@@ -1,0 +1,13 @@
+{
+    "name": "{{cookiecutter.repo_name}}",
+    "version": "0.0.0",
+    "authors": [
+        "Steve <steve@TODO>"
+    ],
+    "license": "MIT",
+    "private": true,
+    "dependencies": {
+    },
+    "resolutions": {
+    }
+}

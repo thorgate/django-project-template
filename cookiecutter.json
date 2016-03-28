@@ -1,0 +1,8 @@
+{
+    "project_title": "User-visible title of the project.",
+    "repo_name": "Preferably lowercase codename, used for the directory structure.",
+    "is_react_project": "Use react specific structure [y/n]",
+    "test_host": "Hostname of the staging server",
+    "live_host": "Hostname of the live server",
+    "vcs": "Which VCS will the generated project be using? (git/hg/none) [Default: none]"
+}

@@ -1,0 +1,14 @@
+
+.vertical-wrapper {
+    display: table;
+    height: 100%;
+    position: fixed;
+    left: 0;
+    right: 0;
+    width: 100%;
+
+    .vertical-inner {
+        display: table-cell;
+        vertical-align: middle;
+    }
+}

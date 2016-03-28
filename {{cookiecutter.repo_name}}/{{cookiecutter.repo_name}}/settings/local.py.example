@@ -1,0 +1,24 @@
+# For production, change this to import from settings.production
+from settings.base import *
+
+# Add proper database name, user and password here, if necessary
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'HOST': '127.0.0.1',
+#         'NAME': '{{cookiecutter.repo_name}}',
+#         'USER': '{{cookiecutter.repo_name}}',
+#         'PASSWORD': '{{cookiecutter.repo_name}}',
+#     }
+# }
+
+# For production, override SECRET_KEY
+
+
+# # For development:
+# # Debug toolbar
+# INSTALLED_APPS.append('debug_toolbar')
+# INTERNAL_IPS = ('127.0.0.1',)
+
+# Show emails in console, don't send them
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

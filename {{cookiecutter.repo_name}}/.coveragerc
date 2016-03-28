@@ -1,0 +1,16 @@
+[run]
+branch = True
+source =
+    .
+
+omit =
+    */migrations/*
+    {{cookiecutter.repo_name}}/wsgi.py
+    gunicorn-settings.py
+    manage.py
+    fabfile.py
+    settings/*
+    *test*
+
+[html]
+directory = cover

@@ -1,0 +1,103 @@
+{% raw %}<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>eCoop</title>
+
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400' rel='stylesheet' type='text/css'>
+
+    <style>
+        body {
+            background-color: #fcfcfc;
+            min-height: 300px;
+            font-size: 14px;
+            font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+        }
+
+        h1 {
+            font-size: 42px;
+            line-height: 50px;
+            color: #545454;
+            font-weight: 300;
+            margin: 0.67em 0;
+        }
+
+        .panel {
+            margin-bottom: 20px;
+            background-color: #fff;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+        }
+
+        .panel {
+            border: 1px solid #ececec;
+            border-radius: 4px;
+            box-shadow: none;
+            padding: 50px;
+        }
+
+        .panel-shadow {
+            box-shadow: 2px 7px 7px rgba(0, 0, 0, 0.04);
+        }
+
+        .panel-message-wrapper .panel {
+            margin: 250px auto;
+        }
+
+        .panel-message {
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 500px;
+            margin-top: 45px;
+            padding: 30px 40px 50px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .panel-message .text-muted {
+            color: #aaaaaa;
+        }
+
+        .login-background {
+            background: transparent url('data:image/svg+xml;base64,TODO') center top no-repeat;
+            position: absolute;
+            left: 50%;
+            top: 50px;
+            -webkit-transform: translateX(-50%);
+            -ms-transform: translateX(-50%);
+            transform: translateX(-50%);
+            width: 620px;
+            height: 582px;
+            opacity: 0.04;
+            z-index: -1;
+            max-width: 100%;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="panel-message-wrapper">
+        <div class="login-background"></div>
+        <div class="panel panel-shadow panel-message">
+            <h1>{% if error.title %}{{ error.title }}{% else %}Error{% endif %}</h1>
+
+            <p class="text-muted">
+                {% if error.message %}{{ error.message | safe }}{% else %}
+                    The server encountered an internal error and was unable to complete your request.
+                {% endif %}
+            </p>
+
+            {% if sentry %}
+                <p class="text-muted">
+                    {% if error.sentry %}{{ error.sentry }}{% else %}Fault code: {% endif %}{{ sentry }}
+                </p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
+{% endraw %}

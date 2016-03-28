@@ -1,0 +1,11 @@
+{% raw %}{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+    {% crispy form %}
+
+    <a href="{% url 'password_reset' %}">Forgot your password?</a>
+{% endblock %}
+{% endraw %}

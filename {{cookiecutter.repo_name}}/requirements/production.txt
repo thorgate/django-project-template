@@ -1,0 +1,12 @@
+# Pro-tip: Try not to put anything here. There should be no dependency in
+#	production that isn't in development.
+-r base.txt
+
+gunicorn==19.3.0
+
+lxml==3.5.0
+psycopg2==2.6.1
+python3-memcached==1.51
+
+# Sentry
+raven==5.11.1

@@ -1,0 +1,9 @@
+Django==1.8.11
+tg-utils==0.2.0
+{%- if cookiecutter.is_react_project == 'y' %}
+djangorestframework==3.3.3
+tg-react==0.5.2{% else %}
+django-crispy-forms==1.6.0
+django_compressor==2.0{% endif %}
+# Needed if you use utils.hashmodels.ModelHashIdMixin
+hashids==1.1.0
