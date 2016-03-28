@@ -107,7 +107,7 @@ def live():
     raise NotImplemented('TODO: live host not configured')
     defaults()
     env.nginx_conf = 'nginx_prod.conf'
-    env.target = 'live'
+    env.target = 'production'
     env.hosts = ['{{cookiecutter.live_host}}']{% if cookiecutter.is_react_project == 'y' %}
     env.node_workers = 4{% endif %}
 
