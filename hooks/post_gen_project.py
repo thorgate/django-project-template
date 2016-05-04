@@ -14,7 +14,6 @@ def handle_react():
         cleanup_paths = [
             '{{ cookiecutter.repo_name }}/.bowerrc',
             '{{ cookiecutter.repo_name }}/bower.json',
-            '{{ cookiecutter.repo_name }}/config.rb',
             '{{ cookiecutter.repo_name }}/static/config.rb',
             '{{ cookiecutter.repo_name }}/static/css',
             '{{ cookiecutter.repo_name }}/static/fonts',
@@ -38,7 +37,6 @@ def handle_react():
             '{{ cookiecutter.repo_name }}/accounts/api_urls.py',
             '{{ cookiecutter.repo_name }}/accounts/serializers.py',
             '{{ cookiecutter.repo_name }}/static/ensure',
-            '{{ cookiecutter.repo_name }}/config.rb',
             '{{ cookiecutter.repo_name }}/package.json',
             '{{ cookiecutter.repo_name }}/process.json',
             '{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}-server.js',
@@ -85,6 +83,7 @@ def handle_react():
 
     for src, dst in symlinks:
         os.symlink(src, dst)
+
 
 def main():
     """Do some stuff based on configuration"""

@@ -1,0 +1,12 @@
+build:
+  image: thorgate/python3.4
+  volumes:
+    - /wheelhouse:/wheelhouse
+  commands:
+    - pip wheel -r requirements.txt
+    - virtualenv --python=python3.4 venv
+    - . ./venv/bin/activate
+    - pip install -r requirements.txt
+    - tox
+clone:
+  image: plugins/drone-hg

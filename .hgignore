@@ -1,0 +1,6 @@
+.idea
+npm-debug.log
+.tox
+.pyc
+.pyo
+.cache

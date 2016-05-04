@@ -1,0 +1,7 @@
+cookiecutter==1.4.0
+flake8==2.5.4
+
+# Testing requirements
+pytest==2.9.1
+pytest-cookies==0.2.0
+tox==2.3.1

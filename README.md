@@ -16,4 +16,5 @@ Then just execute:
     cookiecutter dir/to/django-project-template/
 
 It will ask you a few questions, e.g. project's name.
-Then search for any TODOs in the code and make appropriate changes in those places.
+
+After generation completes, search for any TODOs in the code and make appropriate changes where needed.

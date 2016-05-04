@@ -1,3 +1,4 @@
+{% raw %}
 from django.http import HttpResponseNotFound, JsonResponse, HttpResponseServerError
 from django.template import TemplateDoesNotExist, Engine, Context, loader
 from django.utils.translation import gettext as _
@@ -58,3 +59,4 @@ def server_error(request, template_name='500.html'):
             'sentry': _('Fault code: #'),
         }
     }))
+{% endraw %}
