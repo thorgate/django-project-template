@@ -9,11 +9,26 @@ TODO: verify that the following info is correct:
  - React:   0.13.3
 {% endif %}
 
+
 ## Setting up development
+
+The easy way is to use `make` to set up everything automatically:
+
+    make setup
+
+This copies PyCharm project dir, creates virtualenv, installs dependencies, creates local settings and applies database migrations.
+{%- if cookiecutter.is_react_project == 'y' %}
+It also installs npm packages for the React app.
+{%- endif %}
+
+
+### The manual way
+
+If you don't want to use `make`, here's how to accomplish the same manually:
 
 **Create PyCharm project dir** (if you are using PyCharm)
 
-    make
+    make pycharm
 
 **Create virtualenv**
 
@@ -54,7 +69,8 @@ Installation instructions are available here: https://nodesource.com/blog/nodejs
 
     npm install --python=python2.7
 
-**Run development servers**
+
+## Run development servers
 
 **Note:** Virtualenv must be activated for the following commands to work
 
@@ -78,6 +94,7 @@ the following line into your settings/local.py:
 **Note:** You also need to explicitly set SITE_URL to your local url or you will run into CORS issues.
 {% endif %}
 
+
 ## Running tests
 
 Use `py.test` for running tests. It's configured to run the entire test-suite of the project by default.
@@ -93,6 +110,7 @@ You can also calculate tests coverage with `coverage run -m py.test && coverage 
 the results will be in `cover/` directory.
 
 {% if cookiecutter.is_react_project == 'y' %}
+
 
 ## Images
 
