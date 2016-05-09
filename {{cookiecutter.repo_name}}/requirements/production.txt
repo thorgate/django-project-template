@@ -2,11 +2,11 @@
 #	production that isn't in development.
 -r base.txt
 
-gunicorn==19.3.0
+gunicorn==19.4.5
 
-lxml==3.5.0
+lxml==3.6.0
 psycopg2==2.6.1
 python3-memcached==1.51
 
-# Sentry
-raven==5.11.1
+# Sentry. Newer versions work best with (unreleased) Sentry 8.5+
+raven==5.13.0

@@ -1,4 +1,4 @@
-Django==1.8.11
+Django==1.8.13
 tg-utils==0.2.0
 {%- if cookiecutter.is_react_project == 'y' %}
 djangorestframework==3.3.3
