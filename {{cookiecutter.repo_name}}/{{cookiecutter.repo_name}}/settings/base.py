@@ -19,7 +19,6 @@ SITE_ROOT = os.path.dirname(os.path.dirname(__file__))
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-TEMPLATE_DEBUG = True
 
 ADMINS = (
     ('Admins', 'errors@TODO'),
@@ -37,8 +36,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    {% if cookiecutter.is_react_project != 'y' %}'crispy_forms',
-    'compressor',{% else %}'rest_framework',
+    {% if cookiecutter.project_type == 'standard' %}'crispy_forms',
+    'webpack_loader',{% else %}'rest_framework',
 
     'tg_react',{% endif %}
 
@@ -57,22 +56,29 @@ MIDDLEWARE_CLASSES = [
 ]
 
 
-TEMPLATE_CONTEXT_PROCESSORS = [
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.debug',
-    'django.core.context_processors.i18n',
-    'django.core.context_processors.media',
-    'django.core.context_processors.static',
-    'django.core.context_processors.tz',
-    'django.contrib.messages.context_processors.messages',
-    'django.core.context_processors.request',
-]
-TEMPLATE_LOADERS = [
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-]
-TEMPLATE_DIRS = [
-    os.path.join(SITE_ROOT, 'templates'),
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            os.path.join(SITE_ROOT, 'templates'),
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.request',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
+                {%- if cookiecutter.project_type == 'standard' %}
+                '{{ cookiecutter.repo_name }}.context_processors.settings_export',
+                {%- endif %}
+            ],
+        },
+    },
 ]
 
 
@@ -118,23 +124,14 @@ STATIC_ROOT = os.path.join(SITE_ROOT, 'assets')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(SITE_ROOT, 'static'),
+    {%- if cookiecutter.project_type == 'standard' %}
+    os.path.join(SITE_ROOT, 'app', 'build'),
+    {%- endif %}
 )
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',{% if cookiecutter.is_react_project != 'y' %}
-    'compressor.finders.CompressorFinder',{% endif %}
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
-
-{%- if cookiecutter.is_react_project != 'y' %}
-
-COMPRESS_CSS_FILTERS = [
-    'compressor.filters.css_default.CssAbsoluteFilter',
-    'tg_utils.compressor_filters.CleanCssFilter',
-]
-COMPRESS_JS_FILTERS = [
-    'tg_utils.compressor_filters.UglifyFilter',
-]
-{%- endif %}
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -211,7 +208,7 @@ LOGGING = {
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
-{% if cookiecutter.is_react_project == 'y' -%}
+{% if cookiecutter.project_type == 'spa' -%}
 WEBPACK_CONSTANT_PROCESSORS = (
     'tg_react.webpack.default_constants',
     'tg_react.language.constants',
@@ -229,16 +226,33 @@ EXPRESS_PORT = 3000
 # TODO: check if this is right for your project.
 SILENCED_SYSTEM_CHECKS = [
     'security.W001',  # we don't use SecurityMiddleware since security is better applied in nginx config
-{% if cookiecutter.is_react_project == 'y' -%}
+{% if cookiecutter.project_type == 'spa' -%}
     'security.W017',  # CSRF_COOKIE_HTTPONLY is False, because React needs access to the cookie
 {% endif -%}
 ]
 
 
 # Default values for sentry
-{%- if cookiecutter.is_react_project == 'y' %}
-RAVEN_PUBLIC_DSN = ''
+{%- if cookiecutter.project_type == 'spa' %}
 RAVEN_FRONTEND_DSN = ''
 {%- endif %}
 RAVEN_BACKEND_DSN = ''
+RAVEN_PUBLIC_DSN = ''
 RAVEN_CONFIG = {}
+
+{% if cookiecutter.project_type == 'standard' %}
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'BUNDLE_DIR_NAME': '',
+        'STATS_FILE': os.path.join(SITE_ROOT, 'app', 'webpack-stats.json'),
+    }
+}
+
+# All these settings will be made available to javascript app
+SETTINGS_EXPORT = [
+    'DEBUG',
+    'SITE_URL',
+    'STATIC_URL',
+    'RAVEN_PUBLIC_DSN',
+]
+{%- endif %}

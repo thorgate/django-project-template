@@ -51,11 +51,12 @@ def server_error(request, template_name='500.html'):
     except TemplateDoesNotExist:
         return HttpResponseServerError('<h1>Server Error (500)</h1>', content_type='text/html')
 
+    message = _('Something went wrong on our side... \n Please hold on while we fix it.').replace('\n', '<br>')
     return HttpResponseServerError(template.render({
         'sentry': sentry_id_from_request(request),
         'error': {
             'title': _('Something went wrong'),
-            'message': ('%s' % _('Something went wrong on our side... \n Please hold on while we fix it.')).replace('\n', '<br>'),
+            'message': message,
             'sentry': _('Fault code: #'),
         }
     }))

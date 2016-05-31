@@ -1,5 +1,5 @@
 {% raw %}{% load staticfiles %}
-{% load compress %}
+{% load render_bundle from webpack_loader %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,10 +8,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="{% static "images/TODO.png" %}">
 
-    {% compress css %}
-        <link href="{% static 'css/bootstrap-custom.css' %}" rel="stylesheet">
-        <link href="{% static 'css/main.css' %}" rel="stylesheet">
-    {% endcompress %}
+    <script>
+        {# This can be used to pass relevant Django settings to the frontend app. #}
+        var DJ_CONST = {
+            {% for key, value in settings.items %}
+                "{{ key|escapejs }}": "{{ value|escapejs }}",
+            {% endfor %}
+            {% if request.user.is_authenticated %}
+                user: {
+                    id: {{ request.user.id }},
+                    email: "{{ request.user.email|escapejs }}",
+                    name: "{{ request.user.name|escapejs }}",
+                },
+            {% else %}
+                user: null,
+            {% endif %}
+        };
+    </script>
+
+    {# In production, don't include the styles js file (which is unused anyway) #}
+    {% if settings.DEBUG %}
+        {% render_bundle 'styles' %}
+    {% else %}
+        {% render_bundle 'styles' 'css' %}
+    {% endif %}
+    {% block css %}{% endblock css %}
 
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -63,12 +84,7 @@
         {% block content %}{% endblock content %}
     </div>
 
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
-    <script>window.jQuery || document.write('<script src="{% static 'js/jquery-2.2.2.min.js' %}"><\/script>')</script>
-    {% compress js %}
-        <script src="{% static 'js/bootstrap.js' %}"></script>
-        <script src="{% static 'js/main.js' %}"></script>
-    {% endcompress %}
+    {% render_bundle 'app' %}
     {% block scripts %}{% endblock scripts %}
   </body>
 </html>

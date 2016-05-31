@@ -5,44 +5,42 @@ import shutil
 
 def handle_react():
     cwd = os.getcwd()
-    is_react_project = '{{ cookiecutter.is_react_project }}' == 'y'
+    project_type = '{{ cookiecutter.project_type }}'
 
-    print('is_react_project: %s ({{ cookiecutter.is_react_project }})' % str(is_react_project))
+    print('project_type: %s' % project_type)
     print('cleanup paths in %s' % cwd)
 
-    if is_react_project:
+    if project_type == 'spa':
         cleanup_paths = [
-            '{{ cookiecutter.repo_name }}/.bowerrc',
-            '{{ cookiecutter.repo_name }}/bower.json',
-            '{{ cookiecutter.repo_name }}/static/config.rb',
-            '{{ cookiecutter.repo_name }}/static/css',
-            '{{ cookiecutter.repo_name }}/static/fonts',
-            '{{ cookiecutter.repo_name }}/static/js',
-            '{{ cookiecutter.repo_name }}/static/sass',
+            '{{ cookiecutter.repo_name }}/app-standard',
+            '{{ cookiecutter.repo_name }}/static/styles-src',
             '{{ cookiecutter.repo_name }}/templates/accounts',
             '{{ cookiecutter.repo_name }}/templates/registration',
             '{{ cookiecutter.repo_name }}/templates/base.html',
             '{{ cookiecutter.repo_name }}/templates/home.html',
             '{{ cookiecutter.repo_name }}/accounts/forms.py',
             '{{ cookiecutter.repo_name }}/accounts/urls.py',
+            '{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}/context_processors.py',
         ]
         symlinks = [
             ('../../../../templates/500.html', '{{ cookiecutter.repo_name }}/app/src/server/templates/500.html'),
         ]
 
+        os.rename('{{ cookiecutter.repo_name }}/app-spa', '{{ cookiecutter.repo_name }}/app')
+
     else:
         cleanup_paths = [
             '{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}/api_urls.py',
-            '{{ cookiecutter.repo_name }}/app',
+            '{{ cookiecutter.repo_name }}/app-spa',
             '{{ cookiecutter.repo_name }}/accounts/api_urls.py',
             '{{ cookiecutter.repo_name }}/accounts/serializers.py',
             '{{ cookiecutter.repo_name }}/static/ensure',
-            '{{ cookiecutter.repo_name }}/package.json',
-            '{{ cookiecutter.repo_name }}/process.json',
             '{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}-server.js',
             '{{ cookiecutter.repo_name }}/webpack_constants.py',
         ]
         symlinks = []
+
+        os.rename('{{ cookiecutter.repo_name }}/app-standard', '{{ cookiecutter.repo_name }}/app')
 
     # If using specific vcs, add some extra cleanup paths
     repo_type = '{{ cookiecutter.vcs }}'.lower()
@@ -83,6 +81,9 @@ def handle_react():
 
     for src, dst in symlinks:
         os.symlink(src, dst)
+
+    # Move package.json from app dir to Django project dir
+    os.rename('{{ cookiecutter.repo_name }}/app/package.json', '{{ cookiecutter.repo_name }}/package.json')
 
 
 def main():

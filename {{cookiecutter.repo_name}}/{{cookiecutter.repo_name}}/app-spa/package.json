@@ -64,12 +64,14 @@
     "prebuild": "npm run dump-constants"
   },
   "devDependencies": {
-    "babel-eslint": "^6.0.0-beta.6",
+    "babel-eslint": "^6.0.4",
     "chai": "^3.0.0",
     "dev-ip": "^1.0.1",
-    "eslint": "^2.4.0",
-    "eslint-config-airbnb": "^6.1.0",
-    "eslint-plugin-react": "^4.2.3",
+    "eslint": "^2.10.2",
+    "eslint-config-airbnb": "^9.0.1",
+    "eslint-plugin-import": "^1.8.0",
+    "eslint-plugin-jsx-a11y": "^1.2.0",
+    "eslint-plugin-react": "^5.1.1",
     "mocha": "^2.2.5",
     "node-watch": "^0.3.4",
     "react-hot-loader": "^1.2.7",

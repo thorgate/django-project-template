@@ -1,10 +1,7 @@
-syntax: re
+syntax: glob
 
 # Ignore everything in .idea
-.idea
-
-
-syntax: glob
+.idea/
 
 *.pyo
 *.pyc
@@ -14,13 +11,16 @@ node_modules/
 venv/
 
 {{cookiecutter.repo_name}}/settings/local.py
-{{cookiecutter.repo_name}}/db.sqlite3{% if cookiecutter.is_react_project == 'y' %}
+{{cookiecutter.repo_name}}/db.sqlite3
+{%- if cookiecutter.project_type == 'spa' %}
+{{cookiecutter.repo_name}}/constants.json
 {{cookiecutter.repo_name}}/stats.json
-{{cookiecutter.repo_name}}/constants.json{% endif %}
+{%- else %}
+{{cookiecutter.repo_name}}/app/webpack-stats.json
+{%- endif %}
+{{cookiecutter.repo_name}}/app/build/
 {{cookiecutter.repo_name}}/assets/
-{{cookiecutter.repo_name}}/media/{% if cookiecutter.is_react_project == 'y' %}
-{{cookiecutter.repo_name}}/app/build/{% endif %}
-{{cookiecutter.repo_name}}/static/bower_components/
+{{cookiecutter.repo_name}}/media/
 
 {{cookiecutter.repo_name}}/.cache
 {{cookiecutter.repo_name}}/.coverage

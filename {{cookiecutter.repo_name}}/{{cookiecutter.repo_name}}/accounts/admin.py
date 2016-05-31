@@ -3,7 +3,7 @@ from django.contrib.auth import forms as auth_forms
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import ugettext_lazy as _
 
-from accounts.models import *
+from accounts.models import User
 
 
 class UserChangeForm(auth_forms.UserChangeForm):

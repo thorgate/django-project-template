@@ -3,11 +3,14 @@
 TODO: verify that the following info is correct:
 
  - Python:  3.4
- - DB:      PostgreSQL (locally SQLite){% if cookiecutter.is_react_project == 'y' %}
+ - DB:      PostgreSQL (locally SQLite)
  - Node:    0.12.x
  - NPM:     2.13.x
+{%- if cookiecutter.project_type == 'spa' %}
  - React:   0.13.3
-{% endif %}
+{%- else %}
+ - React:   15.x
+{%- endif %}
 
 
 ## Setting up development
@@ -17,8 +20,10 @@ The easy way is to use `make` to set up everything automatically:
     make setup
 
 This copies PyCharm project dir, creates virtualenv, installs dependencies, creates local settings and applies database migrations.
-{%- if cookiecutter.is_react_project == 'y' %}
+{%- if cookiecutter.project_type == 'spa' %}
 It also installs npm packages for the React app.
+{%- else %}
+It also installs npm packages for the frontend parts.
 {%- endif %}
 
 
@@ -60,7 +65,6 @@ Create `settings/local.py` from `settings/local.py.example`
 
     python manage.py migrate
 
-{% if cookiecutter.is_react_project == 'y' %}
 **Ensure you have node 0.12.x**
 
 Installation instructions are available here: https://nodesource.com/blog/nodejs-v012-iojs-and-the-nodesource-linux-repositories
@@ -80,6 +84,7 @@ Run development asset server: `npm run dev`
 
 **Note:** Server will run at 127.0.0.1:8000 (localhost wont work because of CORS)
 
+{% if cookiecutter.project_type == 'spa' %}
 **Install Alt devtool**
 
 See: `https://github.com/goatslacker/alt-devtool`
@@ -109,9 +114,8 @@ https://pytest-django.readthedocs.org/en/latest/index.html
 You can also calculate tests coverage with `coverage run -m py.test && coverage html`,
 the results will be in `cover/` directory.
 
-{% if cookiecutter.is_react_project == 'y' %}
 
-
+{% if cookiecutter.project_type == 'spa' -%}
 ## Images
 
 To render an inline img from react views, do this:
@@ -141,6 +145,21 @@ writing very verbose code, we added a transpile step which replaces all calls to
 with calls to require when building the browser package. 
 
 With this, we improve DX and can still get all the caching/ versioning working.
+{%- endif %}
+
+
+## Running linters
+
+Linters check your code for common problems. Running them is a good idea before submitting pull requests, to ensure you
+don't introduce problems to the codebase.
+
+We use _ESLint_ (for JavaScript parts) and _Prospector_ (for Python). To use them, run those commands in the Django app
+dir:
+
+    # Check Javascript sources with ESLint:
+    npm run lint
+    # Check Python sources with Prospector:
+    prospector
 
 
 ## Deploys
@@ -149,7 +168,7 @@ With this, we improve DX and can still get all the caching/ versioning working.
 
 We use Fabric for deploys, which doesn't support Python 3. Thus you need to create a Python 2 virtualenv.
 It needn't be project specific and it's recommended you create one 'standard' Python 2 environment 
-which can be used for all projects. You will also need to install tg-hammer==0.0.5, our fabric deployment helper. 
+which can be used for all projects. You will also need to install tg-hammer==0.1.0, our fabric deployment helper. 
 
 
 ### Types of deploys
@@ -202,6 +221,7 @@ There are basically two types of deploys:
     or comment out parts of fabfile (after fixing the problem) to avoid trying to e.g. create database twice. Ouch.
 
 
+{% if cookiecutter.project_type == 'spa' -%}
 ## Reasoning/About
 
 Note: Also read the Flux part of the following article http://www.toptal.com/react/navigating-the-react-ecosystem#find-excellent-architects
@@ -260,10 +280,5 @@ And after UglifyJs plugin the line is removed from the output
  - Logical data fetching setup
  - Active development
 
-Note: We currently use a fork of alt until patches for issues #334, #354 and #348 get merged into master and released{% else %}
-
-This project includes Bower integration.
-To install existing dependencies, run `bower install` in the inner project dir (where manage.py is).
-To add a dependency, run `bower install <package-name> --save`.
-Deploying with Fabric will ensure that all Bower dependencies are also installed in the server.
-If you don't have Bower installed, you can get it by running `npm install -g bower`.{% endif %}
+Note: We currently use a fork of alt until patches for issues #334, #354 and #348 get merged into master and released
+{%- endif %}

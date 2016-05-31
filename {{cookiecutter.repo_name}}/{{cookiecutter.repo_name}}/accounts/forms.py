@@ -42,7 +42,7 @@ class PasswordResetForm(auth_forms.PasswordResetForm):
         """
         UserModel = get_user_model()
         email = self.cleaned_data["email"]
-        active_users = UserModel._default_manager.filter(email__iexact=email, is_active=True)
+        active_users = UserModel.objects.filter(email__iexact=email, is_active=True)
         for user in active_users:
             # Make sure that no email is sent to a user that actually has
             # a password marked as unusable

@@ -1,4 +1,4 @@
-# ENV defaults to local (so that requirements/local.txt are installed), but can be overridden 
+# ENV defaults to local (so that requirements/local.txt are installed), but can be overridden
 #  (e.g. ENV=production make setup).
 ENV ?= local
 # PYTHON specifies the python binary to use when creating virtualenv
@@ -14,12 +14,10 @@ help:
 	@echo "make pycharm - Copies default PyCharm settings (unless they already exist)"
 
 
-setup: venv {{ cookiecutter.repo_name }}/settings/local.py
+setup: pycharm venv {{ cookiecutter.repo_name }}/settings/local.py
 	venv/bin/pip install -r requirements/$(ENV).txt
 	cd {{ cookiecutter.repo_name }} && ../venv/bin/python manage.py migrate
-{%- if cookiecutter.is_react_project == 'y' %}
 	cd {{ cookiecutter.repo_name }} && npm install --python=python2.7
-{%- endif %}
 
 
 pycharm: .idea

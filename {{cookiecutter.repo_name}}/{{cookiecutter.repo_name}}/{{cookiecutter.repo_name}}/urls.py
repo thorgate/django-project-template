@@ -2,13 +2,13 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
-{% if cookiecutter.is_react_project == 'y' %}from django.http import HttpResponse, HttpResponseRedirect{% else %}from django.views.generic.base import TemplateView{% endif %}
+{% if cookiecutter.project_type == 'spa' %}from django.http import HttpResponse, HttpResponseRedirect{% else %}from django.views.generic.base import TemplateView{% endif %}
 
 
 admin.autodiscover()
 
 urlpatterns = [
-    {% if cookiecutter.is_react_project == 'y' %}url(r'^api/v1/', include('{{ cookiecutter.repo_name }}.api_urls')),
+    {% if cookiecutter.project_type == 'spa' %}url(r'^api/v1/', include('{{ cookiecutter.repo_name }}.api_urls')),
     {%- else %}url(r'', include('accounts.urls')),
     url(r'^$', TemplateView.as_view(template_name='home.html'), name='home'),{%- endif %}
 
@@ -20,7 +20,7 @@ urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if not settings.DEBUG:
     handler500 = '{{cookiecutter.repo_name}}.views.server_error'
-    handler404 = '{{cookiecutter.repo_name}}.views.page_not_found'{% if cookiecutter.is_react_project == 'y' %}
+    handler404 = '{{cookiecutter.repo_name}}.views.page_not_found'{% if cookiecutter.project_type == 'spa' %}
 
 if settings.DEBUG:
     import logging

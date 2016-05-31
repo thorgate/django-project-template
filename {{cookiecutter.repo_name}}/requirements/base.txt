@@ -1,9 +1,12 @@
 Django==1.8.13
 tg-utils==0.2.0
-{%- if cookiecutter.is_react_project == 'y' %}
+{%- if cookiecutter.project_type == 'spa' %}
 djangorestframework==3.3.3
-tg-react==0.5.2{% else %}
+tg-react==0.5.2
+{%- else %}
 django-crispy-forms==1.6.0
-django_compressor==2.0{% endif %}
+django-webpack-loader==0.3.0
+django-settings-export==1.1.0
+{%- endif %}
 # Needed if you use utils.hashmodels.ModelHashIdMixin
 hashids==1.1.0

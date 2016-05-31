@@ -1,4 +1,4 @@
-{% if cookiecutter.is_react_project == 'y' -%}
+{% if cookiecutter.project_type == 'spa' -%}
 from rest_framework import generics, status
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import AllowAny, IsAuthenticated

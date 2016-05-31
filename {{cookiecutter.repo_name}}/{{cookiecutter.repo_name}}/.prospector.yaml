@@ -1,0 +1,21 @@
+uses:
+    - django
+
+ignore-paths:
+    - node_modules
+    - app
+    - settings
+    - fabfile.py
+
+ignore-patterns:
+    - migrations/
+
+pep8:
+    options:
+        max-line-length: 120
+
+pylint:
+    disable:
+        - unused-argument
+    options:
+        max-line-length: 120

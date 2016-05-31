@@ -18,5 +18,5 @@ def send_password_reset(user, uid, token):
             'user': user,
             'confirm_reset_url': confirm_reset_url,
         })
-    except:
+    except Exception:
         logger.exception("Couldn't send password reset to %s (%d)", user.email, user.id)

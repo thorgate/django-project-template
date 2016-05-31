@@ -22,3 +22,11 @@ else:
     import re
     identifier_re = re.compile(r"[a-zA-Z_][a-zA-Z0-9_]*$")
     assert bool(identifier_re.match(repo_name)), assert_msg
+
+
+# Ensure selected project_type is valid
+valid_project_types = ['standard', 'spa']
+if "{{ cookiecutter.project_type }}" not in valid_project_types:
+    print("Project type '{{ cookiecutter.project_type }}' is not valid!")
+    print("Valid project types are: %s" % ', '.join(valid_project_types))
+    sys.exit(1)

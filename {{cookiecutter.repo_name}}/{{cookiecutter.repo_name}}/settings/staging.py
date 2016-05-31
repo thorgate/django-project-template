@@ -2,7 +2,6 @@ from settings.base import *
 
 
 DEBUG = False
-TEMPLATE_DEBUG = False
 
 ALLOWED_HOSTS = ['TODO.com']
 
@@ -52,13 +51,13 @@ LOGGING['loggers'][''] = {
 INSTALLED_APPS += (
     'raven.contrib.django.raven_compat',
 )
-{%- if cookiecutter.is_react_project == 'y' %}
-RAVEN_PUBLIC_DSN = 'https://TODO@sentry.thorgate.eu/TODO'
+{%- if cookiecutter.project_type == 'spa' %}
 RAVEN_FRONTEND_DSN = 'https://TODO:TODO@sentry.thorgate.eu/TODO'
 {%- endif %}
 RAVEN_BACKEND_DSN = 'https://TODO:TODO@sentry.thorgate.eu/TODO'
+RAVEN_PUBLIC_DSN = 'https://TODO@sentry.thorgate.eu/TODO'
 RAVEN_CONFIG['dsn'] = RAVEN_BACKEND_DSN
-{%- if cookiecutter.is_react_project == 'y' %}
+{%- if cookiecutter.project_type == 'spa' %}
 
 EXPRESS_PORT = '/tmp/express_{{ cookiecutter.repo_name }}_$index.sock'
 {% endif %}

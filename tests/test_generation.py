@@ -26,9 +26,7 @@ def validate_project_works(result, config):
     assert subprocess.check_call(['pip', 'install', '-r' 'requirements/local.txt'], cwd=project_dir) == 0
     assert subprocess.check_call(['cp', 'settings/local.py.example', 'settings/local.py'], cwd=project_inner_dir) == 0
     assert subprocess.check_call(['python', 'manage.py', 'migrate'], cwd=project_inner_dir) == 0
-
-    if config['is_react_project']:
-        assert subprocess.check_call(['npm', 'install' '--python=python2.7'])
+    assert subprocess.check_call(['npm', 'install', '--python=python2.7'], cwd=project_inner_dir) == 0
 
     # Run python tests
     assert subprocess.check_call(['py.test'], cwd=project_inner_dir) == 0
@@ -42,8 +40,6 @@ def test_base_generate(cookies, default_project):
 
     assert result.project.join('.hgignore').exists()
     assert result.project.join('.gitignore').exists()
-
-    assert result.project.join('{repo_name}/static/config.rb'.format(**default_project)).exists()
 
     validate_project_works(result, default_project)
 

@@ -4,4 +4,10 @@
 {% block content %}
     Hello world!
 {% endblock content %}
+
+{% block scripts %}{{ block.super }}
+    <script>
+        {% endraw %}{{cookiecutter.repo_name}}{% raw %}.init();
+    </script>
+{% endblock %}
 {% endraw %}

@@ -1,6 +1,6 @@
 import re
 from StringIO import StringIO
-import string{% if cookiecutter.is_react_project == 'y' %}
+import string{% if cookiecutter.project_type == 'spa' %}
 import time{% endif %}
 import os
 
@@ -43,7 +43,7 @@ from hammer.vcs import Vcs
 """
 
 # Ensure that we have expected version of the tg-hammer package installed
-assert hammer_version == '0.0.5', "tg-hammer==0.0.5 is required"
+assert hammer_version.startswith('0.1.'), "tg-hammer 0.1 is required"
 vcs = Vcs.init(project_root=os.path.dirname(os.path.dirname(__file__)), use_sudo=True)
 
 LOCAL_SETTINGS = """from settings.${target} import *
@@ -61,7 +61,7 @@ DATABASES = {
     }
 }
 """
-{% if cookiecutter.is_react_project == 'y' %}
+{% if cookiecutter.project_type == 'spa' %}
 WORKER_INIT = """description "{{cookiecutter.repo_name}}-express-${index}"
 
 start on (filesystem)
@@ -94,7 +94,7 @@ def defaults():
     env.target = 'staging'
 
     env.service_name = ["gunicorn-{{cookiecutter.repo_name}}"]
-    env.code_dir = '/srv/{{cookiecutter.repo_name}}'{% if cookiecutter.is_react_project == 'y' %}
+    env.code_dir = '/srv/{{cookiecutter.repo_name}}'{% if cookiecutter.project_type == 'spa' %}
     env.node_workers = 2{% endif %}
 
 @task
@@ -108,7 +108,7 @@ def live():
     defaults()
     env.nginx_conf = 'nginx_prod.conf'
     env.target = 'production'
-    env.hosts = ['{{cookiecutter.live_host}}']{% if cookiecutter.is_react_project == 'y' %}
+    env.hosts = ['{{cookiecutter.live_host}}']{% if cookiecutter.project_type == 'spa' %}
     env.node_workers = 4{% endif %}
 
 
@@ -201,9 +201,10 @@ def version():
     """ Get current target version hash. """
     require('hosts')
     require('code_dir')
-    require('tag')
 
-    print colors.yellow(vcs.version())
+    commit_id, branch, message, author = vcs.version()
+    summary = "%s [%s]: %s - %s" % (commit_id, branch, message, author)
+    print colors.yellow(summary)
 
 
 @task
@@ -226,22 +227,17 @@ def deploy(id=None, silent=False, force=False):
     requirements_changes = force or vcs.changed_files(revset, r' requirements/')
     if requirements_changes:
         print colors.yellow("Will update requirements (and do migrations):")
-        print indent(requirements_changes){% if cookiecutter.is_react_project == 'y' %}
+        print indent(requirements_changes)
 
     # See if we have package.json changes
     package_changed = force or vcs.changed_files(revset, r' {{ cookiecutter.repo_name }}/package.json')
     if package_changed:
-        print colors.yellow("Will run npm install:")
-        print indent(package_changed)
+        print colors.yellow("Will run npm install")
 
     # See if we have changes in app source or static files
     app_changed = force or vcs.changed_files(revset, [r' {{ cookiecutter.repo_name }}/app', r' {{ cookiecutter.repo_name }}/static', r' {{ cookiecutter.repo_name }}/settings', r'webpack'])
     if app_changed:
-        print colors.yellow("Will run npm build:")
-        print indent(app_changed[:10])
-
-        if len(app_changed) > 10:
-            print indent('    ... more ...'){% endif %}
+        print colors.yellow("Will run npm build")
 
     # See if we have any changes to migrations between the revisions we're applying
     migrations = force or migrate_diff(revset=revset, silent=True)
@@ -270,9 +266,9 @@ def deploy(id=None, silent=False, force=False):
         with cd(env.code_dir):
             sudo('cp deploy/crontab.conf /etc/cron.d/{{cookiecutter.repo_name}}')
 
-    collectstatic({% if cookiecutter.is_react_project == 'y' %}npm_install=package_changed, npm_build=app_changed{% endif %})
+    collectstatic(npm_install=package_changed, npm_build=app_changed)
 
-    {% if cookiecutter.is_react_project == 'y' %}reload_server{% else %}restart_server{% endif %}(silent=True)
+    {% if cookiecutter.project_type == 'spa' %}reload_server{% else %}restart_server{% endif %}(silent=True)
 
     # Run deploy systemchecks
     check()
@@ -401,7 +397,7 @@ def setup_server():
         sudo('cp deploy/%s /etc/nginx/sites-enabled/{{cookiecutter.repo_name}}' % env.nginx_conf)
         sudo('cp deploy/gunicorn.conf /etc/init/gunicorn-{{cookiecutter.repo_name}}.conf')
         sudo('cp deploy/crontab.conf /etc/cron.d/{{cookiecutter.repo_name}}')
-    {% if cookiecutter.is_react_project == 'y' %}
+    {% if cookiecutter.project_type == 'spa' %}
     update_worker_conf(){% endif %}
 
     # (Re)start services
@@ -423,7 +419,7 @@ def nginx_update():
     with cd(env.code_dir):
         sudo('cp deploy/%s /etc/nginx/sites-enabled/{{cookiecutter.repo_name}}' % env.nginx_conf)
 
-    sudo('service nginx restart'){% if cookiecutter.is_react_project == 'y' %}
+    sudo('service nginx restart'){% if cookiecutter.project_type == 'spa' %}
 
 
 @task
@@ -452,7 +448,7 @@ def stop_server(silent=False):
     require('service_name')
     require('code_dir')
 
-    service(env.service_name, "stop"){% if cookiecutter.is_react_project == 'y' %}
+    service(env.service_name, "stop"){% if cookiecutter.project_type == 'spa' %}
     service(['{{cookiecutter.repo_name}}-express-%d' % n for n in range(0, env.node_workers)], "stop"){% endif %}
 
 
@@ -463,7 +459,7 @@ def start_server(silent=False):
 
     require('service_name')
     require('code_dir')
-    service(env.service_name, "start"){% if cookiecutter.is_react_project == 'y' %}
+    service(env.service_name, "start"){% if cookiecutter.project_type == 'spa' %}
     service(['{{cookiecutter.repo_name}}-express-%d' % n for n in range(0, env.node_workers)], "start"){% endif %}
 
 
@@ -474,7 +470,7 @@ def restart_server(silent=False):
 
     require('service_name')
     require('code_dir')
-    service(env.service_name, "restart"){% if cookiecutter.is_react_project == 'y' %}
+    service(env.service_name, "restart"){% if cookiecutter.project_type == 'spa' %}
     service(['{{cookiecutter.repo_name}}-express-%d' % n for n in range(0, env.node_workers)], "restart")
 
 
@@ -559,25 +555,17 @@ def repo_type():
         print("Current project is using: `%s`" % colors.red('NO VCS'))
 
 
-def collectstatic({% if cookiecutter.is_react_project == 'y' %}npm_install=True, npm_build=True{% endif %}):
-    with cd(env.code_dir{% if cookiecutter.is_react_project != 'y' %} + '/{{cookiecutter.repo_name}}'{% endif %}):
-        {% if cookiecutter.is_react_project == 'y' %}if npm_install:
-            sudo("cd %s ;"
-                 ". ./venv/bin/activate ; "
-                 "cd {{cookiecutter.repo_name}} ; "
-                 "npm install --unsafe-perm" % env.code_dir)
-
-            sudo("cd %s ;"
-                 ". ./venv/bin/activate ; "
-                 "cd {{cookiecutter.repo_name}} ; " % env.code_dir)
+def collectstatic(npm_install=True, npm_build=True):
+    with cd(env.code_dir + '/{{cookiecutter.repo_name}}'):
+        if npm_install:
+            sudo(". ../venv/bin/activate ; "
+                 "npm install --unsafe-perm --production")
 
         if npm_build:
-            sudo("cd %s ;"
-                 ". ./venv/bin/activate ; "
-                 "cd {{cookiecutter.repo_name}} ; "
-                 "npm run build" % env.code_dir){% else %}sudo('bower install --production --allow-root'){% endif %}
+            sudo(". ../venv/bin/activate ; "
+                 "npm run build")
 
-    management_cmd('collectstatic --noinput')
+    management_cmd('collectstatic --noinput --ignore styles-src')
 
 
 def mkdir_wwwdata(path):
@@ -586,11 +574,11 @@ def mkdir_wwwdata(path):
     sudo('chown www-data:www-data ' + path)
 
 
-def request_confirm(tag):
+def request_confirm(action):
     require('confirm_required')
 
     if env.confirm_required:
-        if not confirm("Are you sure you want to run task: %s on servers %s?" % (tag, env.hosts)):
+        if not confirm("Are you sure you want to run task: %s on servers %s?" % (action, env.hosts)):
             abort('Deployment aborted.')
 
 

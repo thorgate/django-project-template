@@ -3,34 +3,44 @@
     "extends": "airbnb",
     "env": {
         "browser": true,
+{%- if cookiecutter.project_type == 'spa' %}
         "node": true,
-        "mocha": true
+        "mocha": true,
+{%- endif %}
     },
     "globals": {
-        "chai": true
+        "DJ_CONST": false,
+{%- if cookiecutter.project_type == 'spa' %}
+        "chai": true,
+{%- endif %}
     },
+{%- if cookiecutter.project_type == 'standard' %}
+    "settings": {
+        "import/resolver": {
+            "webpack": {
+                "config": "app/webpack/config.dev.js",
+            },
+        },
+    },
+{%- endif %}
+
     "rules": {
-        "react/jsx-uses-react": 1,
-        "react/jsx-uses-vars": 1,
-        "react/no-did-mount-set-state": 1,
-        "react/no-did-update-set-state": 1,
-        "react/no-multi-comp": 2,
-        "react/prop-types": 2,
-        "react/react-in-jsx-scope": 2,
-        "react/self-closing-comp": 1,
-        "react/wrap-multilines": 2,
+        // We use 4 spaces for indentation. Everywhere.
+        "indent": ["error", 4],
+        "react/jsx-indent": ["error", 4],
+        "react/jsx-indent-props": ["error", 4],
 
-        "quotes": [2, "single", "avoid-escape"],
-        "comma-dangle": [2, "never"],
-        "brace-style": [0, "1tbs", {"allowSingleLine": true}],
-        "no-underscore-dangle": 0,
-        "func-names": 0,
-        "no-else-return": 0,
-        "no-param-reassign": 0,
-        "no-reserved-keys": 0,
-        "no-console": 0,
+        // Set max line length to 120 chars. Smaller lengths feel too small on modern monitors.
+        "max-len": ["error", 120],
 
-        "padded-blocks": [0, "never"],
-        "indent": [2, 4]
-    }
+        // Allow both single- as well as double quotes. This lets us use e.g. double quotes for user-visible strings and
+        //  single quotes for internals.
+        "quotes": "off",
+
+        // else-return improves readability sometimes, especially with one-liners.
+        "no-else-return": "off",
+
+        // Unlike Airbnb, we don't keep spaces inside of curly braces for objects.
+        "object-curly-spacing": ["error", "never"],
+    },
 }
