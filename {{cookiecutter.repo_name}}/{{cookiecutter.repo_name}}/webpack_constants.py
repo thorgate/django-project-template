@@ -12,5 +12,6 @@ def constants(context):
         'RAVEN_FRONTEND_DSN': settings.RAVEN_FRONTEND_DSN,
 
         'API_BASE': '%s/api/v1/' % settings.SITE_URL,
+        'WEBPACK_PORT': settings.WEBPACK_PORT,
         'API': flatten_urls('{{ cookiecutter.repo_name }}.api_urls', '')
     }

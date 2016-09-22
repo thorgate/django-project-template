@@ -1,4 +1,4 @@
-# Thorgate's Django project template
+# Thorgate's Django template
 
 [Django](https://www.djangoproject.com/) project template that we use at [Thorgate](https://thorgate.eu).
 

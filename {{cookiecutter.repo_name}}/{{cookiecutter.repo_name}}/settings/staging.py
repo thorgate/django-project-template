@@ -9,7 +9,7 @@ ALLOWED_HOSTS = ['TODO.com']
 SITE_URL = 'http://TODO.com'
 
 EMAIL_HOST_PASSWORD = 'TODO (api key)'
-
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 STATIC_URL = '/assets/'
 

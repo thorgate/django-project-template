@@ -29,30 +29,60 @@ EMAIL_SUBJECT_PREFIX = '[{{cookiecutter.project_title}}] '  # subject prefix for
 SESSION_COOKIE_NAME = '{{ cookiecutter.repo_name }}_ssid'
 
 INSTALLED_APPS = [
+    'accounts',
+    '{{cookiecutter.repo_name}}',
+    {% if cookiecutter.include_cms == 'yes' %}
+    'cms',
+    'treebeard',
+    'menus',
+    'sekizai',
+    'djangocms_admin_style',
+    'reversion',
+    'easy_thumbnails',
+    'filer',
+    'mptt',
+
+    'djangocms_file',
+    'djangocms_link',
+    'djangocms_picture',
+    'djangocms_text_ckeditor',
+    {% endif %}
+    {%- if cookiecutter.project_type == 'standard' %}
+    'crispy_forms',
+    'webpack_loader',
+    {%- else %}
+    'rest_framework',
+    'tg_react',
+    {% endif %}
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
+    {%- if cookiecutter.include_cms == 'yes' %}
+    'django.contrib.sites',
+    {%- endif %}
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
-    {% if cookiecutter.project_type == 'standard' %}'crispy_forms',
-    'webpack_loader',{% else %}'rest_framework',
-
-    'tg_react',{% endif %}
-
-    'accounts',
-    '{{cookiecutter.repo_name}}',
 ]
 
 
 MIDDLEWARE_CLASSES = [
+    {%- if cookiecutter.include_cms == 'yes' %}
+    'cms.middleware.utils.ApphookReloadMiddleware',
+    {%- endif %}
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    {%- if cookiecutter.include_cms == 'yes' %}
+    'django.middleware.locale.LocaleMiddleware',
+    'cms.middleware.user.CurrentUserMiddleware',
+    'cms.middleware.page.CurrentPageMiddleware',
+    'cms.middleware.toolbar.ToolbarMiddleware',
+    'cms.middleware.language.LanguageCookieMiddleware',
+    {%- endif %}
 ]
 
 
@@ -74,12 +104,23 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
                 {%- if cookiecutter.project_type == 'standard' %}
+                {%- if cookiecutter.include_cms == 'yes' %}
+                'django.template.context_processors.csrf',
+                'sekizai.context_processors.sekizai',
+                'cms.context_processors.cms_settings',
+                {%- endif %}
                 '{{ cookiecutter.repo_name }}.context_processors.settings_export',
                 {%- endif %}
             ],
         },
     },
 ]
+{%- if cookiecutter.include_cms == 'yes' %}
+
+CMS_TEMPLATES = (
+    ('cms_main.html', 'Main template'),
+)
+{%- endif %}
 
 
 # Database
@@ -142,11 +183,22 @@ AUTH_USER_MODEL = 'accounts.User'
 ALLOWED_HOSTS = []
 
 # Static site url, used when we need absolute url but lack request object, e.g. in email sending.
-SITE_URL = 'http://127.0.0.1:8000'
+BASE_URL = 'http://127.0.0.1'
+{% if cookiecutter.project_type == 'spa' -%}
+WEBPACK_PORT = 3001
+EXPRESS_PORT = 3000
+{%- endif %}
+SITE_URL = '{}:8000'.format(BASE_URL)
+
+{%- if cookiecutter.include_cms == 'yes' %}
+
+SITE_ID = 1
+{% endif %}
+{% if cookiecutter.include_cms == 'no' %}
 
 # Don't allow site's content to be included in frames/iframes.
 X_FRAME_OPTIONS = 'DENY'
-
+{% endif -%}
 
 ROOT_URLCONF = '{{cookiecutter.repo_name}}.urls'
 
@@ -165,11 +217,13 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 DEFAULT_FROM_EMAIL = "{{cookiecutter.project_title}} <info@TODO.com>"
 SERVER_EMAIL = "{{cookiecutter.project_title}} server <server@TODO.com>"
 
-# SMTP
+# Show emails in the console, but don't send them.
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# SMTP  --> This is only used in staging and production
 EMAIL_HOST = 'smtp.sparkpostmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'info@TODO.com'
-EMAIL_HOST_PASSWORD = 'TODO (test api key)'
 
 
 # Base logging config. Logs INFO and higher-level messages to console. Production-specific additions are in
@@ -218,8 +272,6 @@ WEBPACK_CONSTANT_PROCESSORS = (
 TGR_STATICFILES_DIRS = (
     os.path.join(SITE_ROOT, 'app', 'src'),
 )
-
-EXPRESS_PORT = 3000
 {% endif -%}
 
 # Disable a few system checks. Careful with these, only silence what your really really don't need.
