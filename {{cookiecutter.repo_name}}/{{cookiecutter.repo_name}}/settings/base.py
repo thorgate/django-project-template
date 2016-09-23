@@ -183,13 +183,11 @@ AUTH_USER_MODEL = 'accounts.User'
 ALLOWED_HOSTS = []
 
 # Static site url, used when we need absolute url but lack request object, e.g. in email sending.
-BASE_URL = 'http://127.0.0.1'
+SITE_URL = 'http://127.0.0.1:8000'
 {% if cookiecutter.project_type == 'spa' -%}
 WEBPACK_PORT = 3001
 EXPRESS_PORT = 3000
 {%- endif %}
-SITE_URL = '{}:8000'.format(BASE_URL)
-
 {%- if cookiecutter.include_cms == 'yes' %}
 
 SITE_ID = 1
