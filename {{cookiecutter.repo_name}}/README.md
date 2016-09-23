@@ -2,7 +2,7 @@
 
 TODO: verify that the following info is correct:
 
- - Python:  3.4
+ - Python:  3.4/3.5
  - DB:      PostgreSQL (locally SQLite)
  - Node:    0.12.x
  - NPM:     2.13.x
@@ -168,7 +168,7 @@ dir:
 
 We use Fabric for deploys, which doesn't support Python 3. Thus you need to create a Python 2 virtualenv.
 It needn't be project specific and it's recommended you create one 'standard' Python 2 environment 
-which can be used for all projects. You will also need to install tg-hammer==0.1.0, our fabric deployment helper. 
+which can be used for all projects. You will also need to install tg-hammer==0.2.0, our fabric deployment helper. 
 
 
 ### Types of deploys

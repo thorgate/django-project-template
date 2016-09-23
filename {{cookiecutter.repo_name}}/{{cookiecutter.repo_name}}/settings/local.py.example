@@ -20,5 +20,6 @@ from settings.base import *
 # INSTALLED_APPS.append('debug_toolbar')
 # INTERNAL_IPS = ('127.0.0.1',)
 
-# Show emails in console, don't send them
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# Uncomment to send emails from your local machine.
+# EMAIL_HOST_PASSWORD = 'TODO (api key)'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
