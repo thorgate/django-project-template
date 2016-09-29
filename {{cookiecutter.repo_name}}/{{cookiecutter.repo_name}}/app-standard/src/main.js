@@ -8,6 +8,10 @@ import HelloWorld from 'components/HelloWorld';
 // Install Raven in production envs
 if (process.env.NODE_ENV === 'production') {
     Raven.config(DJ_CONST.RAVEN_PUBLIC_DSN).install(); // eslint-disable-line
+    // handle rejected promises
+    window.addEventListener('unhandledrejection', (evt) => {
+        Raven.captureException(evt.reason);
+    });
     // If we have authenticated user, pass its data on to Raven
     if (DJ_CONST.user) {
         Raven.setUserContext({

@@ -5,7 +5,6 @@
 gunicorn==19.4.5
 
 lxml==3.6.0
-psycopg2==2.6.1
 python3-memcached==1.51
 
 # Sentry. Newer versions work best with (unreleased) Sentry 8.5+

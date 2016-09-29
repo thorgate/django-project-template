@@ -1,3 +1,10 @@
+"""
+Usage:
+    fab [target] [action ...]
+
+Use `fab --list` to see available targets and actions.
+"""
+
 import re
 from StringIO import StringIO
 import string{% if cookiecutter.project_type == 'spa' %}
@@ -6,45 +13,23 @@ import os
 
 from fabric import colors
 from fabric.api import *
+from fabric.contrib import files
 from fabric.contrib.console import confirm
 from fabric.utils import indent
 
 from django.utils.crypto import get_random_string
 
 from hammer import __version__ as hammer_version
-from hammer.vcs import Vcs
-
-"""
-    Usage:
-        fab TARGET actions
-
-    Actions:
-        simple_deploy # Deploy updates without migrations.
-            :arg id Identifier to pass to vcs update command.
-            :arg silent If true doesn't show confirms.
-
-        offline_deploy # Deploy updates with migrations with server restart.
-            :arg id Identifier to pass to vcs update command.
-            :arg silent If true doesn't show confirms.
-
-        online_deploy # Deploy updates with migrations without server restart.
-            :arg id Identifier to pass to vcs update command.
-            :arg silent If true doesn't show confirms.
-
-        version # Get the version deployed to target.
-        update_requirements # Perform pip install -r requirements/production.txt
-
-        stop_server # Stop the remote server service.
-        start_server # Start the remote server service.
-        restart_server # Restart the remote server service.
-
-        migrate_diff # Get the status of migrations needed when upgrading target to the specified version.
-            :arg id Identifier of revision to check against.
-"""
 
 # Ensure that we have expected version of the tg-hammer package installed
-assert hammer_version.startswith('0.1.'), "tg-hammer 0.1 is required"
+assert hammer_version.startswith('0.3.'), "tg-hammer 0.3 is required"
+
+from hammer.service_helpers import {% if cookiecutter.project_type == 'spa' %}install_services, {% endif %}install_services_cp, manage_service
+from hammer.vcs import Vcs
+
+
 vcs = Vcs.init(project_root=os.path.dirname(os.path.dirname(__file__)), use_sudo=True)
+
 
 LOCAL_SETTINGS = """from settings.${target} import *
 
@@ -80,30 +65,38 @@ exec node --harmony {{ cookiecutter.repo_name }}-server.js ${index}
 
 """ TARGETS """
 
-
-# Use  .ssh/config  so that you can use hosts defined there.
-env.use_ssh_config = True
-
-
 def defaults():
-    env.venv_name = 'venv'
+    # Use  .ssh/config  so that you can use hosts defined there.
+    env.use_ssh_config = True
+
     env.confirm_required = True
     env.code_dir = '/'
 
     env.nginx_conf = 'nginx.conf'
     env.target = 'staging'
 
-    env.service_name = ["gunicorn-{{cookiecutter.repo_name}}"]
+    env.service_names = ["gunicorn-{{cookiecutter.repo_name}}"]
     env.code_dir = '/srv/{{cookiecutter.repo_name}}'{% if cookiecutter.project_type == 'spa' %}
     env.node_workers = 2{% endif %}
 
-@task
+    # See https://tg-hammer.readthedocs.io/en/latest/api.html#hammer.service_helpers.DAEMON_TYPES
+    env.service_daemon = 'upstart'
+
+
+@task(alias="staging")
 def test():
+    """ TARGET: test server (staging)
+    """
+
     defaults()
     env.hosts = ['{{cookiecutter.test_host}}']
 
-@task
+
+@task(alias="production")
 def live():
+    """ TARGET: live server (production)
+    """
+
     raise NotImplemented('TODO: live host not configured')
     defaults()
     env.nginx_conf = 'nginx_prod.conf'
@@ -112,17 +105,7 @@ def live():
     env.node_workers = 4{% endif %}
 
 
-@task
-def staging():
-    return test()
-
-@task
-def production():
-    return live()
-
-
-""" FUNCTIONS """
-
+""" ACTIONS """
 
 @task
 def show_log(commit_id=None):
@@ -137,7 +120,10 @@ def show_log(commit_id=None):
         print(result['message'])
         return False
 
-    elif 'forwards' in result:
+    current_version = get_current_version_summary()
+    print(colors.yellow("Current version: " + current_version))
+
+    if 'forwards' in result:
         print("Revisions to apply:")
         print(indent(result['forwards']))
 
@@ -187,6 +173,7 @@ def update_requirements(reqs_type='production'):
         sudo('pip install -r requirements/%s.txt' % reqs_type)
 
 
+@task
 def migrate(silent=False):
     """ Preform migrations on the database. """
 
@@ -202,18 +189,24 @@ def version():
     require('hosts')
     require('code_dir')
 
-    commit_id, branch, message, author = vcs.version()
-    summary = "%s [%s]: %s - %s" % (commit_id, branch, message, author)
+    summary = get_current_version_summary()
     print colors.yellow(summary)
 
 
 @task
-def deploy(id=None, silent=False, force=False):
+def deploy(id=None, silent=False, force=False, services=False, auto_nginx=True):
     """ Perform an automatic deploy to the target requested. """
     require('hosts')
     require('code_dir')
 
-    # Ask for sudo at the begginning so we don't fail during deployment because of wrong pass
+    if force:
+        force = colors.blue('FORCED DEPLOY')
+
+        print '-' * 40
+        print force
+        print '-' * 40
+
+    # Ask for sudo at the beginning so we don't fail during deployment because of wrong pass
     if not sudo('whoami'):
         abort('Failed to elevate to root')
         return
@@ -226,8 +219,7 @@ def deploy(id=None, silent=False, force=False):
     # See if we have any requirements changes
     requirements_changes = force or vcs.changed_files(revset, r' requirements/')
     if requirements_changes:
-        print colors.yellow("Will update requirements (and do migrations):")
-        print indent(requirements_changes)
+        print colors.yellow("Will update requirements (and do migrations)")
 
     # See if we have package.json changes
     package_changed = force or vcs.changed_files(revset, r' {{ cookiecutter.repo_name }}/package.json')
@@ -251,8 +243,21 @@ def deploy(id=None, silent=False, force=False):
         print colors.yellow("Will update cron entries")
 
     # see if nginx conf has changed
-    if vcs.changed_files(revset, r' deploy/%s' % env.nginx_conf):
-        print colors.red("Warning: Nginx configuration change detected, also run: `fab %target% nginx_update`")
+    nginx_changed = vcs.changed_files(revset, [r' deploy/%s' % env.nginx_conf])
+
+    if nginx_changed:
+        if auto_nginx:
+            print colors.yellow("Nginx configuration change detected, updating automatically")
+
+        else:
+            print colors.red("Warning: Nginx configuration change detected, also run: `fab %target% nginx_update`")
+
+    elif force:
+        print colors.yellow("Updating nginx config")
+
+    # if services flag is set, let the user know
+    if force or services:
+        print colors.yellow("Will update service configuration")
 
     if not silent:
         request_confirm("deploy")
@@ -266,6 +271,13 @@ def deploy(id=None, silent=False, force=False):
         with cd(env.code_dir):
             sudo('cp deploy/crontab.conf /etc/cron.d/{{cookiecutter.repo_name}}')
 
+    if force or services:
+        configure_services(){% if cookiecutter.project_type == 'spa' %}
+        update_worker_conf(){% endif %}
+
+    if force or (nginx_changed and auto_nginx):
+        nginx_update()
+
     collectstatic(npm_install=package_changed, npm_build=app_changed)
 
     {% if cookiecutter.project_type == 'spa' %}reload_server{% else %}restart_server{% endif %}(silent=True)
@@ -275,89 +287,19 @@ def deploy(id=None, silent=False, force=False):
 
 
 @task
-def simple_deploy(id=None, silent=False):
-    """ Perform a simple deploy to the target requested. """
-    require('hosts')
-    require('code_dir')
-
-    # Show log of changes, return if nothing to do
-    revset = show_log(id)
-    if not revset:
-        return
-
-    migrations = migrate_diff(revset=revset, silent=True)
-    if migrations:
-        msg = "Found %d migrations; are you sure you want to continue with simple deploy?" % len(migrations)
-        if not confirm(colors.yellow(msg), False):
-            abort('Deployment aborted.')
-
-    if not silent:
-        request_confirm("simple_deploy")
-
-    vcs.update(id)
-    collectstatic()
-    restart_server(silent=True)
-
-
-@task
-def online_deploy(id=None, silent=False):
-    """ Perform an online deploy to the target requested. """
-    require('hosts')
-    require('code_dir')
-
-    # Show log of changes, return if nothing to do
-    revset = show_log(id)
-    if not revset:
-        return
-
-    migrations = migrate_diff(revset=revset, silent=True)
-    if migrations:
-        print colors.yellow("Will apply %d migrations:" % len(migrations))
-        print indent(migrations)
-
-    if not silent:
-        request_confirm("online_deploy")
-
-    vcs.update(id)
-    migrate(silent=True)
-    collectstatic()
-    restart_server(silent=True)
-
-
-@task
-def offline_deploy(id=None, silent=False):
-    """ Perform an offline deploy to the target requested. """
-    require('hosts')
-    require('code_dir')
-
-    # Show log of changes, return if nothing to do
-    revset = show_log(id)
-    if not revset:
-        return
-
-    migrations = migrate_diff(revset=revset, silent=True)
-    if migrations:
-        print colors.yellow("Will apply %d migrations:" % len(migrations))
-        print indent(migrations)
-
-    if not silent:
-        request_confirm("offline_deploy")
-
-    stop_server(silent=True)
-    vcs.update(id)
-    migrate(silent=True)
-    collectstatic()
-    start_server(silent=True)
-
-
-@task
-def setup_server():
+def setup_server(id=None):
+    """ Perform initial deploy on the target """
     require('hosts')
     require('code_dir')
     require('nginx_conf')
 
     # Clone code repository
-    vcs.clone()
+    vcs.clone(id or None)
+
+    # Create virtualenv and install dependencies
+    with cd(env.code_dir):
+        sudo('make venv')
+    update_requirements()
 
     # Create password for DB, secret key and the local settings
     db_password = generate_password()
@@ -369,11 +311,6 @@ def setup_server():
          '      CREATE USER {{cookiecutter.repo_name}} WITH password \'%s\'; '
          '      GRANT ALL PRIVILEGES ON DATABASE {{cookiecutter.repo_name}} to {{cookiecutter.repo_name}};" '
          '| su -c psql postgres' % db_password)
-
-    # Create virtualenv and install dependencies
-    with cd(env.code_dir):
-        sudo('virtualenv -p python3.4 venv')
-    update_requirements()
 
     # Upload local settings
     put(local_path=StringIO(local_settings), remote_path=env.code_dir + '/{{cookiecutter.repo_name}}/settings/local.py', use_sudo=True)
@@ -391,14 +328,16 @@ def setup_server():
     # Ensure any and all created log files are owned by the www-data user
     sudo('chown -R www-data:www-data /var/log/{{cookiecutter.repo_name}}/')
 
-    # Copy logrotate, nginx, crontab and gunicorn confs
+    # Copy logrotate and crontab confs
     with cd(env.code_dir):
         sudo('cp deploy/logrotate.conf /etc/logrotate.d/{{cookiecutter.repo_name}}')
-        sudo('cp deploy/%s /etc/nginx/sites-enabled/{{cookiecutter.repo_name}}' % env.nginx_conf)
-        sudo('cp deploy/gunicorn.conf /etc/init/gunicorn-{{cookiecutter.repo_name}}.conf')
         sudo('cp deploy/crontab.conf /etc/cron.d/{{cookiecutter.repo_name}}')
-    {% if cookiecutter.project_type == 'spa' %}
-    update_worker_conf(){% endif %}
+
+    # Install nginx config
+    nginx_update()
+
+    # Install services
+    configure_services()
 
     # (Re)start services
     start_server(silent=True)
@@ -407,11 +346,14 @@ def setup_server():
     check()
 
     # Restart nginx
-    sudo('service nginx restart')
+    manage_service('nginx', 'restart')
 
 
 @task
 def nginx_update():
+    """ Updates the nginx configuration files and restarts nginx.
+    """
+
     require('code_dir')
     require('nginx_conf')
 
@@ -419,22 +361,49 @@ def nginx_update():
     with cd(env.code_dir):
         sudo('cp deploy/%s /etc/nginx/sites-enabled/{{cookiecutter.repo_name}}' % env.nginx_conf)
 
-    sudo('service nginx restart'){% if cookiecutter.project_type == 'spa' %}
+    # test nginx configuration before restarting it. This catches config problems which might bring down nginx.
+    sudo('nginx -t')
+    manage_service('nginx', 'restart')
 
 
 @task
+def configure_services():
+    """ Updates the services' init files (e.g. for gunicorn)
+    """
+
+    require('code_dir')
+
+    # Ensure at-least the default gunicorn.py exists
+    with cd(env.code_dir + '/{{ cookiecutter.repo_name }}/settings'):
+        if not files.exists('gunicorn.py', use_sudo=True):
+            sudo('cp gunicorn.py.example gunicorn.py')
+
+    # Note: DAEMON_TYPE AND DAEMON_FILE_EXTENSION are replaced by hammer automatically
+    source_dir = os.path.join(
+        env.code_dir,
+        'deploy',
+        '${DAEMON_TYPE}',
+        '${SERVICE_NAME}.${DAEMON_FILE_EXTENSION}',
+    )
+
+    # Install the services using hammer
+    install_services_cp([
+        ('gunicorn-{{cookiecutter.repo_name}}', source_dir.replace('${SERVICE_NAME}', 'gunicorn')),
+    ]){% if cookiecutter.project_type == 'spa' %}
+    update_worker_conf()
+
+
 def update_worker_conf():
     require('node_workers')
 
-    # Copy worker conf
-    for n in range(0, env.node_workers):
-        worker_conf = string.Template(WORKER_INIT).substitute(index=n)
+    def make_worker_tuple(n):
+        return (
+            '{{cookiecutter.repo_name}}-express-%d' % n,
+            string.Template(WORKER_INIT).substitute(index=n),
+        )
 
-        target_name = '{{cookiecutter.repo_name}}-express-%d' % n
-        target_dir = '/etc/init'
-        file_name = '%s.conf'
-
-        put(local_path=StringIO(worker_conf), remote_path='%s/%s' % (target_dir, file_name % target_name), use_sudo=True){% endif %}
+    # Copy node workers init scripts
+    install_services([make_worker_tuple(n) for n in range(0, env.node_workers)]){% endif %}
 
 
 """ SERVER COMMANDS """
@@ -442,57 +411,63 @@ def update_worker_conf():
 
 @task
 def stop_server(silent=False):
+    """ Stops all services
+    """
+
     if not silent:
         request_confirm("stop_server")
 
-    require('service_name')
     require('code_dir')
 
-    service(env.service_name, "stop"){% if cookiecutter.project_type == 'spa' %}
-    service(['{{cookiecutter.repo_name}}-express-%d' % n for n in range(0, env.node_workers)], "stop"){% endif %}
+    manage_service(get_service_names(), "stop")
 
 
 @task
 def start_server(silent=False):
+    """ Starts all services
+    """
+
     if not silent:
         request_confirm("start_server")
 
-    require('service_name')
     require('code_dir')
-    service(env.service_name, "start"){% if cookiecutter.project_type == 'spa' %}
-    service(['{{cookiecutter.repo_name}}-express-%d' % n for n in range(0, env.node_workers)], "start"){% endif %}
+
+    manage_service(get_service_names(), "start")
 
 
 @task
 def restart_server(silent=False):
+    """ Restarts all services
+    """
+
     if not silent:
         request_confirm("restart_server")
 
-    require('service_name')
     require('code_dir')
-    service(env.service_name, "restart"){% if cookiecutter.project_type == 'spa' %}
-    service(['{{cookiecutter.repo_name}}-express-%d' % n for n in range(0, env.node_workers)], "restart")
+
+    manage_service(get_service_names(), "restart")
+
+
+{%- if cookiecutter.project_type == 'spa' %}
 
 
 @task
 def reload_server(silent=False):
-    """ Restarts backend and then restarts frontend servers one-by-one
+    """ Restarts frontend servers one-by-one and then restarts the backend
     """
-
     if not silent:
         request_confirm("reload_server")
 
-    require('service_name')
     require('code_dir')
 
-    service(env.service_name, "restart")
-
-    for n in range(0, env.node_workers):
-        s_name = '{{cookiecutter.repo_name}}-express-%d' % n
-        service(s_name, "restart")
+    for s_name in get_service_names(lambda name: name.startswith('{{cookiecutter.repo_name}}-express-')):
+        manage_service(s_name, "restart")
 
         # sleep 3s before restarting the next one
-        time.sleep(3){% endif %}
+        time.sleep(3)
+
+    manage_service(get_service_names(lambda name: not name.startswith('{{cookiecutter.repo_name}}-express-')), "restart")
+{%- endif %}
 
 
 @task
@@ -528,23 +503,6 @@ def createsuperuser():
 
 """ HELPERS """
 
-
-def service(names, cmd):
-    if not isinstance(names, (list, tuple)):
-        names = [names, ]
-
-    for name in names:
-        full_cmd = "service %s %s" % (name, cmd)
-
-        try:
-            sudo(full_cmd, warn_only=True)
-
-        except Exception as e:
-            print('Failed: %s', full_cmd)
-            print(e)
-
-
-@task
 def repo_type():
     require('code_dir')
 
@@ -586,3 +544,25 @@ def generate_password(length=50):
     # Similar to Django's charset but avoids $ to avoid accidential shell variable expansion
     chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#%^&*(-_=+)'
     return get_random_string(length, chars)
+
+
+def get_service_names(predicate=None):
+    """Get service names for the project
+
+    :param predicate: Predicate to use for filtering: ``fn(service_name) -> bool``
+    :type predicate: NoneType | callable
+    :return:
+    """
+    require('service_names')
+
+    result = env.service_names{%- if cookiecutter.project_type == 'spa' %} + ['{{cookiecutter.repo_name}}-express-%d' % n for n in range(0, env.node_workers)]{% endif %}
+
+    if predicate:
+        return filter(predicate, result)
+
+    return result
+
+
+def get_current_version_summary():
+    commit_id, branch, message, author = vcs.version()
+    return "%s [%s]: %s - %s" % (commit_id, branch, message, author)

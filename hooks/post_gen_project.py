@@ -42,6 +42,9 @@ def handle_react():
 
         os.rename('{{ cookiecutter.repo_name }}/app-standard', '{{ cookiecutter.repo_name }}/app')
 
+    if '{{ cookiecutter.include_cms }}' == 'no':
+        cleanup_paths += ['{{ cookiecutter.repo_name }}/templates/cms_main.html']
+
     # If using specific vcs, add some extra cleanup paths
     repo_type = '{{ cookiecutter.vcs }}'.lower()
     if repo_type not in {'git', 'hg', 'none'}:

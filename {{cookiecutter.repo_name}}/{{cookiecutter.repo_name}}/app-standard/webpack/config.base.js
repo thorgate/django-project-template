@@ -35,7 +35,10 @@ function makeConfig(options) {
                 exclude: /node_modules/,
             }, {
                 test: /\.(css|scss)$/,
-                loaders: ExtractTextPlugin.extract('style', ['css?sourceMap', 'postcss', 'resolve-url', 'sass?sourceMap']),
+                loaders: ExtractTextPlugin.extract({
+                    fallbackLoader: 'style-loader',
+                    loader: ['css?sourceMap', 'postcss', 'resolve-url', 'sass?sourceMap'],
+                }),
             }, {
                 test: /\.(jpe?g|png|gif|svg|woff2?|eot|ttf)$/,
                 loader: 'url',
@@ -64,7 +67,8 @@ function makeConfig(options) {
                 },
             }),
             new webpack.optimize.OccurrenceOrderPlugin(),
-            new ExtractTextPlugin(options.filenameTemplate + '.css', {
+            new ExtractTextPlugin({
+                filename: options.filenameTemplate + '.css',
                 disable: !options.extractCss,
             }),
             new BundleTracker({

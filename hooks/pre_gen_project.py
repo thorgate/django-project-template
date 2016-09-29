@@ -30,3 +30,17 @@ if "{{ cookiecutter.project_type }}" not in valid_project_types:
     print("Project type '{{ cookiecutter.project_type }}' is not valid!")
     print("Valid project types are: %s" % ', '.join(valid_project_types))
     sys.exit(1)
+
+valid_cms_key = ['yes', 'no']
+if "{{ cookiecutter.include_cms }}" not in valid_cms_key:
+    print("Include CMS '{{ cookiecutter.include_cms }}' is not valid!")
+    print("Valid include CMS keys are: %s" % ', '.join(valid_cms_key))
+    sys.exit(1)
+
+if "{{ cookiecutter.project_type }}" != 'standard' and "{{ cookiecutter.include_cms }}" == 'yes':
+    print("Include CMS is not valid with spa project type!")
+    sys.exit(1)
+
+if "{{ cookiecutter.python_version }}" not in ['3', '3.4', '3.5']:
+    print("Only allowed python version options are 3, 3.4 and 3.5")
+    sys.exit(1)

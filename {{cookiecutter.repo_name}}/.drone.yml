@@ -1,0 +1,23 @@
+cache:
+  mount:
+    - {{ cookiecutter.repo_name }}/node_modules
+    - venv
+{% if cookiecutter.vcs %}
+    - .{{ cookiecutter.vcs }}
+{% endif %}
+
+build:
+  image: thorgate/python{{cookiecutter.python_version}}
+  volumes:
+    - /wheelhouse:/wheelhouse
+  commands:
+    - pip wheel -r requirements/local.txt
+    - pip wheel -r requirements/production.txt
+    - make venv
+    - . ./venv/bin/activate
+    - pip install -r requirements/local.txt
+    - pip install -r requirements/production.txt
+    - cd {{ cookiecutter.repo_name }}
+    - npm install --silent --python=python2.7
+    - cp settings/local.py.example settings/local.py
+    - ../testtools.sh -d

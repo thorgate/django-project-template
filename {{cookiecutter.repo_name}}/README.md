@@ -1,8 +1,10 @@
 # README for {{cookiecutter.project_title}}
 
+[![Build Status](https://drone-inside.thorgate.eu/api/badges/thorgate/{{ cookiecutter.repo_name }}/status.svg)](https://drone-inside.thorgate.eu/thorgate/{{ cookiecutter.repo_name }})
+
 TODO: verify that the following info is correct:
 
- - Python:  3.4
+ - Python:  {{cookiecutter.python_version}}
  - DB:      PostgreSQL (locally SQLite)
  - Node:    0.12.x
  - NPM:     2.13.x
@@ -37,12 +39,12 @@ If you don't want to use `make`, here's how to accomplish the same manually:
 
 **Create virtualenv**
 
-    virtualenv --python=python3.4 venv
+    virtualenv --python=python{{cookiecutter.python_version}} venv
     . ./venv/bin/activate
 
 or if you use virtualenvwrapper
 
-    mkvirtualenv {{ cookiecutter.repo_name }} --python=python3.4
+    mkvirtualenv {{ cookiecutter.repo_name }} --python=python{{cookiecutter.python_version}}
     workon {{ cookiecutter.repo_name }}
 
 **Install dependencies**
@@ -162,13 +164,17 @@ dir:
     prospector
 
 
+## Drone (project has to be added in Drone)
+* Go to Drone: https://drone-inside.thorgate.eu/ and {{ cookiecutter.repo_name }}
+* View linting and test results before creating PR.
+
 ## Deploys
 
 ### Python 2 environment
 
 We use Fabric for deploys, which doesn't support Python 3. Thus you need to create a Python 2 virtualenv.
 It needn't be project specific and it's recommended you create one 'standard' Python 2 environment 
-which can be used for all projects. You will also need to install tg-hammer==0.1.0, our fabric deployment helper. 
+which can be used for all projects. You will also need to install tg-hammer==0.2.0, our fabric deployment helper. 
 
 
 ### Types of deploys
@@ -195,7 +201,7 @@ There are basically two types of deploys:
   We usually have one main test server and one main production server for new project.
 * Install (on the server)
   * PostgreSQL (with postgresql-server-dev-X.Y)
-  * python3.4, python3.4-dev, python-virtualenv, libxml2-dev, libxslt1-dev
+  * python{{cookiecutter.python_version}}, python{{cookiecutter.python_version}}-dev, python-virtualenv, libxml2-dev, libxslt1-dev
   * Node 0.12.x & npm 2.13.x (if you have a newer npm just downgrade by running `npm install -g npm@2.13`)
     * `npm install -g node-gyp`
   * Nginx
