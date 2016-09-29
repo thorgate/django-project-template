@@ -6,6 +6,8 @@ from tg_react.apiurls import flatten_urls
 def constants(context):
     return {
         'EXPRESS_PORT': settings.EXPRESS_PORT,
+        'WEBPACK_PORT': settings.WEBPACK_PORT,
+
         'LOGIN_REDIRECT': settings.LOGIN_REDIRECT_URL,
         'APPEND_SLASH': settings.APPEND_SLASH,
         'RAVEN_PUBLIC_DSN': settings.RAVEN_PUBLIC_DSN,

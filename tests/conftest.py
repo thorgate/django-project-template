@@ -7,9 +7,11 @@ def default_project():
         "project_title": "Test project",
         "repo_name": "test_project",
         "project_type": 'standard',
+        "include_cms": 'no',
         "test_host": "test1.thorgate.eu",
         "live_host": "test2.thorgate.eu",
-        "vcs": None
+        "vcs": None,
+        "python_version": "3.4"
     }
 
 

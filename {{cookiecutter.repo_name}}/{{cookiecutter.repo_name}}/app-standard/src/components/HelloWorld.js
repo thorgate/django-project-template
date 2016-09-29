@@ -1,13 +1,14 @@
 import React from 'react';
 
 
-class HelloWorld extends React.Component {
-    render() {
-        const title = this.props.title || "Hello world!";
-        return (
-            <strong>{title}</strong>
-        );
-    }
+function HelloWorld({title}) {
+    return (
+        <strong>{title || "Hello world!"}</strong>
+    );
 }
+
+HelloWorld.propTypes = {
+    title: React.PropTypes.string,
+};
 
 export default HelloWorld;

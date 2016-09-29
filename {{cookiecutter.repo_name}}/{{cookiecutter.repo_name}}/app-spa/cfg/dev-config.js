@@ -12,10 +12,11 @@ export default () => {
     const LOCAL_IP = require('dev-ip')();
 
     const HOST = isArray(LOCAL_IP) && LOCAL_IP[0] || LOCAL_IP || 'localhost';
-    const PORT = parseInt(process.env.PORT, 10) + 1 || 3001;
-    const PUBLIC_PATH = `http://${HOST}:${PORT}/public/`;
-
     const DJ_CONST = JSON.parse(fs.readFileSync(path.join('constants.json')));
+
+    const PORT = parseInt(process.env.PORT, 10) + 1 || DJ_CONST['WEBPACK_PORT'] || 3001;
+    const SITE_URL = `http://${HOST}:${PORT}`;
+    const PUBLIC_PATH = `${SITE_URL}/public/`;
 
     return {
         server: {

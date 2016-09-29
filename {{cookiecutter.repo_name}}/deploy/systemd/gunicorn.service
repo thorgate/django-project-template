@@ -1,0 +1,14 @@
+[Unit]
+Description={{cookiecutter.project_title}} gunicorn daemon
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/srv/{{cookiecutter.repo_name}}/{{cookiecutter.repo_name}}
+Environment="LANG=en_US.UTF-8"
+ExecStart=/srv/{{cookiecutter.repo_name}}/venv/bin/gunicorn -c settings/gunicorn.py {{cookiecutter.repo_name}}.wsgi:application
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

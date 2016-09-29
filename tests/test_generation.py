@@ -40,6 +40,18 @@ def test_base_generate(cookies, default_project):
 
     assert result.project.join('.hgignore').exists()
     assert result.project.join('.gitignore').exists()
+    assert not result.project.join('%s/templates/cms_main.html' % (default_project['repo_name'],)).exists()
+
+    validate_project_works(result, default_project)
+
+
+def test_cms_generate(cookies, default_project):
+    default_project.update({
+        'include_cms': 'yes',
+    })
+    result = generate_project(cookies, default_project)
+
+    assert result.project.join('%s/templates/cms_main.html' % (default_project['repo_name'],)).exists()
 
     validate_project_works(result, default_project)
 
@@ -70,6 +82,17 @@ def test_invalid_project_name_is_error(cookies, default_project):
         'repo_name': '%^&%'
     })
 
+    result = cookies.bake(extra_context=default_project)
+
+    assert result.exit_code == -1
+    assert isinstance(result.exception, FailedHookException)
+
+
+def test_invalid_cms_generate(cookies, default_project):
+    default_project.update({
+        'include_cms': 'yes',
+        "project_type": 'spa',
+    })
     result = cookies.bake(extra_context=default_project)
 
     assert result.exit_code == -1
