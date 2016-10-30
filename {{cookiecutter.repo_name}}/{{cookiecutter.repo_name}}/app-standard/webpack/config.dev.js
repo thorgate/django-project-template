@@ -12,7 +12,7 @@ const filenameTemplate = '[name]';
 const config = makeConfig({
     filenameTemplate: filenameTemplate,
 
-    devtool: 'cheap-module-eval-source-map',
+    devtool: 'eval-source-map',
 
     extractCss: false,
 

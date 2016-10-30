@@ -1,23 +1,46 @@
 cache:
   mount:
-    - {{ cookiecutter.repo_name }}/node_modules
-    - venv
-{% if cookiecutter.vcs %}
+{%- if cookiecutter.vcs %}
     - .{{ cookiecutter.vcs }}
-{% endif %}
+{%- endif %}
+    - .npm
+    - wheels
+
+{%- if cookiecutter.vcs == "hg" %}
+
+clone:
+  image: plugins/drone-hg
+{%- endif %}
 
 build:
-  image: thorgate/python{{cookiecutter.python_version}}
-  volumes:
-    - /wheelhouse:/wheelhouse
+  # TODO: make sure this is the right base image. Default is your selected Python version plus Node 6.x, which might or
+  #  might not exist depending on the selected Python version
+  image: thorgate/python{{cookiecutter.python_version}}-node6
   commands:
-    - pip wheel -r requirements/local.txt
-    - pip wheel -r requirements/production.txt
+    # Make npm use our cached directory for its cache, and create missing wheels
+    - npm config set cache $PWD/.npm
+    - pip wheel --wheel-dir=wheels --find-links=wheels -r requirements/local.txt -r requirements/production.txt
+
+    # Create virtualenv and install dependencies from wheels
     - make venv
     - . ./venv/bin/activate
-    - pip install -r requirements/local.txt
-    - pip install -r requirements/production.txt
+    - pip install --use-wheel --no-index --find-links=wheels -r requirements/local.txt -r requirements/production.txt
+    # Install node packages
     - cd {{ cookiecutter.repo_name }}
     - npm install --silent --python=python2.7
-    - cp settings/local.py.example settings/local.py
-    - ../testtools.sh -d
+
+    # Run tests
+    - EDIT_SETTINGS=no make settings
+    - make test
+    - make quality
+
+notify:
+#  slack:
+#    webhook_url: https://hooks.slack.com/services/TODO
+#    channel: {{ cookiecutter.repo_name }}
+#    username: drone
+#    when:
+#      branch: master
+#    template: |{% raw %}
+#      {{ uppercase build.status }} for {{ repo.full_name }} build #{{ build.number }}
+#      Commit {{ truncate build.commit 8 }} by {{ build.author }}; took {{ duration build.started_at build.finished_at }}{% endraw %}
