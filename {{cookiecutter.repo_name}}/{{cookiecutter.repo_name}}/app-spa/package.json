@@ -56,7 +56,7 @@
   "scripts": {
     "test": "mocha -u exports -R nyan --require ./app/test/babel app/test",
     "dev": "node --harmony ./app/cfg/dev-server.js",
-    "build": "./node_modules/.bin/webpack --config ./app/cfg/production.js --progress --profile --colors",
+    "build": "./node_modules/.bin/webpack --config ./app/cfg/production.js --progress --profile --colors --optimize-minimize",
     "clean": "node ./app/cfg/helpers/clean.js",
     "clean-build": "npm run clean; npm run build",
     "dump-constants": "./manage.py webpack_constants",
