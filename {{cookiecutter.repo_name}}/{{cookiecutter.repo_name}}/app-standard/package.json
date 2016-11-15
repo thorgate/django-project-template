@@ -39,7 +39,7 @@
   },
   "scripts": {
     "dev": "cd app && webpack --config webpack/config.dev.js --watch --progress --profile --color",
-    "build": "cd app && NODE_ENV=production webpack --config webpack/config.production.js --progress --profile --color",
+    "build": "cd app && NODE_ENV=production webpack --config webpack/config.production.js --progress --profile --color --optimize-minimize",
     "clean": "cd app && rm -rf build/",
     "prebuild": "npm run clean",
     "lint": "cd app/src && eslint .",
