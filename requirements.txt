@@ -1,4 +1,4 @@
-cookiecutter==1.4.0
+cookiecutter==1.5.0
 flake8==2.5.4
 
 # Testing requirements

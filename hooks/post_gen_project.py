@@ -1,46 +1,15 @@
 #!/usr/bin/env python
 import os
 import shutil
+import subprocess
 
 
 def handle_react():
     cwd = os.getcwd()
-    project_type = '{{ cookiecutter.project_type }}'
-
-    print('project_type: %s' % project_type)
     print('cleanup paths in %s' % cwd)
 
-    if project_type == 'spa':
-        cleanup_paths = [
-            '{{ cookiecutter.repo_name }}/app-standard',
-            '{{ cookiecutter.repo_name }}/static/styles-src',
-            '{{ cookiecutter.repo_name }}/templates/accounts',
-            '{{ cookiecutter.repo_name }}/templates/registration',
-            '{{ cookiecutter.repo_name }}/templates/base.html',
-            '{{ cookiecutter.repo_name }}/templates/home.html',
-            '{{ cookiecutter.repo_name }}/accounts/forms.py',
-            '{{ cookiecutter.repo_name }}/accounts/urls.py',
-            '{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}/context_processors.py',
-        ]
-        symlinks = [
-            ('../../../../templates/500.html', '{{ cookiecutter.repo_name }}/app/src/server/templates/500.html'),
-        ]
-
-        os.rename('{{ cookiecutter.repo_name }}/app-spa', '{{ cookiecutter.repo_name }}/app')
-
-    else:
-        cleanup_paths = [
-            '{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}/api_urls.py',
-            '{{ cookiecutter.repo_name }}/app-spa',
-            '{{ cookiecutter.repo_name }}/accounts/api_urls.py',
-            '{{ cookiecutter.repo_name }}/accounts/serializers.py',
-            '{{ cookiecutter.repo_name }}/static/ensure',
-            '{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}-server.js',
-            '{{ cookiecutter.repo_name }}/webpack_constants.py',
-        ]
-        symlinks = []
-
-        os.rename('{{ cookiecutter.repo_name }}/app-standard', '{{ cookiecutter.repo_name }}/app')
+    cleanup_paths = []
+    symlinks = []
 
     if '{{ cookiecutter.include_cms }}' == 'no':
         cleanup_paths += ['{{ cookiecutter.repo_name }}/templates/cms_main.html']
@@ -85,14 +54,47 @@ def handle_react():
     for src, dst in symlinks:
         os.symlink(src, dst)
 
-    # Move package.json from app dir to Django project dir
-    os.rename('{{ cookiecutter.repo_name }}/app/package.json', '{{ cookiecutter.repo_name }}/package.json')
+    # Copy cookiecutter config for template to project dir
+    shutil.copyfile(os.path.expanduser('~/.cookiecutter_replay/django-template.json'), '.cookiecutterrc')
 
+
+def create_repos():
+    repo_type = '{{ cookiecutter.vcs }}'.lower()
+    if repo_type == 'git' and not os.path.exists('.git'):
+        print('Creating git repository')
+        subprocess.check_call(['git', 'init']) == 0
+        subprocess.check_call(['git', 'checkout', '-b', 'template']) == 0
+        subprocess.check_call(['git', 'add', '.']) == 0
+        subprocess.check_call(['git', 'commit', '-m', 'Initial commit']) == 0
+        subprocess.check_call(['git', 'checkout', '-b', 'master']) == 0
+
+        print('Git repository initialized. First commit is in branch `template`.')
+        print('Create a repository in BitBucket (https://bitbucket.org/repo/create).')
+        print('Look for the repository address and run:')
+        print('    git remote add origin <repository_address>')
+        print('    git push -u origin master')
+        print('    git checkout template')
+        print('    git push -u origin template')
+
+    elif repo_type == 'hg' and not os.path.exists('.hg'):
+        print('Creating mercurial repository')
+        subprocess.check_call(['hg', 'init']) == 0
+        subprocess.check_call(['hg', 'branch', 'template']) == 0
+        subprocess.check_call(['hg', 'add']) == 0
+        subprocess.check_call(['hg', 'commit', '-m', 'Initial commit']) == 0
+        subprocess.check_call(['hg', 'branch', 'default']) == 0
+
+        print('Mercurial repository initialized. First commit is in branch `template`.')
+        print('You are on branch default. Fix some TODOs and commit.')
+        print('After that create a repository in BitBucket (https://bitbucket.org/repo/create).')
+        print('Look for the repository address and run:')
+        print('    hg push <repository_address>')
 
 def main():
     """Do some stuff based on configuration"""
 
     handle_react()
+    create_repos()
 
 
 if __name__ == '__main__':

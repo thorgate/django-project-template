@@ -4,6 +4,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
+from django.utils.translation import ugettext_lazy as _
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Field
@@ -21,10 +22,10 @@ class LoginForm(AuthenticationForm):
         self.helper.form_class = 'login-form'
         self.helper.form_show_labels = False
         self.helper.layout = Layout(
-            Field('username', placeholder="Username"),
-            Field('password', placeholder="Password")
+            Field('username', placeholder=_("Username")),
+            Field('password', placeholder=_("Password"))
         )
-        self.helper.add_input(Submit('submit', 'Log in'))
+        self.helper.add_input(Submit('submit', _('Log in')))
 
 
 class PasswordResetForm(auth_forms.PasswordResetForm):
@@ -32,7 +33,7 @@ class PasswordResetForm(auth_forms.PasswordResetForm):
     helper.form_class = 'login-form'
     helper.layout = Layout(
         'email',
-        Submit('submit', 'Reset my password')
+        Submit('submit', _('Reset my password'))
     )
 
     def save(self, *args, **kwargs):
@@ -59,7 +60,7 @@ class SetPasswordForm(auth_forms.SetPasswordForm):
     helper.form_class = 'login-form'
     helper.layout = Layout(
         'new_password1',
-        Submit('submit', 'Change my password')
+        Submit('submit', _('Change my password'))
     )
 
     def __init__(self, user, *args, **kwargs):
@@ -74,14 +75,14 @@ class ChangePasswordForm(forms.ModelForm):
         fields = []
 
     password_old = forms.CharField(widget=forms.PasswordInput(),
-                                   label="Enter your old password for confirmation", required=True)
-    password_new = forms.CharField(widget=forms.PasswordInput(), label="New password", required=True)
+                                   label=_("Enter your old password for confirmation"), required=True)
+    password_new = forms.CharField(widget=forms.PasswordInput(), label=_("New password"), required=True)
 
     helper = FormHelper()
     helper.layout = Layout(
         'password_old',
         'password_new',
-        Submit('submit', 'Save changes', css_class="btn btn-primary")
+        Submit('submit', _('Save changes'), css_class="btn btn-primary")
     )
 
     def clean(self):
@@ -91,7 +92,7 @@ class ChangePasswordForm(forms.ModelForm):
 
         # If either old or new password is None, then we get an inline error and don't want to raise ValidationError
         if password_old and self.password_new and not self.instance.check_password(password_old):
-            raise forms.ValidationError("The old password you've entered is not correct!")
+            raise forms.ValidationError(_("The old password you've entered is not correct!"))
 
         return cleaned_data
 

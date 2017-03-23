@@ -1,30 +1,25 @@
-Django==1.8.13
+Django==1.8.17
 tg-utils==0.2.0
-psycopg2==2.6.2
-{%- if cookiecutter.project_type == 'spa' %}
-djangorestframework==3.3.3
-tg-react==0.5.2
-{%- else %}
-django-crispy-forms==1.6.0
-django-webpack-loader==0.3.0
-django-settings-export==1.1.0
-{%- endif %}
+psycopg2==2.7.1
+django-crispy-forms==1.6.1
+django-webpack-loader==0.4.1
+django-settings-export==1.2.1
 # Needed if you use utils.hashmodels.ModelHashIdMixin
-hashids==1.1.0
+hashids==1.2.0
 {%- if cookiecutter.include_cms == 'yes' %}
-django-cms==3.3.0
-django-reversion==1.10.1
-djangocms-file==1.0
-djangocms-link==1.8.0
-djangocms-picture==1.0.0
-djangocms-text-ckeditor==3.0.0
+django-cms==3.4.2
+django-reversion==2.0.8
+djangocms-file==2.0.2
+djangocms-link==2.1.1
+djangocms-picture==2.0.4
+djangocms-text-ckeditor==3.4.0
 
 # html5lib update to fix broken dependency
 html5lib==1.0b8
 
 # django-filer for media management
-django-mptt==0.8.5
+django-mptt==0.8.7
 easy-thumbnails==2.3
-django-polymorphic==0.8.1
-django-filer==1.2.4
+django-polymorphic==1.1
+django-filer==1.2.7
 {%- endif %}

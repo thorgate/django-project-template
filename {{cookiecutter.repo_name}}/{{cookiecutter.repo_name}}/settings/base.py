@@ -47,13 +47,8 @@ INSTALLED_APPS = [
     'djangocms_picture',
     'djangocms_text_ckeditor',
     {% endif %}
-    {%- if cookiecutter.project_type == 'standard' %}
     'crispy_forms',
     'webpack_loader',
-    {%- else %}
-    'rest_framework',
-    'tg_react',
-    {% endif %}
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -103,19 +98,21 @@ TEMPLATES = [
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
-                {%- if cookiecutter.project_type == 'standard' %}
                 {%- if cookiecutter.include_cms == 'yes' %}
                 'django.template.context_processors.csrf',
                 'sekizai.context_processors.sekizai',
                 'cms.context_processors.cms_settings',
                 {%- endif %}
-                '{{ cookiecutter.repo_name }}.context_processors.settings_export',
-                {%- endif %}
+                'django_settings_export.settings_export',
             ],
         },
     },
 ]
 {%- if cookiecutter.include_cms == 'yes' %}
+
+THUMBNAIL_PROCESSORS = (
+    'filer.thumbnail_processors.scale_and_crop_with_subject_location',
+)
 
 CMS_TEMPLATES = (
     ('cms_main.html', 'Main template'),
@@ -165,9 +162,7 @@ STATIC_ROOT = os.path.join(SITE_ROOT, 'assets')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(SITE_ROOT, 'static'),
-    {%- if cookiecutter.project_type == 'standard' %}
     os.path.join(SITE_ROOT, 'app', 'build'),
-    {%- endif %}
 )
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -184,11 +179,6 @@ AUTH_USER_MODEL = 'accounts.User'
 # Static site url, used when we need absolute url but lack request object, e.g. in email sending.
 SITE_URL = 'http://127.0.0.1:8000'
 ALLOWED_HOSTS = []
-{%- if cookiecutter.project_type == 'spa' %}
-
-WEBPACK_PORT = 3001
-EXPRESS_PORT = 3000
-{%- endif %}
 
 {%- if cookiecutter.include_cms == 'yes' %}
 
@@ -262,37 +252,19 @@ LOGGING = {
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
-{% if cookiecutter.project_type == 'spa' -%}
-WEBPACK_CONSTANT_PROCESSORS = (
-    'tg_react.webpack.default_constants',
-    'tg_react.language.constants',
-    'webpack_constants.constants',
-)
-
-TGR_STATICFILES_DIRS = (
-    os.path.join(SITE_ROOT, 'app', 'src'),
-)
-{% endif -%}
 
 # Disable a few system checks. Careful with these, only silence what your really really don't need.
 # TODO: check if this is right for your project.
 SILENCED_SYSTEM_CHECKS = [
     'security.W001',  # we don't use SecurityMiddleware since security is better applied in nginx config
-{% if cookiecutter.project_type == 'spa' -%}
-    'security.W017',  # CSRF_COOKIE_HTTPONLY is False, because React needs access to the cookie
-{% endif -%}
 ]
 
 
 # Default values for sentry
-{%- if cookiecutter.project_type == 'spa' %}
-RAVEN_FRONTEND_DSN = ''
-{%- endif %}
 RAVEN_BACKEND_DSN = ''
 RAVEN_PUBLIC_DSN = ''
 RAVEN_CONFIG = {}
 
-{% if cookiecutter.project_type == 'standard' %}
 WEBPACK_LOADER = {
     'DEFAULT': {
         'BUNDLE_DIR_NAME': '',
@@ -307,4 +279,3 @@ SETTINGS_EXPORT = [
     'STATIC_URL',
     'RAVEN_PUBLIC_DSN',
 ]
-{%- endif %}

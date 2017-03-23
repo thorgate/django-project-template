@@ -59,7 +59,11 @@ setup: pycharm settings venv
 	@cd $(SITE_ROOT) && ../venv/bin/python manage.py migrate
 	@echo "$(CYAN)Installing npm packages$(COFF)"
 	@cd $(SITE_ROOT) && npm install --python=python2.7
-
+	@echo "$(CYAN)===================================================================="
+	@echo "SETUP SUCCEEDED"
+	@echo "Move into inner '{{cookiecutter.repo_name}}' directory."
+	@echo "Run 'npm run dev' to build required Javascript."
+	@echo "Run 'python manage.py runserver' to start Django development server.$(COFF)"
 
 pycharm: $(PROJECT_ROOT)/.idea
 
@@ -70,7 +74,7 @@ $(PROJECT_ROOT)/.idea:
 
 
 venv:
-	@echo "$(CYAN)Creating python$(PYTHON) virutal environment$(COFF)"
+	@echo "$(CYAN)Creating $(PYTHON) virtual environment$(COFF)"
 	@cd $(PROJECT_ROOT) && virtualenv -p $(PYTHON) venv
 
 
@@ -104,4 +108,4 @@ clean:
 
 quality:
 	@echo "$(CYAN)Running code quality checks$(COFF)"
-	@cd $(SITE_ROOT) && . $(PROJECT_ROOT)/venv/bin/activate && prospector && npm run lint;
+	@cd $(SITE_ROOT) && . $(PROJECT_ROOT)/venv/bin/activate && npm run stylelint && npm run lint && prospector;

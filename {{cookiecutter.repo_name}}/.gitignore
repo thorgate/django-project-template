@@ -1,6 +1,7 @@
 # Ignore everything in .idea
 .idea
 
+*.mo
 *.pyo
 *.pyc
 .sass-cache/
@@ -11,12 +12,7 @@ venv/
 {{cookiecutter.repo_name}}/settings/local.py
 {{cookiecutter.repo_name}}/settings/gunicorn.py
 {{cookiecutter.repo_name}}/db.sqlite3
-{%- if cookiecutter.project_type == 'spa' %}
-{{cookiecutter.repo_name}}/constants.json
-{{cookiecutter.repo_name}}/stats.json
-{%- else %}
 {{cookiecutter.repo_name}}/app/webpack-stats.json
-{%- endif %}
 {{cookiecutter.repo_name}}/app/build/
 {{cookiecutter.repo_name}}/assets/
 {{cookiecutter.repo_name}}/media/

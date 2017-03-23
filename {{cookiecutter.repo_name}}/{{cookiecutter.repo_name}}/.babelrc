@@ -1,8 +1,4 @@
 {
-  {%- if cookiecutter.project_type == 'standard' %}
   "presets": [["es2015", {"modules": false}], "stage-1", "react"],
-  {%- else %}
-  "presets": ["es2015", "stage-1", "react"],
-  {%- endif %}
   "plugins": ["transform-function-bind", "transform-decorators-legacy"]
 }

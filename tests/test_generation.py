@@ -1,9 +1,11 @@
 import subprocess
 
+from cookiecutter.config import USER_CONFIG_PATH
 from cookiecutter.exceptions import FailedHookException
 
 
 def generate_project(cookies, config):
+    cookies._config_file = USER_CONFIG_PATH
     result = cookies.bake(extra_context=config)
 
     assert result.exit_code == 0
@@ -82,17 +84,6 @@ def test_invalid_project_name_is_error(cookies, default_project):
         'repo_name': '%^&%'
     })
 
-    result = cookies.bake(extra_context=default_project)
-
-    assert result.exit_code == -1
-    assert isinstance(result.exception, FailedHookException)
-
-
-def test_invalid_cms_generate(cookies, default_project):
-    default_project.update({
-        'include_cms': 'yes',
-        "project_type": 'spa',
-    })
     result = cookies.bake(extra_context=default_project)
 
     assert result.exit_code == -1

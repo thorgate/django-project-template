@@ -7,8 +7,7 @@ Use `fab --list` to see available targets and actions.
 
 import re
 from StringIO import StringIO
-import string{% if cookiecutter.project_type == 'spa' %}
-import time{% endif %}
+import string
 import os
 
 from fabric import colors
@@ -22,9 +21,9 @@ from django.utils.crypto import get_random_string
 from hammer import __version__ as hammer_version
 
 # Ensure that we have expected version of the tg-hammer package installed
-assert hammer_version.startswith('0.3.'), "tg-hammer 0.3 is required"
+assert hammer_version.startswith('0.5.'), "tg-hammer 0.5.x is required"
 
-from hammer.service_helpers import {% if cookiecutter.project_type == 'spa' %}install_services, {% endif %}install_services_cp, manage_service
+from hammer.service_helpers import install_services_cp, manage_service
 from hammer.vcs import Vcs
 
 
@@ -46,21 +45,6 @@ DATABASES = {
     }
 }
 """
-{% if cookiecutter.project_type == 'spa' %}
-WORKER_INIT = """description "{{cookiecutter.repo_name}}-express-${index}"
-
-start on (filesystem)
-stop on runlevel [016]
-
-respawn
-console log
-setuid www-data
-setgid www-data
-chdir /srv/{{cookiecutter.repo_name}}/{{cookiecutter.repo_name}}
-
-env LANG=en_US.UTF-8
-exec node --harmony {{ cookiecutter.repo_name }}-server.js ${index}
-"""{% endif %}
 
 
 """ TARGETS """
@@ -68,16 +52,17 @@ exec node --harmony {{ cookiecutter.repo_name }}-server.js ${index}
 def defaults():
     # Use  .ssh/config  so that you can use hosts defined there.
     env.use_ssh_config = True
+    # Forward ctrl+c to the server, giving the running process there a chance to abort, instead of just aborting Fabric
+    #  and cutting the connection.
+    env.remote_interrupt = True
 
     env.confirm_required = True
-    env.code_dir = '/'
 
     env.nginx_conf = 'nginx.conf'
     env.target = 'staging'
 
     env.service_names = ["gunicorn-{{cookiecutter.repo_name}}"]
-    env.code_dir = '/srv/{{cookiecutter.repo_name}}'{% if cookiecutter.project_type == 'spa' %}
-    env.node_workers = 2{% endif %}
+    env.code_dir = '/srv/{{cookiecutter.repo_name}}'
 
     # See https://tg-hammer.readthedocs.io/en/latest/api.html#hammer.service_helpers.DAEMON_TYPES
     env.service_daemon = 'upstart'
@@ -101,8 +86,7 @@ def live():
     defaults()
     env.nginx_conf = 'nginx_prod.conf'
     env.target = 'production'
-    env.hosts = ['{{cookiecutter.live_host}}']{% if cookiecutter.project_type == 'spa' %}
-    env.node_workers = 4{% endif %}
+    env.hosts = ['{{cookiecutter.live_host}}']
 
 
 """ ACTIONS """
@@ -227,7 +211,8 @@ def deploy(id=None, silent=False, force=False, services=False, auto_nginx=True):
         print colors.yellow("Will run npm install")
 
     # See if we have changes in app source or static files
-    app_changed = force or vcs.changed_files(revset, [r' {{ cookiecutter.repo_name }}/app', r' {{ cookiecutter.repo_name }}/static', r' {{ cookiecutter.repo_name }}/settings', r'webpack'])
+    app_patterns = [r' {{ cookiecutter.repo_name }}/app', r' {{ cookiecutter.repo_name }}/static', r' {{ cookiecutter.repo_name }}/settings', r'webpack']
+    app_changed = force or package_changed or vcs.changed_files(revset, app_patterns)
     if app_changed:
         print colors.yellow("Will run npm build")
 
@@ -272,15 +257,14 @@ def deploy(id=None, silent=False, force=False, services=False, auto_nginx=True):
             sudo('cp deploy/crontab.conf /etc/cron.d/{{cookiecutter.repo_name}}')
 
     if force or services:
-        configure_services(){% if cookiecutter.project_type == 'spa' %}
-        update_worker_conf(){% endif %}
+        configure_services()
 
     if force or (nginx_changed and auto_nginx):
         nginx_update()
 
     collectstatic(npm_install=package_changed, npm_build=app_changed)
 
-    {% if cookiecutter.project_type == 'spa' %}reload_server{% else %}restart_server{% endif %}(silent=True)
+    restart_server(silent=True)
 
     # Run deploy systemchecks
     check()
@@ -389,21 +373,7 @@ def configure_services():
     # Install the services using hammer
     install_services_cp([
         ('gunicorn-{{cookiecutter.repo_name}}', source_dir.replace('${SERVICE_NAME}', 'gunicorn')),
-    ]){% if cookiecutter.project_type == 'spa' %}
-    update_worker_conf()
-
-
-def update_worker_conf():
-    require('node_workers')
-
-    def make_worker_tuple(n):
-        return (
-            '{{cookiecutter.repo_name}}-express-%d' % n,
-            string.Template(WORKER_INIT).substitute(index=n),
-        )
-
-    # Copy node workers init scripts
-    install_services([make_worker_tuple(n) for n in range(0, env.node_workers)]){% endif %}
+    ])
 
 
 """ SERVER COMMANDS """
@@ -446,28 +416,6 @@ def restart_server(silent=False):
     require('code_dir')
 
     manage_service(get_service_names(), "restart")
-
-
-{%- if cookiecutter.project_type == 'spa' %}
-
-
-@task
-def reload_server(silent=False):
-    """ Restarts frontend servers one-by-one and then restarts the backend
-    """
-    if not silent:
-        request_confirm("reload_server")
-
-    require('code_dir')
-
-    for s_name in get_service_names(lambda name: name.startswith('{{cookiecutter.repo_name}}-express-')):
-        manage_service(s_name, "restart")
-
-        # sleep 3s before restarting the next one
-        time.sleep(3)
-
-    manage_service(get_service_names(lambda name: not name.startswith('{{cookiecutter.repo_name}}-express-')), "restart")
-{%- endif %}
 
 
 @task
@@ -516,14 +464,22 @@ def repo_type():
 def collectstatic(npm_install=True, npm_build=True):
     with cd(env.code_dir + '/{{cookiecutter.repo_name}}'):
         if npm_install:
-            sudo(". ../venv/bin/activate ; "
-                 "npm install --unsafe-perm --production")
+            node_cmd('npm install --unsafe-perm --production')
 
         if npm_build:
-            sudo(". ../venv/bin/activate ; "
-                 "npm run build")
+            node_cmd('npm run build')
 
     management_cmd('collectstatic --noinput --ignore styles-src')
+
+
+def node_cmd(command):
+    # Runs node/npm command using correct version of Node.js
+    node_version = '6.9.4'
+    # Figure out where our desired versions of node and npm are installed
+    node_bin = sudo('n bin %s' % node_version).strip()
+    node_bin_dir = os.path.dirname(node_bin)
+
+    sudo(". ../venv/bin/activate ; export PATH=%s:$PATH; %s" % (node_bin_dir, command))
 
 
 def mkdir_wwwdata(path):
@@ -555,7 +511,7 @@ def get_service_names(predicate=None):
     """
     require('service_names')
 
-    result = env.service_names{%- if cookiecutter.project_type == 'spa' %} + ['{{cookiecutter.repo_name}}-express-%d' % n for n in range(0, env.node_workers)]{% endif %}
+    result = env.service_names
 
     if predicate:
         return filter(predicate, result)

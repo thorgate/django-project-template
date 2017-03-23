@@ -7,6 +7,8 @@ build:
     - virtualenv --python=python3.4 venv
     - . ./venv/bin/activate
     - pip install -r requirements.txt
+    - git config --global user.email "foo@bar.baz"
+    - git config --global user.name "Foo Bar"
     - tox
 clone:
   image: plugins/drone-hg
