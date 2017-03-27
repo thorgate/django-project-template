@@ -55,7 +55,7 @@ def handle_react():
         os.symlink(src, dst)
 
     # Copy cookiecutter config for template to project dir
-    shutil.copyfile(os.path.expanduser('~/.cookiecutter_replay/django-template.json'), '.cookiecutterrc')
+    shutil.copyfile(os.path.expanduser('~/.cookiecutter_replay/django-project-template.json'), '.cookiecutterrc')
 
 
 def create_repos():
