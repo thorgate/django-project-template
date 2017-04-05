@@ -27,7 +27,8 @@ def validate_project_works(result, config):
 
     assert subprocess.check_call(['pip', 'install', '-r' 'requirements/local.txt'], cwd=project_dir) == 0
     assert subprocess.check_call(['cp', 'settings/local.py.example', 'settings/local.py'], cwd=project_inner_dir) == 0
-    assert subprocess.check_call(['python', 'manage.py', 'migrate'], cwd=project_inner_dir) == 0
+    assert subprocess.check_call(['cp', 'settings/local_test.py.example', 'settings/local_test.py'], cwd=project_inner_dir) == 0
+    assert subprocess.check_call(['python', 'manage.py', 'migrate', '--settings=settings.local_test'], cwd=project_inner_dir) == 0
     assert subprocess.check_call(['npm', 'install', '--python=python2.7'], cwd=project_inner_dir) == 0
 
     # Run python tests

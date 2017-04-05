@@ -28,6 +28,7 @@ COFF ?= \033[0m
 
 all: help
 
+
 help:
 	@echo "+------<<<<                                 Configuration                                >>>>------+"
 	@echo ""
@@ -39,8 +40,7 @@ help:
 	@echo "+------<<<<                                     Tasks                                    >>>>------+"
 	@echo ""
 	@echo "$(CYAN)make setup$(COFF)    - Sets up the project in your local machine"
-	@echo "                This includes copying PyCharm files, creating virtualenv, installing requirements,"
-	@echo "                creating local settings file, doing db migrations and installing npm packages."
+	@echo "                This includes copying PyCharm files, creating local settings file, and setting up Docker."
 	@echo ""
 	@echo "$(CYAN)make pycharm$(COFF)  - Copies default PyCharm settings (unless they already exist)"
 	@echo ""
@@ -52,18 +52,22 @@ help:
 	@echo ""
 
 
-setup: pycharm settings venv
-	@echo "$(CYAN)Installing python packages$(COFF)"
-	@$(PROJECT_ROOT)/venv/bin/pip install -r $(PROJECT_ROOT)/requirements/$(ENV).txt
+docker: settings
+	@docker-compose down
+	@docker-compose build
+	@docker-compose up -d
+	@docker-compose logs -f
+
+
+setup: pycharm settings
+	@echo "$(CYAN)Creating Docker images$(COFF)"
+	@docker-compose build
 	@echo "$(CYAN)Running django migrations$(COFF)"
-	@cd $(SITE_ROOT) && ../venv/bin/python manage.py migrate
-	@echo "$(CYAN)Installing npm packages$(COFF)"
-	@cd $(SITE_ROOT) && npm install --python=python2.7
+	@make migrate
+
 	@echo "$(CYAN)===================================================================="
 	@echo "SETUP SUCCEEDED"
-	@echo "Move into inner '{{cookiecutter.repo_name}}' directory."
-	@echo "Run 'npm run dev' to build required Javascript."
-	@echo "Run 'python manage.py runserver' to start Django development server.$(COFF)"
+	@echo "Run 'make docker' to start Django development server and Webpack.$(COFF)"
 
 pycharm: $(PROJECT_ROOT)/.idea
 
@@ -71,11 +75,6 @@ pycharm: $(PROJECT_ROOT)/.idea
 $(PROJECT_ROOT)/.idea:
 	@echo "$(CYAN)Creating pycharm settings from template$(COFF)"
 	@mkdir -p $(PROJECT_ROOT)/.idea && cp -R $(PROJECT_ROOT)/.idea_template/* $(PROJECT_ROOT)/.idea/
-
-
-venv:
-	@echo "$(CYAN)Creating $(PYTHON) virtual environment$(COFF)"
-	@cd $(PROJECT_ROOT) && virtualenv -p $(PYTHON) venv
 
 
 settings: $(SITE_ROOT)/settings/local.py
@@ -91,14 +90,14 @@ $(SITE_ROOT)/settings/local.py:
 
 coverage:
 	@echo "$(CYAN)Running automatic code coverage check$(COFF)"
-	@cd $(SITE_ROOT) && . $(PROJECT_ROOT)/venv/bin/activate && coverage run -m py.test
-	@cd $(SITE_ROOT) && . $(PROJECT_ROOT)/venv/bin/activate && coverage html
-	@cd $(SITE_ROOT) && . $(PROJECT_ROOT)/venv/bin/activate && coverage report
+	@docker-compose run --rm django coverage run -m py.test
+	@docker-compose run --rm django coverage html
+	@docker-compose run --rm django coverage report
 
 
 test: clean
 	@echo "$(CYAN)Running automatic tests$(COFF)"
-	@cd $(SITE_ROOT) && . $(PROJECT_ROOT)/venv/bin/activate && py.test
+	@docker-compose run --rm django py.test
 
 
 clean:
@@ -106,6 +105,56 @@ clean:
 	@cd $(SITE_ROOT) && find . -name "*.pyc" -exec rm -rf {} \;
 
 
-quality:
-	@echo "$(CYAN)Running code quality checks$(COFF)"
-	@cd $(SITE_ROOT) && . $(PROJECT_ROOT)/venv/bin/activate && npm run stylelint && npm run lint && prospector;
+quality: stylelint eslint prospector
+
+
+eslint:
+	@echo "$(CYAN)Running ESLint$(COFF)"
+	@docker-compose run --rm node npm run lint
+
+
+prospector:
+	@echo "$(CYAN)Running Prospector$(COFF)"
+	@docker-compose run --rm django prospector
+
+
+stylelint:
+	@echo "$(CYAN)Running StyleLint$(COFF)"
+	@docker-compose run --rm node npm run stylelint
+
+
+docker-django:
+	docker-compose run --rm django $(cmd)
+
+
+docker-manage:
+	docker-compose run --rm django ./manage.py $(cmd)
+
+
+shell:
+	docker-compose run --rm django ./manage.py shell
+
+
+makemigrations:
+	docker-compose run --rm django ./manage.py makemigrations $(cmd)
+
+
+migrate:
+	docker-compose run --rm django ./manage.py migrate $(cmd)
+
+
+docker-logs:
+	docker-compose logs -f
+
+
+makemessages:
+	docker-compose run --rm django ./manage.py makemessages -a
+	docker-compose run --rm django ./manage.py makemessages -a -d djangojs
+
+
+compilemessages:
+	docker-compose run --rm django ./manage.py compilemessages
+
+
+psql:
+	docker-compose exec postgres psql --user {{cookiecutter.repo_name}} --dbname {{cookiecutter.repo_name}}

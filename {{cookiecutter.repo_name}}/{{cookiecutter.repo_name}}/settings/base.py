@@ -31,7 +31,8 @@ SESSION_COOKIE_NAME = '{{ cookiecutter.repo_name }}_ssid'
 INSTALLED_APPS = [
     'accounts',
     '{{cookiecutter.repo_name}}',
-    {% if cookiecutter.include_cms == 'yes' %}
+{%- if cookiecutter.include_cms == 'yes' %}
+
     'cms',
     'treebeard',
     'menus',
@@ -41,21 +42,22 @@ INSTALLED_APPS = [
     'easy_thumbnails',
     'filer',
     'mptt',
-
     'djangocms_file',
     'djangocms_link',
     'djangocms_picture',
     'djangocms_text_ckeditor',
-    {% endif %}
+{%- endif %}
+
     'crispy_forms',
     'webpack_loader',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    {%- if cookiecutter.include_cms == 'yes' %}
+{%- if cookiecutter.include_cms == 'yes' %}
     'django.contrib.sites',
-    {%- endif %}
+{%- endif %}
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
@@ -123,17 +125,23 @@ CMS_TEMPLATES = (
 # Database
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(SITE_ROOT, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'HOST': 'postgres',
+        'NAME': '{{cookiecutter.repo_name}}',
+        'USER': '{{cookiecutter.repo_name}}',
+        'PASSWORD': '{{cookiecutter.repo_name}}',
     }
 }
 
 
 # Caching
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'KEY_PREFIX': '{{cookiecutter.repo_name}}',
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://redis:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
     }
 }
 
@@ -155,10 +163,10 @@ USE_TZ = True
 
 
 # Static files and media (CSS, JavaScript, images)
-MEDIA_ROOT = os.path.join(SITE_ROOT, 'media')
+MEDIA_ROOT = '/files/media'
 MEDIA_URL = '/media/'
 
-STATIC_ROOT = os.path.join(SITE_ROOT, 'assets')
+STATIC_ROOT = '/files/assets'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(SITE_ROOT, 'static'),

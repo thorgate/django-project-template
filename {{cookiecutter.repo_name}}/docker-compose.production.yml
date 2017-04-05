@@ -1,0 +1,49 @@
+# Docker-compose configuration for production
+
+version: '2'
+
+services:
+    django:
+        build:
+            context: .
+            dockerfile: Dockerfile-django.production
+        container_name: {{cookiecutter.repo_name}}_django
+        restart: unless-stopped
+        volumes:
+            - "./{{cookiecutter.repo_name}}/app/build:/app/app/build"
+            - "./{{cookiecutter.repo_name}}/app/webpack-stats.json:/app/app/webpack-stats.json"
+            - "/var/lib/docker-nginx/files/{{cookiecutter.repo_name}}/media:/files/media"
+            - "/var/lib/docker-nginx/files/{{cookiecutter.repo_name}}/assets:/files/assets"
+            - "/var/log/{{cookiecutter.repo_name}}:/var/log/{{cookiecutter.repo_name}}"
+        # For some reason the command also has to be specified here, otherwise the entrypoint+command combination won't
+        #  work.
+        entrypoint: /usr/bin/wait-for-it.sh postgres:5432 -t 60 --
+        command: gunicorn {{cookiecutter.repo_name}}.wsgi:application --workers 2 --bind :80
+        depends_on:
+            - redis
+        external_links:
+            - postgres-9.5:postgres
+
+    node:
+        build:
+            context: .
+            dockerfile: Dockerfile-node
+        # Make this service no-op as we don't actually want it running but do want to use docker-compose file to define
+        #  volumes etc.
+        restart: "no"
+        command: "true"
+        volumes:
+            - "./{{cookiecutter.repo_name}}/app:/app/app"
+            - "./{{cookiecutter.repo_name}}/static:/app/static:ro"
+
+    redis:
+        image: redis:3.2-alpine
+        restart: unless-stopped
+        volumes:
+            - "/var/lib/docker-{{cookiecutter.repo_name}}/redis:/data"
+
+# NB: Network with this name must already exist on the server and be used by Nginx and Postgres.
+networks:
+    default:
+        external:
+            name: private

@@ -3,94 +3,133 @@
 TODO: verify that the following info is correct:
 
  - Python:  {{cookiecutter.python_version}}
- - DB:      PostgreSQL (locally SQLite)
+ - DB:      PostgreSQL
  - Node:    6.9.x
  - NPM:     3.x
  - React:   15.x
 
-Browser support is defined in the `browserslist` file that is used for autoprefixing CSS.
+Browser support is defined in the `{{ cookiecutter.repo_name }}/browserslist` file that is used for autoprefixing CSS.
 
 
 ## Setting up development
+
+### Installing Docker and Docker Compose
+
+Refer to original [Docker documentation](https://docs.docker.com/engine/installation/) for installing Docker.
+
+After installing Docker you need to install [Docker Compose](https://docs.docker.com/compose/install/) to run
+ multi-container Docker applications (such as ours). The `curl` method is preferred for installation.
+
+To run Docker commands without `sudo`, you also need to
+[create a Docker group and add your user to it](https://docs.docker.com/engine/installation/linux/ubuntulinux/#/create-a-docker-group).
+
+### Setting up {{cookiecutter.project_title}}
 
 The easy way is to use `make` to set up everything automatically:
 
     make setup
 
-This copies PyCharm project dir, creates virtualenv, installs dependencies, creates local settings and applies database migrations.
-It also installs npm packages for the frontend parts.
+This command:
+
+- copies PyCharm project directory
+- creates local settings file from local.py.example
+- builds Docker images
+- sets up database and runs Django migrations
+- runs `docker-compose up`
+
+Refer to `Makefile` to see what actually happens. You can then use the same commands to set everything up manually.
 
 
-### The manual way
+## Running development server
 
-If you don't want to use `make`, here's how to accomplish the same manually:
+Both docker and docker-compose are used to run this project, so the run command is quite straightforward.
 
-**Create PyCharm project dir** (if you are using PyCharm)
+    docker-compose up
 
-    make pycharm
+This builds, (re)creates and starts containers for Django, Node, PostgreSQL and Redis. Refer to `docker-compose.yml` for
+more insight.
 
-**Create virtualenv**
+Logs from all running containers are shown in the terminal. To run in "detached mode", pass the `-d` flag to
+docker-compose. To see running containers, use `docker-compose ps`. To see logs from these containers, run
+`docker-compose logs`.
 
-    virtualenv --python=python{{cookiecutter.python_version}} venv
-    . ./venv/bin/activate
+To _stop_ all running containers, use
 
-or if you use virtualenvwrapper
+    docker-compose stop
 
-    mkvirtualenv {{ cookiecutter.repo_name }} --python=python{{cookiecutter.python_version}}
-    workon {{ cookiecutter.repo_name }}
+This stops running containers without removing them. The same containers can be started again with
+`docker-compose start`. To stop a single container, pass the name as an extra argument, e.g.
+`docker-compose stop django`.
 
-**Install dependencies**
+To _stop and remove_ containers, run
 
-    pip install -r requirements/local.txt
+    docker-compose down
 
-**Switch to internal {{ cookiecutter.repo_name }} dir**
+This stops all running containers and removes containers, networks, volumes and images created by `up`.
 
-    cd {{ cookiecutter.repo_name }}
+### Using a different configuration file
 
-**Create local settings**
+By default docker-compose uses the `docker-compose.yml` file in the current directory. To use other configuration files,
+e.g. production configuration, specify the file to use with the `-f` flag.
 
-Create `settings/local.py` from `settings/local.py.example`
+    docker-compose -f docker-compose.production.yml up
 
-    cp settings/local.py.example settings/local.py
+Note that the production configuration lacks PostgreSQL, since it runs on a separate container on our servers.
 
-(now you can also open the project in PyCharm without running into issues due to missing virtualenv/settings)
+## Running Django commands in Docker
 
-**Apply database migrations**
+    docker-compose run django python manage.py <command>
 
-    python manage.py migrate
+### Command shortcuts in the Makefile
 
-**Ensure you have node 6.9.x**
+|Action                             |Makefile shortcut                  |Actual command                                                              |
+|:----------------------------------|:----------------------------------|:---------------------------------------------------------------------------|
+|make migrations                    |`make makemigrations cmd=<command>`|`docker-compose run --rm django ./manage.py makemigrations $(cmd)`          |
+|migrating                          |`make migrate cmd=<command>`       |`docker-compose run --rm django ./manage.py migrate $(cmd)`                 |
+|manage.py commands                 |`make docker-manage cmd=<command>` |`docker-compose run --rm django ./manage.py $(cmd)`                         |
+|any command in Django container    |`make docker-django cmd=<command>` |`docker-compose run --rm django $(cmd)`                                     |
+|run tests                          |`make test`                        |`docker-compose run --rm django py.test`                                    |
+|run linters                        |`make quality`                     |                                                                            |
+|run StyleLint                      |`make stylelint`                   |`docker-compose run --rm node npm run stylelint`                            |
+|run ESLint                         |`make eslint`                      |`docker-compose run --rm node npm run lint`                                 |
+|run Prospector                     |`make prospector`                  |`docker-compose run --rm django prospector`                                 |
+|run psql                           |`make psql`                        |`docker exec -it --user postgres {{cookiecutter.repo_name}}_postgres_1 psql`|
 
-See https://nodejs.org/en/ or https://nodejs.org/en/download/package-manager/ or use [n](https://github.com/tj/n)
+## Running commands on the server
 
-**Install WebApp dependencies**
+    docker-compose -f docker-compose.production.yml run --rm --name {{ cookiecutter.repo_name }}_tmp django python manage.py <command>
 
-    npm install --python=python2.7
+## Installing new pip or npm packages
 
+Since both `pip` and `npm` are inside their containers, currently the easiest way to install new packages is to add them
+to the respective requirements file and rebuild the container.
 
-## Run development servers
+## Rebuilding Docker images
 
-**Note:** Virtualenv must be activated for the following commands to work
+To rebuild the images run `docker-compose build`. This builds images for all containers specified in the configuration
+file.
 
-Run django server: `python manage.py runserver`
+To rebuild a single image, add the container name as extra argument, e.g. `docker-compose build node`.
 
-Run development asset server: `npm run dev`
+## Swapping between branches
 
-**Note:** Server will run at 127.0.0.1:8000 (localhost wont work because of CORS)
+After changing to a different branch, run `docker-compose up --build`. This builds the images before starting
+containers.
 
+If you switch between multiple branches that you have already built once, but haven't actually changed any configuration
+(e.g. installed new pip or npm packages), Docker finds the necessary steps from its cache and doesn't actually build
+anything.
 
 ## Running tests
 
-Use `py.test` for running tests. It's configured to run the entire test-suite of the project by default.
-
-    py.test
-
-You can also use `--reuse-db` or `--nomigrations` flags to speed things up a bit. See also:
+You can also use `--reuse-db` or `--nomigrations` flags to the actual command above to speed things up a bit. See also:
 https://pytest-django.readthedocs.org/en/latest/index.html
 
 ### Coverage
 
 You can also calculate tests coverage with `coverage run -m py.test && coverage html`,
+
+TODO: Expose this directory outside of docker
 the results will be in `cover/` directory.
 
 
@@ -99,20 +138,18 @@ the results will be in `cover/` directory.
 Linters check your code for common problems. Running them is a good idea before submitting pull requests, to ensure you
 don't introduce problems to the codebase.
 
-We use _ESLint_ (for JavaScript parts) and _Prospector_ (for Python) and StyleLint (for SCSS). To use them, run those commands in the Django app
-dir:
+We use _ESLint_ (for JavaScript parts) and _Prospector_ (for Python) and StyleLint (for SCSS).
+To use them, run those commands in the Django app dir:
 
     # Check Javascript sources with ESLint:
-    npm run lint
+    make eslint
     # Check SCSS sources with StyleLint:
-    npm run stylelint
+    make stylelint
     # Check Python sources with Prospector:
-    prospector
+    make prospector
+    # Run all of above:
+    make quality
 
-
-## Drone (project has to be added in Drone)
-* Go to Drone: https://drone-inside.thorgate.eu/ and {{ cookiecutter.repo_name }}
-* View linting and test results before creating PR.
 
 ## Deploys
 
@@ -121,6 +158,16 @@ dir:
 We use Fabric for deploys, which doesn't support Python 3. Thus you need to create a Python 2 virtualenv.
 It needn't be project specific and it's recommended you create one 'standard' Python 2 environment
 which can be used for all projects. You will also need to install django and tg-hammer==0.4, our fabric deployment helper.
+
+
+### Server setup
+
+Your server needs to have [Docker Engine](https://docs.docker.com/engine/installation/)
+as well as [Docker Compose](https://docs.docker.com/compose/) installed.
+
+We also assume that you have Nginx and Postgres (version 9.5 by default) running in Docker containers and reachable via
+'private' network. We also make a few assumptions regards directories that will be used as volumes for static assets,
+media, etc. You can find these paths in `fabfile.py` and `docker-compose.production.yml`.
 
 
 ### Types of deploys
@@ -145,28 +192,13 @@ There are basically two types of deploys:
 
 * Figure out which server you're going to deploy to.
   We usually have one main test server and one main production server for new project.
-* Install (on the server)
-  * PostgreSQL (with postgresql-server-dev-X.Y)
-  * python{{cookiecutter.python_version}}, python{{cookiecutter.python_version}}-dev, python-virtualenv, libxml2-dev, libxslt1-dev
-  * Node 6.9.x & npm 3.x
-  * Nginx
-  * git or mercurial
-  Also ensure that PostgreSQL allows peer authentication (setup needs to manage the database through the postgres system user).
 * Check `fabfile.py` in Django project dir. It has two tasks (functions) - `test` and `live`.
-  Ensure that the one you'll use has correct settings (mostly hostname; for production, the number of workers for React
-  project is also important).
+  Ensure that the one you'll use has correct settings (mostly hostname).
 * Check django settings (`settings/staging.py` and/or `settings/production.py`)
-  and Nginx config (`deploy/nginx*.conf`) - ensure that they have proper hostnames etc.
-  If you compiled Nginx yourself, it will most likely have installed to `/usr/local/nginx/` instead of `/etc/nginx/`
-  and you will have to replace the hardcoded paths in the fabfile, also considering that the `sites-available` and
-  `sites-enabled` directories will not have been created and included automatically in the main config.
-* If the product uses HTTPS (it should), then you need to manually add key and cert files to `/etc/nginx/certs/`
-  and create `/etc/nginx/conf.d/ssl.PROJNAME.include` file, containing their paths.
+  and Nginx config (`deploy/nginx/*.conf`) - ensure that they have proper hostnames etc.
 * Add the server's SSH key (`/root/.ssh/id_rsa.pub`) to the project repo as deployment key.
 * Ensure you've committed and pushed all relevant changes.
 * Run `fab ENV setup_server` where `ENV` is either `test` or `live`.
   * If it worked, you're all done, congrats!
-  * If you got a compiler error while it was installing lxml2, your server probably ran out of memory while compiling.
-    In that case, you'll need to either add more RAM or add swap: https://www.digitalocean.com/community/tutorials/how-to-add-swap-on-ubuntu-14-04
   * If something else broke, you might need to either nuke the code dir, database and database user on the server;
     or comment out parts of fabfile (after fixing the problem) to avoid trying to e.g. create database twice. Ouch.

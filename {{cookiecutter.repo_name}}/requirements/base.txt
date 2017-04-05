@@ -1,6 +1,7 @@
 Django==1.8.17
 tg-utils==0.2.0
 psycopg2==2.7.1
+django-redis==4.5.0
 django-crispy-forms==1.6.1
 django-webpack-loader==0.4.1
 django-settings-export==1.2.1

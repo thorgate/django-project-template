@@ -1,11 +1,12 @@
-# Thorgate's Django template
+# Thorgate's Django template (Docker variant)
 
 [Django](https://www.djangoproject.com/) project template that we use at [Thorgate](https://thorgate.eu).
 
 Best suited for medium-sized and bigger apps that use JavaScript and React for frontend.
 
-**NB: this is a standard, non-Docker variant** of the template,
-use [docker branch](https://github.com/thorgate/django-project-template/tree/docker) for the Docker variant.
+**NB: this is a Docker variant** of the template,
+use [master branch](https://github.com/thorgate/django-project-template/tree/master) for the standard,
+non-Docker variant.
 
 
 ## Features
@@ -27,6 +28,7 @@ use [docker branch](https://github.com/thorgate/django-project-template/tree/doc
 
 - Batteries
 
+    - Docker / Docker Compose integration
     - Linting of Python, JavaScript and Sass code with [Prospector](http://prospector.landscape.io/),
       [ESLint](http://eslint.org/) and [stylelint](https://stylelint.io/)
     - [py.test](http://pytest.org/) and [coverage](https://coverage.readthedocs.io/) integration

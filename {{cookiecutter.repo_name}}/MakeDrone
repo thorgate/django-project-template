@@ -1,0 +1,61 @@
+# ENV defaults to local (so that requirements/local.txt are installed), but can be overridden
+#  (e.g. ENV=production make setup).
+ENV ?= local
+# PYTHON specifies the python binary to use when creating virtualenv
+PYTHON ?= python{{cookiecutter.python_version}}
+
+# Editor can be defined globally but defaults to nano
+EDITOR ?= nano
+
+# Just copy the settings file, don't open in editor
+EDIT_SETTINGS ?= no
+
+# Get root dir and project dir
+PROJECT_ROOT ?= $(PWD)
+SITE_ROOT ?= $(PROJECT_ROOT)/{{cookiecutter.repo_name}}
+
+BLACK ?= \033[0;30m
+RED ?= \033[0;31m
+GREEN ?= \033[0;32m
+YELLOW ?= \033[0;33m
+BLUE ?= \033[0;34m
+PURPLE ?= \033[0;35m
+CYAN ?= \033[0;36m
+GRAY ?= \033[0;37m
+COFF ?= \033[0m
+
+
+venv:
+	@echo "$(CYAN)Creating $(PYTHON) virtual environment$(COFF)"
+	@cd $(PROJECT_ROOT) && virtualenv -p $(PYTHON) venv
+
+
+settings: $(SITE_ROOT)/settings/local.py
+
+
+$(SITE_ROOT)/settings/local.py:
+	@echo "$(CYAN)Creating Django settings file$(COFF)"
+	@cp $(SITE_ROOT)/settings/local.py.example $(SITE_ROOT)/settings/local.py
+	@cp $(SITE_ROOT)/settings/local_test.py.example $(SITE_ROOT)/settings/local_test.py
+
+
+coverage:
+	@echo "$(CYAN)Running automatic code coverage check$(COFF)"
+	@cd $(SITE_ROOT) && . $(PROJECT_ROOT)/venv/bin/activate && coverage run -m py.test
+	@cd $(SITE_ROOT) && . $(PROJECT_ROOT)/venv/bin/activate && coverage html
+	@cd $(SITE_ROOT) && . $(PROJECT_ROOT)/venv/bin/activate && coverage report
+
+
+test: clean
+	@echo "$(CYAN)Running automatic tests$(COFF)"
+	@cd $(SITE_ROOT) && . $(PROJECT_ROOT)/venv/bin/activate && py.test
+
+
+clean:
+	@echo "$(CYAN)Cleaning pyc files$(COFF)"
+	@cd $(SITE_ROOT) && find . -name "*.pyc" -exec rm -rf {} \;
+
+
+quality:
+	@echo "$(CYAN)Running code quality checks$(COFF)"
+	@cd $(SITE_ROOT) && . $(PROJECT_ROOT)/venv/bin/activate && prospector && npm run lint;

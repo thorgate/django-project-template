@@ -22,17 +22,29 @@ build:
     - pip wheel --wheel-dir=wheels --find-links=wheels -r requirements/local.txt -r requirements/production.txt
 
     # Create virtualenv and install dependencies from wheels
-    - make venv
+    - make -f MakeDrone venv
     - . ./venv/bin/activate
     - pip install --use-wheel --no-index --find-links=wheels -r requirements/local.txt -r requirements/production.txt
     # Install node packages
     - cd {{ cookiecutter.repo_name }}
     - npm install --silent --python=python2.7
+    # If you have tests that load front-end views, comment in the following line.
+    # - npm run build-quiet
 
     # Run tests
-    - EDIT_SETTINGS=no make settings
-    - make test
-    - make quality
+    - make -f MakeDrone settings
+    - make -f MakeDrone test
+    - make -f MakeDrone quality
+
+compose:
+  database:
+    image: postgres:9.5
+    environment:
+      - POSTGRES_USER={{ cookiecutter.repo_name }}
+      - POSTGRES_PASSWORD={{ cookiecutter.repo_name }}
+
+  redis:
+    image: redis:3.2-alpine
 
 notify:
 #  slack:

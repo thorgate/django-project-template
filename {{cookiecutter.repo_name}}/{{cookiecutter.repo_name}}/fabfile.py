@@ -5,14 +5,13 @@ Usage:
 Use `fab --list` to see available targets and actions.
 """
 
-import re
+import ConfigParser
 from StringIO import StringIO
 import string
 import os
 
 from fabric import colors
 from fabric.api import *
-from fabric.contrib import files
 from fabric.contrib.console import confirm
 from fabric.utils import indent
 
@@ -23,7 +22,6 @@ from hammer import __version__ as hammer_version
 # Ensure that we have expected version of the tg-hammer package installed
 assert hammer_version.startswith('0.5.'), "tg-hammer 0.5.x is required"
 
-from hammer.service_helpers import install_services_cp, manage_service
 from hammer.vcs import Vcs
 
 
@@ -40,7 +38,7 @@ DATABASES = {
         'NAME': '{{cookiecutter.repo_name}}',
         'USER': '{{cookiecutter.repo_name}}',
         'PASSWORD': '${db_password}',
-        'HOST': '127.0.0.1',
+        'HOST': 'postgres',
         'PORT': '5432',
     }
 }
@@ -58,14 +56,48 @@ def defaults():
 
     env.confirm_required = True
 
-    env.nginx_conf = 'nginx.conf'
     env.target = 'staging'
 
-    env.service_names = ["gunicorn-{{cookiecutter.repo_name}}"]
     env.code_dir = '/srv/{{cookiecutter.repo_name}}'
 
-    # See https://tg-hammer.readthedocs.io/en/latest/api.html#hammer.service_helpers.DAEMON_TYPES
-    env.service_daemon = 'upstart'
+    # Mapping of configuration files and their rules
+    #
+    #  "Directory name inside deploy/": [
+    #      {
+    #          "pattern": "filename to search for (replacements: target[env.target])",
+    #          "filename": "filename used in remote machine (replacements: target[env.target])",
+    #          "remote_path": "path on the remote machine where the file/files must be uploaded to (replacements: filename, target)",
+    #      },
+    #      ...
+    #  ]
+    #
+    env.deployment_configurations = {
+        "letsencrypt": [
+            {
+                "pattern": "%(target)s.conf",
+                "filename": "letsencrypt.{{cookiecutter.repo_name}}.conf",
+                "remote_path": "/etc/letsencrypt/configs/%(filename)s"
+            }
+        ],
+        "nginx": [
+            {
+                "pattern": "common.include",
+                "filename": "app.{{cookiecutter.repo_name}}.include",
+                "remote_path": "/var/lib/docker-nginx/config/conf.d/%(filename)s"
+            },
+            {
+                "pattern": "%(target)s.ssl",
+                "filename": "ssl.{{cookiecutter.repo_name}}.include",
+                "remote_path": "/var/lib/docker-nginx/config/conf.d/%(filename)s"
+            },
+            {
+                "default_site": True,
+                "pattern": "%(target)s.conf",
+                "filename": "{{cookiecutter.repo_name}}",
+                "remote_path": "/var/lib/docker-nginx/config/sites-enabled/%(filename)s"
+            }
+        ]
+    }
 
 
 @task(alias="staging")
@@ -84,7 +116,6 @@ def live():
 
     raise NotImplemented('TODO: live host not configured')
     defaults()
-    env.nginx_conf = 'nginx_prod.conf'
     env.target = 'production'
     env.hosts = ['{{cookiecutter.live_host}}']
 
@@ -148,16 +179,6 @@ def migrate_diff(id=None, revset=None, silent=False):
 
 
 @task
-def update_requirements(reqs_type='production'):
-    """ Install the required packages from the requirements file using pip """
-    require('hosts')
-    require('code_dir')
-
-    with cd(env.code_dir), prefix('. venv/bin/activate'):
-        sudo('pip install -r requirements/%s.txt' % reqs_type)
-
-
-@task
 def migrate(silent=False):
     """ Preform migrations on the database. """
 
@@ -178,7 +199,7 @@ def version():
 
 
 @task
-def deploy(id=None, silent=False, force=False, services=False, auto_nginx=True):
+def deploy(id=None, silent=False, force=False, auto_nginx=True):
     """ Perform an automatic deploy to the target requested. """
     require('hosts')
     require('code_dir')
@@ -205,14 +226,10 @@ def deploy(id=None, silent=False, force=False, services=False, auto_nginx=True):
     if requirements_changes:
         print colors.yellow("Will update requirements (and do migrations)")
 
-    # See if we have package.json changes
-    package_changed = force or vcs.changed_files(revset, r' {{ cookiecutter.repo_name }}/package.json')
-    if package_changed:
-        print colors.yellow("Will run npm install")
-
     # See if we have changes in app source or static files
-    app_patterns = [r' {{ cookiecutter.repo_name }}/app', r' {{ cookiecutter.repo_name }}/static', r' {{ cookiecutter.repo_name }}/settings', r'webpack']
-    app_changed = force or package_changed or vcs.changed_files(revset, app_patterns)
+    app_patterns = [r' {{cookiecutter.repo_name}}/app', r' {{cookiecutter.repo_name}}/static',
+                    r' {{cookiecutter.repo_name}}/settings', r' {{cookiecutter.repo_name}}/package.json']
+    app_changed = force or vcs.changed_files(revset, app_patterns)
     if app_changed:
         print colors.yellow("Will run npm build")
 
@@ -227,8 +244,13 @@ def deploy(id=None, silent=False, force=False, services=False, auto_nginx=True):
     if crontab_changed:
         print colors.yellow("Will update cron entries")
 
+    # See if we have any changes to letsencrypt configurations
+    letsencrypt_changed = force or vcs.changed_files(revset, get_config_modified_patterns('letsencrypt'))
+    if letsencrypt_changed:
+        print colors.yellow("Will update letsencrypt configurations")
+
     # see if nginx conf has changed
-    nginx_changed = vcs.changed_files(revset, [r' deploy/%s' % env.nginx_conf])
+    nginx_changed = vcs.changed_files(revset, get_config_modified_patterns('nginx'))
 
     if nginx_changed:
         if auto_nginx:
@@ -240,34 +262,31 @@ def deploy(id=None, silent=False, force=False, services=False, auto_nginx=True):
     elif force:
         print colors.yellow("Updating nginx config")
 
-    # if services flag is set, let the user know
-    if force or services:
-        print colors.yellow("Will update service configuration")
-
     if not silent:
         request_confirm("deploy")
 
     vcs.update(id)
-    if requirements_changes:
-        update_requirements()
+
+    docker_compose('build')
+
     if migrations or requirements_changes:
         migrate(silent=True)
     if crontab_changed:
         with cd(env.code_dir):
             sudo('cp deploy/crontab.conf /etc/cron.d/{{cookiecutter.repo_name}}')
 
-    if force or services:
-        configure_services()
-
     if force or (nginx_changed and auto_nginx):
         nginx_update()
 
-    collectstatic(npm_install=package_changed, npm_build=app_changed)
+    if force or letsencrypt_changed:
+        letsencrypt_update()
 
-    restart_server(silent=True)
+    collectstatic(npm_build=app_changed)
 
     # Run deploy systemchecks
     check()
+
+    docker_up(silent=True)
 
 
 @task
@@ -275,15 +294,9 @@ def setup_server(id=None):
     """ Perform initial deploy on the target """
     require('hosts')
     require('code_dir')
-    require('nginx_conf')
 
     # Clone code repository
     vcs.clone(id or None)
-
-    # Create virtualenv and install dependencies
-    with cd(env.code_dir):
-        sudo('make venv')
-    update_requirements()
 
     # Create password for DB, secret key and the local settings
     db_password = generate_password()
@@ -292,143 +305,170 @@ def setup_server(id=None):
 
     # Create database
     sudo('echo "CREATE DATABASE {{cookiecutter.repo_name}}; '
-         '      CREATE USER {{cookiecutter.repo_name}} WITH password \'%s\'; '
+         '      CREATE USER {{cookiecutter.repo_name}} WITH password \'{db_password}\'; '
          '      GRANT ALL PRIVILEGES ON DATABASE {{cookiecutter.repo_name}} to {{cookiecutter.repo_name}};" '
-         '| su -c psql postgres' % db_password)
+         '| docker exec -i postgres-9.5 psql -U postgres'.format(db_password=db_password))
 
     # Upload local settings
     put(local_path=StringIO(local_settings), remote_path=env.code_dir + '/{{cookiecutter.repo_name}}/settings/local.py', use_sudo=True)
 
-    # Create necessary dirs, with correct permissions
-    mkdir_wwwdata('/var/log/{{cookiecutter.repo_name}}/')
-    with cd(env.code_dir + '/{{cookiecutter.repo_name}}'), prefix('. ../venv/bin/activate'):
-        mkdir_wwwdata('assets/CACHE/')
-        mkdir_wwwdata('media/')
+    # Create log dir
+    sudo('mkdir -p /var/log/{{cookiecutter.repo_name}}/')
+
+    # webpack-stats.json must exist before the Django container is run. Otherwise docker-compose assumes it to be a
+    #  directory (because it's a volume).
+    sudo('touch %s/{{cookiecutter.repo_name}}/app/webpack-stats.json' % env.code_dir)
+
+    docker_compose('build')
 
     # migrations, collectstatic
-    management_cmd('migrate')
+    migrate(silent=True)
     collectstatic()
 
-    # Ensure any and all created log files are owned by the www-data user
-    sudo('chown -R www-data:www-data /var/log/{{cookiecutter.repo_name}}/')
-
-    # Copy logrotate and crontab confs
+    # Copy logrotate conf
     with cd(env.code_dir):
         sudo('cp deploy/logrotate.conf /etc/logrotate.d/{{cookiecutter.repo_name}}')
-        sudo('cp deploy/crontab.conf /etc/cron.d/{{cookiecutter.repo_name}}')
-
-    # Install nginx config
-    nginx_update()
-
-    # Install services
-    configure_services()
 
     # (Re)start services
-    start_server(silent=True)
+    docker_up(silent=True)
 
     # Run deploy systemchecks
     check()
 
-    # Restart nginx
-    manage_service('nginx', 'restart')
+    # Configure letsencrypt
+    letsencrypt_configure(reconfigure_nginx=False)
+
+    # Install nginx config
+    nginx_update()
 
 
 @task
 def nginx_update():
     """ Updates the nginx configuration files and restarts nginx.
     """
-
-    require('code_dir')
-    require('nginx_conf')
-
-    # Update nginx config
-    with cd(env.code_dir):
-        sudo('cp deploy/%s /etc/nginx/sites-enabled/{{cookiecutter.repo_name}}' % env.nginx_conf)
+    update_config_files('nginx')
 
     # test nginx configuration before restarting it. This catches config problems which might bring down nginx.
-    sudo('nginx -t')
-    manage_service('nginx', 'restart')
+    sudo('docker exec nginx nginx -t')
+    sudo('docker exec nginx nginx -s reload')
 
 
 @task
-def configure_services():
-    """ Updates the services' init files (e.g. for gunicorn)
-    """
-
+def letsencrypt_configure(reconfigure_nginx=True):
     require('code_dir')
 
-    # Ensure at-least the default gunicorn.py exists
-    with cd(env.code_dir + '/{{ cookiecutter.repo_name }}/settings'):
-        if not files.exists('gunicorn.py', use_sudo=True):
-            sudo('cp gunicorn.py.example gunicorn.py')
+    domains = set()
 
-    # Note: DAEMON_TYPE AND DAEMON_FILE_EXTENSION are replaced by hammer automatically
-    source_dir = os.path.join(
-        env.code_dir,
-        'deploy',
-        '${DAEMON_TYPE}',
-        '${SERVICE_NAME}.${DAEMON_FILE_EXTENSION}',
-    )
+    # Collect all the domains that need a certificate
+    with cd(env.code_dir):
+        # construct a configparser object
+        config = ConfigParser.ConfigParser()
 
-    # Install the services using hammer
-    install_services_cp([
-        ('gunicorn-{{cookiecutter.repo_name}}', source_dir.replace('${SERVICE_NAME}', 'gunicorn')),
-    ])
+        for filename in get_config_repo_paths('letsencrypt'):
+            buf = StringIO()
+
+            # Add the actual config file data to the buffer
+            get(filename, buf)
+
+            # Here we prepend a section header to the in-memory buffer. This
+            #  allows us to easily read the letsencrypt config file using stdlib configparser
+            #
+            # see: http://stackoverflow.com/questions/2819696/parsing-properties-file-in-python/25493615#25493615
+            buf = StringIO('[DEFAULT]\n' + buf.getvalue())
+
+            # read config from buf
+            config.readfp(buf)
+
+            # get domains from the config file
+            for domain in config.get('DEFAULT', 'domains').split(','):
+                domains.add(domain.strip())
+
+    # Create a temporary nginx config file
+    temporary_nginx_conf = """
+        server {
+            listen 80;
+            server_name %(domains)s;
+            location /.well-known/acme-challenge/ {
+                root /etc/letsencrypt/www;
+                break;
+            }
+        }
+    """ % {
+        "domains": " ".join(domains),
+    }
+
+    # Notify the user that the dns MUST be configured for all the domains as of this point
+    print(" ")
+    print(colors.blue('Preparing to request certificate using letsencrypt. The DNS for '
+                      'following domains MUST be configured to point to the remote host: %s' % " ".join(domains)))
+
+    if not confirm(colors.yellow("Is the dns configured? (see above)")):
+        abort('Deployment aborted.')
+
+    # Upload it to the app nginx config path
+    put(local_path=StringIO(temporary_nginx_conf), remote_path=get_nginx_app_target_path(), use_sudo=True)
+
+    # Reload nginx
+    sudo('docker exec nginx nginx -s reload')
+
+    # use letsencrypt_update to obtain the certificate
+    letsencrypt_update(dry_run=True)
+
+    # restore nginx config if requested
+    if reconfigure_nginx:
+        nginx_update()
+
+
+@task
+def letsencrypt_update(dry_run=False):
+    require('code_dir')
+
+    updated_files = update_config_files('letsencrypt')
+
+    for target_path in updated_files:
+        # verify everything works using --dry-run
+        if dry_run:
+            sudo("certbot-auto certonly --dry-run --noninteractive --agree-tos -c %s" % target_path)
+
+        # Aquire the certificate
+        sudo("certbot-auto certonly --noninteractive --agree-tos -c %s" % target_path)
+
+    # Reload nginx
+    sudo('docker exec nginx nginx -s reload')
 
 
 """ SERVER COMMANDS """
 
-
 @task
-def stop_server(silent=False):
+def docker_down(silent=False):
     """ Stops all services
     """
 
     if not silent:
-        request_confirm("stop_server")
+        request_confirm("docker_down")
 
-    require('code_dir')
-
-    manage_service(get_service_names(), "stop")
+    docker_compose('down')
 
 
 @task
-def start_server(silent=False):
+def docker_up(silent=False):
     """ Starts all services
     """
 
     if not silent:
-        request_confirm("start_server")
+        request_confirm("docker_up")
 
-    require('code_dir')
+    docker_compose('up -d')
 
-    manage_service(get_service_names(), "start")
-
-
-@task
-def restart_server(silent=False):
-    """ Restarts all services
-    """
-
-    if not silent:
-        request_confirm("restart_server")
-
-    require('code_dir')
-
-    manage_service(get_service_names(), "restart")
+    # This is necessary to make nginx refresh IP addresses of containers.
+    sudo('docker exec nginx nginx -s reload')
 
 
 @task
 def management_cmd(cmd):
     """ Perform a management command on the target. """
 
-    require('hosts')
-    require('code_dir')
-
-    sudo("cd %s ;"
-         ". ./venv/bin/activate ; "
-         "cd {{cookiecutter.repo_name}} ; "
-         "python manage.py %s" % (env.code_dir, cmd))
+    docker_compose_run('django', 'python manage.py ' + cmd)
 
 
 @task
@@ -461,31 +501,11 @@ def repo_type():
         print("Current project is using: `%s`" % colors.red('NO VCS'))
 
 
-def collectstatic(npm_install=True, npm_build=True):
-    with cd(env.code_dir + '/{{cookiecutter.repo_name}}'):
-        if npm_install:
-            node_cmd('npm install --unsafe-perm --production')
-
-        if npm_build:
-            node_cmd('npm run build')
+def collectstatic(npm_build=True):
+    if npm_build:
+        docker_compose_run('node', 'npm run build', name='{{cookiecutter.repo_name}}_npm_build')
 
     management_cmd('collectstatic --noinput --ignore styles-src')
-
-
-def node_cmd(command):
-    # Runs node/npm command using correct version of Node.js
-    node_version = '6.9.4'
-    # Figure out where our desired versions of node and npm are installed
-    node_bin = sudo('n bin %s' % node_version).strip()
-    node_bin_dir = os.path.dirname(node_bin)
-
-    sudo(". ../venv/bin/activate ; export PATH=%s:$PATH; %s" % (node_bin_dir, command))
-
-
-def mkdir_wwwdata(path):
-    # Creates directory and makes www-data its owner
-    sudo('mkdir -p ' + path)
-    sudo('chown www-data:www-data ' + path)
 
 
 def request_confirm(action):
@@ -502,23 +522,75 @@ def generate_password(length=50):
     return get_random_string(length, chars)
 
 
-def get_service_names(predicate=None):
-    """Get service names for the project
-
-    :param predicate: Predicate to use for filtering: ``fn(service_name) -> bool``
-    :type predicate: NoneType | callable
-    :return:
-    """
-    require('service_names')
-
-    result = env.service_names
-
-    if predicate:
-        return filter(predicate, result)
-
-    return result
-
-
 def get_current_version_summary():
     commit_id, branch, message, author = vcs.version()
     return "%s [%s]: %s - %s" % (commit_id, branch, message, author)
+
+
+def docker_compose(cmd):
+    with cd(env.code_dir):
+        sudo('docker-compose -f docker-compose.production.yml ' + cmd)
+
+
+def docker_compose_run(service, cmd='', name='{{cookiecutter.repo_name}}_tmp'):
+    docker_compose('run --rm --name {name} {service} {cmd}'.format(name=name, service=service, cmd=cmd))
+
+
+def get_config_modified_patterns(key):
+    return map(lambda x: r' %s' % x, get_config_repo_paths(key))
+
+
+def get_config_repo_paths(key):
+    require('deployment_configurations')
+
+    return map(lambda x: 'deploy/%s/%s' % (key, render_config_key(x, 'pattern')), env.deployment_configurations.get(key, []))
+
+
+def update_config_files(key):
+    require('deployment_configurations')
+
+    paths = []
+
+    with cd(env.code_dir):
+        for config_def in env.deployment_configurations.get(key, []):
+            repo_path = render_config_key(config_def, 'pattern')
+            remote_path = render_config_key(config_def, 'remote_path')
+
+            sudo('cp deploy/%s/%s %s' % (key, repo_path, remote_path))
+
+            paths.append(remote_path)
+
+    return paths
+
+
+def render_config_key(config_def, key):
+    require('target')
+
+    if key == 'pattern' or key == 'filename':
+        params = {
+            'target': env.target,
+        }
+
+    elif key == 'remote_path':
+        params = {
+            'target': env.target,
+            'filename': render_config_key(config_def, 'filename'),
+        }
+
+    else:
+        return abort('invalid config key: %s' % key)
+
+    return config_def[key] % params
+
+def get_nginx_app_target_path():
+    require('deployment_configurations')
+
+    if env.deployment_configurations.get('nginx', None) is None:
+        abort('nginx key not in deployment configurations')
+
+    default_site = list(filter(lambda x: x.get('default_site', False), env.deployment_configurations['nginx']))
+
+    if len(default_site) > 1:
+        abort('multiple default nginx sites found')
+
+    return render_config_key(default_site[0], 'remote_path')

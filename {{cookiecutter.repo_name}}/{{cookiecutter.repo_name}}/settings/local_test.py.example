@@ -1,0 +1,7 @@
+from settings.test import *
+
+DATABASES['default']['HOST'] = '127.0.0.1'
+DATABASES['default']['USER'] = '{{ cookiecutter.repo_name }}'
+DATABASES['default']['PASSWORD'] = '{{ cookiecutter.repo_name }}'
+
+CACHES['default']['LOCATION'] = "redis://127.0.0.1:6379/1"

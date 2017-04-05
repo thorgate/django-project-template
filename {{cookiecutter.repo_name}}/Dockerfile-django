@@ -1,0 +1,21 @@
+# Development Dockerfile for Django app
+
+FROM python:3.5.2-slim
+
+# Install system requirements
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends gcc gettext libpq-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY ./wait-for-it.sh /usr/bin/
+
+# Copy Python requirements dir and Install requirements
+COPY ./requirements /tmp/requirements
+RUN pip install -r /tmp/requirements/local.txt
+
+# Set the default directory where CMD will execute
+WORKDIR /app
+
+# Run Django's runserver by default
+CMD python manage.py runserver 0.0.0.0:80

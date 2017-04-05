@@ -10,14 +10,15 @@ syntax: glob
 npm-debug.log
 node_modules/
 venv/
+.cache/
+
+.data-*/
 
 {{cookiecutter.repo_name}}/settings/local.py
-{{cookiecutter.repo_name}}/settings/gunicorn.py
 {{cookiecutter.repo_name}}/db.sqlite3
 {{cookiecutter.repo_name}}/app/webpack-stats.json
 {{cookiecutter.repo_name}}/app/build/
 {{cookiecutter.repo_name}}/assets/
-{{cookiecutter.repo_name}}/media/
 
 {{cookiecutter.repo_name}}/.cache
 {{cookiecutter.repo_name}}/.coverage

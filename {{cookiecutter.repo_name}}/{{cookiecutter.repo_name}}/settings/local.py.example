@@ -5,7 +5,7 @@ from settings.base import *
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'HOST': '127.0.0.1',
+#         'HOST': 'postgres',
 #         'NAME': '{{cookiecutter.repo_name}}',
 #         'USER': '{{cookiecutter.repo_name}}',
 #         'PASSWORD': '{{cookiecutter.repo_name}}',

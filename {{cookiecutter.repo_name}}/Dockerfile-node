@@ -1,0 +1,16 @@
+# Based on Node 6.9 LTS image
+FROM node:6.9.1
+
+# Set the default directory where CMD will execute
+WORKDIR /app
+
+# Copy some utility files
+COPY ./{{cookiecutter.repo_name}}/.babelrc .
+COPY ./{{cookiecutter.repo_name}}/.eslintrc .
+COPY ./{{cookiecutter.repo_name}}/.eslintignore .
+# Install node requirements
+COPY ./{{cookiecutter.repo_name}}/package.json .
+RUN npm install
+
+# Set the default command to execute when creating a new container
+CMD npm run build
