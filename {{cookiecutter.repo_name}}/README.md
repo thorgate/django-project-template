@@ -1,7 +1,5 @@
 # README for {{cookiecutter.project_title}}
 
-[![Build Status](https://drone-inside.thorgate.eu/api/badges/thorgate/{{ cookiecutter.repo_name }}/status.svg)](https://drone-inside.thorgate.eu/thorgate/{{ cookiecutter.repo_name }})
-
 TODO: verify that the following info is correct:
 
  - Python:  {{cookiecutter.python_version}}

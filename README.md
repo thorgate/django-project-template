@@ -4,6 +4,9 @@
 
 Best suited for medium-sized and bigger apps that use JavaScript and React for frontend.
 
+**NB: this is a standard, non-Docker variant** of the template,
+use [docker branch](https://github.com/thorgate/django-project-template/tree/docker) for the Docker variant.
+
 
 ## Features
 
@@ -11,22 +14,21 @@ Best suited for medium-sized and bigger apps that use JavaScript and React for f
 
     - [Django](https://www.djangoproject.com/) 1.8 (because it's LTS; you can easily upgrade to 1.10)
     - Separate settings for different environments (local/staging/production)
-    - Python 3.4 / 3.5
+    - Python 3.4 / 3.5 / 3.6
 
 - Frontend app with JavaScript (ES2015), React and Sass
 
     - Latest JavaScript features from [ES2015](https://babeljs.io/docs/learn-es2015/) and beyond, transpiled with
       [Babel](https://babeljs.io/)
-    - [React](https://facebook.github.io/react/) 15.0 for fast modular user interfaces
+    - [React](https://facebook.github.io/react/) 15.4 for fast modular user interfaces
     - [Sass](http://sass-lang.com/), [PostCSS](http://postcss.org/) and
       [Autoprefixer](https://github.com/postcss/autoprefixer) for more convenient styling
-    - [Webpack](https://webpack.github.io/) 2.0-beta is used to bundle and minify JavaScript and styles
-    - Optional single-page app structure
+    - [Webpack](https://webpack.github.io/) 2.3 is used to bundle and minify JavaScript and styles
 
 - Batteries
 
-    - Linting of Python and JavaScript code with [Prospector](http://prospector.landscape.io/) and
-      [ESLint](http://eslint.org/)
+    - Linting of Python, JavaScript and Sass code with [Prospector](http://prospector.landscape.io/),
+      [ESLint](http://eslint.org/) and [stylelint](https://stylelint.io/)
     - [py.test](http://pytest.org/) and [coverage](https://coverage.readthedocs.io/) integration
     - Deploy helpers, using [Fabric](http://www.fabfile.org/)
     - Out-of-the-box configuration for nginx, gunicorn, logrotate and crontab
