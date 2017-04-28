@@ -12,7 +12,7 @@ COPY ./wait-for-it.sh /usr/bin/
 
 # Copy Python requirements dir and Install requirements
 COPY ./requirements /tmp/requirements
-RUN pip install -r /tmp/requirements/local.txt
+RUN pip install --no-cache-dir -r /tmp/requirements/local.txt
 
 # Set the default directory where CMD will execute
 WORKDIR /app

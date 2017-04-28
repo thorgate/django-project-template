@@ -1,5 +1,5 @@
-# Based on Node 6.9 LTS image
-FROM node:6.9.1
+# Based on Node 6.10 LTS image
+FROM node:6.10.2
 
 # Set the default directory where CMD will execute
 WORKDIR /app

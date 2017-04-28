@@ -43,6 +43,6 @@ services:
             POSTGRES_PASSWORD: {{cookiecutter.repo_name}}
 
     redis:
-        image: redis:3.2-alpine
+        image: redis:3.2.8-alpine
         volumes:
             - ".data-redis:/data"

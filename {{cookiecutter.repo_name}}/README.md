@@ -4,7 +4,7 @@ TODO: verify that the following info is correct:
 
  - Python:  {{cookiecutter.python_version}}
  - DB:      PostgreSQL
- - Node:    6.9.x
+ - Node:    6.10.x
  - NPM:     3.x
  - React:   15.x
 

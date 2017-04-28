@@ -37,7 +37,7 @@ services:
             - "./{{cookiecutter.repo_name}}/static:/app/static:ro"
 
     redis:
-        image: redis:3.2-alpine
+        image: redis:3.2.8-alpine
         restart: unless-stopped
         volumes:
             - "/var/lib/docker-{{cookiecutter.repo_name}}/redis:/data"

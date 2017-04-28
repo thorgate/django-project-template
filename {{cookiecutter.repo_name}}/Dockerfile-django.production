@@ -15,7 +15,7 @@ COPY ./wait-for-it.sh /usr/bin/
 
 # Copy Python requirements dir and Install requirements
 COPY ./requirements /tmp/requirements
-RUN pip install -r /tmp/requirements/production.txt
+RUN pip install --no-cache-dir -r /tmp/requirements/production.txt
 
 # Copy code
 COPY ./{{cookiecutter.repo_name}} /app

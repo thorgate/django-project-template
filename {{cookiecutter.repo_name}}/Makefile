@@ -127,6 +127,10 @@ docker-django:
 	docker-compose run --rm django $(cmd)
 
 
+bash:
+	docker-compose run --rm django bash
+
+
 docker-manage:
 	docker-compose run --rm django ./manage.py $(cmd)
 
