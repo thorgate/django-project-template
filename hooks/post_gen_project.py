@@ -54,19 +54,16 @@ def handle_react():
     for src, dst in symlinks:
         os.symlink(src, dst)
 
-    # Copy cookiecutter config for template to project dir
-    shutil.copyfile(os.path.expanduser('~/.cookiecutter_replay/django-project-template.json'), '.cookiecutterrc')
-
 
 def create_repos():
     repo_type = '{{ cookiecutter.vcs }}'.lower()
     if repo_type == 'git' and not os.path.exists('.git'):
         print('Creating git repository')
-        subprocess.check_call(['git', 'init']) == 0
-        subprocess.check_call(['git', 'checkout', '-b', 'template']) == 0
-        subprocess.check_call(['git', 'add', '.']) == 0
-        subprocess.check_call(['git', 'commit', '-m', 'Initial commit']) == 0
-        subprocess.check_call(['git', 'checkout', '-b', 'master']) == 0
+        subprocess.check_call(['git', 'init'])
+        subprocess.check_call(['git', 'checkout', '-b', 'template'])
+        subprocess.check_call(['git', 'add', '.'])
+        subprocess.check_call(['git', 'commit', '-m', 'Initial commit'])
+        subprocess.check_call(['git', 'checkout', '-b', 'master'])
 
         print('Git repository initialized. First commit is in branch `template`.')
         print('Create a repository in BitBucket (https://bitbucket.org/repo/create).')
@@ -78,17 +75,18 @@ def create_repos():
 
     elif repo_type == 'hg' and not os.path.exists('.hg'):
         print('Creating mercurial repository')
-        subprocess.check_call(['hg', 'init']) == 0
-        subprocess.check_call(['hg', 'branch', 'template']) == 0
-        subprocess.check_call(['hg', 'add']) == 0
-        subprocess.check_call(['hg', 'commit', '-m', 'Initial commit']) == 0
-        subprocess.check_call(['hg', 'branch', 'default']) == 0
+        subprocess.check_call(['hg', 'init'])
+        subprocess.check_call(['hg', 'branch', 'template'])
+        subprocess.check_call(['hg', 'add'])
+        subprocess.check_call(['hg', 'commit', '-m', 'Initial commit'])
+        subprocess.check_call(['hg', 'branch', 'default'])
 
         print('Mercurial repository initialized. First commit is in branch `template`.')
         print('You are on branch default. Fix some TODOs and commit.')
         print('After that create a repository in BitBucket (https://bitbucket.org/repo/create).')
         print('Look for the repository address and run:')
         print('    hg push <repository_address>')
+
 
 def main():
     """Do some stuff based on configuration"""

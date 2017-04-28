@@ -9,15 +9,14 @@ This needs to be run in the root of the project you are upgrading.
 The template branch needs to be in your local repo, but must not be active/checked out. (git doesn't like this)
 """
 
-import argparse
 import json
 import subprocess
 import shutil
 import os
+import sys
 import tempfile
 from os import listdir
 from os.path import join, exists, isdir, abspath, basename
-
 
 from cookiecutter.generate import generate_files
 from cookiecutter.main import prompt_for_config, generate_context
@@ -61,6 +60,10 @@ def get_or_create_context(template_context_path, context_path):
             ask_config = True
 
     if ask_config:
+        # Merge existing values into the new config template, so that the user won't have to fill them in again.
+        for k, v in context['cookiecutter'].items():
+            if k in template_context['cookiecutter']:
+                template_context['cookiecutter'][k] = v
         context = {'cookiecutter': prompt_for_config(template_context)}
 
     return context, ask_config
@@ -172,8 +175,8 @@ def update_template(path, template_path, tmp_dir):
 
     # prompt if necessary
     context, created = get_or_create_context(template_context_path, context_path)
-    if created:
-        dump_context(join(tmp_path, '.cookiecutterrc'), context)
+    # Always dump the used config into .cookiecutterrc so that it stays up to date
+    dump_context(join(tmp_path, '.cookiecutterrc'), context)
 
     generate_files(
         repo_dir=template_path,
@@ -190,7 +193,15 @@ def update_template(path, template_path, tmp_dir):
     if template_vcs:
         commit_msg = "Upgrade template to {}".format(template_version)
 
-    vcs.commit_all(tmp_path, message=commit_msg)
+    try:
+        vcs.commit_all(tmp_path, message=commit_msg)
+    except subprocess.CalledProcessError as e:
+        if e.stdout and e.stdout.startswith(b"On branch template\nYour branch is up-to-date "):
+            print("No changes were found - your project seems to be up-to-date already!")
+            sys.exit(1)
+        else:
+            raise
+
     vcs.push(tmp_path, branch='template')
 
 

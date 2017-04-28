@@ -1,3 +1,5 @@
+import json
+import os
 import sys
 
 import cookiecutter
@@ -33,3 +35,21 @@ if "{{ cookiecutter.include_cms }}" not in valid_cms_key:
 if "{{ cookiecutter.python_version }}" not in ['3.4', '3.5', '3.6']:
     print("Only allowed python version options are 3.4, 3.5 and 3.6.")
     sys.exit(1)
+
+
+def copy_cookiecutter_config(local_filename='.cookiecutterrc'):
+    """ Copy cookiecutter replay for template to project dir, unless it already exists.
+    
+    This creates the initial .cookiecutterrc file when the project is first generated.
+    """
+
+    replay_filename = os.path.expanduser('~/.cookiecutter_replay/django-project-template.json')
+    if not os.path.exists(replay_filename) or os.path.exists(local_filename):
+        # This happens when we're upgrading an existing project
+        return
+
+    with open(replay_filename, 'r') as f_in, open(local_filename, 'w') as f_out:
+        json.dump(json.load(f_in), f_out, indent=4, sort_keys=True)
+
+
+copy_cookiecutter_config()

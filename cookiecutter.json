@@ -15,6 +15,6 @@
     "include_cms": "no",
     "test_host": "test.TODO.com",
     "live_host": "production.TODO.com",
-    "vcs": "none",
+    "vcs": "git",
     "python_version": "3.5"
 }

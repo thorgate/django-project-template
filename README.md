@@ -45,7 +45,7 @@ If not, you can install it from pip: `pip install cookiecutter`.
 
 Then just execute:
 
-    cookiecutter dir/to/django-template/
+    cookiecutter dir/to/django-project-template/
 
 It will ask you a few questions, e.g. project's name.
 
