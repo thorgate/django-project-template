@@ -1,4 +1,4 @@
 {{cookiecutter.repo_name}}/node_modules/
 venv/
 
-.data-*/
+.data*/
