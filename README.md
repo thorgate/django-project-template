@@ -1,6 +1,6 @@
-# Thorgate's Django template
+# Thorgate's Django template (Bootstrap 4 variant)
 
-[![Build status](https://gitlab.com/thorgate-public/django-project-template/badges/master/pipeline.svg)](https://gitlab.com/thorgate-public/django-project-template/commits/master) 
+[![Build status](https://gitlab.com/thorgate-public/django-project-template/badges/bootstrap4/pipeline.svg)](https://gitlab.com/thorgate-public/django-project-template/commits/bootstrap4) 
 
 [Django](https://www.djangoproject.com/) project template that we use at [Thorgate](https://thorgate.eu).
 
