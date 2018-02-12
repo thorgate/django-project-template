@@ -2,9 +2,6 @@
 #	production that isn't in development.
 -r base.txt
 
-gunicorn==19.7.0
+gunicorn==19.7.1
 
-lxml==3.7.2
-python3-memcached==1.51
-
-raven==6.0.0
+raven==6.4.0

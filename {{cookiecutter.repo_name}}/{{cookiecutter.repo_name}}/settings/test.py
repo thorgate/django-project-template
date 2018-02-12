@@ -1,5 +1,6 @@
 from settings.local import *
 
+
 SEND_EMAILS = False
 
 DATABASES = {

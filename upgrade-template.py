@@ -37,7 +37,7 @@ def dump_context(path, context):
         json.dump(context, outfile, sort_keys=True, indent=4)
 
 
-def get_or_create_context(template_context_path, context_path):
+def get_or_create_context(template_context_path, context_path, template_path):
     template_context = generate_context(context_file=template_context_path)
     ask_config = not exists(context_path)
 
@@ -66,6 +66,9 @@ def get_or_create_context(template_context_path, context_path):
                 template_context['cookiecutter'][k] = v
         context = {'cookiecutter': prompt_for_config(template_context)}
 
+    # include template dir or url in the context dict
+    context['cookiecutter']['_template'] = template_path if template_path[-1] == '/' else '{}/'.format(template_path)
+
     return context, ask_config
 
 
@@ -80,6 +83,24 @@ class Git:
         cmd = 'cd {path} && git rev-parse HEAD'.format(path=repo_path)
         return get_stdout_lines(cmd)[0]
 
+    def local_branch(self, repo_path):
+        cmd = 'cd {path} && git rev-parse --abbrev-ref @'.format(path=repo_path)
+        return get_stdout_lines(cmd)[0]
+
+    def get_commit_details(self, commit_id, repo_path):
+        sep = ':|:|:'
+
+        return subprocess.check_output([
+            "git",
+            "--no-pager",
+            "log",
+            "-n",
+            "1",
+            "--oneline",
+            "--format=%H{0}%an <%ae>{0}%cI{0}%s".format(sep),
+            commit_id,
+        ], cwd=repo_path).decode().strip().split(':|:|:')
+
     def has_branch(self, branch):
         return branch in get_stdout_lines('git branch')
 
@@ -92,8 +113,13 @@ class Git:
         get_stdout_lines(cmd)
 
     def commit_all(self, repo_path, message="Template auto-update"):
-        cmd = 'cd {path} && git commit -a -m "{message}"'.format(path=repo_path, message=message)
-        get_stdout_lines(cmd)
+        subprocess.check_output([
+            'git',
+            'commit',
+            '-a',
+            '-m',
+            message,
+        ], cwd=repo_path)
 
     def push(self, repo_path, branch=None):
         cmd = 'cd {path} && git push origin{branch}'.format(
@@ -108,9 +134,24 @@ class Git:
 
 class Mercurial:
     def get_version(self, repo_path):
-        cmd = 'cd {path} && hg id -n && hg id -i'.format(path=repo_path)
-        rev, rev_hash = get_stdout_lines(cmd)[:-1]
-        return '{rev} ({hash})'.format(rev=rev, hash=rev_hash)
+        cmd = 'cd {path} && hg id -i'.format(path=repo_path)
+        return get_stdout_lines(cmd)[0]
+
+    def local_branch(self, repo_path):
+        cmd = 'cd {path} && hg id -b'.format(path=repo_path)
+        return get_stdout_lines(cmd)[0]
+
+    def get_commit_details(self, commit_id, repo_path):
+        sep = ':|:|:'
+
+        return subprocess.check_output([
+            "hg",
+            "log",
+            "--template",
+            "'{{node|short}}{0}{{author}}{0}{{desc|firstline}}\\n'".format(sep),
+            "-r",
+            commit_id,
+        ], cwd=repo_path).decode().strip().split(':|:|:')
 
     def has_branch(self, branch):
         return branch in [x.split()[0] for x in get_stdout_lines('hg branches') if x]
@@ -124,8 +165,12 @@ class Mercurial:
         get_stdout_lines(cmd)
 
     def commit_all(self, repo_path, message="Template auto-update"):
-        cmd = 'cd {path} && hg commit -m "{message}"'.format(path=repo_path, message=message)
-        get_stdout_lines(cmd)
+        subprocess.check_output([
+            'hg',
+            'commit',
+            '-m',
+            message,
+        ], cwd=repo_path)
 
     def push(self, repo_path, branch=None):
         cmd = 'cd {path} && hg push'.format(path=repo_path)
@@ -174,7 +219,7 @@ def update_template(path, template_path, tmp_dir):
     context_path = join(path, '.cookiecutterrc')
 
     # prompt if necessary
-    context, created = get_or_create_context(template_context_path, context_path)
+    context, created = get_or_create_context(template_context_path, context_path, template_path)
     # Always dump the used config into .cookiecutterrc so that it stays up to date
     dump_context(join(tmp_path, '.cookiecutterrc'), context)
 
@@ -191,12 +236,16 @@ def update_template(path, template_path, tmp_dir):
 
     commit_msg = "Upgrade template"
     if template_vcs:
-        commit_msg = "Upgrade template to {}".format(template_version)
+        commit_msg = "Upgrade template to {}\n\nFrom django-project-template `{} {}`".format(
+            template_version,
+            template_vcs.local_branch(template_path),
+            ' '.join(template_vcs.get_commit_details(template_version, template_path)),
+        )
 
     try:
         vcs.commit_all(tmp_path, message=commit_msg)
     except subprocess.CalledProcessError as e:
-        if e.stdout and e.stdout.startswith(b"On branch template\nYour branch is up-to-date "):
+        if e.stdout and (e.stdout.startswith(b"On branch template\nYour branch is up-to-date ") or b"working tree clean" in e.stdout):
             print("No changes were found - your project seems to be up-to-date already!")
             sys.exit(1)
         else:
@@ -207,6 +256,9 @@ def update_template(path, template_path, tmp_dir):
 
 if __name__ == '__main__':
     template_path = os.path.dirname(__file__)
+
+    # until this is resolved: https://github.com/audreyr/cookiecutter/pull/944
+    sys.path.insert(0, os.path.abspath(os.path.join(template_path, "extensions")))
 
     try:
         with tempfile.TemporaryDirectory() as tmp:

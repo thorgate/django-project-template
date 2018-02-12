@@ -1,12 +1,13 @@
 # README for {{cookiecutter.project_title}}
 
+
 TODO: verify that the following info is correct:
 
  - Python:  {{cookiecutter.python_version}}
- - DB:      PostgreSQL
- - Node:    6.10.x
- - NPM:     3.x
- - React:   15.x
+ - DB:      PostgreSQL 10
+ - Node:    8.9.x
+ - NPM:     5.x
+ - React:   16.x
 
 Browser support is defined in the `{{ cookiecutter.repo_name }}/browserslist` file that is used for autoprefixing CSS.
 
@@ -93,7 +94,8 @@ Note that the production configuration lacks PostgreSQL, since it runs on a sepa
 |run StyleLint                      |`make stylelint`                   |`docker-compose run --rm node npm run stylelint`                            |
 |run ESLint                         |`make eslint`                      |`docker-compose run --rm node npm run lint`                                 |
 |run Prospector                     |`make prospector`                  |`docker-compose run --rm django prospector`                                 |
-|run psql                           |`make psql`                        |`docker exec -it --user postgres {{cookiecutter.repo_name}}_postgres_1 psql`|
+|run psql                           |`make psql`                        |`docker-compose exec postgres psql --user {{cookiecutter.repo_name}} --dbname {{cookiecutter.repo_name}}` |
+
 
 ## Running commands on the server
 
@@ -151,13 +153,21 @@ To use them, run those commands in the Django app dir:
     make quality
 
 
+## Django translations
+
+Project contains two commands for updating and compiling translations. Those two are `make makemessages` and `make compilemessages`.
+Howewer if you are adding a new language or are creating translations for the first time after setting up project, you need to run
+different command to create the initial locale files. The command is `add-locale`. After you have used this command once per each
+new language you can safely use `makemessages` and `compilemessages`
+
+
 ## Deploys
 
 ### Python 2 environment
 
 We use Fabric for deploys, which doesn't support Python 3. Thus you need to create a Python 2 virtualenv.
 It needn't be project specific and it's recommended you create one 'standard' Python 2 environment
-which can be used for all projects. You will also need to install django and tg-hammer==0.4, our fabric deployment helper.
+which can be used for all projects. You will also need to install django and tg-hammer==0.6, our fabric deployment helper.
 
 
 ### Server setup
@@ -165,7 +175,7 @@ which can be used for all projects. You will also need to install django and tg-
 Your server needs to have [Docker Engine](https://docs.docker.com/engine/installation/)
 as well as [Docker Compose](https://docs.docker.com/compose/) installed.
 
-We also assume that you have Nginx and Postgres (version 9.5 by default) running in Docker containers and reachable via
+We also assume that you have Nginx and Postgres (version 10 by default) running in Docker containers and reachable via
 'private' network. We also make a few assumptions regards directories that will be used as volumes for static assets,
 media, etc. You can find these paths in `fabfile.py` and `docker-compose.production.yml`.
 
@@ -195,7 +205,7 @@ There are basically two types of deploys:
 * Check `fabfile.py` in Django project dir. It has two tasks (functions) - `test` and `live`.
   Ensure that the one you'll use has correct settings (mostly hostname).
 * Check django settings (`settings/staging.py` and/or `settings/production.py`)
-  and Nginx config (`deploy/nginx/*.conf`) - ensure that they have proper hostnames etc.
+  and Nginx config (`deploy/nginx/*.conf`, `deploy/letsencrypt/*.conf`) - ensure that they have proper hostnames etc.
 * Add the server's SSH key (`/root/.ssh/id_rsa.pub`) to the project repo as deployment key.
 * Ensure you've committed and pushed all relevant changes.
 * Run `fab ENV setup_server` where `ENV` is either `test` or `live`.

@@ -25,6 +25,9 @@ CYAN ?= \033[0;36m
 GRAY ?= \033[0;37m
 COFF ?= \033[0m
 
+# Mark non-file targets as PHONY
+.PHONY: all help docker settings setup pycharm coverage node-install test clean quality eslint prospector stylelint docker-django
+.PHONY: bash docker-manage shell makemigrations migrate docker-logs makemessages compilemessages add-locale psql isort isort-fix
 
 all: help
 
@@ -49,6 +52,8 @@ help:
 	@echo "$(CYAN)make coverage$(COFF) - Runs code test coverage calculation"
 	@echo ""
 	@echo "$(CYAN)make quality$(COFF)  - Runs automatic code quality tests on your code"
+	@echo ""
+	@echo "$(CYAN)make isort-fix$(COFF) - Fix imports automatically with isort"
 	@echo ""
 
 
@@ -77,15 +82,19 @@ $(PROJECT_ROOT)/.idea:
 	@mkdir -p $(PROJECT_ROOT)/.idea && cp -R $(PROJECT_ROOT)/.idea_template/* $(PROJECT_ROOT)/.idea/
 
 
-settings: $(SITE_ROOT)/settings/local.py
+settings: $(SITE_ROOT)/settings/local.py $(SITE_ROOT)/settings/local_test.py
 
 
 $(SITE_ROOT)/settings/local.py:
-	@echo "$(CYAN)Creating Django settings file$(COFF)"
+	@echo "$(CYAN)Creating Django local.py settings file$(COFF)"
 	@cp $(SITE_ROOT)/settings/local.py.example $(SITE_ROOT)/settings/local.py
 	@if [ $(EDIT_SETTINGS) = "yes" ]; then\
 		$(EDITOR) $(SITE_ROOT)/settings/local.py;\
 	fi
+
+$(SITE_ROOT)/settings/local_test.py:
+	@echo "$(CYAN)Creating Django settings local_test.py file$(COFF)"
+	@cp $(SITE_ROOT)/settings/local_test.py.example $(SITE_ROOT)/settings/local_test.py
 
 
 coverage:
@@ -93,6 +102,12 @@ coverage:
 	@docker-compose run --rm django coverage run -m py.test
 	@docker-compose run --rm django coverage html
 	@docker-compose run --rm django coverage report
+# Uncomment the next line to enable node tests in CI
+#	@docker-compose run --rm node npm run test -- --coverage
+
+
+node-install:
+	@docker-compose run --rm node npm install
 
 
 test: clean
@@ -105,7 +120,7 @@ clean:
 	@cd $(SITE_ROOT) && find . -name "*.pyc" -exec rm -rf {} \;
 
 
-quality: stylelint eslint prospector
+quality: stylelint eslint prospector isort
 
 
 eslint:
@@ -121,6 +136,16 @@ prospector:
 stylelint:
 	@echo "$(CYAN)Running StyleLint$(COFF)"
 	@docker-compose run --rm node npm run stylelint
+
+
+isort:
+	@echo "$(CYAN)Checking imports with isort$(COFF)"
+	docker-compose run --rm django isort --recursive --check-only -p . --diff
+
+
+isort-fix:
+	@echo "$(CYAN)Fixing imports with isort$(COFF)"
+	docker-compose run --rm django isort --recursive -p .
 
 
 docker-django:
@@ -158,6 +183,18 @@ makemessages:
 
 compilemessages:
 	docker-compose run --rm django ./manage.py compilemessages
+
+
+add-locale: $(SITE_ROOT)/locale
+ifdef LOCALE
+	@echo "Adding new locale $(LOCALE)"
+	docker-compose run --rm django ./manage.py makemessages -l $(LOCALE)
+	docker-compose run --rm django ./manage.py makemessages -d djangojs -i node_modules -l $(LOCALE)
+	@echo "$(YELLOW)Also change the the ownership of the locale files to the current user:$(COFF)"
+	@echo '    - sudo chown -R $$USER: locale/ $(SITE_ROOT)/locale/'
+else
+	@echo "$(RED)Please specify the locale you would like to add via LOCALE (e.g. make add-locale LOCALE='et')$(COFF)"
+endif
 
 
 psql:

@@ -1,2 +1,8 @@
-.idea
+.idea/
 npm-debug.log
+.tox
+*.mo
+*.pyo
+*.pyc
+.cache
+venv/

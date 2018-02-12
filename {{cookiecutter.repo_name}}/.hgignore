@@ -15,6 +15,7 @@ venv/
 .data-*/
 
 {{cookiecutter.repo_name}}/settings/local.py
+{{cookiecutter.repo_name}}/settings/local_test.py
 {{cookiecutter.repo_name}}/db.sqlite3
 {{cookiecutter.repo_name}}/app/webpack-stats.json
 {{cookiecutter.repo_name}}/app/build/

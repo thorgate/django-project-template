@@ -20,6 +20,6 @@ add_header X-XSS-Protection "1; mode=block";
 
 # Letsencrypt acme verification
 location /.well-known/acme-challenge/ {
-    root /var/www/letsencrypt;
+    root /etc/letsencrypt/www;
     break;
 }

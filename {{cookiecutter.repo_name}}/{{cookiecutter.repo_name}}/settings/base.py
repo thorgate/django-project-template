@@ -10,6 +10,7 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 
 import os
 
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/dev/howto/deployment/checklist/
 
@@ -63,7 +64,7 @@ INSTALLED_APPS = [
 ]
 
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     {%- if cookiecutter.include_cms == 'yes' %}
     'cms.middleware.utils.ApphookReloadMiddleware',
     {%- endif %}
@@ -134,11 +135,39 @@ DATABASES = {
 }
 
 
+# Redis config (used for caching{% if cookiecutter.include_celery == 'yes' %} and celery{% endif %})
+REDIS_HOST = 'redis'
+REDIS_PORT = 6379
+REDIS_DB = 1
+REDIS_URL = 'redis://%s:%d/%d' % (REDIS_HOST, REDIS_PORT, REDIS_DB)
+{%- if cookiecutter.include_celery == 'yes' %}
+
+
+# Celery configuration
+CELERY_RESULT_BACKEND = REDIS_URL
+CELERY_REDIS_CONNECT_RETRY = True
+CELERYD_HIJACK_ROOT_LOGGER = False
+BROKER_URL = REDIS_URL
+BROKER_TRANSPORT_OPTIONS = {'fanout_prefix': True}
+
+CELERY_TIMEZONE = 'UTC'
+
+# Set your Celerybeat tasks/schedule here
+CELERYBEAT_SCHEDULE = {
+    'default-task': {
+        # TODO: Remove the default task after confirming that Celery works.
+        'task': '{{cookiecutter.repo_name}}.tasks.default_task',
+        'schedule': 5,
+    },
+}
+{%- endif %}
+
+
 # Caching
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://redis:6379/1",
+        "LOCATION": REDIS_URL,
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
@@ -205,6 +234,7 @@ WSGI_APPLICATION = '{{cookiecutter.repo_name}}.wsgi.application'
 
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = 'login'
+LOGOUT_REDIRECT_URL = 'login'
 
 
 # Crispy-forms
@@ -212,8 +242,13 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 
 # Email config
+{%- if cookiecutter.live_hostname == 'none' %}
 DEFAULT_FROM_EMAIL = "{{cookiecutter.project_title}} <info@TODO.com>"
 SERVER_EMAIL = "{{cookiecutter.project_title}} server <server@TODO.com>"
+{%- else %}
+DEFAULT_FROM_EMAIL = "{{cookiecutter.project_title}} <info@{{ cookiecutter.live_hostname }}>"
+SERVER_EMAIL = "{{cookiecutter.project_title}} server <server@{{ cookiecutter.live_hostname }}>"
+{%- endif %}
 
 # Show emails in the console, but don't send them.
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -221,7 +256,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # SMTP  --> This is only used in staging and production
 EMAIL_HOST = 'smtp.sparkpostmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'info@TODO.com'
+EMAIL_HOST_USER = 'SMTP_Injection'
 
 
 # Base logging config. Logs INFO and higher-level messages to console. Production-specific additions are in
@@ -230,7 +265,7 @@ EMAIL_HOST_USER = 'info@TODO.com'
 #  only have to configure the root handler.
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': True,
+    'disable_existing_loggers': False,
     'formatters': {
         'default': {
             'format': '%(asctime)s [%(levelname)s] %(name)s:%(lineno)d %(funcName)s - %(message)s'

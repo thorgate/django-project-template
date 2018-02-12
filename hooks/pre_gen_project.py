@@ -1,18 +1,56 @@
 import json
 import os
+import subprocess
 import sys
 
 import cookiecutter
 
+from cookiecutter.prompt import read_user_yes_no
+
+from fqdn import FQDN
+
 
 # Ensure cookiecutter is recent enough
-cookiecutter_min_version = '1.5.0'
+cookiecutter_min_version = '1.6.0'
 if cookiecutter.__version__ < cookiecutter_min_version:
     print("--------------------------------------------------------------")
     print("!! Your cookiecutter is too old, at least %s is required !!" % cookiecutter_min_version)
     print("--------------------------------------------------------------")
     sys.exit(1)
 
+# Fetch latest updates from remote repository
+if os.environ.get('CI_SERVER') != 'yes':
+    template_dir = '{{ cookiecutter._template }}'
+    print('Template dir:', template_dir)
+    print('Checking for latest template version via git')
+    subprocess.call(["git", "fetch"], cwd=template_dir)
+    print('')
+
+    # Warn user if the version of the template that's being used is not the latest available
+    local_sha = subprocess.check_output(["git", "rev-parse", "@"], cwd=template_dir).decode().strip()
+    local_branch = subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "@"], cwd=template_dir).decode().strip()
+    if local_branch == 'HEAD':
+        remote_branch = 'master'  # default to master
+    else:
+        remote_branch = local_branch
+
+    try:
+        remote_sha = subprocess.check_output(["git", "rev-parse", "origin/{}".format(remote_branch)], cwd=template_dir).decode().strip()
+
+    except subprocess.CalledProcessError:
+        # The branch is probably not pushed
+        remote_sha = None
+
+    # Print out the template version info
+    print('local commit: {}; branch: {}'.format(local_sha, local_branch))
+    print('remote commit: {}; branch: {}'.format(remote_sha, remote_branch))
+    print()
+
+    if local_sha != remote_sha:
+        if not read_user_yes_no('The template version you are using is not the latest available, are you sure you want to continue?',
+                                default_value='yes'):
+            print("Bye!")
+            sys.exit(1)
 
 # Ensure the selected repo name is usable
 repo_name = '{{ cookiecutter.repo_name }}'
@@ -32,9 +70,37 @@ if "{{ cookiecutter.include_cms }}" not in valid_cms_key:
     print("Valid include CMS keys are: %s" % ', '.join(valid_cms_key))
     sys.exit(1)
 
+valid_celery_key = ['yes', 'no']
+if "{{ cookiecutter.include_celery }}" not in valid_celery_key:
+    print("Include CMS '{{ cookiecutter.include_celery }}' is not valid!")
+    print("Valid include Celery keys are: %s" % ', '.join(valid_celery_key))
+    sys.exit(1)
+
 if "{{ cookiecutter.python_version }}" not in ['3.4', '3.5', '3.6']:
     print("Only allowed python version options are 3.4, 3.5 and 3.6.")
     sys.exit(1)
+
+if not FQDN("{{ cookiecutter.test_host }}").is_valid:
+    print("Test host is not a valid domain name")
+    sys.exit(1)
+
+if not FQDN("{{ cookiecutter.live_host }}").is_valid:
+    print("Live host is not a valid domain name")
+    sys.exit(1)
+
+if not FQDN("{{ cookiecutter.repo_name|as_hostname }}.{{ cookiecutter.test_host }}").is_valid:
+    print("Test hostname is not a valid domain name")
+    sys.exit(1)
+
+live_hostname = "{{ cookiecutter.live_hostname }}"
+if live_hostname != 'none':
+    if live_hostname != live_hostname.lower():
+        print("Live hostname should be lowercase")
+        sys.exit(1)
+
+    if not FQDN(live_hostname).is_valid:
+        print("Live hostname is not a valid domain name")
+        sys.exit(1)
 
 
 def copy_cookiecutter_config(local_filename='.cookiecutterrc'):

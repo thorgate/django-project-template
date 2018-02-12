@@ -1,5 +1,6 @@
 from django import forms
-from django.contrib.auth import forms as auth_forms, get_user_model
+from django.contrib.auth import forms as auth_forms
+from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_bytes
@@ -7,7 +8,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import ugettext_lazy as _
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout, Field
+from crispy_forms.layout import Field, Layout, Submit
 
 from accounts.emails import send_password_reset
 from accounts.models import User
@@ -36,6 +37,7 @@ class PasswordResetForm(auth_forms.PasswordResetForm):
         Submit('submit', _('Reset my password'))
     )
 
+    # pylint: disable=arguments-differ
     def save(self, *args, **kwargs):
         """
         Generates a one-use only link for resetting password and sends to the

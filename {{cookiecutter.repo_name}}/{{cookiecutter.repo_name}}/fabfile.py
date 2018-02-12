@@ -6,9 +6,11 @@ Use `fab --list` to see available targets and actions.
 """
 
 import ConfigParser
-from StringIO import StringIO
 import string
 import os
+
+from StringIO import StringIO
+from distutils.version import LooseVersion
 
 from fabric import colors
 from fabric.api import *
@@ -20,9 +22,10 @@ from django.utils.crypto import get_random_string
 from hammer import __version__ as hammer_version
 
 # Ensure that we have expected version of the tg-hammer package installed
-assert hammer_version.startswith('0.5.'), "tg-hammer 0.5.x is required"
+assert LooseVersion(hammer_version) >= LooseVersion('0.6'), "tg-hammer 0.6.x is required"
 
 from hammer.vcs import Vcs
+from hammer.docker_network import create_docker_network
 
 
 vcs = Vcs.init(project_root=os.path.dirname(os.path.dirname(__file__)), use_sudo=True)
@@ -83,18 +86,18 @@ def defaults():
             {
                 "pattern": "common.include",
                 "filename": "app.{{cookiecutter.repo_name}}.include",
-                "remote_path": "/var/lib/docker-nginx/config/conf.d/%(filename)s"
+                "remote_path": "/etc/nginx/conf.d/%(filename)s"
             },
             {
                 "pattern": "%(target)s.ssl",
                 "filename": "ssl.{{cookiecutter.repo_name}}.include",
-                "remote_path": "/var/lib/docker-nginx/config/conf.d/%(filename)s"
+                "remote_path": "/etc/nginx/conf.d/%(filename)s"
             },
             {
                 "default_site": True,
                 "pattern": "%(target)s.conf",
                 "filename": "{{cookiecutter.repo_name}}",
-                "remote_path": "/var/lib/docker-nginx/config/sites-enabled/%(filename)s"
+                "remote_path": "/etc/nginx/sites-enabled/%(filename)s"
             }
         ]
     }
@@ -114,7 +117,11 @@ def live():
     """ TARGET: live server (production)
     """
 
+    {%- if cookiecutter.live_hostname == 'none' %}
+
     raise NotImplemented('TODO: live host not configured')
+    {%- else %}
+    {% endif %}
     defaults()
     env.target = 'production'
     env.hosts = ['{{cookiecutter.live_host}}']
@@ -267,26 +274,29 @@ def deploy(id=None, silent=False, force=False, auto_nginx=True):
 
     vcs.update(id)
 
+    ensure_docker_networks()
     docker_compose('build')
 
-    if migrations or requirements_changes:
-        migrate(silent=True)
+    collectstatic(npm_build=app_changed)
+
     if crontab_changed:
         with cd(env.code_dir):
             sudo('cp deploy/crontab.conf /etc/cron.d/{{cookiecutter.repo_name}}')
 
-    if force or (nginx_changed and auto_nginx):
-        nginx_update()
-
-    if force or letsencrypt_changed:
-        letsencrypt_update()
-
-    collectstatic(npm_build=app_changed)
+    if migrations or requirements_changes:
+        migrate(silent=True)
 
     # Run deploy systemchecks
     check()
 
     docker_up(silent=True)
+
+    # Update nginx after bringing up container
+    if force or (nginx_changed and auto_nginx):
+        nginx_update()
+
+    if force or letsencrypt_changed:
+        letsencrypt_update()
 
 
 @task
@@ -307,7 +317,7 @@ def setup_server(id=None):
     sudo('echo "CREATE DATABASE {{cookiecutter.repo_name}}; '
          '      CREATE USER {{cookiecutter.repo_name}} WITH password \'{db_password}\'; '
          '      GRANT ALL PRIVILEGES ON DATABASE {{cookiecutter.repo_name}} to {{cookiecutter.repo_name}};" '
-         '| docker exec -i postgres-9.5 psql -U postgres'.format(db_password=db_password))
+         '| docker exec -i postgres-10 psql -U postgres'.format(db_password=db_password))
 
     # Upload local settings
     put(local_path=StringIO(local_settings), remote_path=env.code_dir + '/{{cookiecutter.repo_name}}/settings/local.py', use_sudo=True)
@@ -318,6 +328,8 @@ def setup_server(id=None):
     # webpack-stats.json must exist before the Django container is run. Otherwise docker-compose assumes it to be a
     #  directory (because it's a volume).
     sudo('touch %s/{{cookiecutter.repo_name}}/app/webpack-stats.json' % env.code_dir)
+
+    ensure_docker_networks()
 
     docker_compose('build')
 
@@ -458,10 +470,17 @@ def docker_up(silent=False):
     if not silent:
         request_confirm("docker_up")
 
-    docker_compose('up -d')
+    docker_compose('up -d --remove-orphans')
 
     # This is necessary to make nginx refresh IP addresses of containers.
     sudo('docker exec nginx nginx -s reload')
+
+
+@task
+def docker_restart(silent=False):
+    # Stops and then starts all services
+    docker_down(silent=silent)
+    docker_up(silent=silent)
 
 
 @task
@@ -594,3 +613,20 @@ def get_nginx_app_target_path():
         abort('multiple default nginx sites found')
 
     return render_config_key(default_site[0], 'remote_path')
+
+def ensure_docker_networks():
+    # Ensure we have dedicated networks for communicating with Nginx and Postgres
+    ensure_docker_network_exists('{{ cookiecutter.repo_name }}_default', [], internal=False)
+    ensure_docker_network_exists('{{ cookiecutter.repo_name }}_nginx', ['nginx'])
+    ensure_docker_network_exists('{{ cookiecutter.repo_name }}_postgres', ['postgres-10'])
+
+
+def ensure_docker_network_exists(network_name, connected_containers, internal=True):
+    created = create_docker_network(network_name, internal=internal)
+
+    if not created:
+        # Already existed
+        return
+
+    for container_name in connected_containers:
+        sudo('docker network connect %s %s' % (network_name, container_name))

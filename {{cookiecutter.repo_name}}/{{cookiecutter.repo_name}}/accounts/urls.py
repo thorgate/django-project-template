@@ -1,20 +1,28 @@
 from django.conf.urls import url
-from django.contrib.auth.views import logout_then_login, password_reset, password_reset_done, password_reset_confirm, \
-    password_reset_complete
+from django.contrib.auth import views
 
-from accounts.forms import PasswordResetForm, SetPasswordForm
-from accounts.views import login
+from accounts.forms import LoginForm, PasswordResetForm, SetPasswordForm
 
 
 urlpatterns = [
-    url(r'^login/$', login, name='login'),
-    url(r'^logout/$', logout_then_login, name='logout'),
+    url(
+        r'^login/$',
+        views.LoginView.as_view(template_name='accounts/login.html', authentication_form=LoginForm),
+        name='login',
+    ),
+    url(r'^logout/$', views.LogoutView.as_view(), name='logout'),
 
     # Password reset
-    url(r'^account/password_reset/$', password_reset, name='password_reset',
-        kwargs={'password_reset_form': PasswordResetForm}),
-    url(r'^account/password_reset/done/$', password_reset_done, name='password_reset_done',),
-    url(r'^account/reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
-        password_reset_confirm, name='password_reset_confirm', kwargs={'set_password_form': SetPasswordForm}),
-    url(r'^account/reset/done/$', password_reset_complete, name='password_reset_complete'),
+    url(
+        r'^account/password_reset/$',
+        views.PasswordResetView.as_view(form_class=PasswordResetForm),
+        name='password_reset',
+    ),
+    url(r'^account/password_reset/done/$', views.PasswordResetDoneView.as_view(), name='password_reset_done',),
+    url(
+        r'^account/reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
+        views.PasswordResetConfirmView.as_view(form_class=SetPasswordForm),
+        name='password_reset_confirm',
+    ),
+    url(r'^account/reset/done/$', views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
 ]

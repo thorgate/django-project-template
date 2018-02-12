@@ -1,7 +1,13 @@
-cookiecutter==1.5.0
-flake8==2.5.4
+cookiecutter==1.6.0
+
+# Validation of hostnames
+fqdn==1.1.0
+
+# until this is resolved: https://github.com/audreyr/cookiecutter/pull/944
+cookiecutter_repo_extensions==0.2.1
 
 # Testing requirements
+flake8==2.5.4
 pytest==2.9.1
 pytest-cookies==0.2.0
 tox==2.3.1

@@ -1,0 +1,32 @@
+# Official docker image.
+image: docker:latest
+
+services:
+  - docker:dind
+
+variables:
+  POSTGRES_USER: {{ cookiecutter.repo_name }}
+  POSTGRES_PASSWORD: {{ cookiecutter.repo_name }}
+  DOCKER_DRIVER: overlay
+
+before_script:
+  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  - apk update
+  - apk upgrade
+  - apk add python3 python3-dev build-base
+  - pip3 install docker-compose
+
+stages:
+  - test
+
+test:
+  stage: test
+  coverage: '^TOTAL.*\s+(\d+\%)$'
+  except:
+    - template  # Don't run CI on template branch, should not be required
+  script:
+    - EDIT_SETTINGS=no make settings
+    - docker-compose build
+    - make node-install
+    - make quality
+    - make coverage

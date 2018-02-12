@@ -2,5 +2,10 @@
 add_header Strict-Transport-Security "max-age=63072000; includeSubDomains";
 
 # SSL Certs are obtained via letsencrypt
-ssl_certificate             /etc/letsencrypt/live/{{cookiecutter.repo_name}}.{{cookiecutter.live_host}}/fullchain.pem;
-ssl_certificate_key         /etc/letsencrypt/live/{{cookiecutter.repo_name}}.{{cookiecutter.live_host}}/privkey.pem;
+{%- if cookiecutter.live_hostname == 'none' %}
+ssl_certificate             /etc/letsencrypt/live/# TODO example.com/fullchain.pem;
+ssl_certificate_key         /etc/letsencrypt/live/# TODO example.com/privkey.pem;
+{%- else %}
+ssl_certificate             /etc/letsencrypt/live/{{ cookiecutter.live_hostname }}/fullchain.pem;
+ssl_certificate_key         /etc/letsencrypt/live/{{ cookiecutter.live_hostname }}/privkey.pem;
+{%- endif %}

@@ -80,6 +80,9 @@ function makeConfig(options) {
                 indent: 2,
                 logTime: true,
             }),
+            new webpack.DefinePlugin({
+                'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV), // Inject environmental variables to client side
+            }),
         ].concat(options.plugins),
 
         resolve: {

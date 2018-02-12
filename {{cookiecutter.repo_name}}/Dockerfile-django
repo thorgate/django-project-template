@@ -1,6 +1,6 @@
 # Development Dockerfile for Django app
 
-FROM python:3.5.2-slim
+FROM python:{% if cookiecutter.python_version == '3.6' %}3.6.4{% else %}{{ cookiecutter.python_version }}{% endif %}-slim
 
 # Install system requirements
 RUN apt-get update && \
