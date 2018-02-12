@@ -4,7 +4,7 @@
 
 Best suited for medium-sized and bigger apps that use JavaScript and React for frontend.
 
-This is the legacy variant that does not use Docker.
+**NB:** this is the **unmaintained** legacy variant that does not use Docker. See the master branch for the up-to-date variant that uses Docker.
 
 
 ## Features
