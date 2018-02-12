@@ -1,4 +1,5 @@
 import logging
+
 from django.conf import settings
 from django.urls import reverse
 from django.utils.translation import ugettext as _

@@ -1,9 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Raven from 'raven-js';
+import {Provider} from 'react-redux';
 
 import HelloWorld from 'components/HelloWorld';
 
+import rootReducer from './reducers';
+import configureStore from './store';
 
 // Install Raven in production envs
 if (process.env.NODE_ENV === 'production') {
@@ -22,6 +25,8 @@ if (process.env.NODE_ENV === 'production') {
     }
 }
 
+// Create Redux store
+const store = configureStore(rootReducer);
 
 function init() {
     const elem = document.getElementById("hello-container");
@@ -29,7 +34,12 @@ function init() {
         return;
     }
 
-    ReactDOM.render(<HelloWorld />, elem);
+    ReactDOM.render(
+        <Provider store={store}>
+            <HelloWorld />
+        </Provider>,
+        elem,
+    );
 }
 
 

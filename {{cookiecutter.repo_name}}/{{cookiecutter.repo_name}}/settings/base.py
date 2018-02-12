@@ -10,6 +10,7 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 
 import os
 
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/dev/howto/deployment/checklist/
 
@@ -31,7 +32,8 @@ SESSION_COOKIE_NAME = '{{ cookiecutter.repo_name }}_ssid'
 INSTALLED_APPS = [
     'accounts',
     '{{cookiecutter.repo_name}}',
-    {% if cookiecutter.include_cms == 'yes' %}
+{%- if cookiecutter.include_cms == 'yes' %}
+
     'cms',
     'treebeard',
     'menus',
@@ -41,21 +43,22 @@ INSTALLED_APPS = [
     'easy_thumbnails',
     'filer',
     'mptt',
-
     'djangocms_file',
     'djangocms_link',
     'djangocms_picture',
     'djangocms_text_ckeditor',
-    {% endif %}
+{%- endif %}
+
     'crispy_forms',
     'webpack_loader',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    {%- if cookiecutter.include_cms == 'yes' %}
+{%- if cookiecutter.include_cms == 'yes' %}
     'django.contrib.sites',
-    {%- endif %}
+{%- endif %}
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
@@ -123,17 +126,51 @@ CMS_TEMPLATES = (
 # Database
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(SITE_ROOT, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'HOST': 'postgres',
+        'NAME': '{{cookiecutter.repo_name}}',
+        'USER': '{{cookiecutter.repo_name}}',
+        'PASSWORD': '{{cookiecutter.repo_name}}',
     }
 }
 
 
+# Redis config (used for caching{% if cookiecutter.include_celery == 'yes' %} and celery{% endif %})
+REDIS_HOST = 'redis'
+REDIS_PORT = 6379
+REDIS_DB = 1
+REDIS_URL = 'redis://%s:%d/%d' % (REDIS_HOST, REDIS_PORT, REDIS_DB)
+{%- if cookiecutter.include_celery == 'yes' %}
+
+
+# Celery configuration
+CELERY_RESULT_BACKEND = REDIS_URL
+CELERY_REDIS_CONNECT_RETRY = True
+CELERYD_HIJACK_ROOT_LOGGER = False
+BROKER_URL = REDIS_URL
+BROKER_TRANSPORT_OPTIONS = {'fanout_prefix': True}
+
+CELERY_TIMEZONE = 'UTC'
+
+# Set your Celerybeat tasks/schedule here
+CELERYBEAT_SCHEDULE = {
+    'default-task': {
+        # TODO: Remove the default task after confirming that Celery works.
+        'task': '{{cookiecutter.repo_name}}.tasks.default_task',
+        'schedule': 5,
+    },
+}
+{%- endif %}
+
+
 # Caching
 CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'KEY_PREFIX': '{{cookiecutter.repo_name}}',
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": REDIS_URL,
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
     }
 }
 
@@ -155,10 +192,10 @@ USE_TZ = True
 
 
 # Static files and media (CSS, JavaScript, images)
-MEDIA_ROOT = os.path.join(SITE_ROOT, 'media')
+MEDIA_ROOT = '/files/media'
 MEDIA_URL = '/media/'
 
-STATIC_ROOT = os.path.join(SITE_ROOT, 'assets')
+STATIC_ROOT = '/files/assets'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(SITE_ROOT, 'static'),
@@ -205,8 +242,13 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 
 # Email config
+{%- if cookiecutter.live_hostname == 'none' %}
 DEFAULT_FROM_EMAIL = "{{cookiecutter.project_title}} <info@TODO.com>"
 SERVER_EMAIL = "{{cookiecutter.project_title}} server <server@TODO.com>"
+{%- else %}
+DEFAULT_FROM_EMAIL = "{{cookiecutter.project_title}} <info@{{ cookiecutter.live_hostname }}>"
+SERVER_EMAIL = "{{cookiecutter.project_title}} server <server@{{ cookiecutter.live_hostname }}>"
+{%- endif %}
 
 # Show emails in the console, but don't send them.
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

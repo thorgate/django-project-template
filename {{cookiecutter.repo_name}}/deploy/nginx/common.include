@@ -1,0 +1,25 @@
+# configure logging
+access_log /var/log/nginx/{{cookiecutter.repo_name}}.access.log extended;
+error_log /var/log/nginx/{{cookiecutter.repo_name}}.error.log;
+
+# Don't send the nginx version number in error pages and server header
+server_tokens off;
+
+# Don't allow the browser to render the page inside an frame or iframe
+add_header X-Frame-Options DENY;
+
+# Disable content-type sniffing on some browsers.
+#
+# https://www.owasp.org/index.php/List_of_useful_HTTP_headers#X-Content-Type-Options
+add_header X-Content-Type-Options nosniff;
+
+# Force enable Cross-site scripting (XSS) filter built into most recent web browsers.
+#
+# https://www.owasp.org/index.php/List_of_useful_HTTP_headers#X-XSS-Protection
+add_header X-XSS-Protection "1; mode=block";
+
+# Letsencrypt acme verification
+location /.well-known/acme-challenge/ {
+    root /etc/letsencrypt/www;
+    break;
+}

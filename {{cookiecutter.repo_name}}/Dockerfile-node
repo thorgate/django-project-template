@@ -1,0 +1,8 @@
+# Based on Node 8.9.2 LTS image
+FROM node:8.9.2
+
+# Set the default directory where CMD will execute
+WORKDIR /app
+
+# Set the default command to execute when creating a new container
+CMD /bin/bash -c "npm install && npm run dev"

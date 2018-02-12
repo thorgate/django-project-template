@@ -1,5 +1,5 @@
-from django.http import HttpResponseNotFound, JsonResponse, HttpResponseServerError
-from django.template import TemplateDoesNotExist, Engine, Context, loader
+from django.http import HttpResponseNotFound, HttpResponseServerError, JsonResponse
+from django.template import Context, Engine, loader, TemplateDoesNotExist
 from django.utils.translation import gettext as _
 from django.views.decorators.csrf import requires_csrf_token
 

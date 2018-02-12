@@ -3,23 +3,16 @@ from settings.base import *
 
 DEBUG = False
 
-ALLOWED_HOSTS = ['TODO.com']
+ALLOWED_HOSTS = ['{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}']
 
 # Static site url, used when we need absolute url but lack request object, e.g. in email sending.
-SITE_URL = 'http://TODO.com'
+SITE_URL = 'https://{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}'
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 EMAIL_HOST_PASSWORD = 'TODO (api key)'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 STATIC_URL = '/assets/'
-
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1:11211',
-        'KEY_PREFIX': '{{cookiecutter.repo_name}}',
-    }
-}
 
 # Production logging - all INFO and higher messages go to info.log file. ERROR and higher messages additionally go to
 #  error.log file plus to Sentry.

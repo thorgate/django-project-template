@@ -1,3 +1,4 @@
+import os
 import subprocess
 
 from cookiecutter.config import USER_CONFIG_PATH
@@ -25,16 +26,31 @@ def validate_project_works(result, config):
     project_dir = str(result.project)
     project_inner_dir = str(result.project.join(config['repo_name']))
 
-    assert subprocess.check_call(['pip', 'install', '-r' 'requirements/local.txt'], cwd=project_dir) == 0
-    assert subprocess.check_call(['cp', 'settings/local.py.example', 'settings/local.py'], cwd=project_inner_dir) == 0
-    assert subprocess.check_call(['python', 'manage.py', 'migrate'], cwd=project_inner_dir) == 0
-    assert subprocess.check_call(['npm', 'install', '--python=python2.7'], cwd=project_inner_dir) == 0
+    # Keep these in sync w/ test commands inside {{cookiecutter.repo_name}}/.gitlab-ci.yml (under tests.script)
+    # As an alternative we could also parse the file and retrieve the commands dynamically.
+    commands = [
+        'make settings',
+        'docker-compose build',
+        'make node-install',
+        'make quality',
+        'make coverage',
+    ]
 
-    # Run python tests
-    assert subprocess.check_call(['py.test'], cwd=project_inner_dir) == 0
+    env = os.environ.copy()
+    env.update({
+        'EDIT_SETTINGS': 'no',
 
-    # TODO: Assert coverage changes etc
-    # TODO: Run js tests
+        # PWD call in Makefile reports wrong path during testing
+        'PROJECT_ROOT': project_dir,
+        'SITE_ROOT': project_inner_dir,
+    })
+
+    for cmd in commands:
+        assert subprocess.check_call(
+            cmd.split(' '),
+            cwd=project_dir,
+            env=env,
+        ) == 0
 
 
 def test_base_generate(cookies, default_project):
@@ -58,6 +74,37 @@ def test_cms_generate(cookies, default_project):
     validate_project_works(result, default_project)
 
 
+def test_celery_generate(cookies, default_project):
+    default_project.update({
+        'include_celery': 'yes',
+    })
+    result = generate_project(cookies, default_project)
+
+    assert result.project.join('docker-compose.yml').exists()
+    with open(result.project.join('docker-compose.yml')) as f:
+        contents = f.read()
+    assert 'celery:' in contents
+
+    validate_project_works(result, default_project)
+
+
+def test_celery_and_cms_generate(cookies, default_project):
+    default_project.update({
+        'include_cms': 'yes',
+        'include_celery': 'yes',
+    })
+    result = generate_project(cookies, default_project)
+
+    assert result.project.join('%s/templates/cms_main.html' % (default_project['repo_name'],)).exists()
+
+    assert result.project.join('docker-compose.yml').exists()
+    with open(result.project.join('docker-compose.yml')) as f:
+        contents = f.read()
+    assert 'celery:' in contents
+
+    validate_project_works(result, default_project)
+
+
 def test_git_generate(cookies, default_project):
     default_project.update({
         'vcs': 'git',
@@ -69,19 +116,53 @@ def test_git_generate(cookies, default_project):
     assert not result.project.join('.hgignore').exists()
 
 
-def test_hg_generate(cookies, default_project):
-    default_project.update({
-        'vcs': 'hg',
-    })
-    result = generate_project(cookies, default_project)
-
-    assert result.project.join('.hgignore').exists()
-    assert not result.project.join('.gitignore').exists()
-
-
 def test_invalid_project_name_is_error(cookies, default_project):
     default_project.update({
         'repo_name': '%^&%'
+    })
+
+    result = cookies.bake(extra_context=default_project)
+
+    assert result.exit_code == -1
+    assert isinstance(result.exception, FailedHookException)
+
+
+def test_invalid_test_host_is_error(cookies, default_project):
+    default_project.update({
+        'test_host': '-foo.com',
+    })
+
+    result = cookies.bake(extra_context=default_project)
+
+    assert result.exit_code == -1
+    assert isinstance(result.exception, FailedHookException)
+
+
+def test_invalid_live_host_is_error(cookies, default_project):
+    default_project.update({
+        'live_host': '-foo.com',
+    })
+
+    result = cookies.bake(extra_context=default_project)
+
+    assert result.exit_code == -1
+    assert isinstance(result.exception, FailedHookException)
+
+
+def test_invalid_test_hostname_is_error(cookies, default_project):
+    default_project.update({
+        'repo_name': '_foo',  # translated to `-foo.{{ test_host }}` for the hostname
+    })
+
+    result = cookies.bake(extra_context=default_project)
+
+    assert result.exit_code == -1
+    assert isinstance(result.exception, FailedHookException)
+
+
+def test_invalid_live_hostname_is_error(cookies, default_project):
+    default_project.update({
+        'live_hostname': '-foo.com',
     })
 
     result = cookies.bake(extra_context=default_project)

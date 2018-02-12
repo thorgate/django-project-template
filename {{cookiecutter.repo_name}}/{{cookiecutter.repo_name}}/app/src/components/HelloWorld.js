@@ -1,18 +1,35 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import {connect} from 'react-redux';
 
+import {createTitle} from '../ducks/title';
 
-function HelloWorld({title}) {
-    return (
-        <strong>{title}</strong>
-    );
+class HelloWorld extends React.Component {
+    static propTypes = {
+        title: PropTypes.string.isRequired,
+        createTitle: PropTypes.func.isRequired,
+    };
+
+    componentDidMount() {
+        this.props.createTitle('Hello world from Redux!');
+    }
+
+    render() {
+        return (
+            <h1>{this.props.title}</h1>
+        );
+    }
 }
 
-HelloWorld.propTypes = {
-    title: React.PropTypes.string,
-};
+const mapStateToProps = state => ({
+    title: state.title.title,
+});
 
-HelloWorld.defaultProps = {
-    title: 'Hello world!',
-};
+const mapDispatchToProps = dispatch => ({
+    createTitle: title => dispatch(createTitle(title)),
+});
 
-export default HelloWorld;
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps,
+)(HelloWorld);

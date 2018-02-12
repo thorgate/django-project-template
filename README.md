@@ -1,10 +1,10 @@
-# Thorgate's Django template (legacy variant)
+# Thorgate's Django template
+
+[![Build status](https://gitlab.com/thorgate-public/django-project-template/badges/master/pipeline.svg)](https://gitlab.com/thorgate-public/django-project-template/commits/master) 
 
 [Django](https://www.djangoproject.com/) project template that we use at [Thorgate](https://thorgate.eu).
 
 Best suited for medium-sized and bigger apps that use JavaScript and React for frontend.
-
-This is the legacy variant that does not use Docker.
 
 
 ## Features
@@ -19,13 +19,14 @@ This is the legacy variant that does not use Docker.
 
     - Latest JavaScript features from [ES2015](https://babeljs.io/docs/learn-es2015/) and beyond, transpiled with
       [Babel](https://babeljs.io/)
-    - [React](https://facebook.github.io/react/) 15.4 for fast modular user interfaces
+    - [React](https://facebook.github.io/react/) 16 for fast modular user interfaces
     - [Sass](http://sass-lang.com/), [PostCSS](http://postcss.org/) and
       [Autoprefixer](https://github.com/postcss/autoprefixer) for more convenient styling
     - [Webpack](https://webpack.github.io/) 2.3 is used to bundle and minify JavaScript and styles
 
 - Batteries
 
+    - Docker / Docker Compose integration
     - Linting of Python, JavaScript and Sass code with [Prospector](http://prospector.landscape.io/),
       [ESLint](http://eslint.org/) and [stylelint](https://stylelint.io/)
     - [py.test](http://pytest.org/) and [coverage](https://coverage.readthedocs.io/) integration

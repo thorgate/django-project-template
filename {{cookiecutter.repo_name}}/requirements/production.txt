@@ -4,7 +4,4 @@
 
 gunicorn==19.7.1
 
-lxml==3.8.0
-python3-memcached==1.58
-
-raven==6.3.0
+raven==6.4.0

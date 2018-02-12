@@ -1,9 +1,28 @@
-Django==1.11.7
+{% if cookiecutter.include_celery == 'yes' -%}
+celery[redis]==4.0.2
+{% endif -%}
+Django==1.11.9
 tg-utils==0.2.0
 psycopg2==2.7.3.2
+django-redis==4.8.0
 django-crispy-forms==1.7.0
 django-webpack-loader==0.5.0
 django-settings-export==1.2.1
+
+# Tests
+pytest==3.3.2
+pytest-django==3.1.2
+coverage==4.4.2
+prospector==0.12.7
+unidiff==0.5.5
+# pylint 1.8 doesn't work with pylint-django 0.7.2
+pylint==1.7.5
+# enforce pylint django version (to avoid ContextualVersionConflict)
+pylint-django==0.7.2
+# astroid 1.6 breaks pylint, so fix its version as well
+astroid==1.5.3
+isort==4.2.15
+
 # Needed if you use utils.hashmodels.ModelHashIdMixin
 hashids==1.2.0
 {%- if cookiecutter.include_cms == 'yes' %}

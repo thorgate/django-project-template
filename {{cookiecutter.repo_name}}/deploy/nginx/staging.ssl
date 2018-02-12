@@ -1,0 +1,6 @@
+# Force this site to only be served over HTTPS
+add_header Strict-Transport-Security "max-age=63072000; includeSubDomains";
+
+# SSL Certs are obtained via letsencrypt
+ssl_certificate             /etc/letsencrypt/live/{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}/fullchain.pem;
+ssl_certificate_key         /etc/letsencrypt/live/{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}/privkey.pem;

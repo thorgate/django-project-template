@@ -1,0 +1,30 @@
+# Production Dockerfile for Django app
+
+FROM python:{% if cookiecutter.python_version == '3.6' %}3.6.4{% else %}{{ cookiecutter.python_version }}{% endif %}-slim
+
+# Install system requirements
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends gcc gettext libpq-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+# Create a directory for the logs
+RUN mkdir -p /var/log/{{cookiecutter.repo_name}}
+
+COPY ./wait-for-it.sh /usr/bin/
+
+# Copy Python requirements dir and Install requirements
+COPY ./requirements /tmp/requirements
+RUN pip install --no-cache-dir -r /tmp/requirements/production.txt
+
+# Copy code
+COPY ./{{cookiecutter.repo_name}} /app
+
+# Set the default directory where CMD will execute
+WORKDIR /app
+
+# Compile translations to .mo files
+# RUN python manage.py compilemessages
+
+# Run Gunicorn by default
+CMD gunicorn {{cookiecutter.repo_name}}.wsgi:application --workers 2 --bind :80
