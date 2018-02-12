@@ -72,7 +72,7 @@ See https://nodejs.org/en/ or https://nodejs.org/en/download/package-manager/ or
 
 **Note:** Virtualenv must be activated for the following commands to work
 
-Run django server: `python manage.py runserver`
+Run django server: `python -Wall manage.py runserver` or to hide (deprecation) warnings `python manage.py runserver`
 
 Run development asset server: `npm run dev`
 
@@ -110,17 +110,13 @@ dir:
     prospector
 
 
-## Drone (project has to be added in Drone)
-* Go to Drone: https://drone-inside.thorgate.eu/ and {{ cookiecutter.repo_name }}
-* View linting and test results before creating PR.
-
 ## Deploys
 
 ### Python 2 environment
 
 We use Fabric for deploys, which doesn't support Python 3. Thus you need to create a Python 2 virtualenv.
 It needn't be project specific and it's recommended you create one 'standard' Python 2 environment
-which can be used for all projects. You will also need to install django and tg-hammer==0.4, our fabric deployment helper.
+which can be used for all projects. You will also need to install django and tg-hammer==0.6, our fabric deployment helper.
 
 
 ### Types of deploys

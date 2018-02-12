@@ -1,4 +1,3 @@
-{% raw %}
 from django.http import HttpResponseNotFound, JsonResponse, HttpResponseServerError
 from django.template import TemplateDoesNotExist, Engine, Context, loader
 from django.utils.translation import gettext as _
@@ -29,7 +28,7 @@ def page_not_found(request, template_name='404.html'):
     except TemplateDoesNotExist:
         template = Engine().from_string(
             '<h1>Not Found</h1>'
-            '<p>The requested URL {{ request_path }} was not found on this server.</p>')
+            '<p>The requested URL {% raw %}{{ request_path }}{% endraw %} was not found on this server.</p>')
         body = template.render(Context(context))
         content_type = 'text/html'
 
@@ -60,4 +59,3 @@ def server_error(request, template_name='500.html'):
             'sentry': _('Fault code: #'),
         }
     }))
-{% endraw %}

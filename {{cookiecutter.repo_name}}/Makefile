@@ -63,7 +63,7 @@ setup: pycharm settings venv
 	@echo "SETUP SUCCEEDED"
 	@echo "Move into inner '{{cookiecutter.repo_name}}' directory."
 	@echo "Run 'npm run dev' to build required Javascript."
-	@echo "Run 'python manage.py runserver' to start Django development server.$(COFF)"
+	@echo "Run 'python -Wall manage.py runserver' to start Django development server.$(COFF)"
 
 pycharm: $(PROJECT_ROOT)/.idea
 

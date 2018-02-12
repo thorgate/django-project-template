@@ -1,9 +1,11 @@
 # Local development dependencies go here
 -r base.txt
 
-django-debug-toolbar==1.7
+django-debug-toolbar==1.8
 
-pytest==3.0.7
+pytest==3.2.3
 pytest-django==3.1.2
-coverage==4.3.4
-prospector==0.12.4
+coverage==4.4.2
+prospector==0.12.7
+unidiff==0.5.4
+pylint==1.7.4

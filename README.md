@@ -1,18 +1,17 @@
-# Thorgate's Django template
+# Thorgate's Django template (legacy variant)
 
 [Django](https://www.djangoproject.com/) project template that we use at [Thorgate](https://thorgate.eu).
 
 Best suited for medium-sized and bigger apps that use JavaScript and React for frontend.
 
-**NB: this is a standard, non-Docker variant** of the template,
-use [docker branch](https://github.com/thorgate/django-project-template/tree/docker) for the Docker variant.
+This is the legacy variant that does not use Docker.
 
 
 ## Features
 
 - Django-based backend
 
-    - [Django](https://www.djangoproject.com/) 1.8 (because it's LTS; you can easily upgrade to 1.10)
+    - [Django](https://www.djangoproject.com/) 1.11 (because it's LTS)
     - Separate settings for different environments (local/staging/production)
     - Python 3.4 / 3.5 / 3.6
 
@@ -50,3 +49,14 @@ It will ask you a few questions, e.g. project's name.
 After generation completes, search for any TODOs in the code and make appropriate changes where needed.
 
 See README.md in the generated project for instructions on how to set up your development environment.
+
+
+## Upgrading project template
+
+First ensure you have a python3 interpreter with `cookiecutter` installed.
+
+To upgrade an existing project, change the current working directory to the root of the project you want to upgrade. i.e. `cd project-to-upgrade`. Ensure your are not in the `template` branch.
+
+Then run `python ~/path/to/django-project-template/upgrade-template.py`
+
+This will make a commit to the branch `template` in your project with the updates to the project template. Then merge the `template` branch.

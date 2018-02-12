@@ -21,7 +21,7 @@ from django.utils.crypto import get_random_string
 from hammer import __version__ as hammer_version
 
 # Ensure that we have expected version of the tg-hammer package installed
-assert hammer_version.startswith('0.5.'), "tg-hammer 0.5.x is required"
+assert hammer_version.startswith('0.6.'), "tg-hammer 0.6.x is required"
 
 from hammer.service_helpers import install_services_cp, manage_service
 from hammer.vcs import Vcs

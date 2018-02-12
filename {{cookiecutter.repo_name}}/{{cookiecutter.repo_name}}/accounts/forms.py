@@ -36,6 +36,7 @@ class PasswordResetForm(auth_forms.PasswordResetForm):
         Submit('submit', _('Reset my password'))
     )
 
+    # pylint: disable=arguments-differ
     def save(self, *args, **kwargs):
         """
         Generates a one-use only link for resetting password and sends to the

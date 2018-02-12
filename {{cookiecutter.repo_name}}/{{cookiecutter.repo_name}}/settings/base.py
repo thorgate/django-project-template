@@ -61,7 +61,7 @@ INSTALLED_APPS = [
 ]
 
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     {%- if cookiecutter.include_cms == 'yes' %}
     'cms.middleware.utils.ApphookReloadMiddleware',
     {%- endif %}
@@ -197,6 +197,7 @@ WSGI_APPLICATION = '{{cookiecutter.repo_name}}.wsgi.application'
 
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = 'login'
+LOGOUT_REDIRECT_URL = 'login'
 
 
 # Crispy-forms
@@ -213,7 +214,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # SMTP  --> This is only used in staging and production
 EMAIL_HOST = 'smtp.sparkpostmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'info@TODO.com'
+EMAIL_HOST_USER = 'SMTP_Injection'
 
 
 # Base logging config. Logs INFO and higher-level messages to console. Production-specific additions are in
@@ -222,7 +223,7 @@ EMAIL_HOST_USER = 'info@TODO.com'
 #  only have to configure the root handler.
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': True,
+    'disable_existing_loggers': False,
     'formatters': {
         'default': {
             'format': '%(asctime)s [%(levelname)s] %(name)s:%(lineno)d %(funcName)s - %(message)s'
