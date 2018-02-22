@@ -51,12 +51,12 @@ def get_or_create_context(template_context_path, context_path, template_path):
             ask_config = True
 
         template_keys = set(template_context['cookiecutter'].keys())
-        context_keys = set(context['cookiecutter'].keys())
+        context_keys = set(context['cookiecutter'].keys()) - set(['_template'])
 
         if template_keys != context_keys:
             print('Context keys mismatch, regenerating')
-            print('Template keys:', template_keys)
-            print('Existing keys:', context_keys)
+            print('Template keys:', sorted(template_keys))
+            print('Existing keys:', sorted(context_keys))
             ask_config = True
 
     if ask_config:
