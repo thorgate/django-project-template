@@ -18,8 +18,11 @@ if cookiecutter.__version__ < cookiecutter_min_version:
     print("--------------------------------------------------------------")
     sys.exit(1)
 
-# Fetch latest updates from remote repository
-if os.environ.get('CI_SERVER') != 'yes':
+
+def check_remote_repository_updates():
+    if os.environ.get('CI_SERVER') == 'yes':
+        return
+
     template_dir = '{{ cookiecutter._template }}'
     print('Template dir:', template_dir)
     print('Checking for latest template version via git')
@@ -47,60 +50,62 @@ if os.environ.get('CI_SERVER') != 'yes':
     print()
 
     if local_sha != remote_sha:
-        if not read_user_yes_no('The template version you are using is not the latest available, are you sure you want to continue?',
-                                default_value='yes'):
+        if not read_user_yes_no(
+                'The template version you are using is not the latest available, are you sure you want to continue?',
+                default_value='yes'):
             print("Bye!")
             sys.exit(1)
 
-# Ensure the selected repo name is usable
-repo_name = '{{ cookiecutter.repo_name }}'
-assert_msg = 'Repo name should be valid Python identifier!'
 
-if hasattr(repo_name, 'isidentifier'):
-    assert repo_name.isidentifier(), assert_msg
-else:
-    import re
-    identifier_re = re.compile(r"[a-zA-Z_][a-zA-Z0-9_]*$")
-    assert bool(identifier_re.match(repo_name)), assert_msg
+def validate_config():
+    # Ensure the selected repo name is usable
+    repo_name = '{{ cookiecutter.repo_name }}'
+    assert_msg = 'Repo name should be valid Python identifier!'
 
+    if hasattr(repo_name, 'isidentifier'):
+        assert repo_name.isidentifier(), assert_msg
+    else:
+        import re
+        identifier_re = re.compile(r"[a-zA-Z_][a-zA-Z0-9_]*$")
+        assert bool(identifier_re.match(repo_name)), assert_msg
 
-valid_cms_key = ['yes', 'no']
-if "{{ cookiecutter.include_cms }}" not in valid_cms_key:
-    print("Include CMS '{{ cookiecutter.include_cms }}' is not valid!")
-    print("Valid include CMS keys are: %s" % ', '.join(valid_cms_key))
-    sys.exit(1)
-
-valid_celery_key = ['yes', 'no']
-if "{{ cookiecutter.include_celery }}" not in valid_celery_key:
-    print("Include CMS '{{ cookiecutter.include_celery }}' is not valid!")
-    print("Valid include Celery keys are: %s" % ', '.join(valid_celery_key))
-    sys.exit(1)
-
-if "{{ cookiecutter.python_version }}" not in ['3.4', '3.5', '3.6']:
-    print("Only allowed python version options are 3.4, 3.5 and 3.6.")
-    sys.exit(1)
-
-if not FQDN("{{ cookiecutter.test_host }}").is_valid:
-    print("Test host is not a valid domain name")
-    sys.exit(1)
-
-if not FQDN("{{ cookiecutter.live_host }}").is_valid:
-    print("Live host is not a valid domain name")
-    sys.exit(1)
-
-if not FQDN("{{ cookiecutter.repo_name|as_hostname }}.{{ cookiecutter.test_host }}").is_valid:
-    print("Test hostname is not a valid domain name")
-    sys.exit(1)
-
-live_hostname = "{{ cookiecutter.live_hostname }}"
-if live_hostname != 'none':
-    if live_hostname != live_hostname.lower():
-        print("Live hostname should be lowercase")
+    valid_cms_key = ['yes', 'no']
+    if "{{ cookiecutter.include_cms }}" not in valid_cms_key:
+        print("Include CMS '{{ cookiecutter.include_cms }}' is not valid!")
+        print("Valid include CMS keys are: %s" % ', '.join(valid_cms_key))
         sys.exit(1)
 
-    if not FQDN(live_hostname).is_valid:
-        print("Live hostname is not a valid domain name")
+    valid_celery_key = ['yes', 'no']
+    if "{{ cookiecutter.include_celery }}" not in valid_celery_key:
+        print("Include CMS '{{ cookiecutter.include_celery }}' is not valid!")
+        print("Valid include Celery keys are: %s" % ', '.join(valid_celery_key))
         sys.exit(1)
+
+    if "{{ cookiecutter.python_version }}" not in ['3.4', '3.5', '3.6']:
+        print("Only allowed python version options are 3.4, 3.5 and 3.6.")
+        sys.exit(1)
+
+    if not FQDN("{{ cookiecutter.test_host }}").is_valid:
+        print("Test host is not a valid domain name")
+        sys.exit(1)
+
+    if not FQDN("{{ cookiecutter.live_host }}").is_valid:
+        print("Live host is not a valid domain name")
+        sys.exit(1)
+
+    if not FQDN("{{ cookiecutter.repo_name|as_hostname }}.{{ cookiecutter.test_host }}").is_valid:
+        print("Test hostname is not a valid domain name")
+        sys.exit(1)
+
+    live_hostname = "{{ cookiecutter.live_hostname }}"
+    if live_hostname != 'none':
+        if live_hostname != live_hostname.lower():
+            print("Live hostname should be lowercase")
+            sys.exit(1)
+
+        if not FQDN(live_hostname).is_valid:
+            print("Live hostname is not a valid domain name")
+            sys.exit(1)
 
 
 def copy_cookiecutter_config(local_filename='.cookiecutterrc'):
@@ -118,4 +123,6 @@ def copy_cookiecutter_config(local_filename='.cookiecutterrc'):
         json.dump(json.load(f_in), f_out, indent=4, sort_keys=True)
 
 
+check_remote_repository_updates()
+validate_config()
 copy_cookiecutter_config()
