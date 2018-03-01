@@ -7,12 +7,16 @@ ALLOWED_HOSTS = ['{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_hos
 
 # Static site url, used when we need absolute url but lack request object, e.g. in email sending.
 SITE_URL = 'https://{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}'
+KOA_SITE_BASE = SITE_URL
+DJANGO_SITE_URL = SITE_URL
+
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 EMAIL_HOST_PASSWORD = 'TODO (api key)'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 STATIC_URL = '/assets/'
+STATIC_WEBPACK_URL = STATIC_URL
 
 # Production logging - all INFO and higher messages go to info.log file. ERROR and higher messages additionally go to
 #  error.log file plus to Sentry.

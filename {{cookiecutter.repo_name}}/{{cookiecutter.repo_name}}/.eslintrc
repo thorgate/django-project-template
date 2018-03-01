@@ -5,8 +5,17 @@
         "browser": true,
     },
     "globals": {
+        "NO_PRE_RENDERER": false,
+        "CLUSTERED": false,
+        "WORKER_ID": false,
+        "SERVER_MODE": false,
+        "DEV_MODE": false,
         "DJ_CONST": false,
         "gettext": false,
+        "jest": false,
+        "describe": false,
+        "test": false,
+        "expect": false,
     },
     "settings": {
         "import/resolver": {
@@ -40,6 +49,16 @@
 
         // Allow unary ++ operator in for loop afterthoughts
         "no-plusplus": ["error", {"allowForLoopAfterthoughts": true}],
+
+        // allow some underscore dangles
+        "no-underscore-dangle": [
+            "error", {
+                "allow": [
+                    "__initial_state__",
+                    "__REDUX_DEVTOOLS_EXTENSION_COMPOSE__",
+                ]
+            }
+        ],
 
         // Turn these into warnings
         "class-methods-use-this": "warn",

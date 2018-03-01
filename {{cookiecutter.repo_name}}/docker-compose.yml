@@ -8,7 +8,7 @@ services:
             context: .
             dockerfile: Dockerfile-django
         ports:
-            - "8000:80"
+            - "3000:80"
         volumes:
             - "./{{cookiecutter.repo_name}}:/app"
             - ".data-media:/files/media"
@@ -19,7 +19,6 @@ services:
         command: python manage.py runserver 0.0.0.0:80
         entrypoint: /usr/bin/wait-for-it.sh postgres:5432 -t 60 --
         depends_on:
-            - node
             - postgres
             - redis
 
@@ -27,9 +26,14 @@ services:
         build:
             context: .
             dockerfile: Dockerfile-node
+        ports:
+            - "8000:80"
         volumes:
-            - ".data-node_modules:/app/node_modules"
             - "./{{cookiecutter.repo_name}}:/app"
+            - ".data-node_modules:/app/node_modules"
+            - "./{{cookiecutter.repo_name}}/static:/app/static:ro"
+        depends_on:
+            - django
 
     postgres:
         image: postgres:10

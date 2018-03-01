@@ -48,7 +48,8 @@ Both docker and docker-compose are used to run this project, so the run command 
     docker-compose up
 
 This builds, (re)creates and starts containers for Django, Node, PostgreSQL and Redis. Refer to `docker-compose.yml` for
-more insight.
+more insight. Django app is running on `3000` port. Front-end server is running on `8000` port.
+For more information see [SPA docs](SPA.md)
 
 Logs from all running containers are shown in the terminal. To run in "detached mode", pass the `-d` flag to
 docker-compose. To see running containers, use `docker-compose ps`. To see logs from these containers, run
@@ -151,6 +152,12 @@ To use them, run those commands in the Django app dir:
     make prospector
     # Run all of above:
     make quality
+
+
+## Running tests
+
+Tests are ran by `pytest` and `jest` test runners for python and javascript respectively. They can be run with the
+makefile via `make test`.
 
 
 ## Django translations

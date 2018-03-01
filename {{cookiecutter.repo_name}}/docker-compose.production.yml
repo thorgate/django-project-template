@@ -11,7 +11,7 @@ services:
         restart: unless-stopped
         volumes:
             - "./{{cookiecutter.repo_name}}/app/build:/app/app/build"
-            - "./{{cookiecutter.repo_name}}/app/webpack-stats.json:/app/app/webpack-stats.json"
+            - "./{{cookiecutter.repo_name}}/constants.json:/app/constants.json"
             - "/var/lib/docker-nginx/files/{{cookiecutter.repo_name}}/media:/files/media"
             - "/var/lib/docker-nginx/files/{{cookiecutter.repo_name}}/assets:/files/assets"
             - "/var/log/{{cookiecutter.repo_name}}:/var/log/{{cookiecutter.repo_name}}"
@@ -32,15 +32,20 @@ services:
         build:
             context: .
             dockerfile: Dockerfile-node.production
-        # Make this service no-op as we don't actually want it running but do want to use docker-compose file to define
-        #  volumes etc.
-        restart: "no"
-        command: "true"
+        container_name: {{cookiecutter.repo_name}}_node
+        restart: unless-stopped
+        command: npm run start
         volumes:
+            - "./{{cookiecutter.repo_name}}/constants.json:/app/constants.json"
             - "./{{cookiecutter.repo_name}}/app:/app/app"
             - "./{{cookiecutter.repo_name}}/static:/app/static:ro"
-        # Node container won't be part of any networks
-        networks: []
+            - "/var/log/{{cookiecutter.repo_name}}:/var/log/{{cookiecutter.repo_name}}"
+        networks:
+            - default
+            - {{cookiecutter.repo_name}}_nginx
+        depends_on:
+            - django
+
     {%- if cookiecutter.include_celery == 'yes' %}
 
     celery:

@@ -88,6 +88,7 @@ settings: $(SITE_ROOT)/settings/local.py $(SITE_ROOT)/settings/local_test.py
 $(SITE_ROOT)/settings/local.py:
 	@echo "$(CYAN)Creating Django local.py settings file$(COFF)"
 	@cp $(SITE_ROOT)/settings/local.py.example $(SITE_ROOT)/settings/local.py
+	@cp $(SITE_ROOT)/settings/local_test.py.example $(SITE_ROOT)/settings/local_test.py
 	@if [ $(EDIT_SETTINGS) = "yes" ]; then\
 		$(EDITOR) $(SITE_ROOT)/settings/local.py;\
 	fi
@@ -102,18 +103,22 @@ coverage:
 	@docker-compose run --rm django coverage run -m py.test
 	@docker-compose run --rm django coverage html
 	@docker-compose run --rm django coverage report
-# Uncomment the next line to enable node tests in CI
-#	@docker-compose run --rm node npm run test -- --coverage
+	@docker-compose run --rm node npm run test -- --coverage
 
 
 node-install:
 	@docker-compose run --rm node npm install
 
 
-test: clean
-	@echo "$(CYAN)Running automatic tests$(COFF)"
+test-node: clean
+	@echo "$(CYAN)Running automatic node.js tests$(COFF)"
+	@docker-compose run --rm node npm run test
+
+test-django: clean
+	@echo "$(CYAN)Running automatic django tests$(COFF)"
 	@docker-compose run --rm django py.test
 
+test: test-node test-django
 
 clean:
 	@echo "$(CYAN)Cleaning pyc files$(COFF)"
@@ -184,6 +189,8 @@ makemessages:
 compilemessages:
 	docker-compose run --rm django ./manage.py compilemessages
 
+constants:
+	docker-compose run --rm django ./manage.py webpack_constants
 
 add-locale: $(SITE_ROOT)/locale
 ifdef LOCALE

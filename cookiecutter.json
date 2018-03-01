@@ -12,7 +12,7 @@
     "_6": "\n\t       live_host: Hostname of your live server.",
     "_7": "\n\t       live_hostname: Production hostname of the site. [use none to skip configuration of live hostname] (e.g. example.com)",
     "_8": "\n\t             vcs: Which VCS will the generated project be using? [git/hg/none]",
-    "_9": "\n\t  python_version: Which python version will the generated project be using? [3.4/3.5/3.6]",
+    "_9": "\n\t  python_version: Which python version will the generated project be using? [3.6]",
     "_10": "\n\t",
     "_11": "\n\t Press ENTER to continue.\n",
     "*": "{{cookiecutter._0 + cookiecutter._1 + cookiecutter._2 + cookiecutter._3 + cookiecutter._4 + cookiecutter._5 + cookiecutter._6 + cookiecutter._7 + cookiecutter._8 + cookiecutter._9 + cookiecutter._10}}",

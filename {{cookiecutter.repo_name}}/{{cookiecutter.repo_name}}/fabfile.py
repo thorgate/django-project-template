@@ -13,7 +13,7 @@ from StringIO import StringIO
 from distutils.version import LooseVersion
 
 from fabric import colors
-from fabric.api import *
+from fabric.api import env, task, require, abort, sudo, prefix, cd, put, get
 from fabric.contrib.console import confirm
 from fabric.utils import indent
 
@@ -277,6 +277,7 @@ def deploy(id=None, silent=False, force=False, auto_nginx=True):
     ensure_docker_networks()
     docker_compose('build')
 
+    management_cmd('webpack_constants')
     collectstatic(npm_build=app_changed)
 
     if crontab_changed:
@@ -327,13 +328,13 @@ def setup_server(id=None):
 
     # webpack-stats.json must exist before the Django container is run. Otherwise docker-compose assumes it to be a
     #  directory (because it's a volume).
-    sudo('touch %s/{{cookiecutter.repo_name}}/app/webpack-stats.json' % env.code_dir)
+    sudo('touch %s/{{cookiecutter.repo_name}}/constants.json' % env.code_dir)
 
     ensure_docker_networks()
 
     docker_compose('build')
 
-    # migrations, collectstatic
+    # migrations, constants, collectstatic
     migrate(silent=True)
     collectstatic()
 
@@ -522,6 +523,7 @@ def repo_type():
 
 def collectstatic(npm_build=True):
     if npm_build:
+        management_cmd('webpack_constants')
         docker_compose_run('node', 'npm run build', name='{{cookiecutter.repo_name}}_npm_build')
 
     management_cmd('collectstatic --noinput --ignore styles-src')
@@ -601,6 +603,7 @@ def render_config_key(config_def, key):
 
     return config_def[key] % params
 
+
 def get_nginx_app_target_path():
     require('deployment_configurations')
 
@@ -613,6 +616,7 @@ def get_nginx_app_target_path():
         abort('multiple default nginx sites found')
 
     return render_config_key(default_site[0], 'remote_path')
+
 
 def ensure_docker_networks():
     # Ensure we have dedicated networks for communicating with Nginx and Postgres

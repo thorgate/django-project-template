@@ -1,19 +1,7 @@
 # For production, change this to import from settings.production
 from settings.base import *
 
-# Add proper database name, user and password here, if necessary
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'HOST': 'postgres',
-#         'NAME': '{{cookiecutter.repo_name}}',
-#         'USER': '{{cookiecutter.repo_name}}',
-#         'PASSWORD': '{{cookiecutter.repo_name}}',
-#     }
-# }
-
 # For production, override SECRET_KEY
-
 
 # # For development:
 # # Debug toolbar
@@ -24,3 +12,36 @@ from settings.base import *
 # Uncomment to send emails from your local machine.
 # EMAIL_HOST_PASSWORD = 'TODO (api key)'
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+
+# Do run locally without docker uncomment following code lines
+# This overrides settings to use services from local machine instead
+# If project adds any other services then specify overrides for those as well
+# Media files root uses same directory as docker does
+# import socket  # noqa
+# if socket.gethostname() == 'YOUR_MACHINE_NAME':
+#     # If defining different SITE_URLs, if not using 127.0.0.1
+#     # SITE_URL = 'http://YOUR_MACHINE_IP:8000'
+#     # DJANGO_SITE_URL = 'http://YOUR_MACHINE_IP:3000'
+#     # KOA_APP_PROXY = {key: DJANGO_SITE_URL for key in KOA_APP_PROXY.keys()}
+#
+#     # Add proper database name, user and password here, if necessary
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#             'HOST': 'localhost',
+#             'NAME': '{{cookiecutter.repo_name}}',
+#             'USER': '{{cookiecutter.repo_name}}',
+#             'PASSWORD': '{{cookiecutter.repo_name}}',
+#         }
+#     }
+#
+#     # Redis config (used for caching and celery)
+#     REDIS_HOST = 'localhost'
+#     REDIS_URL = 'redis://%s:%d/%d' % (REDIS_HOST, REDIS_PORT, REDIS_DB)
+#
+#     # Override caching config
+#     CACHES["default"]["LOCATION"] = REDIS_URL
+#
+#     # Override media root for local
+#     MEDIA_ROOT = os.path.join(os.path.dirname(SITE_ROOT), '.data-media')

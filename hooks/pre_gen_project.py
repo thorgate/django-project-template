@@ -76,8 +76,8 @@ if "{{ cookiecutter.include_celery }}" not in valid_celery_key:
     print("Valid include Celery keys are: %s" % ', '.join(valid_celery_key))
     sys.exit(1)
 
-if "{{ cookiecutter.python_version }}" not in ['3.4', '3.5', '3.6']:
-    print("Only allowed python version options are 3.4, 3.5 and 3.6.")
+if "{{ cookiecutter.python_version }}" not in ['3.6']:
+    print("Only allowed python version options are 3.6 or later.")
     sys.exit(1)
 
 if not FQDN("{{ cookiecutter.test_host }}").is_valid:

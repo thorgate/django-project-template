@@ -1,6 +1,6 @@
 # Production Dockerfile for Django app
 
-FROM python:{% if cookiecutter.python_version == '3.6' %}3.6.4{% else %}{{ cookiecutter.python_version }}{% endif %}-slim
+FROM python:3.6.4-slim
 
 # Install system requirements
 RUN apt-get update && \
@@ -24,7 +24,7 @@ COPY ./{{cookiecutter.repo_name}} /app
 WORKDIR /app
 
 # Compile translations to .mo files
-# RUN python manage.py compilemessages
+RUN python manage.py compilemessages
 
 # Run Gunicorn by default
 CMD gunicorn {{cookiecutter.repo_name}}.wsgi:application --workers 2 --bind :80

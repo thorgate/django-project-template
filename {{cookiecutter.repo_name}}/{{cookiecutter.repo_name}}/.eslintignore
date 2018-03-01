@@ -1,4 +1,5 @@
 coverage/
 node_modules/
 app/build/
+app/lib/
 app/test/

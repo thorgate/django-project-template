@@ -1,27 +1,27 @@
-# Thorgate's Django template (Bootstrap 4 variant)
+# Thorgate's Django template (SPA variant)
 
-[![Build status](https://gitlab.com/thorgate-public/django-project-template/badges/bootstrap4/pipeline.svg)](https://gitlab.com/thorgate-public/django-project-template/commits/bootstrap4) 
+[![Build status](https://gitlab.com/thorgate-public/django-project-template/badges/spa/pipeline.svg)](https://gitlab.com/thorgate-public/django-project-template/commits/spa) 
 
 [Django](https://www.djangoproject.com/) project template that we use at [Thorgate](https://thorgate.eu).
 
-Best suited for medium-sized and bigger apps that use JavaScript and React for frontend.
+Best suited for single page web applications.
 
 _(note that the primary repo is in [Gitlab](https://gitlab.com/thorgate-public/django-project-template), with mirror in [Github](https://github.com/thorgate/django-project-template))_
 
 
 ## Features
 
-- Django-based backend
+- Django-based storage API backend (accessible from port `3000` for local development)
 
     - [Django](https://www.djangoproject.com/) 1.11 (because it's LTS)
     - Separate settings for different environments (local/staging/production)
-    - Python 3.4 / 3.5 / 3.6
+    - Python 3.6+
 
-- Frontend app with JavaScript (ES2015), React and Sass
+- Frontend app with JavaScript (ES2015), React, Koa, and Sass (accessible from port `8000` for local development)
 
     - Latest JavaScript features from [ES2015](https://babeljs.io/docs/learn-es2015/) and beyond, transpiled with
       [Babel](https://babeljs.io/)
-    - [React](https://facebook.github.io/react/) 16 for fast modular user interfaces
+    - [React](https://facebook.github.io/react/) 16.2 for fast modular user interfaces
     - [Sass](http://sass-lang.com/), [PostCSS](http://postcss.org/) and
       [Autoprefixer](https://github.com/postcss/autoprefixer) for more convenient styling
     - [Webpack](https://webpack.github.io/) 2.3 is used to bundle and minify JavaScript and styles
@@ -35,6 +35,15 @@ _(note that the primary repo is in [Gitlab](https://gitlab.com/thorgate-public/d
     - Deploy helpers, using [Fabric](http://www.fabfile.org/)
     - Out-of-the-box configuration for nginx, gunicorn, logrotate and crontab
     - Includes [PyCharm](https://www.jetbrains.com/pycharm/) project config
+
+
+## Things to know
+ 
+- System information from the django application goes to node application through a file called `constants.json`. 
+  `webpack_constants` django management command generates a file called `constants.json`. 
+  This command comes from 
+  [https://github.com/thorgate/tg-react/blob/master/tg_react/management/commands/webpack_constants.py]. 
+  `constants.json` is then used in the JS code. This file is ignored by version control.
 
 
 ## Usage

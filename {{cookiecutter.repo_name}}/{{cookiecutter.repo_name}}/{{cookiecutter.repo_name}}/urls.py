@@ -4,16 +4,13 @@ from django.conf.urls.i18n import i18n_patterns
 {%- endif %}
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.views.generic.base import TemplateView
 
 
 admin.autodiscover()
 
 urlpatterns = {% if cookiecutter.include_cms == 'yes' %}i18n_patterns({% else %}[{% endif %}
-    url(r'', include('accounts.urls')),
-    url(r'^$', TemplateView.as_view(template_name='home.html'), name='home'),
-
-    url(r'^adminpanel/', admin.site.urls),
+    url(r'^api/', include('{{cookiecutter.repo_name}}.api_urls')),
+    url(r'^adminpanel/', include(admin.site.urls)),
     {%- if cookiecutter.include_cms == 'yes' %}
     url(r'^filer/', include('filer.urls')),
     # CMS urls should be handled last to avoid possible conflicts

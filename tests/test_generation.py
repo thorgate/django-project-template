@@ -32,6 +32,7 @@ def validate_project_works(result, config):
         'make settings',
         'docker-compose build',
         'make node-install',
+        'make constants',
         'make quality',
         'make coverage',
     ]

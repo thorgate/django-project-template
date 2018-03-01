@@ -1,11 +1,11 @@
-const path = require('path');
+/* eslint-disable */
 const webpack = require('webpack');
+const WriteFilePlugin = require('write-file-webpack-plugin');
 
 const makeConfig = require('./config.base');
-
+const makeServerConfig = require('./serverConfig.base');
 
 // The app/ dir
-const app_root = path.resolve(__dirname, '..');
 const filenameTemplate = 'app/[name]';
 
 
@@ -17,15 +17,31 @@ const config = makeConfig({
     extractCss: false,
     minifyCss: false,
 
-    // Needed for inline CSS (via JS) - see set-public-path.js for more info
-    prependSources: [path.resolve(app_root, 'webpack', 'set-public-path.js')],
+    prependSources: [
+        'webpack-hot-middleware/client',
+        'react-hot-loader/patch',
+    ],
 
-    // This must be same as Django's STATIC_URL setting
-    publicPath: '/static/',
+    plugins: [
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.NamedModulesPlugin(),
+        new webpack.NoEmitOnErrorsPlugin(),
+    ],
+});
 
-    plugins: [],
+const serverConfig = makeServerConfig({
+    extractCss: false,
+    minifyCss: false,
+
+    plugins: [
+        new WriteFilePlugin(),
+        new webpack.DefinePlugin({
+            'process.env': {
+                NODE_ENV: JSON.stringify('development')
+            }
+        })
+    ],
 });
 console.log("Using DEV config");
 
-
-module.exports = config;
+module.exports = [config, serverConfig];

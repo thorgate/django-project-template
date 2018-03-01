@@ -28,6 +28,7 @@ MANAGERS = ADMINS
 EMAIL_SUBJECT_PREFIX = '[{{cookiecutter.project_title}}] '  # subject prefix for managers & admins
 
 SESSION_COOKIE_NAME = '{{ cookiecutter.repo_name }}_ssid'
+SESSION_SAVE_EVERY_REQUEST = True  # Set cookie headers on every request - This is for api
 
 INSTALLED_APPS = [
     'accounts',
@@ -49,8 +50,10 @@ INSTALLED_APPS = [
     'djangocms_text_ckeditor',
 {%- endif %}
 
+    'rest_framework',
+    'django_filters',
+    'tg_react',
     'crispy_forms',
-    'webpack_loader',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -69,6 +72,7 @@ MIDDLEWARE = [
     'cms.middleware.utils.ApphookReloadMiddleware',
     {%- endif %}
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -106,7 +110,6 @@ TEMPLATES = [
                 'sekizai.context_processors.sekizai',
                 'cms.context_processors.cms_settings',
                 {%- endif %}
-                'django_settings_export.settings_export',
             ],
         },
     },
@@ -197,6 +200,7 @@ MEDIA_URL = '/media/'
 
 STATIC_ROOT = '/files/assets'
 STATIC_URL = '/static/'
+STATIC_WEBPACK_URL = '/static-webpack/'
 STATICFILES_DIRS = (
     os.path.join(SITE_ROOT, 'static'),
     os.path.join(SITE_ROOT, 'app', 'build'),
@@ -212,10 +216,11 @@ SECRET_KEY = 'dummy key'
 
 AUTH_USER_MODEL = 'accounts.User'
 
-
 # Static site url, used when we need absolute url but lack request object, e.g. in email sending.
 SITE_URL = 'http://127.0.0.1:8000'
-ALLOWED_HOSTS = []
+DJANGO_SITE_URL = 'http://127.0.0.1:3000'
+ALLOWED_HOSTS = ['django', 'localhost', '127.0.0.1']
+
 
 {%- if cookiecutter.include_cms == 'yes' %}
 
@@ -303,22 +308,76 @@ SILENCED_SYSTEM_CHECKS = [
 ]
 
 
+# Rest framework configuration
+REST_FRAMEWORK = {
+    # Disable Basic auth
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
+    # Change default full-url media files to be only stored path, needs /media prepended in frontend
+    'UPLOADED_FILES_USE_URL': False,
+}
+
+# Webpack settings exporter
+WEBPACK_CONSTANT_PROCESSORS = (
+    'tg_react.webpack.default_constants',
+    '{{cookiecutter.repo_name}}.webpack_constants.language_constants',
+    '{{cookiecutter.repo_name}}.webpack_constants.constants',
+)
+
+
+# Koa configuration
+API_BASE = '/api/'
+KOA_PORT = 80
+KOA_SITE_BASE = 'http://django'
+# If False Koa app will wait for initial data to finish before showing next route
+KOA_APP_IS_EAGER = False
+# If True, 404 are not treated as errors for sentry
+KOA_APP_IGNORE_404 = True
+
+# Proxy map, used by Koa app to proxy all to Django
+KOA_APP_PROXY = {
+    '/d/': KOA_SITE_BASE,  # Generic prefix, helpful if adding new urls to site to use Django views
+    '/api/': KOA_SITE_BASE,
+    MEDIA_URL: KOA_SITE_BASE,
+    STATIC_URL: KOA_SITE_BASE,
+    '/adminpanel/': KOA_SITE_BASE,
+}
+
+
+
 # Default values for sentry
 RAVEN_BACKEND_DSN = ''
 RAVEN_PUBLIC_DSN = ''
 RAVEN_CONFIG = {}
 
-WEBPACK_LOADER = {
-    'DEFAULT': {
-        'BUNDLE_DIR_NAME': '',
-        'STATS_FILE': os.path.join(SITE_ROOT, 'app', 'webpack-stats.json'),
-    }
-}
 
 # All these settings will be made available to javascript app
 SETTINGS_EXPORT = [
     'DEBUG',
     'SITE_URL',
+    'DJANGO_SITE_URL',
+    'MEDIA_URL',
     'STATIC_URL',
+    'STATIC_WEBPACK_URL',
     'RAVEN_PUBLIC_DSN',
+    'RAVEN_BACKEND_DSN',
+    'CSRF_COOKIE_NAME',
+    'SESSION_COOKIE_NAME',
+
+    'LOGIN_REDIRECT',
+    'LOGIN_URL',
+
+    'ALLOWED_HOSTS',
+    'KOA_PORT',
+    'API_BASE',
+    'KOA_API_BASE',
+    'KOA_APP_PROXY',
+    'KOA_APP_IS_EAGER',
+    'KOA_APP_IGNORE_404',
+
+    'APPEND_SLASH',
 ]
