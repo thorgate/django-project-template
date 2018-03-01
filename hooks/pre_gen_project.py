@@ -20,10 +20,13 @@ if cookiecutter.__version__ < cookiecutter_min_version:
 
 
 def check_remote_repository_updates():
-    if os.environ.get('CI_SERVER') == 'yes':
+    template_dir = '{{ cookiecutter._template }}'
+    if not template_dir.startswith('/') or not os.path.exists(template_dir) or \
+            not os.path.exists(os.path.join(template_dir, '.git')):
+        print("Template dir is not absolute dir or not Git repo; skipping freshness check")
+        print(os.getcwd())
         return
 
-    template_dir = '{{ cookiecutter._template }}'
     print('Template dir:', template_dir)
     print('Checking for latest template version via git')
     subprocess.call(["git", "fetch"], cwd=template_dir)
