@@ -20,6 +20,7 @@ from os.path import join, exists, isdir, abspath, basename
 
 from cookiecutter.generate import generate_files
 from cookiecutter.main import prompt_for_config, generate_context
+from copy import deepcopy
 
 
 def load_context(path):
@@ -221,7 +222,11 @@ def update_template(path, template_path, tmp_dir):
     # prompt if necessary
     context, created = get_or_create_context(template_context_path, context_path, template_path)
     # Always dump the used config into .cookiecutterrc so that it stays up to date
-    dump_context(join(tmp_path, '.cookiecutterrc'), context)
+    # Don't dump the template dir (stored under '_template' key)
+    dumped_context = deepcopy(context)
+    if '_template' in dumped_context['cookiecutter']:
+        del dumped_context['cookiecutter']['_template']
+    dump_context(join(tmp_path, '.cookiecutterrc'), dumped_context)
 
     generate_files(
         repo_dir=template_path,

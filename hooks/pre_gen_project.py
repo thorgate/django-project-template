@@ -19,12 +19,14 @@ if cookiecutter.__version__ < cookiecutter_min_version:
     sys.exit(1)
 
 
+def is_git_repository(path):
+    return path.startswith('/') and os.path.exists(path) and os.path.exists(os.path.join(path, '.git'))
+
+
 def check_remote_repository_updates():
     template_dir = '{{ cookiecutter._template }}'
-    if not template_dir.startswith('/') or not os.path.exists(template_dir) or \
-            not os.path.exists(os.path.join(template_dir, '.git')):
+    if not is_git_repository(template_dir):
         print("Template dir is not absolute dir or not Git repo; skipping freshness check")
-        print(os.getcwd())
         return
 
     print('Template dir:', template_dir)
@@ -123,7 +125,11 @@ def copy_cookiecutter_config(local_filename='.cookiecutterrc'):
         return
 
     with open(replay_filename, 'r') as f_in, open(local_filename, 'w') as f_out:
-        json.dump(json.load(f_in), f_out, indent=4, sort_keys=True)
+        config = json.load(f_in)
+        # Don't dump the template dir (stored under '_template' key)
+        if '_template' in config['cookiecutter']:
+            del config['cookiecutter']['_template']
+        json.dump(config, f_out, indent=4, sort_keys=True)
 
 
 check_remote_repository_updates()
