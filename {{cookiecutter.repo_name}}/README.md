@@ -1,5 +1,10 @@
 # README for {{cookiecutter.project_title}}
 
+{% if cookiecutter.gitlab_repo_url -%}
+[![Build status](https://gitlab.com/thorgate/{{ cookiecutter.repo_name }}/badges/master/pipeline.svg)]({{ cookiecutter.gitlab_repo_url }}/commits/master)
+[![Coverage report](https://gitlab.com/thorgate/{{ cookiecutter.repo_name }}/badges/master/coverage.svg)]({{ cookiecutter.gitlab_repo_url }}/commits/master)
+
+{% endif -%}
 
 TODO: verify that the following info is correct:
 

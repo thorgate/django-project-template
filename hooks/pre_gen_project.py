@@ -103,7 +103,7 @@ def validate_config():
         sys.exit(1)
 
     live_hostname = "{{ cookiecutter.live_hostname }}"
-    if live_hostname != 'none':
+    if 'todo' not in live_hostname.lower():
         if live_hostname != live_hostname.lower():
             print("Live hostname should be lowercase")
             sys.exit(1)

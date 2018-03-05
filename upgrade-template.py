@@ -58,6 +58,10 @@ def get_or_create_context(template_context_path, context_path, template_path):
             print('Context keys mismatch, regenerating')
             print('Template keys:', sorted(template_keys))
             print('Existing keys:', sorted(context_keys))
+            # Remove "internal" keys from context, to ensure fresh description of variables is shown again.
+            for k in context_keys:
+                if k == '*' or k.startswith('_'):
+                    del context['cookiecutter'][k]
             ask_config = True
 
     if ask_config:
