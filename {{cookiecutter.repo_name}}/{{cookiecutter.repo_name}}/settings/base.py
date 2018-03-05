@@ -22,7 +22,7 @@ SITE_ROOT = os.path.dirname(os.path.dirname(__file__))
 DEBUG = True
 
 ADMINS = (
-    ('Admins', 'errors@TODO'),
+    ('Admins', '{{ cookiecutter.admin_email }}'),
 )
 MANAGERS = ADMINS
 EMAIL_SUBJECT_PREFIX = '[{{cookiecutter.project_title}}] '  # subject prefix for managers & admins
@@ -242,13 +242,8 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 
 # Email config
-{%- if cookiecutter.live_hostname == 'none' %}
-DEFAULT_FROM_EMAIL = "{{cookiecutter.project_title}} <info@TODO.com>"
-SERVER_EMAIL = "{{cookiecutter.project_title}} server <server@TODO.com>"
-{%- else %}
 DEFAULT_FROM_EMAIL = "{{cookiecutter.project_title}} <info@{{ cookiecutter.live_hostname }}>"
 SERVER_EMAIL = "{{cookiecutter.project_title}} server <server@{{ cookiecutter.live_hostname }}>"
-{%- endif %}
 
 # Show emails in the console, but don't send them.
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
