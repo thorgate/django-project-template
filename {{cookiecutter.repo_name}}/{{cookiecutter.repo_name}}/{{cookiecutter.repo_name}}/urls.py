@@ -13,7 +13,7 @@ urlpatterns = {% if cookiecutter.include_cms == 'yes' %}i18n_patterns({% else %}
     url(r'', include('accounts.urls')),
     url(r'^$', TemplateView.as_view(template_name='home.html'), name='home'),
 
-    url(r'^adminpanel/', admin.site.urls),
+    url(r'^{{cookiecutter.django_admin_path}}/', admin.site.urls),
     {%- if cookiecutter.include_cms == 'yes' %}
     url(r'^filer/', include('filer.urls')),
     # CMS urls should be handled last to avoid possible conflicts

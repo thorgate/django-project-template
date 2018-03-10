@@ -20,6 +20,7 @@ from os.path import join, exists, isdir, abspath, basename
 
 from cookiecutter.generate import generate_files
 from cookiecutter.main import prompt_for_config, generate_context
+from copy import deepcopy
 
 
 def load_context(path):
@@ -51,12 +52,16 @@ def get_or_create_context(template_context_path, context_path, template_path):
             ask_config = True
 
         template_keys = set(template_context['cookiecutter'].keys())
-        context_keys = set(context['cookiecutter'].keys())
+        context_keys = set(context['cookiecutter'].keys()) - set(['_template'])
 
         if template_keys != context_keys:
             print('Context keys mismatch, regenerating')
-            print('Template keys:', template_keys)
-            print('Existing keys:', context_keys)
+            print('Template keys:', sorted(template_keys))
+            print('Existing keys:', sorted(context_keys))
+            # Remove "internal" keys from context, to ensure fresh description of variables is shown again.
+            for k in context_keys:
+                if k == '*' or k.startswith('_'):
+                    del context['cookiecutter'][k]
             ask_config = True
 
     if ask_config:
@@ -221,7 +226,11 @@ def update_template(path, template_path, tmp_dir):
     # prompt if necessary
     context, created = get_or_create_context(template_context_path, context_path, template_path)
     # Always dump the used config into .cookiecutterrc so that it stays up to date
-    dump_context(join(tmp_path, '.cookiecutterrc'), context)
+    # Don't dump the template dir (stored under '_template' key)
+    dumped_context = deepcopy(context)
+    if '_template' in dumped_context['cookiecutter']:
+        del dumped_context['cookiecutter']['_template']
+    dump_context(join(tmp_path, '.cookiecutterrc'), dumped_context)
 
     generate_files(
         repo_dir=template_path,

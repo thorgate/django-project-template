@@ -117,11 +117,11 @@ def live():
     """ TARGET: live server (production)
     """
 
-    {%- if cookiecutter.live_hostname == 'none' %}
+    {%- if 'todo' in cookiecutter.live_hostname|lower %}
 
     raise NotImplemented('TODO: live host not configured')
-    {%- else %}
-    {% endif %}
+    {%- endif %}
+
     defaults()
     env.target = 'production'
     env.hosts = ['{{cookiecutter.live_host}}']
