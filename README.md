@@ -6,6 +6,9 @@
 
 Best suited for medium-sized and bigger apps that use JavaScript and React for frontend.
 
+See also the [default](https://gitlab.com/thorgate-public/django-project-template/tree/master)
+and [single-page app](https://gitlab.com/thorgate-public/django-project-template/tree/spa) variants.
+
 _(note that the primary repo is in [Gitlab](https://gitlab.com/thorgate-public/django-project-template), with mirror in [Github](https://github.com/thorgate/django-project-template))_
 
 
