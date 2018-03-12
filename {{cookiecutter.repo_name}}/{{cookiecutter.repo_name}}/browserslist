@@ -1,5 +1,16 @@
 # Supported browsers
 
-last 2 versions
-> 5%
-IE >= 9
+# Mobile
+last 2 ChromeAndroid versions
+last 2 Android versions
+last 2 iOS versions
+
+# Desktop
+last 3 Chrome versions
+last 2 Edge versions
+last 2 Firefox versions
+Firefox ESR
+last 2 Safari versions
+
+# Actually not used since we use specific browsers (last X Browsername versions) anyway
+not dead
