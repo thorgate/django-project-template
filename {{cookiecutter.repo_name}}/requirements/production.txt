@@ -4,4 +4,4 @@
 
 gunicorn==19.7.1
 
-raven==6.4.0
+raven==6.6.0
