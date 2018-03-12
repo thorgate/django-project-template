@@ -6,6 +6,9 @@
 
 Best suited for single page web applications.
 
+See also the [default](https://gitlab.com/thorgate-public/django-project-template/tree/master)
+and [Bootstrap 4](https://gitlab.com/thorgate-public/django-project-template/tree/bootstrap4) variants.
+
 _(note that the primary repo is in [Gitlab](https://gitlab.com/thorgate-public/django-project-template), with mirror in [Github](https://github.com/thorgate/django-project-template))_
 
 
