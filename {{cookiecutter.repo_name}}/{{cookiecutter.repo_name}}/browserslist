@@ -11,6 +11,3 @@ last 2 Edge versions
 last 2 Firefox versions
 Firefox ESR
 last 2 Safari versions
-
-# Actually not used since we use specific browsers (last X Browsername versions) anyway
-not dead
