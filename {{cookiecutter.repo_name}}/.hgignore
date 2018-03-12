@@ -12,7 +12,7 @@ node_modules/
 venv/
 .cache/
 
-.data-*/
+.data*/
 
 {{cookiecutter.repo_name}}/settings/local.py
 {{cookiecutter.repo_name}}/settings/local_test.py

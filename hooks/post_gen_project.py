@@ -64,18 +64,16 @@ def handle_react():
         os.symlink(src, dst)
 
 
-def get_local_commit(template_dir='{{ cookiecutter._template }}'):
-    if os.environ.get('CI_SERVER') == 'yes':
-        return 'DUMMY'
+def is_git_repository(path):
+    return path.startswith('/') and os.path.exists(path) and os.path.exists(os.path.join(path, '.git'))
 
+
+def get_local_commit(template_dir='{{ cookiecutter._template }}'):
     return subprocess.check_output(["git", "rev-parse", "@"], cwd=template_dir).decode().strip()
 
 
 def get_commit_details(commit_id, template_dir='{{ cookiecutter._template }}'):
     sep = ':|:|:'
-
-    if os.environ.get('CI_SERVER') == 'yes':
-        return []
 
     return subprocess.check_output([
         "git",
@@ -90,20 +88,20 @@ def get_commit_details(commit_id, template_dir='{{ cookiecutter._template }}'):
 
 
 def get_local_branch(template_dir='{{ cookiecutter._template }}'):
-    if os.environ.get('CI_SERVER') == 'yes':
-        return 'dummy'
-
     return subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "@"], cwd=template_dir).decode().strip()
 
 
 def create_repos():
     repo_type = '{{ cookiecutter.vcs }}'.lower()
+    template_dir = '{{ cookiecutter._template }}'
 
-    commit_id = get_local_commit()
-    initial_commit_message = 'Initial commit\n\nCreated from django-project-template `{} {}`'.format(
-        get_local_branch(),
-        ' '.join(get_commit_details(commit_id)),
-    )
+    initial_commit_message = 'Initial commit\n\nCreated from django-project-template'
+    if is_git_repository(template_dir):
+        commit_id = get_local_commit(template_dir)
+        initial_commit_message = 'Initial commit\n\nCreated from django-project-template `{} {}`'.format(
+            get_local_branch(),
+            ' '.join(get_commit_details(commit_id)),
+        )
 
     if repo_type == 'git' and not os.path.exists('.git'):
         print('Creating git repository')

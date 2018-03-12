@@ -10,7 +10,7 @@ admin.autodiscover()
 
 urlpatterns = {% if cookiecutter.include_cms == 'yes' %}i18n_patterns({% else %}[{% endif %}
     url(r'^api/', include('{{cookiecutter.repo_name}}.api_urls')),
-    url(r'^adminpanel/', include(admin.site.urls)),
+    url(r'^{{cookiecutter.django_admin_path}}/', include(admin.site.urls)),
     {%- if cookiecutter.include_cms == 'yes' %}
     url(r'^filer/', include('filer.urls')),
     # CMS urls should be handled last to avoid possible conflicts
