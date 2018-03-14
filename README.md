@@ -45,10 +45,8 @@ _(note that the primary repo is in [Gitlab](https://gitlab.com/thorgate-public/d
 To use this template, first ensure that you have
 [Cookiecutter](http://cookiecutter.readthedocs.org/en/latest/readme.html) available.
 You should probably create additional python3 virtual environment for cookiecutter, activate it
-and then install following packages by running following commands:
-`pip install cookiecutter`
-`pip install cookiecutter_repo_extensions`
-`pip install fqdn`
+and then install following packages by running following command:
+`pip install cookiecutter cookiecutter_repo_extensions fqdn`
 
 
 Then just execute:
