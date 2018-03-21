@@ -17,7 +17,7 @@
     "babel-preset-stage-1": "6.24.1",
     "babel-register": "6.26.0",
     "babel-runtime": "6.26.0",
-    "bootstrap": "4.0.0-beta.2",
+    "bootstrap": "4.0.0",
     "check-engines": "1.5.0",
     "classnames": "2.2.5",
     "cookie-parser": "1.4.3",
@@ -40,7 +40,7 @@
     "memwatch-next": "0.3.0",
     "moment": "2.19.2",
     "node-fetch": "1.7.3",
-    "node-sass": "4.5.3",
+    "node-sass": "4.8.3",
     "postcss-loader": "1.3.3",
     "prop-types": "15.6.0",
     "raven": "2.2.1",
@@ -60,7 +60,7 @@
     "redux-logger": "3.0.6",
     "redux-saga": "0.16.0",
     "resolve-url-loader": "2.0.2",
-    "sass-loader": "6.0.6",
+    "sass-loader": "6.0.7",
     "serialize-javascript": "1.4.0",
     "stats-webpack-plugin": "0.6.1",
     "style-loader": "0.15.0",
@@ -148,12 +148,5 @@
   "engines": {
     "node": ">=8.0.0",
     "npm": ">=5.0.0"
-  },
-  "//": [
-    "node-sass and sass-loader versions are not up-to-date due to node-sass >= 4 generating source maps that might",
-    "include negative column numbers. This in turn raises an error in sass-loader:",
-    "https://github.com/sass/libsass/issues/2312",
-    "We cannot turn off sourcemaps in production as well, since resolve-url-loader requires them.",
-    "Until this issue is fixed, we suggest not to update node-sass and sass-loader."
-  ]
+  }
 }
