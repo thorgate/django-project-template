@@ -9,6 +9,11 @@ CHANGES
 -->
 
 
+## 2018-03-21 (bootstrap4)
+
+- Updated Bootstrap to 4.0 final
+
+
 ## 2018-03-12
 
 - Update Python packages and Node Docker image to latest versions.
