@@ -12,11 +12,11 @@
     "babel-preset-es2015": "6.24.0",
     "babel-preset-react": "6.23.0",
     "babel-preset-stage-1": "6.22.0",
-    "bootstrap": "4.0.0-beta.2",
+    "bootstrap": "4.0.0",
     "css-loader": "0.27.3",
     "extract-text-webpack-plugin": "2.1.0",
     "file-loader": "0.10.1",
-    "node-sass": "3.13.0",
+    "node-sass": "4.8.3",
     "postcss-loader": "1.3.3",
     "prop-types": "15.6.0",
     "raven-js": "3.13.0",
@@ -27,7 +27,7 @@
     "redux-logger": "3.0.6",
     "redux-thunk": "2.2.0",
     "resolve-url-loader": "2.0.2",
-    "sass-loader": "4.1.1",
+    "sass-loader": "6.0.7",
     "style-loader": "0.15.0",
     "url-loader": "0.5.8",
     "webpack": "2.3.0",
@@ -53,12 +53,5 @@
     "lint": "cd app/src && eslint .",
     "stylelint": "cd static/styles-src && stylelint '**/*.scss'",
     "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "//": [
-    "node-sass and sass-loader versions are not up-to-date due to node-sass >= 4 generating source maps that might",
-    "include negative column numbers. This in turn raises an error in sass-loader:",
-    "https://github.com/webpack-contrib/sass-loader/issues/351",
-    "We cannot turn off sourcemaps in production as well, since resolve-url-loader requires them.",
-    "Until this issue is fixed, we suggest not to update node-sass and sass-loader."
-  ]
+  }
 }
