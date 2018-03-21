@@ -16,7 +16,7 @@
     "css-loader": "0.27.3",
     "extract-text-webpack-plugin": "2.1.0",
     "file-loader": "0.10.1",
-    "node-sass": "4.7.2",
+    "node-sass": "4.8.3",
     "postcss-loader": "1.3.3",
     "prop-types": "15.6.0",
     "raven-js": "3.13.0",
@@ -53,12 +53,5 @@
     "lint": "cd app/src && eslint .",
     "stylelint": "cd static/styles-src && stylelint '**/*.scss'",
     "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "//": [
-    "node-sass and sass-loader versions are not up-to-date due to node-sass >= 4 generating source maps that might",
-    "include negative column numbers. This in turn raises an error in sass-loader:",
-    "https://github.com/webpack-contrib/sass-loader/issues/351",
-    "We cannot turn off sourcemaps in production as well, since resolve-url-loader requires them.",
-    "Until this issue is fixed, we suggest not to update node-sass and sass-loader."
-  ]
+  }
 }
