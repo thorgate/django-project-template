@@ -21,7 +21,7 @@ stages:
 
 test:
   stage: test
-  coverage: '^TOTAL.*\s+(\d+\%)$'
+  coverage: '/^TOTAL.*\s+(\d+\%)$/'
   except:
     - template  # Don't run CI on template branch, should not be required
   script:
