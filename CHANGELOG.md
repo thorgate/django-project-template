@@ -9,6 +9,11 @@ CHANGES
 -->
 
 
+## 2018-03-29
+
+- Fixed coverage config in `.gitlab-ci.yml` (it has to be regex).
+
+
 ## 2018-03-12
 
 - Update Python packages and Node Docker image to latest versions.
