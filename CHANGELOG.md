@@ -9,6 +9,11 @@ CHANGES
 -->
 
 
+## 2018-03-29
+
+- Fixed coverage config in `.gitlab-ci.yml` (it has to be regex).
+
+
 ## 2018-03-21 (bootstrap4)
 
 - Updated Bootstrap to 4.0 final
