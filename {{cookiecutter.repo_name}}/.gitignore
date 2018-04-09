@@ -23,3 +23,4 @@ venv/
 {{cookiecutter.repo_name}}/.cache
 {{cookiecutter.repo_name}}/.coverage
 {{cookiecutter.repo_name}}/cover/
+{{cookiecutter.repo_name}}/codecept/output

@@ -9,6 +9,10 @@ CHANGES
 -->
 
 
+## 2018-06-20 (spa)
+
+- Integrate codecept testing framework
+
 ## 2018-06-12
 
 - Update Bootstrap to 4.1.1

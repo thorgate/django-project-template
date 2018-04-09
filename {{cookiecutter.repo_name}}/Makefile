@@ -28,6 +28,7 @@ COFF ?= \033[0m
 # Mark non-file targets as PHONY
 .PHONY: all help docker settings setup pycharm coverage node-install test clean quality eslint prospector stylelint docker-django
 .PHONY: bash docker-manage shell makemigrations migrate docker-logs makemessages compilemessages add-locale psql isort isort-fix
+.PHONY: test-codecept
 
 all: help
 
@@ -118,7 +119,14 @@ test-django: clean
 	@echo "$(CYAN)Running automatic django tests$(COFF)"
 	@docker-compose run --rm django py.test
 
+{% if cookiecutter.include_codecept == 'yes' %}
+test-codecept:
+	@$(SITE_ROOT)/codecept/run.sh -- codeceptjs run --steps
+
+test: test-node test-django test-codecept
+{% else %}
 test: test-node test-django
+{% endif %}
 
 clean:
 	@echo "$(CYAN)Cleaning pyc files$(COFF)"

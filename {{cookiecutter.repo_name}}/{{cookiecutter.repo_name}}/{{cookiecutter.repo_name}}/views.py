@@ -1,7 +1,14 @@
-from django.http import HttpResponseNotFound, HttpResponseServerError, JsonResponse
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseServerError, JsonResponse
 from django.template import Context, Engine, loader, TemplateDoesNotExist
 from django.utils.translation import gettext as _
 from django.views.decorators.csrf import requires_csrf_token
+
+from rest_framework.decorators import api_view
+
+
+@api_view()
+def api_ping(request):
+    return HttpResponse("pong")
 
 
 def sentry_id_from_request(request):

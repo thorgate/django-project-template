@@ -21,8 +21,6 @@ const mapStateToProps = state => ({
     activeLanguage: authSelectors.activeLanguage(state),
 });
 
-@withRouter
-@connect(mapStateToProps)
 class View extends Component {
     static propTypes = {
         location: RouterLocationShape.isRequired,
@@ -164,4 +162,4 @@ class View extends Component {
     }
 }
 
-export default View;{% endraw %}
+export default withRouter(connect(mapStateToProps)(View));{% endraw %}

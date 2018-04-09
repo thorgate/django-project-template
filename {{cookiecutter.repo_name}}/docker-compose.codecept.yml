@@ -1,0 +1,33 @@
+# codeceptjs environment, used together with normal docker-compose.yml,
+# like so:
+# docker-compose -f docker-compose.json -f docker-compose.codecept.yml ...
+
+version: '2'
+
+services:
+  django:
+    volumes:
+      - ".data/codecept/media:/files/media"
+    environment:
+      - DJANGO_SETTINGS_MODULE=settings.test_codecept
+
+  postgres:
+    volumes:
+      - ".data/codecept/postgres:/var/lib/postgresql/data"
+    environment:
+      POSTGRES_USER: codecept
+      POSTGRES_PASSWORD: codecept
+
+  redis:
+    volumes:
+      - ".data/codecept/redis:/data"
+
+  codeceptjs:
+    image: codeception/codeceptjs:1.2.1
+    depends_on:
+      - django
+      - node
+      - postgres
+    command: "/bin/true"
+    volumes:
+      - "./{{cookiecutter.repo_name}}/codecept:/tests"

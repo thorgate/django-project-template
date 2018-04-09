@@ -13,8 +13,6 @@ const mapDispatchToProps = dispatch => ({
     onPageUnload: (...args) => dispatch(pageUnload(...args)),
 });
 
-@withRouter
-@connect(null, mapDispatchToProps)
 class PendingDataRouter extends Component {
     static propTypes = {
         location: RouterLocationShape.isRequired,
@@ -75,4 +73,4 @@ class PendingDataRouter extends Component {
     }
 }
 
-export default PendingDataRouter;
+export default withRouter(connect(null, mapDispatchToProps)(PendingDataRouter));

@@ -19,6 +19,13 @@ def handle_react():
                           '{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}/tasks.py',
                           ]
 
+    if '{{ cookiecutter.include_codecept }}' == 'no':
+        cleanup_paths += [
+            '{{ cookiecutter.repo_name }}/codecept',
+            '{{ cookiecutter.repo_name }}/settings/test_codecept',
+            'docker-compose.codecept.yml',
+        ]
+
     # If using specific vcs, add some extra cleanup paths
     repo_type = '{{ cookiecutter.vcs }}'.lower()
     if repo_type not in {'git', 'hg', 'none'}:

@@ -110,6 +110,17 @@ def test_celery_and_cms_generate(cookies, default_project):
     validate_project_works(result, default_project)
 
 
+def test_codecept_generate(cookies, default_project):
+    default_project.update({
+        'include_codecept': 'yes',
+    })
+    result = generate_project(cookies, default_project)
+
+    assert result.project.join('docker-compose.codecept.yml').exists()
+
+    validate_project_works(result, default_project)
+
+
 def test_git_generate(cookies, default_project):
     default_project.update({
         'vcs': 'git',
