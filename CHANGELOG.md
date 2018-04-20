@@ -9,6 +9,11 @@ CHANGES
 -->
 
 
+## 2018-04-20
+
+- Added Nginx-based rate-limiting for login urls.
+
+
 ## 2018-03-29
 
 - Fixed coverage config in `.gitlab-ci.yml` (it has to be regex).

@@ -89,6 +89,11 @@ def defaults():
                 "remote_path": "/etc/nginx/conf.d/%(filename)s"
             },
             {
+                "pattern": "app.{{cookiecutter.repo_name}}.proxy_django.include",
+                "filename": "app.{{cookiecutter.repo_name}}.proxy_django.include",
+                "remote_path": "/etc/nginx/conf.d/%(filename)s"
+            },
+            {
                 "pattern": "%(target)s.ssl",
                 "filename": "ssl.{{cookiecutter.repo_name}}.include",
                 "remote_path": "/etc/nginx/conf.d/%(filename)s"
