@@ -34,6 +34,13 @@ def validate_project_works(result, config):
     commands = gitlab_ci['test']['script']
     gitlab_ci_env = gitlab_ci['test'].get('variables', {})
 
+    if not commands:
+        raise ValueError(
+            "No test commands extracted from project gitlab-ci. "
+            "You probably need to update this part of the test to reflect changes "
+            "made to the .gitlab-ci.yml structure."
+        )
+
     env = os.environ.copy()
     env.update({
         **gitlab_ci_env,
