@@ -24,8 +24,10 @@ test:
   coverage: '/^TOTAL.*\s+(\d+\%)$/'
   except:
     - template  # Don't run CI on template branch, should not be required
+  variables:
+    EDIT_SETTINGS: 'no'
   script:
-    - EDIT_SETTINGS=no make settings
+    - make settings
     - docker-compose build
     - make node-install
     - make quality
