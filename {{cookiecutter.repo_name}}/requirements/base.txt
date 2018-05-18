@@ -1,7 +1,7 @@
 {% if cookiecutter.include_celery == 'yes' -%}
 celery[redis]==4.1.0
 {% endif -%}
-Django==1.11.11
+Django==1.11.13
 tg-utils==0.3.0
 tg-react==2.0.0a3
 # Use binary variant of psycopg2, see warning at http://initd.org/psycopg/docs/install.html#binary-install-from-pypi
@@ -15,13 +15,13 @@ django-settings-export==1.2.1
 djangorestframework==3.7.7
 django-filter==1.0.4
 
-# Tests
-pytest==3.4.2
-pytest-django==3.1.2
+# Tests and QA
+pytest==3.5.1
+pytest-django==3.2.1
 coverage==4.5.1
 prospector==0.12.7
-pylint==1.8.2
-pylint-django==0.9.3
+pylint==1.8.4
+pylint-django==0.11
 isort==4.3.4
 
 # Needed if you use utils.hashmodels.ModelHashIdMixin

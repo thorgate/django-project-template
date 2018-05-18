@@ -9,6 +9,22 @@ CHANGES
 -->
 
 
+## 2018-05-17
+
+- Update packages and Docker images to latest versions.
+  Notably updated `node-sass` and `sass-loader` so that binary version can be used.
+
+
+## 2018-05-15
+
+- Use `bootstrap4` template pack of `django-crispy-forms`.
+
+
+## 2018-05-14
+
+- Template: use commands from project's `.gitlab-ci.yml` for testing
+
+
 ## 2018-04-20
 
 - Added Nginx-based rate-limiting for login urls.
