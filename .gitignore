@@ -5,4 +5,5 @@ npm-debug.log
 *.pyo
 *.pyc
 .cache
+.pytest_cache
 venv/

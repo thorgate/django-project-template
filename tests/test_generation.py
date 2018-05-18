@@ -1,5 +1,6 @@
 import os
 import subprocess
+import yaml
 
 from cookiecutter.config import USER_CONFIG_PATH
 from cookiecutter.exceptions import FailedHookException
@@ -26,19 +27,23 @@ def validate_project_works(result, config):
     project_dir = str(result.project)
     project_inner_dir = str(result.project.join(config['repo_name']))
 
-    # Keep these in sync w/ test commands inside {{cookiecutter.repo_name}}/.gitlab-ci.yml (under tests.script)
-    # As an alternative we could also parse the file and retrieve the commands dynamically.
-    commands = [
-        'make settings',
-        'docker-compose build',
-        'make node-install',
-        'make quality',
-        'make coverage',
-    ]
+    with open(os.path.join(project_dir, '.gitlab-ci.yml')) as f:
+        gitlab_ci = yaml.load(f)
+
+    # Grab commands and environment from gitlab-ci
+    commands = gitlab_ci['test']['script']
+    gitlab_ci_env = gitlab_ci['test'].get('variables', {})
+
+    if not commands:
+        raise ValueError(
+            "No test commands extracted from project gitlab-ci. "
+            "You probably need to update this part of the test to reflect changes "
+            "made to the .gitlab-ci.yml structure."
+        )
 
     env = os.environ.copy()
     env.update({
-        'EDIT_SETTINGS': 'no',
+        **gitlab_ci_env,
 
         # PWD call in Makefile reports wrong path during testing
         'PROJECT_ROOT': project_dir,
