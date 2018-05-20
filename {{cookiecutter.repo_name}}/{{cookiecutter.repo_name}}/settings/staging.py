@@ -7,7 +7,7 @@ ALLOWED_HOSTS = ['{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_hos
 
 # Static site url, used when we need absolute url but lack request object, e.g. in email sending.
 SITE_URL = 'https://{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}'
-KOA_SITE_BASE = SITE_URL
+KOA_DJANGO_BASE = SITE_URL
 DJANGO_SITE_URL = SITE_URL
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

@@ -6,7 +6,7 @@ export default (error, setStatus, setErrors) => {
     } else if (error.isInvalidResponseCode) {
         setStatus(gettext('Bad response from server, try again later'));
     } else if (error.isValidationError) {
-        const nonFieldErrors = error.errors.nonFieldErrors;
+        const {nonFieldErrors} = error.errors;
         if (nonFieldErrors) {
             setStatus(nonFieldErrors.toString());
         }
@@ -16,7 +16,7 @@ export default (error, setStatus, setErrors) => {
         ).map(
             e => ({field: e.fieldName, message: e.toString()}),
         ).reduce((result, current) => {
-            result[current.field] = current.message;  // eslint-disable-line no-param-reassign
+            result[current.field] = current.message; // eslint-disable-line no-param-reassign
             return result;
         }, {});
         setErrors(fields);

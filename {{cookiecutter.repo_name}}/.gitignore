@@ -6,6 +6,7 @@
 *.pyc
 .sass-cache/
 npm-debug.log
+yarn-error.log
 node_modules/
 venv/
 .cache/
@@ -16,6 +17,7 @@ venv/
 {{cookiecutter.repo_name}}/settings/local_test.py
 {{cookiecutter.repo_name}}/db.sqlite3
 {{cookiecutter.repo_name}}/constants.json
+{{cookiecutter.repo_name}}/static/build/
 {{cookiecutter.repo_name}}/app/build/
 {{cookiecutter.repo_name}}/app/lib/
 {{cookiecutter.repo_name}}/assets/

@@ -15,6 +15,10 @@
         <script src='//cdn.ravenjs.com/1.3.0/native/raven.min.js'></script>
     {% endif %}
 
+    {% for src in assets.headScripts %}
+        <script type="text/javascript" src="{{ src }}"></script>
+    {% endfor %}
+
     {% for css in assets.style %}
         <link rel="stylesheet" href="{{ css }}" type="text/css" />
     {% endfor %}
@@ -33,7 +37,9 @@
 
     <div id="root">{{ html|safe }}</div>
 
-    {% for src in assets.script %}
+    {{ assets.cssHash|safe }}
+
+    {% for src in assets.bodyScripts %}
         <script type="text/javascript" src="{{ src }}"></script>
     {% endfor %}
 </body>

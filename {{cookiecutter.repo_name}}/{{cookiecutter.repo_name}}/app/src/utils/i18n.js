@@ -9,12 +9,13 @@ const i18n = makeI18n();
 
 i18n.ucfirst = str => `${str.charAt(0).toUpperCase()}${str.substr(1).toLowerCase()}`;
 
-export const gettext = i18n.gettext;
-export const pgettext = i18n.pgettext;
-export const ngettext = i18n.ngettext;
-export const npgettext = i18n.npgettext;
-export const ucfirst = i18n.ucfirst;
-export const interpolate = i18n.interpolate;
+export const {gettext} = i18n;
+export const {pgettext} = i18n;
+export const {ngettext} = i18n;
+export const {npgettext} = i18n;
+export const {ucfirst} = i18n;
+export const {interpolate} = i18n;
+
 export const nl2br = (text) => {
     const res = [];
     text.split('\n').forEach((x, i) => {

@@ -1,23 +1,22 @@
-export const hasValue = function (value) {
-    return typeof value !== 'undefined' && value !== null;
-};
+/* global window */
 
-export const isFunction = function (value) {
-    /* global window */
-    return (
-        (typeof window !== 'undefined' && value === window.alert) ||
-        Object.prototype.toString.call(value) === '[object Function]'
-    );
-};
+export const hasValue = value => (
+    typeof value !== 'undefined' && value !== null
+);
 
-export const isObject = function (value) {
-    return Object.prototype.toString.call(value) === '[object Object]';
-};
+export const isFunction = value => (
+    (typeof window !== 'undefined' && value === window.alert) ||
+    Object.prototype.toString.call(value) === '[object Function]'
+);
 
-export const isString = function (value) {
-    return Object.prototype.toString.call(value) === '[object String]';
-};
+export const isObject = value => (
+    Object.prototype.toString.call(value) === '[object Object]'
+);
 
-export const isSubClass = function (B, A) {
-    return B.prototype instanceof A || B === A;
-};
+export const isString = value => (
+    Object.prototype.toString.call(value) === '[object String]'
+);
+
+export const isSubClass = (B, A) => (
+    B.prototype instanceof A || B === A
+);

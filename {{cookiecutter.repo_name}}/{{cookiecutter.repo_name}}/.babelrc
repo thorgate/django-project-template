@@ -4,7 +4,7 @@
         "transform-function-bind",
         "transform-decorators-legacy",
         "syntax-dynamic-import",
-        "dynamic-import-webpack",
-        "universal-import"
+        "react-hot-loader/babel",
+        ["universal-import", {"disableWarnings": true}]
     ]
 }

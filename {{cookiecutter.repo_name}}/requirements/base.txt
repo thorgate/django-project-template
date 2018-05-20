@@ -8,8 +8,6 @@ tg-react==2.0.0a3
 psycopg2-binary==2.7.4
 django-redis==4.9.0
 django-crispy-forms==1.7.2
-django-webpack-loader==0.6.0
-django-settings-export==1.2.1
 
 # DRF & friends
 djangorestframework==3.7.7

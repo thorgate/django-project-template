@@ -327,7 +327,7 @@ WEBPACK_CONSTANT_PROCESSORS = (
 # Koa configuration
 API_BASE = '/api/'
 KOA_PORT = 80
-KOA_SITE_BASE = 'http://django'
+KOA_DJANGO_BASE = 'http://django'
 # If False Koa app will wait for initial data to finish before showing next route
 KOA_APP_IS_EAGER = False
 # If True, 404 are not treated as errors for sentry
@@ -335,11 +335,11 @@ KOA_APP_IGNORE_404 = True
 
 # Proxy map, used by Koa app to proxy all to Django
 KOA_APP_PROXY = {
-    '/d/': KOA_SITE_BASE,  # Generic prefix, helpful if adding new urls to site to use Django views
-    '/api/': KOA_SITE_BASE,
-    MEDIA_URL: KOA_SITE_BASE,
-    STATIC_URL: KOA_SITE_BASE,
-    '/adminpanel/': KOA_SITE_BASE,
+    '/d/': KOA_DJANGO_BASE,  # Generic prefix, helpful if adding new urls to site to use Django views
+    '/api/': KOA_DJANGO_BASE,
+    MEDIA_URL: KOA_DJANGO_BASE,
+    STATIC_URL: KOA_DJANGO_BASE,
+    '/{{cookiecutter.django_admin_path}}/': KOA_DJANGO_BASE,
 }
 
 

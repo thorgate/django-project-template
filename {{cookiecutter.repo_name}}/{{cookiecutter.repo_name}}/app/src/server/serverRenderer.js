@@ -1,12 +1,7 @@
-import path from 'path';
-
 import serialize from 'serialize-javascript';
 
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
-import {flushModuleIds} from 'react-universal-component/server';
-import flushChunks from 'webpack-flush-chunks';
-import {put} from 'redux-saga/effects';
 
 import {StaticRouter} from 'react-router-dom';
 import {renderRoutes} from 'react-router-config';
@@ -15,78 +10,21 @@ import {Provider} from 'react-redux';
 
 import configureStore from 'configuration/configureStore';
 import routes from 'configuration/routes';
-import {STATE_KEY as SERVER_STATE_KEY, setMutator, setCookies} from 'ducks/serverClient';
 import {selectors as userSelectors, setActiveLanguage} from 'ducks/user';
 import sagaRunner from 'sagas/helpers/sagaRunner';
-import logger from 'server/logger';
 import getMatchRouteSagas from 'utils/matchRouteSagas';
 import i18n from 'utils/i18n';
-import getLanguage from './language';
+
+import logger from './utils/logger';
+import getLanguage from './utils/language';
+import collectAssets from './utils/assets';
 
 
-function collectAssets(ctx, clientStats) {
-    // DEV: Use webpack-dev-middleware compiled version
-    // Production: Use cached stats file
-
-    const loadOrder = ['manifest', 'vendor', 'app', 'styles'];
-    const appendPublicPath = asset => `${DJ_CONST.STATIC_WEBPACK_URL}${asset}`;
-    let scripts = [];
-    let styles = [];
-
-    // When not pre-rendering, add all chunks
-    if (ctx.state.noPreRender) {
-        const assetsByChunkName = clientStats.assetsByChunkName;
-
-        const isScript = asset => asset.endsWith('.js');
-        const isStyles = asset => asset.endsWith('.css');
-        const appendAssets = (chunk) => {
-            let chunks = chunk;
-            if (!Array.isArray(chunks)) {
-                chunks = [chunks];
-            }
-
-            scripts = scripts.concat(chunks.filter(isScript));
-            styles = styles.concat(chunks.filter(isStyles));
-        };
-
-        loadOrder.forEach((chunkName) => {
-            appendAssets(assetsByChunkName[chunkName]);
-        });
-
-        Object.entries(assetsByChunkName).forEach(([name, chunk]) => {
-            if (loadOrder.find(key => name === key)) {
-                return;
-            }
-
-            appendAssets(chunk);
-        });
-    } else {
-        const moduleIds = flushModuleIds();
-        const chunks = flushChunks(clientStats, {
-            moduleIds,
-            before: loadOrder,
-            after: [],
-            rootDir: path.join(__dirname, '..'),
-        });
-        scripts = chunks.scripts;
-        styles = chunks.stylesheets;
-    }
-    return {
-        script: scripts.map(appendPublicPath),
-        style: styles.map(appendPublicPath),
-    };
-}
-
-const serializeState = state => serialize(Object.entries(state).reduce((result, [key, data]) => {
-    if (key !== SERVER_STATE_KEY) {
-        result[key] = data;  // eslint-disable-line no-param-reassign
-    }
-    return result;
-}, {}));
+const serializeState = state => serialize(state);
 
 
-const setHeadersFromContext = ctx => function* mutatorSetter() {
-    const mutator = (rawResponse) => {
+const setHeadersFromContext = (ctx) => {
+    const mutateRawResponse = (rawResponse) => {
         const setCookieHeader = rawResponse.headers && rawResponse.headers['set-cookie'];
         if (setCookieHeader) {
             ctx.set({
@@ -95,8 +33,13 @@ const setHeadersFromContext = ctx => function* mutatorSetter() {
         }
         return rawResponse;
     };
-    yield put.resolve(setMutator(mutator));
-    yield put.resolve(setCookies(ctx.cookie));
+
+    return {
+        requestConfig: {
+            mutateRawResponse,
+            cookies: ctx.cookie,
+        },
+    };
 };
 
 
@@ -111,7 +54,8 @@ const preRender = async (ctx, store, handleError, doRedirect, clientStats) => {
                 <StaticRouter location={ctx.url} context={context}>
                     {renderRoutes(routes)}
                 </StaticRouter>
-            </Provider>);
+            </Provider>,
+        );
 
         const header = Helmet.renderStatic();
 
@@ -182,10 +126,11 @@ export default options => async (ctx) => {
     try {
         logger.debug(`GET ${ctx.path}`);
 
-        const {store, sagaMiddleware} = configureStore();
-
-        const mutatorSetter = sagaMiddleware.run(sagaRunner([setHeadersFromContext(ctx)]));
-        await mutatorSetter.done;
+        const {store, sagaMiddleware} = configureStore({}, {
+            sagaMiddleware: {
+                context: setHeadersFromContext(ctx),
+            },
+        });
 
         // Find all initial data loaders
         const {initialTasks} = getMatchRouteSagas(routes, ctx.url);

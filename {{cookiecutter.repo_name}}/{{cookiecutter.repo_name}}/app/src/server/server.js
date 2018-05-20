@@ -1,4 +1,5 @@
-/* eslint-disable global-require, import/no-extraneous-dependencies */
+/* eslint global-require: 0 */
+/* eslint import/no-extraneous-dependencies: 0 */
 import fs from 'fs';
 import path from 'path';
 
@@ -11,9 +12,9 @@ import koaRaven from 'koa2-raven';
 import koaUserAgent from 'koa-useragent';
 import Raven from 'raven';
 
-import DJ_CONST from './constants';
-import getLanguage from './language';
-import logger from './logger';
+import DJ_CONST from './utils/constants';
+import getLanguage from './utils/language';
+import logger from './utils/logger';
 import i18n, {gettext} from '../utils/i18n';
 import koaHostname from './middleware/hostnameValidation';
 
@@ -24,9 +25,13 @@ if (process.send) {
 
 const app = new Koa();
 
+// Create default globals
 global.WORKER_ID = null;
 global.CLUSTERED = false;
 global.NO_PRE_RENDERER = process.env.PRERENDER === 'n';
+global.ENABLE_PROXY = process.env.ENABLE_PROXY === 'y';
+global.WITH_LOGGING = process.env.WITH_LOGGING === 'y';
+
 if (!global.DEV_MODE) {
     /* eslint-disable */
     const cluster = require('cluster');
@@ -61,14 +66,12 @@ app.use(koaResponseTime());
 // Add user agent parsing
 app.use(koaUserAgent);
 
-// Add proxy middleware in development
-if (global.DEV_MODE) {
-    /* eslint-disable global-require */
+// Add proxy middleware in development or when requested
+if (global.DEV_MODE || global.ENABLE_PROXY) {
     const appProxy = require('./middleware/appProxy').default;
 
     // Apply app proxy
     appProxy(app, DJ_CONST.KOA_APP_PROXY);
-    /* eslint-enable global-require */
 }
 
 // Configure nunjucks for templates
@@ -132,7 +135,7 @@ if (DEV_MODE) {
     const webpackHotMiddleware = require('webpack-hot-middleware');
     const webpackHotServerMiddleware = require('webpack-hot-server-middleware');
     const config = require('../../webpack/config.dev.js');
-    const publicPath = config[0].output.publicPath;
+    const {publicPath} = config[0].output;
 
     // Webpack compiler
     const compiler = webpack(config);
@@ -141,7 +144,8 @@ if (DEV_MODE) {
     app.use(koaDevware(webpackDevMiddleware(compiler, {
         watchOptions: {
             aggregateTimeout: 300,
-            poll: true,
+            poll: 1000,
+            ignored: /node_modules/,
         },
         publicPath,
         serverSideRender: true,
@@ -177,20 +181,6 @@ if (DEV_MODE) {
 
 let server;
 
-const serverExit = () => {
-    logger.info('Received shutdown command.');
-
-    if (server) {
-        server.shutdown(() => {
-            process.exit(); // eslint-disable-line no-process-exit
-        });
-    } else {
-        process.exit(); // eslint-disable-line no-process-exit
-    }
-};
-
-process.on('SIGTERM', serverExit);
-process.on('SIGINT', serverExit);
 process.on('unhandledRejection', (reason, p) => {
     logger.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
 });
@@ -218,7 +208,11 @@ export const listen = () => {
 
     // Enable server graceful shutdown
     // Otherwise WebSockets (keep-alive connections) might keep server running
-    gracefulShutdown(server);
+    gracefulShutdown(server, {
+        signals: 'SIGINT SIGTERM',
+        timeout: 10000,
+        development: true,
+    });
 };
 
 export default app;

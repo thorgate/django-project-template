@@ -1,7 +1,5 @@
 import Raven from 'raven-js';
-import {call, select} from 'redux-saga/effects';
-
-import {selectConfig} from 'ducks/serverClient';
+import {call, getContext} from 'redux-saga/effects';
 
 
 /**
@@ -12,9 +10,10 @@ import {selectConfig} from 'ducks/serverClient';
  * @returns {*} - Response from API call
  */
 function* handleApiCall(resource, method, ...rest) {
-    let requestConfig = {};
-    if (SERVER_MODE) {
-        requestConfig = yield select(selectConfig);
+    let requestConfig = yield getContext('requestConfig');
+
+    if (!requestConfig) {
+        requestConfig = {};
     }
 
     const validStatusCodes = rest.pop();
