@@ -49,4 +49,5 @@ class CustomUserAdmin(UserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
 
+
 admin.site.register(User, CustomUserAdmin)
