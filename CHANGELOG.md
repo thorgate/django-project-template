@@ -9,6 +9,16 @@ CHANGES
 -->
 
 
+## 2018-06-11
+
+- Update JS packages.
+  Notably Webpack loaders as much as seemed to be safe (and compatible with Webpack 2),
+  plus Webpack itself from 2.3 to 2.7 (which is the latest 2.x).
+  React was upgraded 16.1 -> 16.4
+- Update Python packages, notably Celery 4.1 -> 4.2, gunicorn 19.7 -> 19.8
+- Update Node Docker image (8.11.1 -> 8.11.2)
+
+
 ## 2018-05-17
 
 - Update packages and Docker images to latest versions.
