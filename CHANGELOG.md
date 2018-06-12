@@ -9,6 +9,11 @@ CHANGES
 -->
 
 
+## 2018-06-12
+
+- Update Bootstrap to 4.1.1
+
+
 ## 2018-06-11
 
 - Update JS packages.
