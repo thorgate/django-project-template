@@ -9,6 +9,13 @@ CHANGES
 -->
 
 
+## 2018-06-15
+
+- Fix broken CSS minification when running `npm run build`.
+  Basically the combination of Bootstrap and Webpack didn't work together and we changed order of Bootstrap imports
+  to make it work. Note that this might break print styles - see https://github.com/twbs/bootstrap/issues/24931
+
+
 ## 2018-06-12
 
 - Update Bootstrap to 4.1.1
