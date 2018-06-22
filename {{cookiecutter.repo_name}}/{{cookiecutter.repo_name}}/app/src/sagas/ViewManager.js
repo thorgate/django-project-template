@@ -1,4 +1,4 @@
-import {take, put, fork, cancel, join, race, call} from 'redux-saga/effects';
+import {all, take, put, fork, cancel, join, race, call} from 'redux-saga/effects';
 
 import {setError} from 'ducks/errors';
 import sagaRunner from 'sagas/helpers/sagaRunner';
@@ -28,7 +28,7 @@ function* viewUnload(initialDataTask, watcherTask) {
     }
 
     if (watcherTask) {
-        yield watcherTask.map(saga => cancel(saga));
+        yield all(watcherTask.map(saga => cancel(saga)));
     }
 
     return true;
@@ -61,7 +61,7 @@ export default function* ViewManager(routes) {
 
         if (watcherTasks.length) {
             // Start watchers for view
-            watcherSagasTask = yield watcherTasks.map(({saga, args}) => fork(saga, ...args));
+            watcherSagasTask = yield all(watcherTasks.map(({saga, args}) => fork(saga, ...args)));
         }
 
         if (initialDataSagasTask) {

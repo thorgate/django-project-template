@@ -12,8 +12,12 @@ const filenameTemplate = 'app/[name]';
 const config = makeConfig({
     filenameTemplate: filenameTemplate,
 
+    mode: 'development',
+
     devtool: 'eval-source-map',
 
+    namedModules: true,
+    minimize: false,
     extractCss: false,
     minifyCss: false,
 
@@ -27,19 +31,17 @@ const config = makeConfig({
         new webpack.NamedModulesPlugin(),
         new webpack.NoEmitOnErrorsPlugin(),
     ],
+
+    performance: {
+        hints: 'warning',
+    },
 });
 
 const serverConfig = makeServerConfig({
-    extractCss: false,
-    minifyCss: false,
+    mode: 'development',
 
     plugins: [
         new WriteFilePlugin(),
-        new webpack.DefinePlugin({
-            'process.env': {
-                NODE_ENV: JSON.stringify('development')
-            }
-        })
     ],
 });
 console.log("Using DEV config");

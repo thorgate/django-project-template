@@ -8,7 +8,7 @@ export default function transformObject(obj) {
         } else if (isFunction(value)) {
             newValue = 'Function';
         }
-        result[key] = newValue;  // eslint-disable-line no-param-reassign
+        result[key] = newValue; // eslint-disable-line no-param-reassign
 
         return result;
     }, {});

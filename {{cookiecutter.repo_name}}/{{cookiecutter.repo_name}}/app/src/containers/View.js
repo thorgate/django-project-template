@@ -93,7 +93,7 @@ class View extends Component {
         this.onPageUnload();
     }
 
-    onPageLoad(nextProps) {
+    onPageLoad = (nextProps) => {
         const {history: {action}, location: {key = 'root', pathname, search, hash}} = nextProps;
         let scrollToTop = hash.length === 0;
 
@@ -115,14 +115,14 @@ class View extends Component {
             // Scroll to top of viewport
             windowScroll(0, 0);
         }
-    }
+    };
 
-    onPageUnload() {
+    onPageUnload = () => {
         // Remember scroll position so we can restore if we return to this view via browser history
         const {location: {key = 'root'}} = this.props;
         const [x, y] = windowPageOffset();
         View.setPageOffset(key, x, y);
-    }
+    };
 
     renderChild = (child) => {
         const {isAuthenticated, user, activeLanguage} = this.props;

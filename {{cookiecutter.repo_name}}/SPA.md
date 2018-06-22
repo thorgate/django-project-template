@@ -1,4 +1,4 @@
-## <a name="general"></a>General Info
+{% raw %}## <a name="general"></a>General Info
 
 - Out of the box Redux, Redux-Saga & Hot-Reload setup
 - In development SPA is running on port `8000` by default, this can be changed with `KOA_PORT` django setting
@@ -37,7 +37,6 @@ And then in route config to support code splitting:
 // Add view as additional chunk with SSR support (view is loaded synchronously server-side)
 const ViewComponent = universal(import('views/ViewComponent'), {
     loading: Loading,
-    resolve: () => require.resolveWeak('views/ViewComponent'),
 });
 ```
 
@@ -48,6 +47,28 @@ For more info see [react-universal-component](https://github.com/faceyspacey/rea
 - ``withView`` *(Function)*: Function with signature `(title: string, authRequired: bool, decoratorProps: Object) => Component` HOC to define view
                              Wrap's base view with `View` component to handle scroll position restore & auth redirect.
                              Decorator props allows overriding `View` component props e.g `NotFoundComponent` to display different 404 page
+                             
+       
+## Loading static assets
+
+ - Loading images
+ 
+```js
+import Img from '../../static/images/something.png';
+
+
+// React <img /> config
+const Foo = () => (
+    <img src={Img} />
+);
+
+
+// Inline background image
+const Bar = () => (
+    <div style={{backgroundImage: `url('${Img}')`}} />
+);
+
+```                             
 
 
 ## <a name="routeConfig"></a>Route config
@@ -89,4 +110,4 @@ Initial data generator should have signature `function* saga(match) {...}`. For 
 ### Route helpers
 - ``urlResolve`` *(Function)*: Function with signature `(name: string, kwargs: Object) => String` to use urls with names
                                e.g for url `/test/:id` `kwargs` should be `{id: 1}` and results in `/test/1`
-                               e.g for optional parameter `/test/:id?` `kwargs` can be `null` and results in `/test`
+                               e.g for optional parameter `/test/:id?` `kwargs` can be `null` and results in `/test`{% endraw %}

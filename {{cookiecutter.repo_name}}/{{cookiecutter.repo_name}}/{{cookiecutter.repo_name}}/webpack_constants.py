@@ -14,7 +14,7 @@ def constants(context):
 
     output.update({
         'API_BASE': f'{settings.SITE_URL if settings.DEBUG else ""}{api_base}',
-        'KOA_API_BASE': f'{settings.KOA_SITE_BASE if settings.KOA_SITE_BASE else ""}{api_base}',
+        'KOA_API_BASE': f'{settings.KOA_DJANGO_BASE if settings.KOA_DJANGO_BASE else ""}{api_base}',
 
         'API': flatten_urls('{{cookiecutter.repo_name}}.api_urls', ''),
     })

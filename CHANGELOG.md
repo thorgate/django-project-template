@@ -8,6 +8,19 @@ When adding new changes just create a similar section after this comment like
 CHANGES
 -->
 
+## 2018-06-22
+
+- Upgrade Webpack to version 4
+  - Remove `WebpackSHAHash` and use built-in solution
+  - Rename `manifest` to `runtime` for clarification
+  - Server-side now uses packages in `node_modules` as externals to reduce bundle size
+- Fix server-side asset loading (use same generated asset ID as client-side)
+- Fix template asset loading order
+- Fix missing `django_admin_path` replacement's
+- Use `redux-saga.getContext` for server-side `requestConfig`
+- Remove `serverClient` reducer
+- Add better support to run production-mode in development
+
 
 ## 2018-06-12
 

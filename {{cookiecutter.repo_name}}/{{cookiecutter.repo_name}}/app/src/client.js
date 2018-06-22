@@ -45,7 +45,8 @@ const render = (appRoutes) => {
                 </ConnectedRouter>
             </Provider>
         </AppContainer>,
-        document.getElementById('root'));
+        document.getElementById('root'),
+    );
 };
 
 if (module.hot) {

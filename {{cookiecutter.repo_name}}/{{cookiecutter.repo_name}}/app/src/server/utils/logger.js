@@ -22,7 +22,7 @@ function addLogger(level) {
     transports.push(new winston.transports.File(cfg));
 }
 
-if (global.DEV_MODE && !global.CLUSTERED) {
+if ((global.DEV_MODE && !global.CLUSTERED) || global.WITH_LOGGING) {
     transports.push(new winston.transports.Console({
         level: 'debug',
         handleExceptions: true,
@@ -46,7 +46,7 @@ const logger = new winston.Logger({
 
 // We also hijack console.log
 if (typeof window === 'undefined' && (global.DEV_MODE || global.CLUSTERED)) {
-    console.log = function () {
+    console.log = function log() {
         logger.info([].slice.call(arguments)); // eslint-disable-line
     };
 }

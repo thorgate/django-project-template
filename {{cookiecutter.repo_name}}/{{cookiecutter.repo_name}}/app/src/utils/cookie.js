@@ -12,7 +12,7 @@ export function setCookie(name, value, days = null) {
             date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
             expires = `; expires=${date.toGMTString()}`;
         }
-        const path = '; path=/';  // Separate variable to get around warning from django's JS translation processing
+        const path = '; path=/'; // Separate variable to get around warning from django's JS translation processing
         document.cookie = `${name}=${value}${expires}${path}`;
     }
 }

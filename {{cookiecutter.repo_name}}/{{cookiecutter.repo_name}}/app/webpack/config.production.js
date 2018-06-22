@@ -12,31 +12,26 @@ const filenameTemplate = 'app/[name]-[chunkhash]';
 const config = makeConfig({
     filenameTemplate: filenameTemplate,
 
+    mode: 'production',
+
     devtool: 'source-map',
 
+    namedModules: false,
+    minimize: true,
     extractCss: true,
     minifyCss: true,
 
     prependSources: [],
 
-    plugins: [
-        new WebpackSHAHash({
-            hashingAlgorithm: "sha512"
-        }),
-    ],
+    plugins: [],
+
+    performance: {
+        hints: 'warning',
+    },
 });
 
 const serverConfig = makeServerConfig({
-    extractCss: true,
-    minifyCss: true,
-
-    plugins: [
-        new webpack.DefinePlugin({
-            'process.env': {
-                NODE_ENV: JSON.stringify('production')
-            }
-        })
-    ],
+    plugins: [],
 });
 console.log("Using PRODUCTION config");
 

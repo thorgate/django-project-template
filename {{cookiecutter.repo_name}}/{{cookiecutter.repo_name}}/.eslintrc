@@ -39,13 +39,15 @@
 
         // Allow both single- as well as double quotes. This lets us use e.g. double quotes for user-visible strings and
         //  single quotes for internals.
-        "quotes": "off",
+        "quotes": ["error", "single"],
+        "jsx-quotes": ["error", "prefer-double"],
 
         // else-return improves readability sometimes, especially with one-liners.
         "no-else-return": "off",
 
         // Unlike Airbnb, we don't keep spaces inside of curly braces for objects.
         "object-curly-spacing": ["error", "never"],
+        "object-curly-newline": "off",
 
         // Allow unary ++ operator in for loop afterthoughts
         "no-plusplus": ["error", {"allowForLoopAfterthoughts": true}],
@@ -55,6 +57,7 @@
             "error", {
                 "allow": [
                     "__initial_state__",
+                    "__DEV__",
                     "__REDUX_DEVTOOLS_EXTENSION_COMPOSE__",
                 ]
             }
@@ -63,6 +66,9 @@
         // Turn these into warnings
         "class-methods-use-this": "warn",
         "jsx-a11y/no-static-element-interactions": "warn",
+        "jsx-a11y/anchor-is-valid": [ "error", { "components": [ "Link" ], "specialLink": [ "to" ] } ],
+        "jsx-a11y/label-has-for": "warn",
+        "function-paren-newline": ["error", "consistent"],
 
         // Show TODOs and FIXMEs as warnings
         "no-warning-comments": ["warn", {"location": "anywhere"}],

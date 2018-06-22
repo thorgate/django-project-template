@@ -10,13 +10,11 @@ import logoutSaga from 'sagas/user/logoutSaga';
 import loginWatcher from 'sagas/user/loginSaga';
 
 
-const Home = universal(() => import('views/Home'), {
+const Home = universal(import('views/Home'), {
     loading: Loading,
-    resolve: () => require.resolveWeak('views/Home'),
 });
-const Login = universal(() => import('views/Login'), {
+const Login = universal(import('views/Login'), {
     loading: Loading,
-    resolve: () => require.resolveWeak('views/Login'),
 });
 
 const routes = [
