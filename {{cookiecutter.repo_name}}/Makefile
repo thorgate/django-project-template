@@ -12,7 +12,7 @@ EDITOR ?= nano
 EDIT_SETTINGS ?= yes
 
 # Get root dir and project dir
-PROJECT_ROOT ?= $(PWD)
+PROJECT_ROOT ?= $(CURDIR)
 SITE_ROOT ?= $(PROJECT_ROOT)/{{cookiecutter.repo_name}}
 
 BLACK ?= \033[0;30m
