@@ -34,6 +34,49 @@ function makeConfig(options) {
                 use: 'babel-loader',
             }, {
                 test: /\.(css|scss)$/,
+                include: [
+                    // CSS modules should only be generated from css/scss files
+                    // within the src directory
+                    path.resolve(__dirname, '..', 'src'),
+                ],
+                use: ExtractTextPlugin.extract({
+                    fallback: 'style-loader',
+                    use: [{
+                        loader: "css-loader",
+                        options: {
+                            localIdentName: '[path]___[name]__[local]___[hash:base64:5]',
+                            modules: true,
+                            importLoader: 1,
+                            sourceMap: true,
+                            minimize: options.minifyCss,
+                        },
+                    }, {
+                        loader: "postcss-loader",
+                        options: {
+                            plugins: function() {
+                                return [autoprefixer]
+                            },
+                        },
+                    }, {
+                        loader: "resolve-url-loader",
+                    }, {
+                        loader: "sass-loader",
+                        options: {
+                            includePaths: [
+                                path.resolve(project_root, 'node_modules', 'bootstrap-sass', 'assets', 'stylesheets'),
+                                path.resolve(__dirname, '..', '..', 'static', 'styles-src'),
+                            ],
+                            sourceMap: true,
+                        },
+                    }],
+                }),
+            }, {
+                test: /\.(css|scss)$/,
+                include: [
+                    // Global stylesheets in the static directory do not
+                    // generate modules
+                    path.resolve(__dirname, '..', '..', 'static'),
+                ],
                 use: ExtractTextPlugin.extract({
                     use: [{
                         loader: "css-loader",
