@@ -9,6 +9,12 @@ CHANGES
 -->
 
 
+## 2018-07-06
+
+- Ignore pytest cache directory.
+- Fix test database, which also needs the correct host and user/password.
+
+
 ## 2018-06-11
 
 - Update JS packages.
