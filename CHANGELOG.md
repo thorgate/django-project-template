@@ -8,6 +8,13 @@ When adding new changes just create a similar section after this comment like
 CHANGES
 -->
 
+## 2018-09-06
+
+- Add project code style to `.idea_template` with style settings to match our linters. 
+  Used to set more specific settings that `.editorconfig` does not allow such as hex color format. 
+- Use `Django` as Python Template Language instead of `Jinja2`.
+- Add browserupgrade molecule import to `main.scss`. It was missing.
+
 
 ## 2018-07-06
 
