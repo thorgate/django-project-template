@@ -9,6 +9,11 @@ CHANGES
 -->
 
 
+## 2018-07-12
+
+- Fix X-Frame-Options for CMS projects.
+
+
 ## 2018-07-06
 
 - Ignore pytest cache directory.
