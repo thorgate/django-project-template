@@ -8,6 +8,11 @@ When adding new changes just create a similar section after this comment like
 CHANGES
 -->
 
+## 2018-07-18
+
+- Allow React pure components in eslint configuration.
+
+
 ## 2018-09-06
 
 - Add project code style to `.idea_template` with style settings to match our linters. 
