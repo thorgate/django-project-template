@@ -13,7 +13,7 @@ CHANGES
 - Allow React pure components in eslint configuration.
 
 
-## 2018-09-06
+## 2018-07-13
 
 - Add project code style to `.idea_template` with style settings to match our linters. 
   Used to set more specific settings that `.editorconfig` does not allow such as hex color format. 
