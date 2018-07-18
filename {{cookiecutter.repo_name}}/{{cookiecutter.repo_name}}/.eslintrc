@@ -25,6 +25,9 @@
         // JSX files use .js extension
         "react/jsx-filename-extension": ["error", {"extensions": [".js"]}],
 
+        // Pure components are more efficient in some cases, but written as class components
+        "react/prefer-stateless-function": ["error", {"ignorePureComponents": true}],
+
         // Set max line length to 120 chars. Smaller lengths feel too small on modern monitors.
         "max-len": ["error", 120],
 
