@@ -14,7 +14,7 @@ django-settings-export==1.2.1
 pytest==3.6.1
 pytest-django==3.2.1
 coverage==4.5.1
-prospector==0.12.11
+prospector==1.1.1
 pylint==1.9.2
 pylint-django==0.11.1
 isort==4.3.4
