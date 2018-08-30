@@ -199,3 +199,9 @@ endif
 
 psql:
 	docker-compose exec postgres psql --user {{cookiecutter.repo_name}} --dbname {{cookiecutter.repo_name}}
+
+
+{% if cookiecutter.include_docs == 'yes' %}
+docs:
+	docker-compose run --rm django sphinx-build ./docs ./docs/_build
+{% endif %}

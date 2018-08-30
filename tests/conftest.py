@@ -20,6 +20,7 @@ def default_project():
         "repo_name": "test_project",
         "include_cms": "no",
         "include_celery": "no",
+        "include_docs": "yes",
         "test_host": "test1.thorgate.eu",
         "live_host": "test2.thorgate.eu",
         "vcs": None,

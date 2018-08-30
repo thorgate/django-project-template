@@ -93,6 +93,27 @@ def test_celery_generate(cookies, default_project):
     validate_project_works(result, default_project)
 
 
+def test_doc_generate(cookies, default_project):
+    default_project.update({
+        'include_docs': 'yes',
+    })
+    result = generate_project(cookies, default_project)
+
+    assert result.project.join('%s/docs/conf.py' % (default_project['repo_name'],)).exists()
+    assert result.project.join('%s/docs/index.rst' % (default_project['repo_name'],)).exists()
+
+    validate_project_works(result, default_project)
+
+
+def test_doc_not_generate(cookies, default_project):
+    default_project.update({
+        'include_celery': 'no',
+    })
+    result = generate_project(cookies, default_project)
+
+    assert not result.project.join('docs').exists()
+
+
 def test_celery_and_cms_generate(cookies, default_project):
     default_project.update({
         'include_cms': 'yes',
