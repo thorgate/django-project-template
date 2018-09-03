@@ -9,4 +9,5 @@ Welcome to {{cookiecutter.repo_name}}'s documentation!
    :caption: Contents:
 
    overview
+   setup
    contributing

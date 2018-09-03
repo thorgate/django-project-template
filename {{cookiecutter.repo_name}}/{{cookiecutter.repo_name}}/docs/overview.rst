@@ -37,3 +37,16 @@ Desktop
 - last 2 Safari versions
 - last 2 Firefox versions
 - Firefox ESR
+
+
+Client information
+******************
+
+TODO: Information about the client.
+TODO: Deadlines.
+
+
+Kickoff notes
+*************
+
+TODO: Project kickoff notes.

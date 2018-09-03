@@ -86,10 +86,10 @@ def validate_config():
         print("Valid include Celery keys are: %s" % ', '.join(valid_celery_key))
         sys.exit(1)
 
-    valid_celery_key = ['yes', 'no']
-    if "{{ cookiecutter.include_docs }}" not in valid_celery_key:
+    valid_docs_key = ['yes', 'no']
+    if "{{ cookiecutter.include_docs }}" not in valid_docs_key:
         print("Include docs '{{ cookiecutter.include_docs }}' is not valid!")
-        print("Valid include Docs keys are: %s" % ', '.join(valid_celery_key))
+        print("Valid include Docs keys are: %s" % ', '.join(valid_docs_key))
         sys.exit(1)
 
     if "{{ cookiecutter.python_version }}" not in ['3.4', '3.5', '3.6']:
