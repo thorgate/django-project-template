@@ -107,11 +107,11 @@ def test_doc_generate(cookies, default_project):
 
 def test_doc_not_generate(cookies, default_project):
     default_project.update({
-        'include_celery': 'no',
+        'include_docs': 'no',
     })
     result = generate_project(cookies, default_project)
 
-    assert not result.project.join('docs').exists()
+    assert not result.project.join('%s/docs' % (default_project['repo_name'],)).exists()
 
 
 def test_celery_and_cms_generate(cookies, default_project):
