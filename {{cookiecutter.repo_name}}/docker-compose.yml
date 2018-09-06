@@ -75,6 +75,6 @@ services:
     {%- endif %}
 
     redis:
-        image: redis:4.0.9-alpine
+        image: redis:4.0.10-alpine
         volumes:
             - ".data/redis:/data"
