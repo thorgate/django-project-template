@@ -1,13 +1,13 @@
-# Thorgate's Django template
+# Thorgate's Django template (Bootstrap 4 variant)
 
-[![Build status](https://gitlab.com/thorgate-public/django-project-template/badges/master/pipeline.svg)](https://gitlab.com/thorgate-public/django-project-template/commits/master) 
+[![Build status](https://gitlab.com/thorgate-public/django-project-template/badges/master/pipeline.svg)](https://gitlab.com/thorgate-public/django-project-template/commits/master)
 
 [Django](https://www.djangoproject.com/) project template that we use at [Thorgate](https://thorgate.eu).
 
 Best suited for medium-sized and bigger apps that use JavaScript and React for frontend.
 
-See also the [Bootstrap 4](https://gitlab.com/thorgate-public/django-project-template/tree/bootstrap4)
-and [single-page app](https://gitlab.com/thorgate-public/django-project-template/tree/spa) variants.
+See also the [Single-Page Application](https://gitlab.com/thorgate-public/django-project-template/tree/spa)
+and [Bootstrap 3](https://gitlab.com/thorgate-public/django-project-template/tree/legacy-docker-bootstrap3) variants.
 
 _(note that the primary repo is in [Gitlab](https://gitlab.com/thorgate-public/django-project-template), with mirror in [Github](https://github.com/thorgate/django-project-template))_
 

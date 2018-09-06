@@ -238,7 +238,7 @@ LOGOUT_REDIRECT_URL = 'login'
 
 
 # Crispy-forms
-CRISPY_TEMPLATE_PACK = 'bootstrap3'
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 
 # Email config

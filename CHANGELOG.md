@@ -11,6 +11,7 @@ CHANGES
 ## 2018-09-06
 
 - Add optional Sphinx integration.
+- Make Bootstrap 4 the new default project template
 
 ## 2018-07-18
 
@@ -19,8 +20,8 @@ CHANGES
 
 ## 2018-07-13
 
-- Add project code style to `.idea_template` with style settings to match our linters. 
-  Used to set more specific settings that `.editorconfig` does not allow such as hex color format. 
+- Add project code style to `.idea_template` with style settings to match our linters.
+  Used to set more specific settings that `.editorconfig` does not allow such as hex color format.
 - Use `Django` as Python Template Language instead of `Jinja2`.
 - Add browserupgrade molecule import to `main.scss`. It was missing.
 
@@ -34,6 +35,18 @@ CHANGES
 
 - Ignore pytest cache directory.
 - Fix test database, which also needs the correct host and user/password.
+
+
+## 2018-06-15
+
+- Fix broken CSS minification when running `npm run build`.
+  Basically the combination of Bootstrap and Webpack didn't work together and we changed order of Bootstrap imports
+  to make it work. Note that this might break print styles - see https://github.com/twbs/bootstrap/issues/24931
+
+
+## 2018-06-12
+
+- Update Bootstrap to 4.1.1
 
 
 ## 2018-06-11
@@ -52,6 +65,11 @@ CHANGES
   Notably updated `node-sass` and `sass-loader` so that binary version can be used.
 
 
+## 2018-05-15
+
+- Use `bootstrap4` template pack of `django-crispy-forms`.
+
+
 ## 2018-05-14
 
 - Template: use commands from project's `.gitlab-ci.yml` for testing
@@ -65,6 +83,11 @@ CHANGES
 ## 2018-03-29
 
 - Fixed coverage config in `.gitlab-ci.yml` (it has to be regex).
+
+
+## 2018-03-21 (bootstrap4)
+
+- Updated Bootstrap to 4.0 final
 
 
 ## 2018-03-12
