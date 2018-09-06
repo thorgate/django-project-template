@@ -8,6 +8,10 @@ When adding new changes just create a similar section after this comment like
 CHANGES
 -->
 
+## 2018-09-06
+
+- Add optional Sphinx integration.
+
 ## 2018-07-18
 
 - Allow React pure components in eslint configuration.
