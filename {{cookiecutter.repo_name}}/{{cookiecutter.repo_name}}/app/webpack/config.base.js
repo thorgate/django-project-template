@@ -63,7 +63,6 @@ function makeConfig(options) {
                         loader: "sass-loader",
                         options: {
                             includePaths: [
-                                path.resolve(project_root, 'node_modules', 'bootstrap-sass', 'assets', 'stylesheets'),
                                 path.resolve(__dirname, '..', '..', 'static', 'styles-src'),
                             ],
                             sourceMap: true,
