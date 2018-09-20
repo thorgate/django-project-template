@@ -55,7 +55,8 @@ Then just execute:
 
 It will ask you a few questions, e.g. project's name.
 
-After generation completes, search for any TODOs in the code and make appropriate changes where needed.
+After generation completes, **you should deactivate virtual environment for cookiecutter**,
+search for any TODOs in the code and make appropriate changes where needed.
 
 See README.md in the generated project for instructions on how to set up your development environment.
 

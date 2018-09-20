@@ -1,5 +1,5 @@
 # Based on Node 8.x LTS image
-FROM node:8.11.3
+FROM node:{% if cookiecutter.node_version == '8' %}8.12.0{% else %}{{ cookiecutter.node_version }}{% endif %}
 
 # Set the default directory where CMD will execute
 WORKDIR /app
