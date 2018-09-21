@@ -37,7 +37,7 @@ function makeConfig(options) {
                 include: [
                     // CSS modules should only be generated from css/scss files
                     // within the src directory
-                    path.resolve(__dirname, '..', 'src'),
+                    path.resolve(app_root, 'src'),
                 ],
                 use: ExtractTextPlugin.extract({
                     fallback: 'style-loader',
@@ -63,7 +63,7 @@ function makeConfig(options) {
                         loader: "sass-loader",
                         options: {
                             includePaths: [
-                                path.resolve(__dirname, '..', '..', 'static', 'styles-src'),
+                                path.resolve(project_root, 'static', 'styles-src'),
                             ],
                             sourceMap: true,
                         },
@@ -74,7 +74,7 @@ function makeConfig(options) {
                 include: [
                     // Global stylesheets in the static directory do not
                     // generate modules
-                    path.resolve(__dirname, '..', '..', 'static'),
+                    path.resolve(project_root, 'static'),
                 ],
                 use: ExtractTextPlugin.extract({
                     use: [{
