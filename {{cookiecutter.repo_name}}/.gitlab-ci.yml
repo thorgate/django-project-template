@@ -31,7 +31,6 @@ test:
     - make settings
     - docker-compose build
     - make node-install
-    - make constants
     - make quality
     - make coverage
 
@@ -42,8 +41,5 @@ build:
     - template  # Don't run CI on template branch, should not be required
   script:
     - EDIT_SETTINGS=no make settings
+    # Ensure production images build also
     - docker-compose -f docker-compose.production.yml build
-    - make node-install
-    - make constants
-    - make quality
-    - make coverage

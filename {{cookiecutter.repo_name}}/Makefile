@@ -27,7 +27,7 @@ COFF ?= \033[0m
 
 # Mark non-file targets as PHONY
 .PHONY: all help docker settings setup pycharm coverage node-install test clean quality eslint prospector stylelint docker-django
-.PHONY: bash docker-manage shell makemigrations migrate docker-logs makemessages compilemessages add-locale psql isort isort-fix
+.PHONY: django-shell node-shell docker-manage shell makemigrations migrate docker-logs makemessages compilemessages add-locale psql isort isort-fix
 
 all: help
 
@@ -82,7 +82,7 @@ $(PROJECT_ROOT)/.idea:
 	@mkdir -p $(PROJECT_ROOT)/.idea && cp -R $(PROJECT_ROOT)/.idea_template/* $(PROJECT_ROOT)/.idea/
 
 
-settings: $(SITE_ROOT)/settings/local.py $(SITE_ROOT)/settings/local_test.py
+settings: $(SITE_ROOT)/settings/local.py $(SITE_ROOT)/settings/local_test.py $(SITE_ROOT)/django.env
 
 
 $(SITE_ROOT)/settings/local.py:
@@ -97,12 +97,14 @@ $(SITE_ROOT)/settings/local_test.py:
 	@echo "$(CYAN)Creating Django settings local_test.py file$(COFF)"
 	@cp $(SITE_ROOT)/settings/local_test.py.example $(SITE_ROOT)/settings/local_test.py
 
+$(SITE_ROOT)/django.env:
+	@echo "$(CYAN)Creating Django .env file$(COFF)"
+	@touch $(SITE_ROOT)/django.env
+
 
 coverage:
 	@echo "$(CYAN)Running automatic code coverage check$(COFF)"
-	@docker-compose run --rm django coverage run -m py.test
-	@docker-compose run --rm django coverage html
-	@docker-compose run --rm django coverage report
+	@docker-compose run --rm django py.test --cov --cov-report term-missing
 	@docker-compose run --rm node npm run test -- --coverage
 
 
@@ -110,9 +112,9 @@ node-install:
 	@docker-compose run --rm node npm install
 
 
-test-node: clean
+test-node:
 	@echo "$(CYAN)Running automatic node.js tests$(COFF)"
-	@docker-compose run --rm node npm run test
+	@docker-compose run --rm node npm run test || echo No tests to run
 
 test-django: clean
 	@echo "$(CYAN)Running automatic django tests$(COFF)"
@@ -157,8 +159,12 @@ docker-django:
 	docker-compose run --rm django $(cmd)
 
 
-bash:
-	docker-compose run --rm django bash
+django-shell:
+	docker-compose run --rm django /bin/sh
+
+
+node-shell:
+	docker-compose run --rm node /bin/sh
 
 
 docker-manage:
@@ -183,14 +189,11 @@ docker-logs:
 
 makemessages:
 	docker-compose run --rm django ./manage.py makemessages -a
-	docker-compose run --rm django ./manage.py makemessages -a -d djangojs
 
 
 compilemessages:
 	docker-compose run --rm django ./manage.py compilemessages
 
-constants:
-	docker-compose run --rm django ./manage.py webpack_constants
 
 add-locale: $(SITE_ROOT)/locale
 ifdef LOCALE

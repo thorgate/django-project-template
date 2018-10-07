@@ -1,30 +1,63 @@
 # Production Dockerfile for Django app
+FROM python:{% if cookiecutter.python_version == '3.6' %}3.6.6{% else %}{{ cookiecutter.python_version }}{% endif %}-alpine
 
-FROM python:3.6.5-slim
-
-# Install system requirements
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y --no-install-recommends gcc gettext libpq-dev && \
-    rm -rf /var/lib/apt/lists/*
-
-# Create a directory for the logs
-RUN mkdir -p /var/log/{{cookiecutter.repo_name}}
-
-COPY ./wait-for-it.sh /usr/bin/
-
-# Copy Python requirements dir and Install requirements
-COPY ./requirements /tmp/requirements
-RUN pip install --no-cache-dir -r /tmp/requirements/production.txt
-
-# Copy code
-COPY ./{{cookiecutter.repo_name}} /app
+ENV DJANGO_PRODUCTION_MODE 1
+ENV DJANGO_SETTINGS_MODULE settings.base
 
 # Set the default directory where CMD will execute
 WORKDIR /app
 
+# Create a directory for the logs
+RUN mkdir -p /var/log/{{cookiecutter.repo_name}}
+
+# Copy wait-for-it.sh script
+COPY ./wait-for-it.sh /usr/bin/
+
+# Expose our application port
+EXPOSE 80
+
+# Install bash and gettext
+# Bash is required to support `wait-for-it.sh` script, should not add too much to docker image
+RUN apk add --no-cache bash gettext
+
+# Install build dependencies and mark them as virtual package so they could be removed together
+RUN apk add --no-cache --virtual .build-deps \
+    ca-certificates alpine-sdk postgresql-dev python3-dev linux-headers musl-dev \
+    libffi-dev jpeg-dev zlib-dev
+
+# Copy Python requirements dir and Install requirements
+COPY ./requirements /tmp/requirements
+
+# Install project production dependencies
+RUN pip install --no-cache-dir -r /tmp/requirements/production.txt
+
+# Find all file objects containing name `test` or compiled python files and remove them
+# Find all runtime dependencies that are marked as needed by scanelf
+# scanelf is utility to show ELF data for binary objects
+# For more info: https://wiki.gentoo.org/wiki/Hardened/PaX_Utilities#The_scanelf_application
+# Finally re-install missing run-dependencies
+RUN find /usr/local \
+        \( -type d -a -name test -o -name tests \) \
+        -o \( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
+        -exec rm -rf '{}' + \
+  && runDeps="$( \
+        scanelf --needed --nobanner --recursive /usr/local \
+                | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
+                | sort -u \
+                | xargs -r apk info --installed \
+                | sort -u \
+    )" \
+  && apk add --virtual .rundeps $runDeps
+
+# Remove build dependencies
+RUN apk del .build-deps
+
+# Copy application code
+COPY ./{{cookiecutter.repo_name}} /app
+
 # Compile translations to .mo files
-RUN python manage.py compilemessages
+# Un-comment this when locale directory has been created
+#RUN python manage.py compilemessages
 
 # Run Gunicorn by default
 CMD gunicorn {{cookiecutter.repo_name}}.wsgi:application --workers 2 --bind :80

@@ -8,6 +8,30 @@ When adding new changes just create a similar section after this comment like
 CHANGES
 -->
 
+## 2018-10-07
+
+- Fix issue with nginx and `app.<project>.proxy_<component>.include`, might occure only on newer server
+- Remove `crontab` references
+- Re-structure SPA
+    - Move `<project>/app` to `app`
+    - Move related files as well
+    - Move `<project>/static/styles-src` to `app/styles-src`
+    - Move `SPA.md` to `app/README.md`
+    - Move `app/src/server` to `app/server`
+- Upgrade SPA to use `babel@7`
+- Switch Django & Node to Alpine Docker images
+- Refactor SSR to be more clearly defined
+    - Can be disabled in settings
+    - All api requests will be made only when SSR is enabled
+    - Production: Disable SSR on last worker
+- Add fancy loading bar for SPA
+- Add `app/settings` and `app/env` to support environment based settings in Node
+- Add `django-environ` to support environment based settings in Django
+- Add `django-cors-headers` to prepare for `k8s`, env based settings is also pre-work for this
+- Improve server logging, logger formatting should be correct now
+- TODO : `tg-i18n` version upgrade (not released yet)
+
+
 ## 2018-06-22
 
 - Upgrade Webpack to version 4

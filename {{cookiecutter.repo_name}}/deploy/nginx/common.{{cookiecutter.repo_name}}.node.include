@@ -1,0 +1,34 @@
+include conf.d/app.{{cookiecutter.repo_name}}.include;
+include conf.d/ssl-common.include;
+include conf.d/ssl.{{cookiecutter.repo_name}}.include;
+
+# 502 error page (portrayed as 503)
+error_page 502 =503 /502.html;
+error_page 503 /502.html;
+location = /502.html {
+    # Retry after 5 mins
+    add_header Retry-After 180 always;
+}
+
+location ^~ /static/ {
+    expires max;
+
+    # Deny access to .map files
+    location ~* \.map$ {
+        # TODO: add your Sentry server's IP here
+        # allow 127.0.0.1;
+        deny all;
+    }
+}
+
+location = /favicon.ico {
+    expires 24h;
+}
+
+location = /robots.txt {
+    expires 24h;
+}
+
+location / {
+    include conf.d/app.{{cookiecutter.repo_name}}.proxy_node.include;
+}

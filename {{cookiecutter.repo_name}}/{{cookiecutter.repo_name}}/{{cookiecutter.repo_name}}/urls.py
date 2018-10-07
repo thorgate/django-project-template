@@ -4,6 +4,7 @@ from django.conf.urls.i18n import i18n_patterns
 {%- endif %}
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.views.generic.base import RedirectView
 
 
 admin.autodiscover()
@@ -33,3 +34,8 @@ if settings.DEBUG:
         ]
     except ImportError:
         pass
+
+
+urlpatterns += [
+    url(r'^$', RedirectView.as_view(url=settings.SITE_URL, permanent=False), name='app-redirect')
+]

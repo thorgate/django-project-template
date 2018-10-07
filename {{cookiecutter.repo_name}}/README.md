@@ -1,8 +1,8 @@
 # README for {{cookiecutter.project_title}}
 
 {% if cookiecutter.gitlab_repo_url -%}
-[![Build status](https://gitlab.com/thorgate/{{ cookiecutter.repo_name }}/badges/master/pipeline.svg)]({{ cookiecutter.gitlab_repo_url }}/commits/master)
-[![Coverage report](https://gitlab.com/thorgate/{{ cookiecutter.repo_name }}/badges/master/coverage.svg)]({{ cookiecutter.gitlab_repo_url }}/commits/master)
+[![Build status]({{ cookiecutter.gitlab_repo_url }}/badges/master/pipeline.svg)]({{ cookiecutter.gitlab_repo_url }}/commits/master)
+[![Coverage report]({{ cookiecutter.gitlab_repo_url }}/badges/master/coverage.svg)]({{ cookiecutter.gitlab_repo_url }}/commits/master)
 
 {% endif -%}
 
@@ -10,7 +10,7 @@ TODO: verify that the following info is correct:
 
  - Python:  {{cookiecutter.python_version}}
  - DB:      PostgreSQL 10
- - Node:    8.x LTS
+ - Node:    10.x LTS
  - NPM:     5.x
  - React:   16.x
 
@@ -54,7 +54,7 @@ Both docker and docker-compose are used to run this project, so the run command 
 
 This builds, (re)creates and starts containers for Django, Node, PostgreSQL and Redis. Refer to `docker-compose.yml` for
 more insight. Django app is running on `3000` port. Front-end server is running on `8000` port.
-For more information see [SPA docs](SPA.md)
+For more information see [SPA docs](app/README.md)
 
 Logs from all running containers are shown in the terminal. To run in "detached mode", pass the `-d` flag to
 docker-compose. To see running containers, use `docker-compose ps`. To see logs from these containers, run

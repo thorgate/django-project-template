@@ -10,8 +10,6 @@ services:
         container_name: {{cookiecutter.repo_name}}_django
         restart: unless-stopped
         volumes:
-            - "./{{cookiecutter.repo_name}}/app/build:/app/app/build"
-            - "./{{cookiecutter.repo_name}}/constants.json:/app/constants.json"
             - "/var/lib/docker-nginx/files/{{cookiecutter.repo_name}}/media:/files/media"
             - "/var/lib/docker-nginx/files/{{cookiecutter.repo_name}}/assets:/files/assets"
             - "/var/log/{{cookiecutter.repo_name}}:/var/log/{{cookiecutter.repo_name}}"
@@ -36,15 +34,11 @@ services:
         restart: unless-stopped
         command: npm run start
         volumes:
-            - "./{{cookiecutter.repo_name}}/constants.json:/app/constants.json"
-            - "./{{cookiecutter.repo_name}}/app:/app/app"
-            - "./{{cookiecutter.repo_name}}/static:/app/static:ro"
+            - "/var/lib/docker-nginx/files/{{cookiecutter.repo_name}}/app/assets:/files/assets"
             - "/var/log/{{cookiecutter.repo_name}}:/var/log/{{cookiecutter.repo_name}}"
         networks:
             - default
             - {{cookiecutter.repo_name}}_nginx
-        depends_on:
-            - django
 
     {%- if cookiecutter.include_celery == 'yes' %}
 
@@ -54,6 +48,7 @@ services:
             dockerfile: Dockerfile-django.production
         restart: unless-stopped
         volumes:
+            - "/var/lib/docker-nginx/files/{{cookiecutter.repo_name}}/media:/files/media"
             - "/var/log/{{cookiecutter.repo_name}}:/var/log/{{cookiecutter.repo_name}}"
         networks:
             - default
