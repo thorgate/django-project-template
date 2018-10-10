@@ -29,6 +29,9 @@
         };
     </script>
 
+    {% render_bundle 'runtime' %}
+    {% render_bundle 'vendors' %}
+
     {# In production, don't include the styles js file (which is unused anyway) #}
     {% if settings.DEBUG %}
         {% render_bundle 'styles' %}

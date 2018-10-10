@@ -1,3 +1,4 @@
+/* eslint-disable */
 const path = require('path');
 const webpack = require('webpack');
 
@@ -12,10 +13,12 @@ const filenameTemplate = 'app/[name]';
 const config = makeConfig({
     filenameTemplate: filenameTemplate,
 
+    mode: 'development',
+
     devtool: 'eval-source-map',
 
-    extractCss: false,
-    minifyCss: false,
+    namedModules: true,
+    minimize: false,
 
     // Needed for inline CSS (via JS) - see set-public-path.js for more info
     prependSources: [path.resolve(app_root, 'webpack', 'set-public-path.js')],
@@ -24,6 +27,10 @@ const config = makeConfig({
     publicPath: '/static/',
 
     plugins: [],
+
+    performance: {
+        hints: 'warning',
+    },
 });
 console.log("Using DEV config");
 
