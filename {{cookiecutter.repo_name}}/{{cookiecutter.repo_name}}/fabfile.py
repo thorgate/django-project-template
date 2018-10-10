@@ -251,11 +251,6 @@ def deploy(id=None, silent=False, force=False, auto_nginx=True):
         print colors.yellow("Will apply %d migrations:" % len(migrations))
         print indent(migrations)
 
-    # See if we have any changes to crontab config
-    crontab_changed = force or vcs.changed_files(revset, r'deploy/crontab.conf')
-    if crontab_changed:
-        print colors.yellow("Will update cron entries")
-
     # See if we have any changes to letsencrypt configurations
     letsencrypt_changed = force or vcs.changed_files(revset, get_config_modified_patterns('letsencrypt'))
     if letsencrypt_changed:
@@ -283,10 +278,6 @@ def deploy(id=None, silent=False, force=False, auto_nginx=True):
     docker_compose('build')
 
     collectstatic(npm_build=app_changed)
-
-    if crontab_changed:
-        with cd(env.code_dir):
-            sudo('cp deploy/crontab.conf /etc/cron.d/{{cookiecutter.repo_name}}')
 
     if migrations or requirements_changes:
         migrate(silent=True)

@@ -36,7 +36,7 @@ _(note that the primary repo is in [Gitlab](https://gitlab.com/thorgate-public/d
       [ESLint](http://eslint.org/) and [stylelint](https://stylelint.io/)
     - [py.test](http://pytest.org/) and [coverage](https://coverage.readthedocs.io/) integration
     - Deploy helpers, using [Fabric](http://www.fabfile.org/)
-    - Out-of-the-box configuration for nginx, gunicorn, logrotate and crontab
+    - Out-of-the-box configuration for nginx, gunicorn and logrotate
     - Includes [PyCharm](https://www.jetbrains.com/pycharm/) project config
 
 
