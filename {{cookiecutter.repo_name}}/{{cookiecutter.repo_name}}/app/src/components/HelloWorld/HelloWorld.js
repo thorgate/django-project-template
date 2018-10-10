@@ -2,7 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 
-import {createTitle} from '../ducks/title';
+import {createTitle} from 'ducks/title';
+import styles from './HelloWorld.scss';
 
 class HelloWorld extends React.Component {
     static propTypes = {
@@ -16,7 +17,7 @@ class HelloWorld extends React.Component {
 
     render() {
         return (
-            <h1>{this.props.title}</h1>
+            <h1 className={styles.title}>{this.props.title}</h1>
         );
     }
 }

@@ -12,6 +12,10 @@ CHANGES
 
 - Add optional Sphinx integration.
 - Make Bootstrap 4 the new default project template
+- Simple CSS modules support
+  - SCSS is supported
+  - Stylesheets imported from the `src/` directory are used as CSS modules
+  - Stylesheets imported from the `static/` directory are treated as global stylesheets
 
 ## 2018-07-18
 
