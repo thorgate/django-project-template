@@ -102,17 +102,28 @@ coverage:
 	@docker-compose run --rm django coverage run -m py.test
 	@docker-compose run --rm django coverage html
 	@docker-compose run --rm django coverage report
-# Uncomment the next line to enable node tests in CI
-#	@docker-compose run --rm node npm run test -- --coverage
+	@docker-compose run --rm node npm run test -- --coverage
 
 
 node-install:
 	@docker-compose run --rm node npm install
 
 
-test: clean
-	@echo "$(CYAN)Running automatic tests$(COFF)"
+test-node-watch: clean
+	@docker-compose run --rm node npm run test -- --watchAll
+
+
+test-node: clean
+	@echo "$(CYAN)Running automatic node.js tests$(COFF)"
+	@docker-compose run --rm node npm run test
+
+
+test-django: clean
+	@echo "$(CYAN)Running automatic django tests$(COFF)"
 	@docker-compose run --rm django py.test
+
+
+test: test-node test-django
 
 
 clean:
@@ -199,7 +210,6 @@ endif
 
 psql:
 	docker-compose exec postgres psql --user {{cookiecutter.repo_name}} --dbname {{cookiecutter.repo_name}}
-
 
 {% if cookiecutter.include_docs == 'yes' %}
 docs:

@@ -22,6 +22,7 @@ venv/
 {{cookiecutter.repo_name}}/.cache
 {{cookiecutter.repo_name}}/.pytest_cache
 {{cookiecutter.repo_name}}/.coverage
+{{cookiecutter.repo_name}}/coverage
 {{cookiecutter.repo_name}}/cover/
 
 {% if cookiecutter.include_docs == 'yes' %}{{cookiecutter.repo_name}}/docs/_build{% endif %}

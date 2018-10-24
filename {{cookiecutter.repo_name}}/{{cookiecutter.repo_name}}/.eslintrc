@@ -1,8 +1,10 @@
 {
     "parser": "babel-eslint",
-    "extends": "airbnb",
+    "extends": ["airbnb", "plugin:jest/recommended"],
+    "plugins": ["jest"],
     "env": {
         "browser": true,
+        "jest/globals": true,
     },
     "globals": {
         "DJ_CONST": false,
