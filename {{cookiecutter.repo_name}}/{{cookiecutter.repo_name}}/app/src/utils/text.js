@@ -13,3 +13,11 @@ export default function nl2br(text) {
 
     return res;
 }
+
+/**
+ * A wrapper for the global gettext so that it can be easily mocked in tests.
+ * @param {string} text
+ * @returns {string}
+ */
+export const gettext = text => window.gettext(text);
+

@@ -8,7 +8,13 @@ When adding new changes just create a similar section after this comment like
 CHANGES
 -->
 
+## 2018-10-24
+
+- Add front-end testing support
+- Set up [Jest](https://jestjs.io/) and [react-testing-library](https://github.com/kentcdodds/react-testing-library)
+
 ## 2018-09-07
+
 - Webpack 4 support
 - Simple CSS modules support
   - SCSS is supported
