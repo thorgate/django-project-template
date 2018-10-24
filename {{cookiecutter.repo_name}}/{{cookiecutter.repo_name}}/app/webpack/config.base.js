@@ -135,11 +135,11 @@ function makeConfig(options) {
                         reuseExistingChunk: true,
                         enforce: true,
                         chunks: 'initial',
-                        minChunks: 2,
+                        minChunks: 1,
                     },
                 },
             },
-            runtimeChunk: true,
+            runtimeChunk: 'single',
         },
 
         resolve: {
