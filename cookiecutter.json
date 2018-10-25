@@ -15,7 +15,7 @@
     "_9": "\n\t      admin_email: Administrative email (for Django, Let’s Encrypt, etc).",
     "_10": "\n\t              vcs: Which VCS will the generated project be using?  [git/hg/none]",
     "_11": "\n\t   python_version: Which python version will the generated project be using?  [3.4/3.5/3.6]",
-    "_12": "\n\t   python_version: Which Node.js version will the generated project be using?  [8 >=]",
+    "_12": "\n\t   node_version: Which Node.js version will the generated project be using?  [8 >=]",
     "_13": "\n\tdjango_admin_path: URL path for Django Admin.",
     "_14": "\n\t  gitlab_repo_url: Optional Gitlab repo url (https://gitlab.com/org/repo, used for CI badges).",
     "_15": "\n\t",
