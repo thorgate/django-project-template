@@ -43,19 +43,33 @@ _(note that the primary repo is in [Gitlab](https://gitlab.com/thorgate-public/d
 ## Usage
 
 To use this template, first ensure that you have
-[Cookiecutter](http://cookiecutter.readthedocs.org/en/latest/readme.html) available.
-You should probably create additional python3 virtual environment for cookiecutter, activate it
-and then install following packages by running following command:
-`pip install cookiecutter cookiecutter_repo_extensions fqdn`
+[Pipenv](https://pipenv.readthedocs.io/en/latest/) available.
 
+After that, you should:
 
-Then just execute:
+1. Install the requirements of the project template by running
+    ```
+    pipenv install
+    ```
+2. Activate the virtualenv created by pipenv:
+    ```
+    pipenv shell
+    ```
+3. Navigate to the directory where you'd like to create your project:
+    ```
+    cd /home/my-awesome-projects/
+    ```
 
+4. Create a new project by executing:
+    ```
     cookiecutter dir/to/django-project-template/
+    ```
+
 
 It will ask you a few questions, e.g. project's name.
 
-After generation completes, search for any TODOs in the code and make appropriate changes where needed.
+After generation completes, **you should deactivate virtual environment for cookiecutter**,
+search for any TODOs in the code and make appropriate changes where needed.
 
 See README.md in the generated project for instructions on how to set up your development environment.
 

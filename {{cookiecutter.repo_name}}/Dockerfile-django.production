@@ -14,8 +14,13 @@ RUN mkdir -p /var/log/{{cookiecutter.repo_name}}
 COPY ./wait-for-it.sh /usr/bin/
 
 # Copy Python requirements dir and Install requirements
-COPY ./requirements /tmp/requirements
-RUN pip install --no-cache-dir -r /tmp/requirements/production.txt
+RUN pip install -U pipenv pip setuptools wheel
+
+COPY Pipfile /
+COPY Pipfile.lock /
+
+# Install all dependencies from Pipfile.lock file
+RUN pipenv install --system --ignore-pipfile
 
 # Copy code
 COPY ./{{cookiecutter.repo_name}} /app

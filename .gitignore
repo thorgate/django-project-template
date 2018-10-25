@@ -7,3 +7,4 @@ npm-debug.log
 .cache
 .pytest_cache
 venv/
+.venv/

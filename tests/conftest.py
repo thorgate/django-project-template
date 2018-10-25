@@ -25,4 +25,5 @@ def default_project():
         "live_host": "test2.thorgate.eu",
         "vcs": None,
         "python_version": "3.6",
+        "node_version": "8",
     }

@@ -10,8 +10,14 @@ CHANGES
 
 ## 2018-10-24
 
+- Add Pipenv setup for Django
+
+
+## 2018-10-24
+
 - Add front-end testing support
 - Set up [Jest](https://jestjs.io/) and [react-testing-library](https://github.com/kentcdodds/react-testing-library)
+
 
 ## 2018-09-07
 
@@ -21,10 +27,12 @@ CHANGES
   - Stylesheets imported from the `src/` directory are used as CSS modules
   - Stylesheets imported from the `static/` directory are treated as global stylesheets
 
+
 ## 2018-09-06
 
 - Add optional Sphinx integration.
 - Make Bootstrap 4 the new default project template
+
 
 ## 2018-07-18
 

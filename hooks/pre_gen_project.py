@@ -2,6 +2,7 @@ import json
 import os
 import subprocess
 import sys
+import re
 
 import cookiecutter
 
@@ -70,7 +71,6 @@ def validate_config():
     if hasattr(repo_name, 'isidentifier'):
         assert repo_name.isidentifier(), assert_msg
     else:
-        import re
         identifier_re = re.compile(r"[a-zA-Z_][a-zA-Z0-9_]*$")
         assert bool(identifier_re.match(repo_name)), assert_msg
 
@@ -92,8 +92,12 @@ def validate_config():
         print("Valid include Docs keys are: %s" % ', '.join(valid_docs_key))
         sys.exit(1)
 
-    if "{{ cookiecutter.python_version }}" not in ['3.4', '3.5', '3.6']:
-        print("Only allowed python version options are 3.4, 3.5 and 3.6.")
+    if not re.match(r'(3\.[4-7](\.\d+)?)', "{{ cookiecutter.python_version }}"):
+        print("Only allowed python version options are 3.4.x, 3.5.x, 3.6.x and 3.7.x.")
+        sys.exit(1)
+
+    if not re.match(r'((8|9|10|11)(\.\d+){0,2})', "{{ cookiecutter.node_version }}"):
+        print("Only allowed Node.js version's start from 8.")
         sys.exit(1)
 
     if not FQDN("{{ cookiecutter.test_host }}").is_valid:
@@ -121,7 +125,7 @@ def validate_config():
 
 def copy_cookiecutter_config(local_filename='.cookiecutterrc'):
     """ Copy cookiecutter replay for template to project dir, unless it already exists.
-    
+
     This creates the initial .cookiecutterrc file when the project is first generated.
     """
 
