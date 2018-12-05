@@ -26,10 +26,13 @@ RUN apk add --no-cache --virtual .build-deps \
     libffi-dev jpeg-dev zlib-dev
 
 # Copy Python requirements dir and Install requirements
-COPY ./requirements /tmp/requirements
+RUN pip install -U pipenv pip setuptools wheel
 
-# Install project production dependencies
-RUN pip install --no-cache-dir -r /tmp/requirements/production.txt
+COPY Pipfile /
+COPY Pipfile.lock /
+
+# Install all dependencies from Pipfile.lock file
+RUN pipenv install --system --ignore-pipfile
 
 # Find all file objects containing name `test` or compiled python files and remove them
 # Find all runtime dependencies that are marked as needed by scanelf

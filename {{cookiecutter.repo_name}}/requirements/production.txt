@@ -1,7 +1,0 @@
-# Pro-tip: Try not to put anything here. There should be no dependency in
-#	production that isn't in development.
--r base.txt
-
-gunicorn==19.8.1
-
-raven==6.9.0

@@ -19,7 +19,9 @@ venv/
 {{cookiecutter.repo_name}}/assets/
 
 {{cookiecutter.repo_name}}/.cache
+{{cookiecutter.repo_name}}/.pytest_cache
 {{cookiecutter.repo_name}}/.coverage
+{{cookiecutter.repo_name}}/coverage
 {{cookiecutter.repo_name}}/cover/
 
 # Node Project files
@@ -28,3 +30,5 @@ app/coverage/
 
 # Django env
 {{cookiecutter.repo_name}}/django.env
+
+{% if cookiecutter.include_docs == 'yes' %}{{cookiecutter.repo_name}}/docs/_build{% endif %}

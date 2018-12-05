@@ -6,7 +6,6 @@
         <entryData>
           <resourceRoots>
             <path value="file://$PROJECT_DIR$/app/src" />
-            <path value="file://$PROJECT_DIR$/app/styles-src" />
           </resourceRoots>
         </entryData>
       </entry>

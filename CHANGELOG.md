@@ -8,28 +8,72 @@ When adding new changes just create a similar section after this comment like
 CHANGES
 -->
 
-## 2018-10-07
+## 2018-12-05
 
 - Fix issue with nginx and `app.<project>.proxy_<component>.include`, might occure only on newer server
-- Remove `crontab` references
 - Re-structure SPA
     - Move `<project>/app` to `app`
     - Move related files as well
-    - Move `<project>/static/styles-src` to `app/styles-src`
-    - Move `SPA.md` to `app/README.md`
-    - Move `app/src/server` to `app/server`
+    - Move `<project>/static/styles-src` to `app/src/styles`
+    - Move `SPA.md` to `app/SPA.md`
+    - Move to [Razzle](https://github.com/jaredpalmer/razzle) based setup
 - Upgrade SPA to use `babel@7`
 - Switch Django & Node to Alpine Docker images
-- Refactor SSR to be more clearly defined
-    - Can be disabled in settings
-    - All api requests will be made only when SSR is enabled
-    - Production: Disable SSR on last worker
 - Add fancy loading bar for SPA
-- Add `app/settings` and `app/env` to support environment based settings in Node
 - Add `django-environ` to support environment based settings in Django
 - Add `django-cors-headers` to prepare for `k8s`, env based settings is also pre-work for this
 - Improve server logging, logger formatting should be correct now
 - TODO : `tg-i18n` version upgrade (not released yet)
+
+
+## 2018-10-24
+
+- Add Pipenv setup for Django
+
+
+## 2018-10-24
+
+- Add front-end testing support
+- Set up [Jest](https://jestjs.io/) and [react-testing-library](https://github.com/kentcdodds/react-testing-library)
+
+
+## 2018-09-07
+
+- Webpack 4 support
+- Simple CSS modules support
+  - SCSS is supported
+  - Stylesheets imported from the `src/` directory are used as CSS modules
+  - Stylesheets imported from the `static/` directory are treated as global stylesheets
+
+
+## 2018-09-06
+
+- Add optional Sphinx integration.
+- Make Bootstrap 4 the new default project template
+
+
+## 2018-07-18
+
+- Allow React pure components in eslint configuration.
+
+
+## 2018-07-13
+
+- Add project code style to `.idea_template` with style settings to match our linters.
+  Used to set more specific settings that `.editorconfig` does not allow such as hex color format.
+- Use `Django` as Python Template Language instead of `Jinja2`.
+- Add browserupgrade molecule import to `main.scss`. It was missing.
+
+
+## 2018-07-12
+
+- Fix X-Frame-Options for CMS projects.
+
+
+## 2018-07-06
+
+- Ignore pytest cache directory.
+- Fix test database, which also needs the correct host and user/password.
 
 
 ## 2018-06-22
@@ -44,6 +88,13 @@ CHANGES
 - Use `redux-saga.getContext` for server-side `requestConfig`
 - Remove `serverClient` reducer
 - Add better support to run production-mode in development
+
+
+## 2018-06-15
+
+- Fix broken CSS minification when running `npm run build`.
+  Basically the combination of Bootstrap and Webpack didn't work together and we changed order of Bootstrap imports
+  to make it work. Note that this might break print styles - see https://github.com/twbs/bootstrap/issues/24931
 
 
 ## 2018-06-12

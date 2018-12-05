@@ -82,12 +82,22 @@ def validate_config():
 
     valid_celery_key = ['yes', 'no']
     if "{{ cookiecutter.include_celery }}" not in valid_celery_key:
-        print("Include CMS '{{ cookiecutter.include_celery }}' is not valid!")
+        print("Include Celery '{{ cookiecutter.include_celery }}' is not valid!")
         print("Valid include Celery keys are: %s" % ', '.join(valid_celery_key))
+        sys.exit(1)
+
+    valid_docs_key = ['yes', 'no']
+    if "{{ cookiecutter.include_docs }}" not in valid_docs_key:
+        print("Include docs '{{ cookiecutter.include_docs }}' is not valid!")
+        print("Valid include Docs keys are: %s" % ', '.join(valid_docs_key))
         sys.exit(1)
 
     if not re.match(r'(3\.[6-7](\.\d+)?)', "{{ cookiecutter.python_version }}"):
         print("Only allowed python version options are 3.6 or later.")
+        sys.exit(1)
+
+    if not re.match(r'((8|10|11)(\.\d+){0,2})', "{{ cookiecutter.node_version }}"):
+        print("Only allowed Node.js version's start from 8 or 10 and greater.")
         sys.exit(1)
 
     if not FQDN("{{ cookiecutter.test_host }}").is_valid:

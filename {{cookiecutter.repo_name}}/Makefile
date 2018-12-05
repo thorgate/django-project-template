@@ -7,12 +7,15 @@ PYTHON ?= python{{cookiecutter.python_version}}
 # Editor can be defined globally but defaults to nano
 EDITOR ?= nano
 
+# Put Pipenv virtual env inside project folder
+PIPENV_VENV_IN_PROJECT=1
+
 # By default we open the editor after copying settings, but can be overridden
 #  (e.g. EDIT_SETTINGS=no make settings).
 EDIT_SETTINGS ?= yes
 
 # Get root dir and project dir
-PROJECT_ROOT ?= $(PWD)
+PROJECT_ROOT ?= $(CURDIR)
 SITE_ROOT ?= $(PROJECT_ROOT)/{{cookiecutter.repo_name}}
 
 BLACK ?= \033[0;30m
@@ -56,6 +59,8 @@ help:
 	@echo "$(CYAN)make isort-fix$(COFF) - Fix imports automatically with isort"
 	@echo ""
 
+Pipfile.lock:
+	pipenv --python=$(PYTHON) lock -v
 
 docker: settings
 	@docker-compose down
@@ -82,20 +87,21 @@ $(PROJECT_ROOT)/.idea:
 	@mkdir -p $(PROJECT_ROOT)/.idea && cp -R $(PROJECT_ROOT)/.idea_template/* $(PROJECT_ROOT)/.idea/
 
 
-settings: $(SITE_ROOT)/settings/local.py $(SITE_ROOT)/settings/local_test.py $(SITE_ROOT)/django.env
+settings: Pipfile.lock $(SITE_ROOT)/settings/local.py $(SITE_ROOT)/settings/local_test.py $(SITE_ROOT)/django.env
 
 
 $(SITE_ROOT)/settings/local.py:
 	@echo "$(CYAN)Creating Django local.py settings file$(COFF)"
 	@cp $(SITE_ROOT)/settings/local.py.example $(SITE_ROOT)/settings/local.py
-	@cp $(SITE_ROOT)/settings/local_test.py.example $(SITE_ROOT)/settings/local_test.py
 	@if [ $(EDIT_SETTINGS) = "yes" ]; then\
 		$(EDITOR) $(SITE_ROOT)/settings/local.py;\
 	fi
 
+
 $(SITE_ROOT)/settings/local_test.py:
 	@echo "$(CYAN)Creating Django settings local_test.py file$(COFF)"
 	@cp $(SITE_ROOT)/settings/local_test.py.example $(SITE_ROOT)/settings/local_test.py
+
 
 $(SITE_ROOT)/django.env:
 	@echo "$(CYAN)Creating Django .env file$(COFF)"
@@ -112,15 +118,22 @@ node-install:
 	@docker-compose run --rm node npm install
 
 
-test-node:
+test-node-watch: clean
+	@docker-compose run --rm node npm run test -- --watchAll
+
+
+test-node: clean
 	@echo "$(CYAN)Running automatic node.js tests$(COFF)"
-	@docker-compose run --rm node npm run test || echo No tests to run
+	@docker-compose run --rm node npm run test
+
 
 test-django: clean
 	@echo "$(CYAN)Running automatic django tests$(COFF)"
 	@docker-compose run --rm django py.test
 
+
 test: test-node test-django
+
 
 clean:
 	@echo "$(CYAN)Cleaning pyc files$(COFF)"
@@ -153,6 +166,13 @@ isort:
 isort-fix:
 	@echo "$(CYAN)Fixing imports with isort$(COFF)"
 	docker-compose run --rm django isort --recursive -p .
+
+pipenv-check:
+	pipenv --python=$(PYTHON) check
+
+
+py-install-deps:
+	pipenv --python=$(PYTHON) install $(cmd)
 
 
 docker-django:
@@ -209,3 +229,8 @@ endif
 
 psql:
 	docker-compose exec postgres psql --user {{cookiecutter.repo_name}} --dbname {{cookiecutter.repo_name}}
+
+{% if cookiecutter.include_docs == 'yes' %}
+docs:
+	docker-compose run --rm django sphinx-build ./docs ./docs/_build
+{% endif %}

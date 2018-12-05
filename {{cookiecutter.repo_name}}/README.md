@@ -29,6 +29,14 @@ After installing Docker you need to install [Docker Compose](https://docs.docker
 To run Docker commands without `sudo`, you also need to
 [create a Docker group and add your user to it](https://docs.docker.com/engine/installation/linux/ubuntulinux/#/create-a-docker-group).
 
+### Installing pipenv
+
+To ensure correct project dependencies are resolved `pipenv` is required to be installed locally.
+Easiest way is to create virtualenv for this.
+Keep this active when doing `make setup` or any time adding dependencies to project.
+
+Check commands info for `pipenv` helpers.
+
 ### Setting up {{cookiecutter.project_title}}
 
 The easy way is to use `make` to set up everything automatically:
@@ -89,19 +97,22 @@ Note that the production configuration lacks PostgreSQL, since it runs on a sepa
 
 ### Command shortcuts in the Makefile
 
-|Action                             |Makefile shortcut                  |Actual command                                                              |
-|:----------------------------------|:----------------------------------|:---------------------------------------------------------------------------|
-|make migrations                    |`make makemigrations cmd=<command>`|`docker-compose run --rm django ./manage.py makemigrations $(cmd)`          |
-|migrating                          |`make migrate cmd=<command>`       |`docker-compose run --rm django ./manage.py migrate $(cmd)`                 |
-|manage.py commands                 |`make docker-manage cmd=<command>` |`docker-compose run --rm django ./manage.py $(cmd)`                         |
-|any command in Django container    |`make docker-django cmd=<command>` |`docker-compose run --rm django $(cmd)`                                     |
-|run tests                          |`make test`                        |`docker-compose run --rm django py.test`                                    |
-|run linters                        |`make quality`                     |                                                                            |
-|run StyleLint                      |`make stylelint`                   |`docker-compose run --rm node npm run stylelint`                            |
-|run ESLint                         |`make eslint`                      |`docker-compose run --rm node npm run lint`                                 |
-|run Prospector                     |`make prospector`                  |`docker-compose run --rm django prospector`                                 |
-|run psql                           |`make psql`                        |`docker-compose exec postgres psql --user {{cookiecutter.repo_name}} --dbname {{cookiecutter.repo_name}}` |
-
+|Action                                |Makefile shortcut                      |Actual command                                                              |
+|:-------------------------------------|:--------------------------------------|:---------------------------------------------------------------------------|
+|Installing Python dependencies        |`make py-install-deps cmd=<dependency>`|`pipenv --python=$(PYTHON) install $(cmd)`                                  |
+|Generate Pipfile.lock                 |`make Pipfile.lock`                    |`pipenv --python=$(PYTHON) lock`                                            |
+|Check Python package security warnings|`make pipenv-check`                    |`pipenv --python=$(PYTHON) check`                                           |
+|make migrations                       |`make makemigrations cmd=<command>`    |`docker-compose run --rm django ./manage.py makemigrations $(cmd)`          |
+|migrating                             |`make migrate cmd=<command>`           |`docker-compose run --rm django ./manage.py migrate $(cmd)`                 |
+|manage.py commands                    |`make docker-manage cmd=<command>`     |`docker-compose run --rm django ./manage.py $(cmd)`                         |
+|any command in Django container       |`make docker-django cmd=<command>`     |`docker-compose run --rm django $(cmd)`                                     |
+|run tests                             |`make test`                            |`docker-compose run --rm django py.test`                                    |
+|run linters                           |`make quality`                         |                                                                            |
+|run StyleLint                         |`make stylelint`                       |`docker-compose run --rm node npm run stylelint`                            |
+|run ESLint                            |`make eslint`                          |`docker-compose run --rm node npm run lint`                                 |
+|run Prospector                        |`make prospector`                      |`docker-compose run --rm django prospector`                                 |
+|run psql                              |`make psql`                            |`docker-compose exec postgres psql --user {{cookiecutter.repo_name}} --dbname {{cookiecutter.repo_name}}` |
+{% if cookiecutter.include_docs == 'yes' %}|generate docs                         |`make docs`                            |`docker-compose run --rm django sphinx-build ./docs ./docs/_build`          |{% endif %}
 
 ## Running commands on the server
 
@@ -109,8 +120,15 @@ Note that the production configuration lacks PostgreSQL, since it runs on a sepa
 
 ## Installing new pip or npm packages
 
-Since both `pip` and `npm` are inside their containers, currently the easiest way to install new packages is to add them
-to the respective requirements file and rebuild the container.
+Since `npm` is inside the container, currently the easiest way to install new packages is to add them
+to the `package.json` file and rebuild the container.
+
+Python dependencies are a bit special. As we are using `pipenv` best option is to use `make py-install-deps cmd=<dependency>`.
+After package is added also don't forget to `make Pipfile.lock` to update lock file. This ensure when we are building production images
+we don't install conflicting packages and everything is resolved to matching version while developing.
+
+When using `pipenv` via make file it will create the virtualenv under project directory. To use `pipenv` manually without `Makefile`,
+prefix `pipenv` commands with `PIPENV_VENV_IN_PROJECT=1`. 
 
 ## Rebuilding Docker images
 
@@ -132,6 +150,13 @@ anything.
 
 You can also use `--reuse-db` or `--nomigrations` flags to the actual command above to speed things up a bit. See also:
 https://pytest-django.readthedocs.org/en/latest/index.html
+
+{% if cookiecutter.include_docs == 'yes' %}
+## Generating documentation with Sphinx
+
+To build **.rst** files into html, run `make docs`. View the documentation at `/docs/_build/index.html`.
+Read more about contributing to docs from `/docs/contributing.rst`.
+{% endif %}
 
 ### Coverage
 
@@ -224,3 +249,20 @@ There are basically two types of deploys:
   * If it worked, you're all done, congrats!
   * If something else broke, you might need to either nuke the code dir, database and database user on the server;
     or comment out parts of fabfile (after fixing the problem) to avoid trying to e.g. create database twice. Ouch.
+
+
+### Updating packages in pipenv
+
+* make sure you have pipenv installed
+* Update packages in Pipenv file
+* run `pipenv lock` if it successfully generates lock file, then you are set
+* if previous command fails (due to package version clash), then do as it suggests - install the packages using the commands given and see what version is installed.
+
+
+### Using pipenv locally for pycharm
+
+* run `pipenv install` locally. Given, that you have pipenv installed.
+* When you ran previous command, it told you where it created the virtual environment something like /home/you/.virtualenvs/projectname-somehash
+* if you missed it you can see it by running `pipenv run which python`
+* Open your project in pycharm and under settings search of project interpreter or just interpreter. Pycharm is smart enough and shoul already have picked up your venv location but just in case you can make sure it matches the path you saw when you ran the install command
+
