@@ -28,7 +28,7 @@ function* mutateRequestConfig(origRequestConfig, resource) {
 }
 
 function onRequestError(error, resource) {
-    const isError404 = error.isInvalidResponseCode && error.statusCode === 404;
+    const isError404 = error.isInvalidResponseCode && [404, 403].includes(error.statusCode);
 
     if (process.env.NODE_ENV === 'production' && !error.isValidationError && !isError404) {
         Sentry.captureException(error);
