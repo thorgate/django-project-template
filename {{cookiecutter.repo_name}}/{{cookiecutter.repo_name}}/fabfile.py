@@ -347,18 +347,22 @@ def setup_server(id=None):
     )
 
     django_site_settings = string.Template(BASE_LOCAL_SETTINGS).substitute(
-        node_site=env.node_site, django_site=env.django_site, allowed_hosts=allowed_hosts,
+        node_site=env.node_site, django_site=env.django_site,
     )
 
     django_local_settings = string.Template(DJANGO_LOCAL_SETTINGS).substitute(
-        db_password=db_password, secret_key=secret_key, site_settings=django_site_settings, prefix='DJANGO',
+        db_password=db_password, secret_key=secret_key,
+        site_settings=django_site_settings,
+        allowed_hosts=allowed_hosts,
+        prefix='DJANGO',
     )
 
     # Create database
     sudo('echo "CREATE DATABASE {{cookiecutter.repo_name}}; '
          '      CREATE USER {{cookiecutter.repo_name}} WITH password \'{db_password}\'; '
          '      GRANT ALL PRIVILEGES ON DATABASE {{cookiecutter.repo_name}} to {{cookiecutter.repo_name}};" '
-         '| docker exec -i postgres-10 psql -U postgres'.format(db_password=db_password))
+         '| docker exec -i postgres-{postgres_version} psql -U postgres'.format(db_password=db_password,
+                                                                                postgres_version=env.postgres_version))
 
     # Upload local settings / env files
     node_settings_file = env.code_dir + '/app/.env.production.local'
@@ -719,7 +723,8 @@ def ensure_docker_networks():
     # Ensure we have dedicated networks for communicating with Nginx and Postgres
     ensure_docker_network_exists('{{ cookiecutter.repo_name }}_default', [], internal=False)
     ensure_docker_network_exists('{{ cookiecutter.repo_name }}_nginx', ['nginx'])
-    ensure_docker_network_exists('{{ cookiecutter.repo_name }}_postgres', ['postgres-10'])
+    ensure_docker_network_exists('{{ cookiecutter.repo_name }}_postgres', ['postgres-{postgres_version}'.format(
+        postgres_version=env.postgres_version)])
 
 
 def ensure_docker_network_exists(network_name, connected_containers, internal=True):

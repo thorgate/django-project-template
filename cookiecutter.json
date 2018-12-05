@@ -1,7 +1,8 @@
 {
     "_extensions": [
         "cookiecutter_repo_extensions:Extension",
-        "clean_hostname:CleanHostnameModule"
+        "clean_hostname:CleanHostnameModule",
+        "clean_appconfigname:CleanAppConfignameModule"
     ],
     "_0": "\n\t Some information before the generation!\n",
     "_1": "\n\t      project_title: User-visible title of the project.",
