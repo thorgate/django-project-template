@@ -303,7 +303,7 @@ def deploy(id=None, silent=False, force=False, auto_nginx=True):
     ensure_docker_networks()
     docker_compose('build')
 
-    collectstatic(npm_build=app_changed)
+    collectstatic()
 
     if migrations or requirements_changes:
         migrate(silent=True)
@@ -623,10 +623,8 @@ def repo_type():
         print("Current project is using: `%s`" % colors.red('NO VCS'))
 
 
-def collectstatic(npm_build=True):
-    if npm_build:
-        docker_compose_run('node', 'npm run export-assets', name='{{cookiecutter.repo_name}}_npm_export')
-
+def collectstatic():
+    docker_compose_run('node', 'npm run export-assets', name='{{cookiecutter.repo_name}}_npm_export')
     management_cmd('collectstatic --noinput --ignore styles-src')
 
 
