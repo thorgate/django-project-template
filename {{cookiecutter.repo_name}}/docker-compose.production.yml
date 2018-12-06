@@ -12,7 +12,6 @@ services:
         volumes:
             - "./{{cookiecutter.repo_name}}/app/build:/app/app/build"
             - "./{{cookiecutter.repo_name}}/app/webpack-stats.json:/app/app/webpack-stats.json"
-            - "/var/lib/docker-nginx/files/{{cookiecutter.repo_name}}/media:/files/media"
             - "/var/lib/docker-nginx/files/{{cookiecutter.repo_name}}/assets:/files/assets"
             - "/var/log/{{cookiecutter.repo_name}}:/var/log/{{cookiecutter.repo_name}}"
         # For some reason the command also has to be specified here, otherwise the entrypoint+command combination won't

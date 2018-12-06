@@ -127,7 +127,7 @@ After package is added also don't forget to `make Pipfile.lock` to update lock f
 we don't install conflicting packages and everything is resolved to matching version while developing.
 
 When using `pipenv` via make file it will create the virtualenv under project directory. To use `pipenv` manually without `Makefile`,
-prefix `pipenv` commands with `PIPENV_VENV_IN_PROJECT=1`. 
+prefix `pipenv` commands with `PIPENV_VENV_IN_PROJECT=1`.
 
 ## Rebuilding Docker images
 
@@ -207,7 +207,7 @@ as well as [Docker Compose](https://docs.docker.com/compose/) installed.
 
 We also assume that you have Nginx and Postgres (version 10 by default) running in Docker containers and reachable via
 'private' network. We also make a few assumptions regards directories that will be used as volumes for static assets,
-media, etc. You can find these paths in `fabfile.py` and `docker-compose.production.yml`.
+etc. You can find these paths in `fabfile.py` and `docker-compose.production.yml`.
 
 
 ### Types of deploys
@@ -238,6 +238,51 @@ There are basically two types of deploys:
   and Nginx config (`deploy/nginx/*.conf`, `deploy/letsencrypt/*.conf`) - ensure that they have proper hostnames etc.
 * Add the server's SSH key (`/root/.ssh/id_rsa.pub`) to the project repo as deployment key.
 * Ensure you've committed and pushed all relevant changes.
+{% if cookiecutter.django_media_engine == 'S3' -%}
+* [Create the bucket for media files](http://docs.aws.amazon.com/AmazonS3/latest/UG/CreatingaBucket.html):
+  * Bucket name: {{ cookiecutter.repo_name }}-{ENV} where `ENV` is either `staging` or `production`.
+  * Region: Closest to the users of the project.
+  * Create a new user:
+    * Go to [AWS IAM](https://console.aws.amazon.com/iam/home?#users).
+    * Click "Create new users" and follow the prompts.
+    * Leave "Generate an access key for each User" selected.
+  * Get the credentials:
+    * Go to the new user's Security Credentials tab.
+    * Click "Manage access keys".
+    * Download the credentials for the access key that was created.
+    * and Save them somewhere because no one will ever be able to download them again.
+    * Get the new user's ARN (Amazon Resource Name) by going to the user's Summary tab.
+       It'll look like this: "arn:aws:iam::123456789012:user/someusername".
+  * Go to the bucket properties in the [S3 management console](https://console.aws.amazon.com/s3/home).
+  * Add a bucket policy that looks like this, but change "BUCKET-NAME" to the bucket name,
+     and "USER-ARN" to your new user's ARN. This grants full access to the bucket and
+     its contents to the specified user:
+
+    {
+        "Statement": [
+            {
+                "Action": "s3:*",
+                "Effect": "Allow",
+                "Resource": [
+                    "arn:aws:s3:::BUCKET-NAME/*",
+                    "arn:aws:s3:::BUCKET-NAME"
+                ],
+                "Principal": {
+                    "AWS": [
+                        "USER-ARN"
+                    ]
+                }
+            }
+        ]
+    }
+
+  * More information about working with S3 can be found [here](https://github.com/Fueled/django-init/wiki/Working-with-S3).
+{% endif %}{% if cookiecutter.django_media_engine == 'GCS' -%}
+1. Create a service account ([Google Getting Started Guide](https://cloud.google.com/docs/authentication/getting-started)).
+2. Create the key and download your-project-XXXXX.json file.
+3. Make sure your service account has access to the bucket and appropriate permissions. ([Using IAM Permissions](https://cloud.google.com/storage/docs/access-control/using-iam-permissions)).
+4. The key file must be available in a file called `google-credentials-{env}.json` next to to fabfile.py  where `ENV` is either `staging` or `production`.
+5. Make sure to delete the local copy of the credentials file once the deployment succeeds{% endif %}
 * Run `fab ENV setup_server` where `ENV` is either `test` or `live`.
   * If it worked, you're all done, congrats!
   * If something else broke, you might need to either nuke the code dir, database and database user on the server;
@@ -257,5 +302,4 @@ There are basically two types of deploys:
 * run `pipenv install` locally. Given, that you have pipenv installed.
 * When you ran previous command, it told you where it created the virtual environment something like /home/you/.virtualenvs/projectname-somehash
 * if you missed it you can see it by running `pipenv run which python`
-* Open your project in pycharm and under settings search of project interpreter or just interpreter. Pycharm is smart enough and shoul already have picked up your venv location but just in case you can make sure it matches the path you saw when you ran the install command
-
+* Open your project in pycharm and under settings search of project interpreter or just interpreter. Pycharm is smart enough and should already have picked up your venv location but just in case you can make sure it matches the path you saw when you ran the install command

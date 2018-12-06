@@ -8,6 +8,22 @@ When adding new changes just create a similar section after this comment like
 CHANGES
 -->
 
+## 2018-12-06
+
+**Breaking:** This version includes a breaking change which removes support for locally stored
+media files. The media files will be stored in a CDN and we have builtin support for both Amazon S3 and
+Google's Cloud storage. This change is done to simplify moving to Kubernetes in the future.
+
+- Force storing media files in a CDN
+- Remove support for locally stored media files
+
+Some guides for existing projects:
+
+- [Ensuring your project is compatible with remote media](https://gitlab.com/thorgate-public/django-project-template/wikis/Guides/Ensuring-your-project-is-compatible-with-remote-media)
+- [Making some of the remote media private](https://gitlab.com/thorgate-public/django-project-template/wikis/Guides/Making-some-of-the-remote-media-private)
+- [Moving existing media to S3](https://gitlab.com/thorgate-public/django-project-template/wikis/Guides/Moving-existing-media-to-S3)
+
+
 ## 2018-10-24
 
 - Add Pipenv setup for Django

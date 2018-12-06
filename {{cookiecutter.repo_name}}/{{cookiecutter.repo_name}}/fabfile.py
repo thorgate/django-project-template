@@ -45,6 +45,17 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+
+{% if cookiecutter.django_media_engine == 'S3' -%}
+AWS_ACCESS_KEY_ID = '${aws_access_key}'
+AWS_SECRET_ACCESS_KEY = '${aws_secret_key}'
+{%- endif %}{% if cookiecutter.django_media_engine == 'GCS' -%}
+from google.oauth2 import service_account
+GS_PROJECT_ID = '${gcs_project_id}'
+GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
+    '${gcs_credentials_json}'
+){% endif %}
+
 """
 
 
@@ -304,10 +315,30 @@ def setup_server(id=None):
     # Clone code repository
     vcs.clone(id or None)
 
+    # Request values for {{ cookiecutter.django_media_engine }}
+    {% if cookiecutter.django_media_engine == 'S3' -%}
+    aws_access_key = request_input('aws_access_key', '')
+    aws_secret_key = request_input('aws_secret_key', '')
+    {%- endif %}{% if cookiecutter.django_media_engine == 'GCS' -%}
+    gcs_project_id = request_input('gcs_project_id', '')
+    gcs_credentials_json = None
+    with open('./google-credentials-{}.json'.format(env.target)) as f:
+        gcs_credentials_json = f.read().replace('\r', '').replace('\n', ''){% endif %}
+
     # Create password for DB, secret key and the local settings
     db_password = generate_password()
     secret_key = generate_password()
-    local_settings = string.Template(LOCAL_SETTINGS).substitute(db_password=db_password, secret_key=secret_key, target=env.target)
+    local_settings = string.Template(LOCAL_SETTINGS).substitute(
+        db_password=db_password,
+        secret_key=secret_key,
+        target=env.target,
+        {% if cookiecutter.django_media_engine == 'S3' -%}
+        aws_access_key=aws_access_key,
+        aws_secret_key=aws_secret_key,
+        {%- endif %}{% if cookiecutter.django_media_engine == 'GCS' -%}
+        gcs_project_id=gcs_project_id,
+        gcs_credentials_json=gcs_credentials_json,{% endif %}
+    )
 
     # Create database
     sudo('echo "CREATE DATABASE {{cookiecutter.repo_name}}; '
@@ -615,6 +646,22 @@ def ensure_docker_networks():
     ensure_docker_network_exists('{{ cookiecutter.repo_name }}_default', [], internal=False)
     ensure_docker_network_exists('{{ cookiecutter.repo_name }}_nginx', ['nginx'])
     ensure_docker_network_exists('{{ cookiecutter.repo_name }}_postgres', ['postgres-10'])
+
+
+def request_input(key, default_value):
+    val = None
+
+    while not val:
+        val = prompt('Enter value for {0}{1}: '.format(key, '[Default: {0}]'.format(default_value) if default_value else ''))
+
+        if not val:
+            if default_value:
+                val = default_value
+
+            else:
+                print(colors.red('Please enter a value'))
+
+    return val
 
 
 def ensure_docker_network_exists(network_name, connected_containers, internal=True):
