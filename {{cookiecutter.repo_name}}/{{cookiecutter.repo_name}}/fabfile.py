@@ -62,7 +62,7 @@ def defaults():
 
     env.code_dir = '/srv/{{cookiecutter.repo_name}}'
 
-    env.postgres_version = '9.5'
+    env.postgres_version = '{{cookiecutter.postgres_version}}'
 
     # Mapping of configuration files and their rules
     #
