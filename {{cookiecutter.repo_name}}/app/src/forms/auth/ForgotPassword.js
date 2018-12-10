@@ -113,7 +113,7 @@ const ForgotPasswordForm = withFormik({
     }),
 
     handleSubmit: (values, { props, setErrors, setSubmitting, setStatus }) => (
-        props.onForgotPassword({ payload: values, actions: { setErrors, setSubmitting, setStatus } })
+        props.onForgotPassword({ data: values, actions: { setErrors, setSubmitting, setStatus } })
     ),
 
     displayName: 'ForgotPasswordForm', // helps with React DevTools

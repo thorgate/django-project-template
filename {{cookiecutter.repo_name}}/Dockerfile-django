@@ -21,7 +21,7 @@ COPY Pipfile /
 COPY Pipfile.lock /
 
 # Install all dependencies from Pipfile.lock file
-RUN pipenv install --system --ignore-pipfile
+RUN pipenv install --system --dev --ignore-pipfile
 
 # Check for security warnings, will be enabled later when failing dependencies have been updated
 # RUN pipenv check --system

@@ -15,7 +15,7 @@ from distutils.version import LooseVersion
 from fabric import colors
 from fabric.api import env, task, require, abort, sudo, prefix, cd, put, get
 from fabric.contrib.console import confirm
-from fabric.contrib.files import append
+from fabric.contrib.files import append, exists
 from fabric.utils import indent
 
 from django.utils.crypto import get_random_string
@@ -31,6 +31,8 @@ from hammer.docker_network import create_docker_network
 
 vcs = Vcs.init(project_root=os.path.dirname(os.path.dirname(__file__)), use_sudo=True)
 
+LOCAL_PY_TEMPLATE = """from settings.${target} import *
+"""
 
 BASE_LOCAL_SETTINGS = """RAZZLE_SITE_URL=https://${node_site}
 RAZZLE_DJANGO_SITE_URL=https://${django_site}
@@ -259,14 +261,15 @@ def deploy(id=None, silent=False, force=False, auto_nginx=True):
     if not revset and not force:
         return
 
+    ensure_local_py_exists()
+
     # See if we have any requirements changes
     requirements_changes = force or vcs.changed_files(revset, r' requirements/')
     if requirements_changes:
         print(colors.yellow("Will update requirements (and do migrations)"))
 
     # See if we have changes in app source or static files
-    app_patterns = [r' {{cookiecutter.repo_name}}/app', r' {{cookiecutter.repo_name}}/static',
-                    r' {{cookiecutter.repo_name}}/settings', r' {{cookiecutter.repo_name}}/package.json']
+    app_patterns = [r' app/']
     app_changed = force or vcs.changed_files(revset, app_patterns)
     if app_changed:
         print(colors.yellow("Will run npm build"))
@@ -363,6 +366,8 @@ def setup_server(id=None):
          '      GRANT ALL PRIVILEGES ON DATABASE {{cookiecutter.repo_name}} to {{cookiecutter.repo_name}};" '
          '| docker exec -i postgres-{postgres_version} psql -U postgres'.format(db_password=db_password,
                                                                                 postgres_version=env.postgres_version))
+    # Ensure default local.py file exists - this will use correct base file to override some settings values
+    ensure_local_py_exists()
 
     # Upload local settings / env files
     node_settings_file = env.code_dir + '/app/.env.production.local'
@@ -611,6 +616,18 @@ def add_secret_key(key, remote_paths):
     # Append to correct file if line not exists
     for remote_path in remote_paths:
         append(remote_path, '%s=%s' % (key, value), escape=False, use_sudo=True)
+
+
+def ensure_local_py_exists():
+    require('hosts')
+    require('code_dir')
+
+    django_local_settings = env.code_dir + '/spotter/settings/local.py'
+
+    if not exists(django_local_settings, use_sudo=True):
+        content = string.Template(LOCAL_PY_TEMPLATE).substitute(target=env.target)
+
+        put(StringIO(content), django_local_settings, use_sudo=True)
 
 
 def repo_type():

@@ -243,6 +243,8 @@ AUTH_USER_MODEL = 'accounts.User'
 SITE_URL = env.str('RAZZLE_SITE_URL', default='http://127.0.0.1:8000')
 DJANGO_SITE_URL = env.str('RAZZLE_DJANGO_SITE_URL', default='http://127.0.0.1:3000')
 ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['django', 'localhost', '127.0.0.1'])
+CSRF_TRUSTED_ORIGINS = env.list('DJANGO_CSRF_TRUSTED_ORIGINS', default=ALLOWED_HOSTS)
+CORS_ORIGIN_WHITELIST = env.list('DJANGO_CORS_ORIGIN_WHITELIST', default=ALLOWED_HOSTS)
 
 
 {%- if cookiecutter.include_cms == 'yes' %}

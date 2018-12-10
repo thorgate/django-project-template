@@ -2,6 +2,7 @@ import { createSaveAction, createFormSaveSaga } from '@thorgate/spa-forms';
 import { select, takeLatest, put } from 'redux-saga/effects';
 import { getLocation, push } from 'connected-react-router';
 import qs from 'qs';
+import { getType } from 'typesafe-actions';
 
 import { urlResolve } from 'configuration/routes';
 import { saveToken } from 'sagas/helpers/token';
@@ -31,10 +32,10 @@ function* successHook(result) {
 
 
 const obtainTokenSaga = createFormSaveSaga({
-    resource: api.auth.obtain.post,
+    resource: api.auth.obtain,
     successHook,
 });
 
 export default function* loginWatcherSaga() {
-    yield takeLatest(obtainToken.type, obtainTokenSaga);
+    yield takeLatest(getType(obtainToken), obtainTokenSaga);
 }

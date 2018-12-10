@@ -112,7 +112,7 @@ const ResetPasswordForm = withFormik({
     }),
 
     handleSubmit: (values, { props, setErrors, setSubmitting, setStatus }) => (
-        props.onResetPassword({ payload: values, actions: { setErrors, setSubmitting, setStatus } })
+        props.onResetPassword({ data: values, actions: { setErrors, setSubmitting, setStatus } })
     ),
 
     displayName: 'ResetPasswordForm', // helps with React DevTools

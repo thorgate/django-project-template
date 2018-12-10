@@ -12,6 +12,11 @@ export function* verifyToken() {
     try {
         yield api.auth.verify.post(null, { token });
     } catch (error) {
+        // When network error, skip token invalidation
+        if (error.isNetworkError) {
+            return;
+        }
+
         yield call(refreshToken);
     }
 }

@@ -5,7 +5,7 @@ from settings.base import *
 
 DEBUG = False
 
-ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['{{ cookiecutter.django_host_prefix }}.{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}'])
+ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['{{ cookiecutter.django_host_prefix }}.{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}', '{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}'])
 
 # Static site url, used when we need absolute url but lack request object, e.g. in email sending.
 SITE_URL = env.str('RAZZLE_SITE_URL', default='https://{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}')
@@ -65,5 +65,5 @@ RAVEN_CONFIG = {'dsn': RAVEN_BACKEND_DSN}
 # CORS overrides
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_EXPOSE_HEADERS = default_headers
-CORS_ORIGIN_WHITELIST = ALLOWED_HOSTS
-CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS
+CORS_ORIGIN_WHITELIST = env.list('DJANGO_CORS_ORIGIN_WHITELIST', default=ALLOWED_HOSTS)
+CSRF_TRUSTED_ORIGINS = env.list('DJANGO_CSRF_TRUSTED_ORIGINS', default=ALLOWED_HOSTS)

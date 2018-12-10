@@ -107,7 +107,7 @@ const SignupForm = withFormik({
     }),
 
     handleSubmit: (values, { props, setErrors, setSubmitting, setStatus }) => (
-        props.onSignup({ payload: values, actions: { setErrors, setSubmitting, setStatus } })
+        props.onSignup({ data: values, actions: { setErrors, setSubmitting, setStatus } })
     ),
 
     displayName: 'SignupForm', // helps with React DevTools

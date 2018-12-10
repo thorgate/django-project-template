@@ -102,8 +102,9 @@ export default function configureStore(initialState = {}, options = {}) {
 
         if (process.env.BUILD_TARGET === 'client') {
             module.hot.accept('../sagas', () => {
-                sagaHotReloader.replaceRootSaga(require('../sagas').default);
-                console.log('🔁  HMR Reloaded `./sagas` ...');
+                sagaHotReloader.replaceRootSaga(require('../sagas').default).then(() => {
+                    console.log('🔁  HMR Reloaded `./sagas` ...');
+                });
             });
         }
     }

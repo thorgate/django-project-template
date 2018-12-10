@@ -77,7 +77,7 @@ const LoginForm = withFormik({
     }),
 
     handleSubmit: (values, { props, setErrors, setSubmitting, setStatus }) => (
-        props.onLogin({ payload: values, actions: { setErrors, setSubmitting, setStatus } })
+        props.onLogin({ data: values, actions: { setErrors, setSubmitting, setStatus } })
     ),
 
     displayName: 'LoginForm', // helps with React DevTools
