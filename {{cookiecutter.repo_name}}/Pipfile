@@ -13,6 +13,10 @@ django-redis = "==4.9.0"
 django-crispy-forms = "==1.7.2"
 django-webpack-loader = "==0.6.0"
 django-settings-export = "==1.2.1"
+"django-storages{% if cookiecutter.django_media_engine == 'GCS' %}[google]{% endif %}" = "==1.7.1"
+{% if cookiecutter.django_media_engine == 'S3' -%}
+boto3 = "==1.9.60"
+{% endif -%}
 pytest = "==3.8.0"
 pytest-django = "==3.4.2"
 coverage = "==4.5.1"

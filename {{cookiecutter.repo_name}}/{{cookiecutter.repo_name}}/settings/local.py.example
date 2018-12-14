@@ -24,3 +24,13 @@ from settings.base import *
 # Uncomment to send emails from your local machine.
 # EMAIL_HOST_PASSWORD = 'TODO (api key)'
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+{% if cookiecutter.django_media_engine == 'S3' -%}
+# AWS_ACCESS_KEY_ID = 'TODO (access key)'
+# AWS_SECRET_ACCESS_KEY = 'TODO (secret key)'
+{% endif %}{% if cookiecutter.django_media_engine == 'GCS' -%}
+# from google.oauth2 import service_account
+# GS_PROJECT_ID = 'TODO (project id)'
+# GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
+#     json.load('TODO (credentials json data)')
+# ){% endif %}

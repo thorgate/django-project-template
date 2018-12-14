@@ -17,9 +17,10 @@
     "_11": "\n\t   python_version: Which python version will the generated project be using?  [3.4/3.5/3.6]",
     "_12": "\n\t   node_version: Which Node.js version will the generated project be using?  [8 >=]",
     "_13": "\n\tdjango_admin_path: URL path for Django Admin.",
-    "_14": "\n\t  gitlab_repo_url: Optional Gitlab repo url (https://gitlab.com/org/repo, used for CI badges).",
-    "_15": "\n\t",
-    "_16": "\n\t Press ENTER to continue.\n",
+    "_14": "\n\t  django_media_engine: Which CDN to use for media files [S3/GCS].",
+    "_15": "\n\t  gitlab_repo_url: Optional Gitlab repo url (https://gitlab.com/org/repo, used for CI badges).",
+    "_16": "\n\t",
+    "_17": "\n\t Press ENTER to continue.\n",
     "*": "{{cookiecutter._0 + cookiecutter._1 + cookiecutter._2 + cookiecutter._3 + cookiecutter._4 + cookiecutter._5 + cookiecutter._6 + cookiecutter._7 + cookiecutter._8 + cookiecutter._9 + cookiecutter._10 + cookiecutter._11 + cookiecutter._12 + cookiecutter._13 + cookiecutter._14 + cookiecutter._15 + cookiecutter._16}}",
     "project_title": "User-visible title of the project.",
     "repo_name": "{{cookiecutter.project_title|lower|replace(' ', '_')}}",
@@ -34,5 +35,6 @@
     "python_version": "3.6",
     "node_version": "8",
     "django_admin_path": "adminpanel",
+    "django_media_engine": "S3",
     "gitlab_repo_url": ""
 }

@@ -191,10 +191,35 @@ USE_L10N = True
 USE_TZ = True
 
 
-# Static files and media (CSS, JavaScript, images)
+# Media files (user uploaded/site generated)
 MEDIA_ROOT = '/files/media'
 MEDIA_URL = '/media/'
+MEDIAFILES_LOCATION = 'media'
 
+# In staging/prod we use {{ cookiecutter.django_media_engine }} for file storage engine
+{% if cookiecutter.django_media_engine == 'S3' -%}
+AWS_ACCESS_KEY_ID = '<unset>'
+AWS_SECRET_ACCESS_KEY = '<unset>'
+AWS_STORAGE_BUCKET_NAME = '<unset>'
+AWS_DEFAULT_ACL = 'public-read'
+AWS_IS_GZIPPED = True
+AWS_S3_ENCRYPTION = True
+AWS_S3_FILE_OVERWRITE = False
+AWS_S3_REGION_NAME = 'eu-central-1'
+AWS_S3_SIGNATURE_VERSION = 's3v4'
+
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=1209600',  # 2 weeks in seconds
+}
+{%- endif %}{% if cookiecutter.django_media_engine == 'GCS' -%}
+GS_BUCKET_NAME = '<unset>'
+GS_PROJECT_ID = '<unset>'
+GS_CREDENTIALS = '<unset>'
+GS_DEFAULT_ACL = 'publicRead'
+GS_FILE_OVERWRITE = False
+GS_CACHE_CONTROL = 'max-age=1209600'  # 2 weeks in seconds{% endif %}
+
+# Static files (CSS, JavaScript, images)
 STATIC_ROOT = '/files/assets'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (

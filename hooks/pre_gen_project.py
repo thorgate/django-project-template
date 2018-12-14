@@ -100,6 +100,12 @@ def validate_config():
         print("Only allowed Node.js version's start from 8.")
         sys.exit(1)
 
+    valid_dme_keys = ['S3', 'GCS']
+    if "{{ cookiecutter.django_media_engine }}" not in valid_dme_keys:
+        print("Django media engine '{{ cookiecutter.django_media_engine }}' is not valid!")
+        print("Valid media engines are: %s" % ', '.join(valid_dme_keys))
+        sys.exit(1)
+
     if not FQDN("{{ cookiecutter.test_host }}").is_valid:
         print("Test host is not a valid domain name")
         sys.exit(1)
