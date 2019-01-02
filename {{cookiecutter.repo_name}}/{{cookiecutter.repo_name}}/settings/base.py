@@ -10,6 +10,8 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 
 import os
 
+import environ
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/dev/howto/deployment/checklist/
@@ -17,9 +19,19 @@ import os
 # Build paths inside the project like this: os.path.join(SITE_ROOT, ...)
 SITE_ROOT = os.path.dirname(os.path.dirname(__file__))
 
+# Load env to get settings
+ROOT_DIR = environ.Path(SITE_ROOT)
+env = environ.Env()
+
+READ_DOT_ENV_FILE = env.bool('DJANGO_READ_DOT_ENV_FILE', default=True)
+if READ_DOT_ENV_FILE:
+    # OS environment variables take precedence over variables from .env
+    # By default use django.env file from project root directory
+    env.read_env(str(ROOT_DIR.path('django.env')))
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool('DJANGO_DEBUG', default=True)
 
 ADMINS = (
     ('Admins', '{{ cookiecutter.admin_email }}'),
@@ -127,19 +139,17 @@ CMS_TEMPLATES = (
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'HOST': 'postgres',
-        'NAME': '{{cookiecutter.repo_name}}',
-        'USER': '{{cookiecutter.repo_name}}',
-        'PASSWORD': '{{cookiecutter.repo_name}}',
+        'HOST': env.str('DJANGO_DATABASE_HOST', default='postgres'),
+        'PORT': env.int('DJANGO_DATABASE_PORT', default=5432),
+        'NAME': env.str('DJANGO_DATABASE_NAME', default='{{cookiecutter.repo_name}}'),
+        'USER': env.str('DJANGO_DATABASE_USER', default='{{cookiecutter.repo_name}}'),
+        'PASSWORD': env.str('DJANGO_DATABASE_PASSWORD', default='{{cookiecutter.repo_name}}'),
     }
 }
 
 
 # Redis config (used for caching{% if cookiecutter.include_celery == 'yes' %} and celery{% endif %})
-REDIS_HOST = 'redis'
-REDIS_PORT = 6379
-REDIS_DB = 1
-REDIS_URL = 'redis://%s:%d/%d' % (REDIS_HOST, REDIS_PORT, REDIS_DB)
+REDIS_URL = env.str('DJANGO_REDIS_URL', default='redis://redis:6379/1')
 {%- if cookiecutter.include_celery == 'yes' %}
 
 
@@ -192,9 +202,9 @@ USE_TZ = True
 
 
 # Media files (user uploaded/site generated)
-MEDIA_ROOT = '/files/media'
-MEDIA_URL = '/media/'
-MEDIAFILES_LOCATION = 'media'
+MEDIA_ROOT = env.str('DJANGO_MEDIA_ROOT', default='/files/media')
+MEDIA_URL = env.str('DJANGO_MEDIA_URL', default='/media/')
+MEDIAFILES_LOCATION = env.str('DJANGO_MEDIAFILES_LOCATION', default='media')
 
 # In staging/prod we use {{ cookiecutter.django_media_engine }} for file storage engine
 {% if cookiecutter.django_media_engine == 'S3' -%}
@@ -221,7 +231,7 @@ GS_CACHE_CONTROL = 'max-age=1209600'  # 2 weeks in seconds{% endif %}
 
 # Static files (CSS, JavaScript, images)
 STATIC_ROOT = '/files/assets'
-STATIC_URL = '/static/'
+STATIC_URL = env.str('DJANGO_STATIC_URL', default='/static/')
 STATICFILES_DIRS = (
     os.path.join(SITE_ROOT, 'static'),
     os.path.join(SITE_ROOT, 'app', 'build'),
@@ -233,14 +243,14 @@ STATICFILES_FINDERS = (
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'dummy key'
+SECRET_KEY = env.str('DJANGO_SECRET_KEY', default='dummy key')
 
 AUTH_USER_MODEL = 'accounts.User'
 
 
 # Static site url, used when we need absolute url but lack request object, e.g. in email sending.
-SITE_URL = 'http://127.0.0.1:8000'
-ALLOWED_HOSTS = []
+SITE_URL = env.str('DJANGO_SITE_URL', default='http://127.0.0.1:8000')
+ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=[])
 
 {%- if cookiecutter.include_cms == 'yes' %}
 
@@ -274,9 +284,10 @@ SERVER_EMAIL = "{{cookiecutter.project_title}} server <server@{{ cookiecutter.li
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # SMTP  --> This is only used in staging and production
-EMAIL_HOST = 'smtp.sparkpostmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'SMTP_Injection'
+EMAIL_HOST = env.str('DJANGO_EMAIL_HOST', default='smtp.sparkpostmail.com')
+EMAIL_PORT = env.int('DJANGO_EMAIL_PORT', default=587)
+EMAIL_HOST_USER = env.str('DJANGO_EMAIL_HOST_USER', default='SMTP_Injection')
+EMAIL_HOST_PASSWORD = env.str('DJANGO_EMAIL_HOST_PASSWORD', default='')
 
 
 # Base logging config. Logs INFO and higher-level messages to console. Production-specific additions are in
@@ -324,9 +335,9 @@ SILENCED_SYSTEM_CHECKS = [
 
 
 # Default values for sentry
-RAVEN_BACKEND_DSN = ''
-RAVEN_PUBLIC_DSN = ''
-RAVEN_CONFIG = {}
+RAVEN_BACKEND_DSN = env.str('DJANGO_RAVEN_BACKEND_DSN', default='https://TODO:TODO@sentry.thorgate.eu/TODO')
+RAVEN_PUBLIC_DSN = env.str('DJANGO_RAVEN_PUBLIC_DSN', default='https://TODO@sentry.thorgate.eu/TODO')
+RAVEN_CONFIG = {'dsn': RAVEN_BACKEND_DSN}
 
 WEBPACK_LOADER = {
     'DEFAULT': {

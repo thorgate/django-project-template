@@ -8,6 +8,23 @@ When adding new changes just create a similar section after this comment like
 CHANGES
 -->
 
+## 2019-01-02
+
+**Breaking:** This version converts our template to use environment based settings via django-environ.
+
+- Use environment based settings
+
+### Upgrading
+
+- Upgrade template
+  - Note: Pay attention to files in settings directory
+- Test that everything is still working
+- Commit changes
+- In servers
+    - Update Django to new settings
+        - Convert `<root>/<project>/settings/local.py` to `<root>/<project>/django.env`
+        - Or remove `DJANGO_PRODUCTION_MODE` env reference from `Dockerfile-django.production`
+
 ## 2018-12-06
 
 **Breaking:** This version includes a breaking change which removes support for locally stored
