@@ -21,7 +21,7 @@ function* successHook(result) {
     saveToken(access, refresh);
 
     const location = yield select(getLocation);
-    let { next } = qs.parse(location.search || '');
+    let { next } = qs.parse(location.search || '', { ignoreQueryPrefix: true });
 
     if (!next) {
         next = urlResolve('landing');

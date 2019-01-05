@@ -12,7 +12,7 @@ export default function* logoutWorker() {
 
     const location = yield select(getLocation);
 
-    const query = qs.parse(location.search);
+    const query = qs.parse(location.search, { ignoreQueryPrefix: true });
     if (query.next) {
         url = query.next;
     }

@@ -622,7 +622,7 @@ def ensure_local_py_exists():
     require('hosts')
     require('code_dir')
 
-    django_local_settings = env.code_dir + '/spotter/settings/local.py'
+    django_local_settings = env.code_dir + '/{{cookiecutter.repo_name}}/settings/local.py'
 
     if not exists(django_local_settings, use_sudo=True):
         content = string.Template(LOCAL_PY_TEMPLATE).substitute(target=env.target)

@@ -15,7 +15,7 @@ import { RouterLocationShape } from 'utils/types';
 
 
 const Signup = ({ location, isAuthenticated, onSignup }) => {
-    const query = qs.parse(location.search);
+    const query = qs.parse(location.search, { ignoreQueryPrefix: true });
     const { permissionDenied } = location.state || {};
 
     if (isAuthenticated && !permissionDenied) {
