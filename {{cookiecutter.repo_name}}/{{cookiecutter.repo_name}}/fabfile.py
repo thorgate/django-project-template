@@ -13,8 +13,9 @@ from StringIO import StringIO
 from distutils.version import LooseVersion
 
 from fabric import colors
-from fabric.api import *
+from fabric.api import abort, cd, env, prompt, require, sudo, task
 from fabric.contrib.console import confirm
+from fabric.operations import get, put
 from fabric.utils import indent
 
 from django.utils.crypto import get_random_string
@@ -60,6 +61,7 @@ GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
 
 
 """ TARGETS """
+
 
 def defaults():
     # Use  .ssh/config  so that you can use hosts defined there.
@@ -145,6 +147,7 @@ def live():
 
 """ ACTIONS """
 
+
 @task
 def show_log(commit_id=None):
     """ List revisions to apply/unapply when updating to given revision.
@@ -195,8 +198,8 @@ def migrate_diff(id=None, revset=None, silent=False):
     migrations = vcs.changed_files(revset, "\/(?P<model>\w+)\/migrations\/(?P<migration>.+)")
 
     if not silent and migrations:
-        print "Found %d migrations." % len(migrations)
-        print indent(migrations)
+        print("Found %d migrations." % len(migrations))
+        print(indent(migrations))
 
     return migrations
 
@@ -218,7 +221,7 @@ def version():
     require('code_dir')
 
     summary = get_current_version_summary()
-    print colors.yellow(summary)
+    print(colors.yellow(summary))
 
 
 @task
@@ -230,9 +233,9 @@ def deploy(id=None, silent=False, force=False, auto_nginx=True):
     if force:
         force = colors.blue('FORCED DEPLOY')
 
-        print '-' * 40
-        print force
-        print '-' * 40
+        print('-' * 40)
+        print(force)
+        print('-' * 40)
 
     # Ask for sudo at the beginning so we don't fail during deployment because of wrong pass
     if not sudo('whoami'):
@@ -247,38 +250,38 @@ def deploy(id=None, silent=False, force=False, auto_nginx=True):
     # See if we have any requirements changes
     requirements_changes = force or vcs.changed_files(revset, r' requirements/')
     if requirements_changes:
-        print colors.yellow("Will update requirements (and do migrations)")
+        print(colors.yellow("Will update requirements (and do migrations)"))
 
     # See if we have changes in app source or static files
     app_patterns = [r' {{cookiecutter.repo_name}}/app', r' {{cookiecutter.repo_name}}/static',
                     r' {{cookiecutter.repo_name}}/settings', r' {{cookiecutter.repo_name}}/package.json']
     app_changed = force or vcs.changed_files(revset, app_patterns)
     if app_changed:
-        print colors.yellow("Will run npm build")
+        print(colors.yellow("Will run npm build"))
 
     # See if we have any changes to migrations between the revisions we're applying
     migrations = force or migrate_diff(revset=revset, silent=True)
     if migrations:
-        print colors.yellow("Will apply %d migrations:" % len(migrations))
-        print indent(migrations)
+        print(colors.yellow("Will apply %d migrations:" % len(migrations)))
+        print(indent(migrations))
 
     # See if we have any changes to letsencrypt configurations
     letsencrypt_changed = force or vcs.changed_files(revset, get_config_modified_patterns('letsencrypt'))
     if letsencrypt_changed:
-        print colors.yellow("Will update letsencrypt configurations")
+        print(colors.yellow("Will update letsencrypt configurations"))
 
     # see if nginx conf has changed
     nginx_changed = vcs.changed_files(revset, get_config_modified_patterns('nginx'))
 
     if nginx_changed:
         if auto_nginx:
-            print colors.yellow("Nginx configuration change detected, updating automatically")
+            print(colors.yellow("Nginx configuration change detected, updating automatically"))
 
         else:
-            print colors.red("Warning: Nginx configuration change detected, also run: `fab %target% nginx_update`")
+            print(colors.red("Warning: Nginx configuration change detected, also run: `fab %target% nginx_update`"))
 
     elif force:
-        print colors.yellow("Updating nginx config")
+        print(colors.yellow("Updating nginx config"))
 
     if not silent:
         request_confirm("deploy")
@@ -478,6 +481,7 @@ def letsencrypt_update(dry_run=False):
 
 """ SERVER COMMANDS """
 
+
 @task
 def docker_down(silent=False):
     """ Stops all services
@@ -536,6 +540,7 @@ def createsuperuser():
 
 
 """ HELPERS """
+
 
 def repo_type():
     require('code_dir')
@@ -628,6 +633,7 @@ def render_config_key(config_def, key):
 
     return config_def[key] % params
 
+
 def get_nginx_app_target_path():
     require('deployment_configurations')
 
@@ -640,6 +646,7 @@ def get_nginx_app_target_path():
         abort('multiple default nginx sites found')
 
     return render_config_key(default_site[0], 'remote_path')
+
 
 def ensure_docker_networks():
     # Ensure we have dedicated networks for communicating with Nginx and Postgres
