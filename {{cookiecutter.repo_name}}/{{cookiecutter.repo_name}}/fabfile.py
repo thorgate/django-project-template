@@ -16,6 +16,7 @@ from fabric import colors
 from fabric.api import abort, cd, env, prompt, require, sudo, task
 from fabric.contrib.console import confirm
 from fabric.operations import get, put
+from fabric.contrib.files import append, exists
 from fabric.utils import indent
 
 from django.utils.crypto import get_random_string
@@ -31,32 +32,14 @@ from hammer.docker_network import create_docker_network
 
 vcs = Vcs.init(project_root=os.path.dirname(os.path.dirname(__file__)), use_sudo=True)
 
-
-LOCAL_SETTINGS = """from settings.${target} import *
-
-SECRET_KEY = '${secret_key}'
-
-DATABASES = {
-    'default': {
-        'ENGINE':'django.db.backends.postgresql_psycopg2',
-        'NAME': '{{cookiecutter.repo_name}}',
-        'USER': '{{cookiecutter.repo_name}}',
-        'PASSWORD': '${db_password}',
-        'HOST': 'postgres',
-        'PORT': '5432',
-    }
-}
-
-{% if cookiecutter.django_media_engine == 'S3' -%}
-AWS_ACCESS_KEY_ID = '${aws_access_key}'
-AWS_SECRET_ACCESS_KEY = '${aws_secret_key}'
-{%- endif %}{% if cookiecutter.django_media_engine == 'GCS' -%}
-from google.oauth2 import service_account
-GS_PROJECT_ID = '${gcs_project_id}'
-GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
-    '${gcs_credentials_json}'
-){% endif %}
-
+LOCAL_ENV_TEMPLATE = """DJANGO_SECRET_KEY=${secret_key}
+DJANGO_SITE_URL=https://${django_site}
+DJANGO_ALLOWED_HOSTS=${allowed_hosts}
+DJANGO_DATABASE_HOST=postgres
+DJANGO_DATABASE_PORT=5432
+DJANGO_DATABASE_NAME={{cookiecutter.repo_name}}
+DJANGO_DATABASE_USER={{cookiecutter.repo_name}}
+DJANGO_DATABASE_PASSWORD=${db_password}
 """
 
 
@@ -127,6 +110,7 @@ def test():
     """
 
     defaults()
+    env.django_site = '{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}'
     env.hosts = ['{{cookiecutter.test_host}}']
 
 
@@ -142,6 +126,7 @@ def live():
 
     defaults()
     env.target = 'production'
+    env.django_site = '{{ cookiecutter.live_hostname }}'
     env.hosts = ['{{cookiecutter.live_host}}']
 
 
@@ -247,6 +232,9 @@ def deploy(id=None, silent=False, force=False, auto_nginx=True):
     if not revset and not force:
         return
 
+    # Ensure default local.py file exists
+    ensure_local_py_exists()
+
     # See if we have any requirements changes
     requirements_changes = force or vcs.changed_files(revset, r' requirements/')
     if requirements_changes:
@@ -318,39 +306,53 @@ def setup_server(id=None):
     # Clone code repository
     vcs.clone(id or None)
 
-    # Request values for {{ cookiecutter.django_media_engine }}
-    {% if cookiecutter.django_media_engine == 'S3' -%}
-    aws_access_key = request_input('aws_access_key', '')
-    aws_secret_key = request_input('aws_secret_key', '')
-    {%- endif %}{% if cookiecutter.django_media_engine == 'GCS' -%}
-    gcs_project_id = request_input('gcs_project_id', '')
-    gcs_credentials_json = None
-    with open('./google-credentials-{}.json'.format(env.target)) as f:
-        gcs_credentials_json = f.read().replace('\r', '').replace('\n', ''){% endif %}
+    # Ensure default local.py file exists
+    ensure_local_py_exists()
 
-    # Create password for DB, secret key and the local settings
+    # Create password for DB and the secret key
     db_password = generate_password()
     secret_key = generate_password()
-    local_settings = string.Template(LOCAL_SETTINGS).substitute(
+
+    # Create site settings for this env
+    django_local_env = string.Template(LOCAL_ENV_TEMPLATE).substitute(
         db_password=db_password,
         secret_key=secret_key,
-        target=env.target,
-        {% if cookiecutter.django_media_engine == 'S3' -%}
-        aws_access_key=aws_access_key,
-        aws_secret_key=aws_secret_key,
-        {%- endif %}{% if cookiecutter.django_media_engine == 'GCS' -%}
-        gcs_project_id=gcs_project_id,
-        gcs_credentials_json=gcs_credentials_json,{% endif %}
+        django_site=env.django_site,
+        allowed_hosts=','.join([env.django_site]),
     )
+    django_env_file_path = env.code_dir + '/{{cookiecutter.repo_name}}/django.env'
+
+    # Upload base env file
+    put(local_path=StringIO(django_local_env), remote_path=django_env_file_path, use_sudo=True)
+
+    # Request additional secrets
+    print('Enter Django RAVEN_PUBLIC_DSN:')
+    add_secret_key('DJANGO_RAVEN_PUBLIC_DSN', [django_env_file_path])
+
+    print('Enter Django RAVEN_BACKEND_DSN:')
+    add_secret_key('DJANGO_RAVEN_BACKEND_DSN', [django_env_file_path])
+
+    print('Enter Django EMAIL_HOST_PASSWORD:')
+    add_secret_key('DJANGO_EMAIL_HOST_PASSWORD', [django_env_file_path])
+
+    {% if cookiecutter.django_media_engine == 'S3' -%}
+    print('Enter Django DJANGO_AWS_ACCESS_KEY_ID:')
+    add_secret_key('DJANGO_AWS_ACCESS_KEY_ID', [django_env_file_path])
+
+    print('Enter Django DJANGO_AWS_SECRET_ACCESS_KEY:')
+    add_secret_key('DJANGO_AWS_SECRET_ACCESS_KEY', [django_env_file_path])
+    {%- endif %}{% if cookiecutter.django_media_engine == 'GCS' -%}
+    print('Enter Django DJANGO_GS_PROJECT_ID:')
+    add_secret_key('DJANGO_GS_PROJECT_ID', [django_env_file_path])
+    with open('./google-credentials-{}.json'.format(env.target)) as f:
+        gcs_credentials_json = f.read().replace('\r', '').replace('\n', '')
+    add_secret_key('DJANGO_GS_CREDENTIALS', [django_env_file_path], gcs_credentials_json){% endif %}
 
     # Create database
     sudo('echo "CREATE DATABASE {{cookiecutter.repo_name}}; '
          '      CREATE USER {{cookiecutter.repo_name}} WITH password \'{db_password}\'; '
          '      GRANT ALL PRIVILEGES ON DATABASE {{cookiecutter.repo_name}} to {{cookiecutter.repo_name}};" '
          '| docker exec -i postgres-10 psql -U postgres'.format(db_password=db_password))
-
-    # Upload local settings
-    put(local_path=StringIO(local_settings), remote_path=env.code_dir + '/{{cookiecutter.repo_name}}/settings/local.py', use_sudo=True)
 
     # Create log dir
     sudo('mkdir -p /var/log/{{cookiecutter.repo_name}}/')
@@ -539,7 +541,46 @@ def createsuperuser():
     management_cmd('createsuperuser')
 
 
+@task
+def add_secret_keys():
+    """ Add variables to remote env file """
+    require('hosts')
+    require('code_dir')
+
+    if not sudo('whoami'):
+        abort('Failed to elevate to root')
+        return
+
+    remote_path = env.code_dir + '/{{cookiecutter.repo_name}}/django.env'
+
+    while True:
+        # Get key name
+        key = raw_input('Enter key name: ')
+
+        if not key:
+            abort('Missing key name.')
+
+        add_secret_key(key, [remote_path])
+
+        if not confirm(colors.yellow("Add additional secret keys?"), default=False):
+            break
+
+    print('To apply the keys, rebuild docker images and restart (force deploy should do it as well)')
+
+
 """ HELPERS """
+
+
+def add_secret_key(key, remote_paths, value=None):
+    require('code_dir')
+
+    # Get key value
+    if value is None:
+        value = raw_input('Enter "%s" value: ' % key)
+
+    # Append to correct file if line not exists
+    for remote_path in remote_paths:
+        append(remote_path, '%s=%s' % (key, value), escape=False, use_sudo=True)
 
 
 def repo_type():
@@ -655,22 +696,6 @@ def ensure_docker_networks():
     ensure_docker_network_exists('{{ cookiecutter.repo_name }}_postgres', ['postgres-10'])
 
 
-def request_input(key, default_value):
-    val = None
-
-    while not val:
-        val = prompt('Enter value for {0}{1}: '.format(key, '[Default: {0}]'.format(default_value) if default_value else ''))
-
-        if not val:
-            if default_value:
-                val = default_value
-
-            else:
-                print(colors.red('Please enter a value'))
-
-    return val
-
-
 def ensure_docker_network_exists(network_name, connected_containers, internal=True):
     created = create_docker_network(network_name, internal=internal)
 
@@ -680,3 +705,15 @@ def ensure_docker_network_exists(network_name, connected_containers, internal=Tr
 
     for container_name in connected_containers:
         sudo('docker network connect %s %s' % (network_name, container_name))
+
+
+def ensure_local_py_exists():
+    require('hosts')
+    require('code_dir')
+
+    django_local_settings = env.code_dir + '/{{ cookiecutter.repo_name }}/settings/local.py'
+
+    if not exists(django_local_settings, use_sudo=True):
+        content = string.Template("from settings.${target} import *\n").substitute(target=env.target)
+
+        put(StringIO(content), django_local_settings, use_sudo=True)

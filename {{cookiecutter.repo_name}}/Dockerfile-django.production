@@ -2,6 +2,8 @@
 
 FROM python:{% if cookiecutter.python_version == '3.6' %}3.6.6{% else %}{{ cookiecutter.python_version }}{% endif %}-slim
 
+ENV DJANGO_PRODUCTION_MODE 1
+
 # Install system requirements
 RUN apt-get update && \
     apt-get upgrade -y && \
