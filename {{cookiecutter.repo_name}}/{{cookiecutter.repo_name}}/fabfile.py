@@ -287,7 +287,7 @@ def deploy(id=None, silent=False, force=False, auto_nginx=True):
     # Run deploy systemchecks
     check()
 
-    docker_up(silent=True)
+    docker_up(silent=True, force_recreate=force)
 
     # Update nginx after bringing up container
     if force or (nginx_changed and auto_nginx):
@@ -496,24 +496,24 @@ def docker_down(silent=False):
 
 
 @task
-def docker_up(silent=False):
+def docker_up(silent=False, force_recreate=False):
     """ Starts all services
     """
 
     if not silent:
         request_confirm("docker_up")
 
-    docker_compose('up -d --remove-orphans')
+    docker_compose('up -d --remove-orphans{}'.format(' --force-recreate' if force_recreate else ''))
 
     # This is necessary to make nginx refresh IP addresses of containers.
     sudo('docker exec nginx nginx -s reload')
 
 
 @task
-def docker_restart(silent=False):
+def docker_restart(silent=False, force_recreate=False):
     # Stops and then starts all services
     docker_down(silent=silent)
-    docker_up(silent=silent)
+    docker_up(silent=silent, force_recreate=force_recreate)
 
 
 @task
