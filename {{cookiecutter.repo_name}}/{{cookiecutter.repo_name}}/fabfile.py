@@ -470,10 +470,10 @@ def letsencrypt_update(dry_run=False):
     for target_path in updated_files:
         # verify everything works using --dry-run
         if dry_run:
-            sudo("certbot-auto certonly --dry-run --noninteractive --agree-tos -c %s" % target_path)
+            sudo("certbot-auto --no-self-upgrade certonly --dry-run --noninteractive --agree-tos -c %s" % target_path)
 
         # Aquire the certificate
-        sudo("certbot-auto certonly --noninteractive --agree-tos -c %s" % target_path)
+        sudo("certbot-auto --no-self-upgrade certonly --noninteractive --agree-tos -c %s" % target_path)
 
     # Reload nginx
     sudo('docker exec nginx nginx -s reload')
