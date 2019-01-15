@@ -236,7 +236,7 @@ def deploy(id=None, silent=False, force=False, auto_nginx=True):
     ensure_local_py_exists()
 
     # See if we have any requirements changes
-    requirements_changes = force or vcs.changed_files(revset, r' requirements/')
+    requirements_changes = force or vcs.changed_files(revset, r'Pipfile')
     if requirements_changes:
         print(colors.yellow("Will update requirements (and do migrations)"))
 
