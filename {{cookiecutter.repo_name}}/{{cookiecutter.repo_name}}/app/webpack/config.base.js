@@ -64,8 +64,8 @@ function makeConfig(options) {
                             importLoader: 1,
                             localIdentName: '[path][name]__[local]--[hash:base64:5]',
                             getLocalIdent: (loaderContext, localIdentName, localName, options) => {
-                                // Everything that comes from our global style folder will be in global scope
-                                if (/styles-src/.test(loaderContext.resourcePath)) {
+                                // Everything that comes from our global style folder and node_modules will be in global scope
+                                if (/styles-src|node_modules/.test(loaderContext.resourcePath)) {
                                     return localName;
                                 }
 
