@@ -18,8 +18,13 @@ from settings.base import *
 # # For development:
 # # Debug toolbar
 # INSTALLED_APPS.append('debug_toolbar')
-# INTERNAL_IPS = ('127.0.0.1',)
+# INTERNAL_IPS = ['127.0.0.1']
 # MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
+
+# # Trick to have debug toolbar when developing with docker
+# import socket
+# hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+# INTERNAL_IPS += [ip[:-1] + '1' for ip in ips]
 
 # Uncomment to send emails from your local machine.
 # EMAIL_HOST_PASSWORD = 'TODO (api key)'

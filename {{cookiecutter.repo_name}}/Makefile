@@ -201,7 +201,7 @@ docker-logs:
 
 makemessages:
 	docker-compose run --rm django ./manage.py makemessages -a
-	docker-compose run --rm django ./manage.py makemessages -a -d djangojs
+	docker-compose run --rm django ./manage.py makemessages -a -d djangojs {% if cookiecutter.include_docs == 'yes' %}--ignore="docs/*"{% endif %}
 
 
 compilemessages:
