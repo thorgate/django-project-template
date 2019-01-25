@@ -6,7 +6,7 @@ from celery import Celery
 
 
 # Set the default Django settings module
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings.local')
 
 app = Celery('{{cookiecutter.repo_name}}')
 
