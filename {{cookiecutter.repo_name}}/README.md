@@ -242,10 +242,18 @@ There are basically two types of deploys:
 * [Create the bucket for media files](http://docs.aws.amazon.com/AmazonS3/latest/UG/CreatingaBucket.html):
   * Bucket name: {{ cookiecutter.repo_name }}-{ENV} where `ENV` is either `staging` or `production`.
   * Region: Closest to the users of the project.
+    * Don't forget to change `AWS_S3_REGION_NAME` to the correct one
+  * Public access settings:
+    * `Block new public ACLs and uploading public objects (Recommended)` = False
+    * `Remove public access granted through public ACLs (Recommended)` = False
+  * Properties:
+    * Default encryption - AES-256
+    * It's nice to add tags
   * Create a new user:
     * Go to [AWS IAM](https://console.aws.amazon.com/iam/home?#users).
     * Click "Create new users" and follow the prompts.
     * Leave "Generate an access key for each User" selected.
+    * It's nice to add tags
   * Get the credentials:
     * Go to the new user's Security Credentials tab.
     * Click "Manage access keys".
@@ -258,6 +266,7 @@ There are basically two types of deploys:
      and "USER-ARN" to your new user's ARN. This grants full access to the bucket and
      its contents to the specified user:
 
+    ```json
     {
         "Statement": [
             {
@@ -275,7 +284,11 @@ There are basically two types of deploys:
             }
         ]
     }
-
+    ```
+  * When receiving `signature we calculated does not match` error
+    * waiting should fix this, around 1-2 hours max
+    * files should still have been uploaded
+        * can be confirmed by removing url params in browser (`?X-Amz-Algorithm=....`)
   * More information about working with S3 can be found [here](https://github.com/Fueled/django-init/wiki/Working-with-S3).
 {% endif %}{% if cookiecutter.django_media_engine == 'GCS' -%}
 1. Create a service account ([Google Getting Started Guide](https://cloud.google.com/docs/authentication/getting-started)).
