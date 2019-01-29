@@ -110,6 +110,7 @@ Note that the production configuration lacks PostgreSQL, since it runs on a sepa
 |run StyleLint                         |`make stylelint`                       |`docker-compose run --rm node npm run stylelint`                            |
 |run ESLint                            |`make eslint`                          |`docker-compose run --rm node npm run lint`                                 |
 |run Prospector                        |`make prospector`                      |`docker-compose run --rm django prospector`                                 |
+|run isort                             |`make isort`                           |`docker-compose run --rm django isort --recursive --check-only -p . --diff` |
 |run psql                              |`make psql`                            |`docker-compose exec postgres psql --user {{cookiecutter.repo_name}} --dbname {{cookiecutter.repo_name}}` |
 {% if cookiecutter.include_docs == 'yes' %}|generate docs                         |`make docs`                            |`docker-compose run --rm django sphinx-build ./docs ./docs/_build`          |{% endif %}
 
@@ -170,7 +171,9 @@ the results will be in `cover/` directory.
 Linters check your code for common problems. Running them is a good idea before submitting pull requests, to ensure you
 don't introduce problems to the codebase.
 
-We use _ESLint_ (for JavaScript parts) and _Prospector_ (for Python) and StyleLint (for SCSS).
+We use _ESLint_ (for JavaScript parts), _Prospector_ (for Python), _StyleLint_ (for SCSS), _isort_ (for Python imports)
+and _Pipenv check_ (for security vulnerabilities).
+
 To use them, run those commands in the Django app dir:
 
     # Check Javascript sources with ESLint:
@@ -179,6 +182,10 @@ To use them, run those commands in the Django app dir:
     make stylelint
     # Check Python sources with Prospector:
     make prospector
+    # Check Python imports with isort:
+    make isort
+    # Check Python package security vulnerabilities:
+    make pipenv-check
     # Run all of above:
     make quality
 
