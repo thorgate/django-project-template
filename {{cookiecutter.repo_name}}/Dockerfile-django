@@ -14,7 +14,7 @@ RUN apk add --no-cache --virtual .build-deps \
     libffi-dev libxml2-dev libxslt-dev jpeg-dev zlib-dev bash gettext
 
 # Copy Python requirements dir and Install requirements
-RUN pip install -U pipenv pip setuptools wheel
+RUN pip install -U pipenv==2018.11.26 pip setuptools wheel
 
 COPY Pipfile /
 COPY Pipfile.lock /
