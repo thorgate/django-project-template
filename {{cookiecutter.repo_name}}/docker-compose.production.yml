@@ -10,8 +10,6 @@ services:
         container_name: {{cookiecutter.repo_name}}_django
         restart: unless-stopped
         volumes:
-            - "./{{cookiecutter.repo_name}}/app/build:/app/app/build"
-            - "./{{cookiecutter.repo_name}}/app/webpack-stats.json:/app/app/webpack-stats.json"
             - "/var/lib/docker-nginx/files/{{cookiecutter.repo_name}}/assets:/files/assets"
             - "/var/log/{{cookiecutter.repo_name}}:/var/log/{{cookiecutter.repo_name}}"
         # For some reason the command also has to be specified here, otherwise the entrypoint+command combination won't
@@ -27,19 +25,6 @@ services:
         external_links:
             - postgres-10:postgres
 
-    node:
-        build:
-            context: .
-            dockerfile: Dockerfile-node.production
-        # Make this service no-op as we don't actually want it running but do want to use docker-compose file to define
-        #  volumes etc.
-        restart: "no"
-        command: "true"
-        volumes:
-            - "./{{cookiecutter.repo_name}}/app:/app/app"
-            - "./{{cookiecutter.repo_name}}/static:/app/static:ro"
-        # Node container won't be part of any networks
-        networks: []
     {%- if cookiecutter.include_celery == 'yes' %}
 
     celery:

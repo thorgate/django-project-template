@@ -240,13 +240,6 @@ def deploy(id=None, silent=False, force=False, auto_nginx=True):
     if requirements_changes:
         print(colors.yellow("Will update requirements (and do migrations)"))
 
-    # See if we have changes in app source or static files
-    app_patterns = [r' {{cookiecutter.repo_name}}/app', r' {{cookiecutter.repo_name}}/static',
-                    r' {{cookiecutter.repo_name}}/settings', r' {{cookiecutter.repo_name}}/package.json']
-    app_changed = force or vcs.changed_files(revset, app_patterns)
-    if app_changed:
-        print(colors.yellow("Will run npm build"))
-
     # See if we have any changes to migrations between the revisions we're applying
     migrations = force or migrate_diff(revset=revset, silent=True)
     if migrations:
@@ -279,7 +272,7 @@ def deploy(id=None, silent=False, force=False, auto_nginx=True):
     ensure_docker_networks()
     docker_compose('build')
 
-    collectstatic(npm_build=app_changed)
+    collectstatic()
 
     if migrations or requirements_changes:
         migrate(silent=True)
@@ -356,10 +349,6 @@ def setup_server(id=None):
 
     # Create log dir
     sudo('mkdir -p /var/log/{{cookiecutter.repo_name}}/')
-
-    # webpack-stats.json must exist before the Django container is run. Otherwise docker-compose assumes it to be a
-    #  directory (because it's a volume).
-    sudo('touch %s/{{cookiecutter.repo_name}}/app/webpack-stats.json' % env.code_dir)
 
     ensure_docker_networks()
 
@@ -593,10 +582,7 @@ def repo_type():
         print("Current project is using: `%s`" % colors.red('NO VCS'))
 
 
-def collectstatic(npm_build=True):
-    if npm_build:
-        docker_compose_run('node', 'npm run build', name='{{cookiecutter.repo_name}}_npm_build')
-
+def collectstatic():
     management_cmd('collectstatic --noinput --ignore styles-src')
 
 

@@ -1,5 +1,8 @@
-# Based on Node 8.x LTS image
-FROM node:{% if cookiecutter.node_version == '8' %}8.12.0{% else %}{{ cookiecutter.node_version }}{% endif %}
+# Based on Node 10.x LTS image
+FROM node:{% if cookiecutter.node_version == '10' %}10.15.1{% else %}{{ cookiecutter.node_version }}{% endif %}-alpine
+
+# Install system requirements
+RUN apk add --no-cache build-base python bash
 
 # Set the default directory where CMD will execute
 WORKDIR /app
