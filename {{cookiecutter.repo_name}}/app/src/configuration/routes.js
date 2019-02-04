@@ -5,7 +5,6 @@ import { buildUrlCache, RenderChildren, resolvePath } from 'tg-named-routes';
 import App from 'containers/AppShell';
 import PageNotFound from 'views/PageNotFound';
 
-import { verifyToken } from 'sagas/auth/verifyTokenSaga';
 import permissionCheck from 'sagas/auth/permissionCheckSaga';
 import obtainTokenWatcher from 'sagas/auth/obtainTokenSaga';
 import logoutWorker from 'sagas/auth/logoutSaga';
@@ -35,7 +34,6 @@ const routes = [
     {
         component: App,
         initial: [
-            verifyToken,
             fetchUserDetails,
         ],
         watcher: [

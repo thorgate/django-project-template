@@ -9,7 +9,7 @@ ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['{{ cookiecutter.djang
 
 # Static site url, used when we need absolute url but lack request object, e.g. in email sending.
 SITE_URL = env.str('RAZZLE_SITE_URL', default='https://{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}')
-DJANGO_SITE_URL = env.str('RAZZLE_DJANGO_SITE_URL', default='https://{{ cookiecutter.django_host_prefix }}.{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}')
+DJANGO_SITE_URL = env.str('RAZZLE_BACKEND_SITE_URL', default='https://{{ cookiecutter.django_host_prefix }}.{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}')
 
 CSRF_COOKIE_DOMAIN = env.str('DJANGO_CSRF_COOKIE_DOMAIN', default='.{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}')
 
@@ -22,8 +22,16 @@ STATIC_URL = env.str('DJANGO_STATIC_URL', default='/assets/')
 
 # Production logging - all INFO and higher messages go to info.log file. ERROR and higher messages additionally go to
 #  error.log file plus to Sentry.
-if env.str('DJANGO_DISABLE_FILE_LOGGING') != 'y':
-    LOGGING['handlers'] = {
+LOGGING['handlers'] = {
+    'sentry': {
+        'level': 'ERROR',
+        'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+    },
+}
+
+
+if env.str('DJANGO_DISABLE_FILE_LOGGING', default='n') != 'y':
+    LOGGING['handlers'].update({
         'info_log': {
             'level': 'INFO',
             'class': 'logging.handlers.WatchedFileHandler',
@@ -36,11 +44,7 @@ if env.str('DJANGO_DISABLE_FILE_LOGGING') != 'y':
             'filename': '/var/log/{{cookiecutter.repo_name}}/error.log',
             'formatter': 'default',
         },
-        'sentry': {
-            'level': 'ERROR',
-            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
-        },
-    }
+    })
     LOGGING['loggers'][''] = {
         'handlers': ['info_log', 'error_log', 'sentry'],
         'level': 'INFO',

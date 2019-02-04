@@ -22,8 +22,8 @@ ForgotPassword.propTypes = {
 };
 
 const mapDispatchToProps = (dispatch) => ({
-    onForgotPassword: (payload) => (
-        dispatch(forgotPassword(payload))
+    onForgotPassword: (payload, actions) => (
+        dispatch(forgotPassword(payload, actions))
     ),
 });
 

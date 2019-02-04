@@ -8,9 +8,12 @@ const LoadablePlugin = require('@loadable/webpack-plugin');
 const cssLoaderFinder = makeLoaderFinder('css-loader');
 
 module.exports = {
-    plugins: [
-        'long-term-caching',
-    ],
+    plugins: [{
+        name: 'long-term-caching',
+        options: {
+            aggressiveCaching: true,
+        },
+    }],
     modify(baseConfig, secondArg, webpack) {
         const {dev, target} = secondArg;
         /* make a copy of config */
@@ -47,21 +50,15 @@ module.exports = {
 
         if (target !== 'node') {
             config.plugins.push(new LoadablePlugin({
-                filename: path.resolve(path.join(process.cwd(), 'build', 'loadable-stats.json')),
-                writeToDisk: true,
+                outputAsset: false,
+                writeToDisk: {
+                    filename: path.resolve(__dirname, 'build'),
+                },
             }));
         }
 
         // adding ./src to module resolver so I can import modules with absolute paths
         config.resolve.modules.push('./src');
-
-        if (target === 'node') {
-            config.externals = [
-                'tg-named-routes',
-                '@loadable/component',
-                ...config.externals,
-            ];
-        }
 
         return config;
     },

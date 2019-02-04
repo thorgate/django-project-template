@@ -51,8 +51,8 @@ Login.defaultProps = {
 
 
 const mapDispatchToProps = (dispatch) => ({
-    onLogin: (payload) => (
-        dispatch(obtainToken(payload))
+    onLogin: (payload, actions) => (
+        dispatch(obtainToken(payload, actions))
     ),
 });
 

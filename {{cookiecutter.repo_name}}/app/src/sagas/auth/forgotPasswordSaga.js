@@ -9,7 +9,7 @@ import api from 'services/api';
  * Trigger Forgot password watcher saga.
  * @returns Created trigger action
  */
-export const forgotPassword = createSaveAction('GET_FORGOT_PASSWORD_LINK');
+export const forgotPassword = createSaveAction('@@sagas/auth/GET_FORGOT_PASSWORD_LINK');
 
 
 function successHook(result, { payload: { actions: { setStatus } } }) {
@@ -24,5 +24,5 @@ const forgotPasswordSaga = createFormSaveSaga({
 });
 
 export default function* forgotPasswordWatcherSaga() {
-    yield takeLatest(getType(forgotPassword), forgotPasswordSaga);
+    yield takeLatest(getType(forgotPassword), forgotPasswordSaga, null);
 }

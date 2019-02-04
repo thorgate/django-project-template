@@ -43,7 +43,7 @@ EMAIL_SUBJECT_PREFIX = '[{{cookiecutter.project_title}}] '  # subject prefix for
 SESSION_COOKIE_NAME = '{{ cookiecutter.repo_name }}_ssid'
 SESSION_COOKIE_DOMAIN = env.str('DJANGO_SESSION_COOKIE_DOMAIN', default=None)
 
-CSRF_COOKIE_DOMAIN = env.str('DJANGO_CSRF_COOKIE_DOMAIN', default='127.0.0.1')
+CSRF_COOKIE_DOMAIN = env.str('DJANGO_CSRF_COOKIE_DOMAIN', default=None)
 CSRF_COOKIE_HTTPONLY = False
 
 
@@ -241,7 +241,7 @@ AUTH_USER_MODEL = 'accounts.User'
 
 # Static site url, used when we need absolute url but lack request object, e.g. in email sending.
 SITE_URL = env.str('RAZZLE_SITE_URL', default='http://127.0.0.1:8000')
-DJANGO_SITE_URL = env.str('RAZZLE_DJANGO_SITE_URL', default='http://127.0.0.1:3000')
+DJANGO_SITE_URL = env.str('RAZZLE_BACKEND_SITE_URL', default='http://127.0.0.1:3000')
 ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['django', 'localhost', '127.0.0.1'])
 CSRF_TRUSTED_ORIGINS = env.list('DJANGO_CSRF_TRUSTED_ORIGINS', default=ALLOWED_HOSTS)
 CORS_ORIGIN_WHITELIST = env.list('DJANGO_CORS_ORIGIN_WHITELIST', default=ALLOWED_HOSTS)
@@ -344,7 +344,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'ROTATE_REFRESH_TOKENS': True,
 

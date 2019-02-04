@@ -1,9 +1,9 @@
 import { getLocalStorage } from '@thorgate/spa-view';
 import { getContext } from 'redux-saga/effects';
-import addMinutes from 'date-fns/add_minutes';
 import Cookies from 'js-cookie';
 
 import SETTINGS from 'settings';
+import { addTimedelta } from 'utils/datetime';
 
 
 export function* getToken() {
@@ -23,7 +23,12 @@ export function saveToken(access = null, refresh = null) {
         return;
     }
 
-    Cookies.set(SETTINGS.AUTH_TOKEN_NAME, access, { expires: addMinutes(new Date(), 5) });
+    const cookieOptions = {
+        expires: addTimedelta(new Date(), SETTINGS.AUTH_TOKEN_LIFETIME),
+        domain: `.${SETTINGS.SITE_URL.replace('https://', '').replace('http://', '')}`,
+    };
+
+    Cookies.set(SETTINGS.AUTH_TOKEN_NAME, access, cookieOptions);
 
     if (refresh) {
         getLocalStorage().setItem(SETTINGS.AUTH_REFRESH_TOKEN_NAME, refresh);

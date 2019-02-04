@@ -76,8 +76,8 @@ const LoginForm = withFormik({
         password: Yup.string(),
     }),
 
-    handleSubmit: (values, { props, setErrors, setSubmitting, setStatus }) => (
-        props.onLogin({ data: values, actions: { setErrors, setSubmitting, setStatus } })
+    handleSubmit: (values, { props, ...formik }) => (
+        props.onLogin({ data: values }, formik)
     ),
 
     displayName: 'LoginForm', // helps with React DevTools

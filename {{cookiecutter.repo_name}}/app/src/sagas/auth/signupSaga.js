@@ -13,7 +13,7 @@ import api from 'services/api';
  * Trigger Signup watcher saga.
  * @returns Created trigger action
  */
-export const signup = createSaveAction('auth/SIGNUP_POST');
+export const signup = createSaveAction('@@sagas/auth/SIGNUP_POST');
 
 
 function* successHook(result) {
@@ -38,5 +38,5 @@ const signupSaga = createFormSaveSaga({
 
 
 export default function* loginWatcherSaga() {
-    yield takeLatest(getType(signup), signupSaga);
+    yield takeLatest(getType(signup), signupSaga, null);
 }

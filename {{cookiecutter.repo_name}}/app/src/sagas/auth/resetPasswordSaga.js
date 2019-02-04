@@ -9,7 +9,7 @@ import api from 'services/api';
  * Trigger Reset password watcher saga.
  * @returns Created trigger action
  */
-export const resetPassword = createSaveAction('forgotPassword/RESET_PASSWORD');
+export const resetPassword = createSaveAction('@@sagas/auth/forgotPassword/RESET_PASSWORD');
 
 
 function* errorHook(options) {
@@ -39,5 +39,5 @@ const resetPasswordSaga = createFormSaveSaga({
 
 
 export default function* resetPasswordWatcherSaga() {
-    yield takeLatest(getType(resetPassword), resetPasswordSaga);
+    yield takeLatest(getType(resetPassword), resetPasswordSaga, null);
 }

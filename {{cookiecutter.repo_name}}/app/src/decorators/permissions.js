@@ -1,7 +1,7 @@
 import { permissionCheck } from '@thorgate/spa-permissions';
 
 
-const defaultDecoratorProps = { redirectRouteName: 'auth:login', PermissionDeniedComponent: null };
+const defaultDecoratorProps = { redirectRouteName: 'auth:login' };
 
 
 /**
@@ -12,7 +12,11 @@ const defaultDecoratorProps = { redirectRouteName: 'auth:login', PermissionDenie
  * @returns {React.Component|Function} Wrapped component
  */
 export const loginRequired = (decoratorProps = {}) => permissionCheck(
-    ({ isAuthenticated }) => isAuthenticated, 'loginRequired', { ...defaultDecoratorProps, ...decoratorProps }
+    ({ isAuthenticated }) => isAuthenticated, 'loginRequired', {
+        ...defaultDecoratorProps,
+        PermissionDeniedComponent: null, // Login works as redirect
+        ...decoratorProps,
+    },
 );
 
 /**
@@ -24,4 +28,8 @@ export const loginRequired = (decoratorProps = {}) => permissionCheck(
  */
 export const superUserRequired = (decoratorProps = {}) => permissionCheck(({ user, isAuthenticated }) => (
     isAuthenticated && !!user && user.is_superuser
-), 'superUserRequired', { ...defaultDecoratorProps, ...decoratorProps });
+), 'superUserRequired', {
+    ...defaultDecoratorProps,
+    redirectRouteName: null, // superUserRequired works as permission denied
+    ...decoratorProps,
+});

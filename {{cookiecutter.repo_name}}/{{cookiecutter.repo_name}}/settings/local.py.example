@@ -23,7 +23,6 @@ from settings.base import *
 #     # If defining different SITE_URLs, if not using 127.0.0.1
 #     # SITE_URL = 'http://YOUR_MACHINE_IP:8000'
 #     # DJANGO_SITE_URL = 'http://YOUR_MACHINE_IP:3000'
-#     # KOA_APP_PROXY = {key: DJANGO_SITE_URL for key in KOA_APP_PROXY.keys()}
 #
 #     # Add proper database name, user and password here, if necessary
 #     DATABASES = {

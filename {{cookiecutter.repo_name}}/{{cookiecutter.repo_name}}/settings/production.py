@@ -6,7 +6,7 @@ ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['{{ cookiecutter.djang
 
 # Static site url, used when we need absolute url but lack request object, e.g. in email sending.
 SITE_URL = env.str('RAZZLE_SITE_URL', default='https://{{ cookiecutter.live_hostname }}')
-DJANGO_SITE_URL = env.str('RAZZLE_DJANGO_SITE_URL', default='https://{{ cookiecutter.django_host_prefix }}.{{ cookiecutter.live_hostname }}')
+DJANGO_SITE_URL = env.str('RAZZLE_BACKEND_SITE_URL', default='https://{{ cookiecutter.django_host_prefix }}.{{ cookiecutter.live_hostname }}')
 
 CSRF_COOKIE_DOMAIN = env.str('DJANGO_CSRF_COOKIE_DOMAIN', default='.{{ cookiecutter.live_hostname }}')
 

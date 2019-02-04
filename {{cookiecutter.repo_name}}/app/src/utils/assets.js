@@ -1,7 +1,7 @@
 import SETTINGS from 'settings';
 
 
-const resolveAsset = (url, basePath = null, sitePath = SETTINGS.DJANGO_SITE_URL) => {
+const resolveAsset = (url, basePath = null, sitePath = SETTINGS.BACKEND_SITE_URL) => {
     let path = `${basePath || ''}${url}`;
 
     if (!path.startsWith('/') && !/https?:\/\//.test(path)) {

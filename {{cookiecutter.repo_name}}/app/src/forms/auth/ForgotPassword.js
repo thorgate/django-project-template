@@ -112,8 +112,8 @@ const ForgotPasswordForm = withFormik({
             .required(pgettext('form error', 'Email address is required')),
     }),
 
-    handleSubmit: (values, { props, setErrors, setSubmitting, setStatus }) => (
-        props.onForgotPassword({ data: values, actions: { setErrors, setSubmitting, setStatus } })
+    handleSubmit: (values, { props, ...formik }) => (
+        props.onForgotPassword({ data: values }, formik)
     ),
 
     displayName: 'ForgotPasswordForm', // helps with React DevTools

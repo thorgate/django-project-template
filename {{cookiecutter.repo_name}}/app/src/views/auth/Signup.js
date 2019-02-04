@@ -51,8 +51,8 @@ Signup.defaultProps = {
 
 
 const mapDispatchToProps = (dispatch) => ({
-    onSignup: (payload) => (
-        dispatch(signup(payload))
+    onSignup: (payload, actions) => (
+        dispatch(signup(payload, actions))
     ),
 });
 

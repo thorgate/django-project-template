@@ -26,7 +26,7 @@ _(note that the primary repo is in [Gitlab](https://gitlab.com/thorgate-public/d
         - Or remove `DJANGO_PRODUCTION_MODE` and `DJANGO_SETTINGS_MODULE` env reference from `Dockerfile-django.production`
     - Create `<root>/app/env/.env.production.local`
         - `RAZZLE_SITE_URL`
-        - `RAZZLE_DJANGO_SITE_URL`
+        - `RAZZLE_BACKEND_SITE_URL`
         - `RAZZLE_RAVEN_PUBLIC_DSN`
         - `RAZZLE_RAVEN_BACKEND_DSN`
 

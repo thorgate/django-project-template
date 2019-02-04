@@ -111,8 +111,8 @@ const ResetPasswordForm = withFormik({
         password_confirm: Yup.string().required(pgettext('form error', 'Password confirmation is required')),
     }),
 
-    handleSubmit: (values, { props, setErrors, setSubmitting, setStatus }) => (
-        props.onResetPassword({ data: values, actions: { setErrors, setSubmitting, setStatus } })
+    handleSubmit: (values, { props, ...formik }) => (
+        props.onResetPassword({ data: values }, formik)
     ),
 
     displayName: 'ResetPasswordForm', // helps with React DevTools

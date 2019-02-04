@@ -13,7 +13,7 @@ import api from 'services/api';
  * Trigger obtain token watcher saga.
  * @returns Created trigger action
  */
-export const obtainToken = createSaveAction('auth/OBTAIN_TOKEN');
+export const obtainToken = createSaveAction('@@sagas/auth/OBTAIN_TOKEN');
 
 
 function* successHook(result) {
@@ -37,5 +37,5 @@ const obtainTokenSaga = createFormSaveSaga({
 });
 
 export default function* loginWatcherSaga() {
-    yield takeLatest(getType(obtainToken), obtainTokenSaga);
+    yield takeLatest(getType(obtainToken), obtainTokenSaga, null);
 }

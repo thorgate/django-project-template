@@ -35,7 +35,7 @@ LOCAL_PY_TEMPLATE = """from settings.${target} import *
 """
 
 BASE_LOCAL_SETTINGS = """RAZZLE_SITE_URL=https://${node_site}
-RAZZLE_DJANGO_SITE_URL=https://${django_site}
+RAZZLE_BACKEND_SITE_URL=https://${django_site}
 """
 
 DJANGO_LOCAL_SETTINGS = """${prefix}_SECRET_KEY=${secret_key}
