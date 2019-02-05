@@ -99,7 +99,7 @@
   "devDependencies": {
     "jest-dom": "2.1.0",
     "react-testing-library": "5.2.0",
-    "stylelint": "9.6.0",
+    "stylelint": "9.10.1",
     "stylelint-config-standard": "18.2.0"
   },
   "jest": {
