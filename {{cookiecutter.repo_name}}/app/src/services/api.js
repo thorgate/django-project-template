@@ -3,8 +3,9 @@ import { FetchResource as Resource } from '@tg-resources/fetch';
 import { createSagaRouter } from '@tg-resources/redux-saga-router';
 import { userActions } from '@thorgate/spa-permissions';
 import { getLocalStorage } from '@thorgate/spa-view';
+import { getLocation, replace } from 'connected-react-router';
 import Cookies from 'js-cookie';
-import { call } from 'redux-saga/effects';
+import { call, select, put } from 'redux-saga/effects';
 import qs from 'qs';
 
 import SETTINGS from 'settings';

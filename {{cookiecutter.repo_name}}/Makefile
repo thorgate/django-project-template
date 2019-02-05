@@ -29,7 +29,7 @@ GRAY ?= \033[0;37m
 COFF ?= \033[0m
 
 # Mark non-file targets as PHONY
-.PHONY: all help docker settings setup pycharm coverage node-install test clean quality eslint prospector stylelint docker-django
+.PHONY: all help docker settings setup pycharm coverage node-install test clean quality eslint prospector stylelint docker-django node-quality
 .PHONY: django-shell node-shell docker-manage shell makemigrations migrate docker-logs makemessages compilemessages add-locale psql isort isort-fix
 
 all: help
@@ -140,7 +140,12 @@ clean:
 	@cd $(SITE_ROOT) && find . -name "*.pyc" -exec rm -rf {} \;
 
 
-quality: stylelint eslint prospector isort
+quality: node-quality prospector isort
+
+
+node-quality:
+	@echo "$(CYAN)Running Node Quality(COFF)"
+	@docker-compose run --rm node npm run quality
 
 
 eslint:
