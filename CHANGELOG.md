@@ -6,24 +6,79 @@ When adding new changes just create a similar section after this comment like
 ## DATE (template variant unless it's the main one)
 
 CHANGES
+
+Note: Try to add categories to changes and link to MRs/Issues
 -->
 
-## 2018-12-05
+## 2019-02-07
 
-- Fix issue with nginx and `app.<project>.proxy_<component>.include`, might occure only on newer server
-- Re-structure SPA
+- [BUG] Fix issue with nginx and `app.<project>.proxy_<component>.include`, might occur only on newer server (see !46)
+- [ENH] Re-structure SPA (see !46)
     - Move `<project>/app` to `app`
     - Move related files as well
     - Move `<project>/static/styles-src` to `app/src/styles`
     - Move `SPA.md` to `app/SPA.md`
     - Move to [Razzle](https://github.com/jaredpalmer/razzle) based setup
-- Upgrade SPA to use `babel@7`
-- Switch Django & Node to Alpine Docker images
-- Add fancy loading bar for SPA
-- Add `django-environ` to support environment based settings in Django
-- Add `django-cors-headers` to prepare for `k8s`, env based settings is also pre-work for this
-- Improve server logging, logger formatting should be correct now
-- TODO : `tg-i18n` version upgrade (not released yet)
+- [ENH] SPA template core packages have been turned into packages (see !46)
+- [ENH] Add `django-cors-headers` to prepare for `k8s` (see !46)
+- [ENH] Improve server logging, logger formatting should be correct now (see !46)
+
+
+## 2019-02-01
+
+**Breaking:** This version changes of the base python docker images to alpine. If you have changed Django dockerfiles files in your projects make sure to port the changes over to alpine as well. This version also removes production Node dockerfile and builds node stuff inside the django dockerfile using docker multistage build.
+
+- [ENH] Use docker multistage builds for production Django and node (see !61)
+  - Note: This removes Dockerfile-node.production
+- [ENH] Freeze pipenv dependency to `2018.11.26` (see !61)
+- [ENH] Pin pep8-naming to `0.7.0` as a workaround for [this issue](https://github.com/PyCQA/pep8-naming/issues/92) (see !61)
+- [ENH] Add pipenv-check to `make quality` (see !60)
+- [ENH] Add more deploment hints about S3 (see !59)
+- [BUG] Ensure correct DJANGO_SETTINGS_MODULE is set (see !58)
+  - Fixes `manage.py shell`, `celery` and deployed code running via `wsgi.py`.
+- [NEW] Add GitLab merge request templates to generated projects (see !57)
+- [BUG] [FABRIC] Update fabfile to detect requirement changes with Pipfile (see !56)
+- [BUG] Added missing --dev flag to pipenv install in development docker file (see !55)
+- [BUG] Ignore docs folder when running `makemessages` (see !55)
+- [ENH] Add styles from node_modules to global css scope (see !55)
+- [ENH] Removed unused `style-loader` from node dependencies (see !55)
+- [ENH] Added an example to local.py.example on how to get debug toolbar to work inside docker (see !55)
+- [FABRIC] Disable certbot self-upgrade (see !54)
+- [FABRIC] Add `--force-recreate` flag to `docker_up` command during a forced deployment (see !53)
+
+## 2019-01-02
+
+**Warning:** This version has a bug regards `DJANGO_SETTINGS_MODULE`, please use the latest version or apply changes from merge request !58 locally.
+
+**Breaking:** This version converts our template to use environment based settings via django-environ.
+
+- Use environment based settings
+
+### Upgrading
+
+- Upgrade template
+  - Note: Pay attention to files in settings directory
+- Test that everything is still working
+- Commit changes
+- In servers
+    - Update Django to new settings
+        - Convert `<root>/<project>/settings/local.py` to `<root>/<project>/django.env`
+        - Or remove `DJANGO_PRODUCTION_MODE` env reference from `Dockerfile-django.production`
+
+## 2018-12-06
+
+**Breaking:** This version includes a breaking change which removes support for locally stored
+media files. The media files will be stored in a CDN and we have builtin support for both Amazon S3 and
+Google's Cloud storage. This change is done to simplify moving to Kubernetes in the future.
+
+- Force storing media files in a CDN
+- Remove support for locally stored media files
+
+Some guides for existing projects:
+
+- [Ensuring your project is compatible with remote media](https://gitlab.com/thorgate-public/django-project-template/wikis/Guides/Ensuring-your-project-is-compatible-with-remote-media)
+- [Making some of the remote media private](https://gitlab.com/thorgate-public/django-project-template/wikis/Guides/Making-some-of-the-remote-media-private)
+- [Moving existing media to S3](https://gitlab.com/thorgate-public/django-project-template/wikis/Guides/Moving-existing-media-to-S3)
 
 
 ## 2018-10-24

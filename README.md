@@ -54,6 +54,7 @@ _(note that the primary repo is in [Gitlab](https://gitlab.com/thorgate-public/d
       [ESLint](http://eslint.org/) and [stylelint](https://stylelint.io/)
     - [py.test](http://pytest.org/) and [coverage](https://coverage.readthedocs.io/) integration
     - Deploy helpers, using [Fabric](http://www.fabfile.org/)
+    - Media files are stored in a CDN like S3 or Google Cloud Storage
     - Out-of-the-box configuration for nginx, gunicorn and logrotate
     - Includes [PyCharm](https://www.jetbrains.com/pycharm/) project config
 
@@ -61,7 +62,7 @@ _(note that the primary repo is in [Gitlab](https://gitlab.com/thorgate-public/d
 ## Usage
 
 To use this template, first ensure that you have
-[Pipenv](https://pipenv.readthedocs.io/en/latest/) available.
+[Pipenv](https://pipenv.readthedocs.io/en/latest/) `2018.11.26` available.
 
 After that, you should:
 

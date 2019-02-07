@@ -20,9 +20,10 @@
     "_13": "\n\t   postgres_version: Which version Postgres container will the project be using in the server?  [9.5+]",
     "_14": "\n\t django_admin_path: URL path for Django Admin.",
     "_15": "\n\tdjango_host_prefix: Host name prefix for Django app.",
-    "_16": "\n\t   gitlab_repo_url: Optional Gitlab repo url (https://gitlab.com/org/repo, used for CI badges).",
-    "_17": "\n\t",
-    "_18": "\n\t Press ENTER to continue.\n",
+    "_16": "\n\t  django_media_engine: Which CDN to use for media files [S3/GCS].",
+    "_17": "\n\t   gitlab_repo_url: Optional Gitlab repo url (https://gitlab.com/org/repo, used for CI badges).",
+    "_18": "\n\t",
+    "_19": "\n\t Press ENTER to continue.\n",
     "*": "{{cookiecutter._0 + cookiecutter._1 + cookiecutter._2 + cookiecutter._3 + cookiecutter._4 + cookiecutter._5 + cookiecutter._6 + cookiecutter._7 + cookiecutter._8 + cookiecutter._9 + cookiecutter._10 + cookiecutter._11 + cookiecutter._12 + cookiecutter._13 + cookiecutter._14 + cookiecutter._15 + cookiecutter._16 + cookiecutter._17 + cookiecutter._18}}",
     "project_title": "User-visible title of the project.",
     "repo_name": "{{cookiecutter.project_title|lower|replace(' ', '_')}}",
@@ -39,5 +40,6 @@
     "postgres_version": "10",
     "django_admin_path": "adminpanel",
     "django_host_prefix": "office",
+    "django_media_engine": "S3",
     "gitlab_repo_url": ""
 }

@@ -1,8 +1,7 @@
 # Production Dockerfile for Django app
-FROM python:{% if cookiecutter.python_version == '3.6' %}3.6.6{% else %}{{ cookiecutter.python_version }}{% endif %}-alpine
+FROM python:{% if cookiecutter.python_version == '3.6' %}3.6.8{% else %}{{ cookiecutter.python_version }}{% endif %}-alpine3.8
 
 ENV DJANGO_PRODUCTION_MODE 1
-ENV DJANGO_SETTINGS_MODULE settings.base
 
 # Set the default directory where CMD will execute
 WORKDIR /app
@@ -25,8 +24,17 @@ RUN apk add --no-cache --virtual .build-deps \
     ca-certificates alpine-sdk postgresql-dev python3-dev linux-headers musl-dev \
     libffi-dev jpeg-dev zlib-dev
 
+# Install bash, libpq{% if cookiecutter.include_cms == 'yes' %}, libjpeg-turbo{% endif %} and gettext
+# Bash is required to support `wait-for-it.sh` script, should not add too much to docker image
+RUN apk add --no-cache bash gettext libpq{% if cookiecutter.include_cms == 'yes' %} libjpeg-turbo{% endif %}
+
+# Install build dependencies and mark them as virtual packages so they could be removed together
+RUN apk add --no-cache --virtual .build-deps \
+    ca-certificates alpine-sdk postgresql-dev python3-dev linux-headers musl-dev \
+    libffi-dev libxml2-dev libxslt-dev jpeg-dev zlib-dev
+
 # Copy Python requirements dir and Install requirements
-RUN pip install -U pipenv pip setuptools wheel
+RUN pip install -U pipenv==2018.11.26 pip setuptools wheel
 
 COPY Pipfile /
 COPY Pipfile.lock /
@@ -55,7 +63,7 @@ RUN find /usr/local \
 # Remove build dependencies
 RUN apk del .build-deps
 
-# Copy application code
+# Copy code
 COPY ./{{cookiecutter.repo_name}} /app
 
 # Compile translations to .mo files
@@ -63,4 +71,4 @@ COPY ./{{cookiecutter.repo_name}} /app
 #RUN python manage.py compilemessages
 
 # Run Gunicorn by default
-CMD gunicorn {{cookiecutter.repo_name}}.wsgi:application --workers 2 --bind :80
+CMD gunicorn {{ cookiecutter.repo_name }}.wsgi:application --workers 2 --bind :80

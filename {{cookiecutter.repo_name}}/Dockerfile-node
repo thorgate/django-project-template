@@ -1,6 +1,7 @@
 # Based on Node {{ cookiecutter.node_version }} Alpine image
-FROM node:{% if cookiecutter.node_version == '10' %}10.14.0{% else %}{{ cookiecutter.node_version }}{% endif %}-alpine
+FROM node:{% if cookiecutter.node_version == '10' %}10.15.1{% else %}{{ cookiecutter.node_version }}{% endif %}-alpine
 
+# Install system requirements
 RUN apk add --no-cache alpine-sdk python bash
 
 # Set the default directory where CMD will execute

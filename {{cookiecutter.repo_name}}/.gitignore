@@ -13,6 +13,7 @@ venv/
 
 .data/
 
+{{cookiecutter.repo_name}}/django.env
 {{cookiecutter.repo_name}}/settings/local.py
 {{cookiecutter.repo_name}}/settings/local_test.py
 {{cookiecutter.repo_name}}/db.sqlite3
