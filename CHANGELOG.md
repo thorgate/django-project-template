@@ -19,8 +19,8 @@ Note: Try to add categories to changes and link to MRs/Issues
     - Move `<project>/static/styles-src` to `app/src/styles`
     - Move `SPA.md` to `app/SPA.md`
     - Move to [Razzle](https://github.com/jaredpalmer/razzle) based setup
-- [ENH] SPA template core packages have been turned into packages (see !46)
-- [ENH] Add `django-cors-headers` to prepare for `k8s` (see !46)
+- [ENH] SPA template core code have been turned into packages (see [tg-spa-utils](https://github.com/thorgate/tg-spa-utils))
+- [ENH] Add `django-cors-headers` to prepare for separate hosts for frontend and backend (see !46)
 - [ENH] Improve server logging, logger formatting should be correct now (see !46)
 
 

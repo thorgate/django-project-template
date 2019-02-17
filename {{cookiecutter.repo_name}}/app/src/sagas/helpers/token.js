@@ -25,8 +25,12 @@ export function saveToken(access = null, refresh = null) {
 
     const cookieOptions = {
         expires: addTimedelta(new Date(), SETTINGS.AUTH_TOKEN_LIFETIME),
-        domain: `.${SETTINGS.SITE_URL.replace('https://', '').replace('http://', '')}`,
     };
+
+    if (process.env.NODE_ENV === 'production') {
+        const domain = SETTINGS.SITE_URL.replace('https://', '').replace('http://', '');
+        cookieOptions.domain = `.${domain}`;
+    }
 
     Cookies.set(SETTINGS.AUTH_TOKEN_NAME, access, cookieOptions);
 

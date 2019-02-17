@@ -1,6 +1,5 @@
 import { createSaveAction, createFormSaveSaga, formErrorsHandler } from '@thorgate/spa-forms';
 import { call, takeLatest } from 'redux-saga/effects';
-import { getType } from 'typesafe-actions';
 
 import api from 'services/api';
 
@@ -26,7 +25,7 @@ function* errorHook(options) {
 }
 
 
-function successHook(params, payload, result, { setStatus }) {
+function successHook(_0, _1, { meta: { setStatus } }) {
     setStatus({ success: true });
 }
 
@@ -39,5 +38,5 @@ const resetPasswordSaga = createFormSaveSaga({
 
 
 export default function* resetPasswordWatcherSaga() {
-    yield takeLatest(getType(resetPassword), resetPasswordSaga, null);
+    yield takeLatest(resetPassword.getType(), resetPasswordSaga, null);
 }

@@ -18,17 +18,6 @@ import environ
 
 # Build paths inside the project like this: os.path.join(SITE_ROOT, ...)
 SITE_ROOT = os.path.dirname(os.path.dirname(__file__))
-ROOT_DIR = environ.Path(SITE_ROOT)
-
-
-# Load env to get settings
-env = environ.Env()
-
-READ_DOT_ENV_FILE = env.bool('DJANGO_READ_DOT_ENV_FILE', default=True)
-if READ_DOT_ENV_FILE:
-    # OS environment variables take precedence over variables from .env
-    # By default use django.env file from project root directory
-    env.read_env(str(ROOT_DIR.path('django.env')))
 
 # Load env to get settings
 ROOT_DIR = environ.Path(SITE_ROOT)
@@ -368,13 +357,17 @@ REST_FRAMEWORK = {
     # Disable Basic auth
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        # By default api session authentication is not used
+        # 'rest_framework.authentication.SessionAuthentication',
     ),
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
     ),
     # Change default full-url media files to be only stored path, needs /media prepended in frontend
     'UPLOADED_FILES_USE_URL': False,
+
+    # Default request format in tests is json
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
 }
 
 # Default values for sentry
@@ -384,7 +377,7 @@ RAVEN_CONFIG = {'dsn': RAVEN_BACKEND_DSN}
 
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'ROTATE_REFRESH_TOKENS': True,
 
