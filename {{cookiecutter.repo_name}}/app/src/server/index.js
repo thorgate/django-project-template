@@ -2,7 +2,7 @@ import path from 'path';
 import { ChunkExtractor, ChunkExtractorManager } from '@loadable/server';
 import '@tg-resources/fetch-runtime';
 import { isAuthenticated } from '@thorgate/spa-permissions';
-import { createLocationAction, ViewManagerWorker } from '@thorgate/spa-view-manager';
+import { createLocationAction, ServerViewManagerWorker } from '@thorgate/spa-view-manager';
 import Koa from 'koa';
 import koaServe from 'koa-static';
 import koaHelmet from 'koa-helmet';
@@ -38,8 +38,6 @@ const router = new Router();
 router.get(
     '*',
     async (ctx, next) => {
-        console.log('target %s', process.env.BUILD_TARGET);
-
         const { store } = configureStore({}, {
             sagaMiddleware: {
                 context: {
@@ -54,7 +52,7 @@ router.get(
         store.dispatch(setActiveLanguage(language));
         ctx.logger.debug('Set language to: %s', language);
 
-        const task = store.runSaga(ViewManagerWorker, routes, createLocationAction(store.getState().router));
+        const task = store.runSaga(ServerViewManagerWorker, routes, createLocationAction(store.getState().router));
 
         store.close();
 
@@ -82,6 +80,7 @@ router.get(
         }
 
         // Provide script tags forward
+        ctx.state.statusCode = context.statusCode;
         ctx.state.linkTags = extractor.getLinkTags();
         ctx.state.scriptTags = extractor.getScriptTags();
         ctx.state.styleTags = extractor.getStyleTags();
@@ -92,7 +91,7 @@ router.get(
         return next();
     },
     (ctx, next) => {
-        ctx.status = 200;
+        ctx.status = ctx.state.statusCode || 200;
         ctx.body = `<!doctype html>
         <html ${ctx.state.helmet.htmlAttributes.toString()}>
         <head>

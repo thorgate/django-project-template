@@ -11,7 +11,7 @@ import api from 'services/api';
 export const forgotPassword = createSaveAction('@@sagas/auth/GET_FORGOT_PASSWORD_LINK');
 
 
-function successHook(result, { meta: { setStatus } }) {
+function successHook(result, _1, { meta: { setStatus } }) {
     if (result.success) {
         setStatus({ success: true });
     }

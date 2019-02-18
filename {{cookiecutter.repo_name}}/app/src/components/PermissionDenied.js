@@ -8,7 +8,7 @@ const PermissionDenied = () => (
     <PageError
         statusCode={403}
         title={gettext('Insufficient permissions')}
-        message={gettext('You don\'t have permissions to access this page')}
+        description={gettext('You don\'t have permissions to access this page')}
     />
 );
 

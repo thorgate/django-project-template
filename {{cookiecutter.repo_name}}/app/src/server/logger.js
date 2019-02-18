@@ -49,8 +49,8 @@ if (process.env.NODE_ENV !== 'production') {
         level: 'debug',
         handleExceptions: true,
         format: combine(
-            splat(),
             colorize({ all: true }),
+            splat(),
             printf((nfo) => `[${nfo.level}]: ${nfo.message}`),
         ),
     }));

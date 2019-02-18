@@ -1,9 +1,6 @@
 import { permissionCheck } from '@thorgate/spa-permissions';
 
 
-const defaultDecoratorProps = { redirectRouteName: 'auth:login' };
-
-
 /**
  * Check if user is authenticated, if not then user is returned to login screen.
  *
@@ -13,7 +10,7 @@ const defaultDecoratorProps = { redirectRouteName: 'auth:login' };
  */
 export const loginRequired = (decoratorProps = {}) => permissionCheck(
     ({ isAuthenticated }) => isAuthenticated, 'loginRequired', {
-        ...defaultDecoratorProps,
+        redirectRouteName: 'auth:login',
         PermissionDeniedComponent: null, // Login works as redirect
         ...decoratorProps,
     },
@@ -29,7 +26,5 @@ export const loginRequired = (decoratorProps = {}) => permissionCheck(
 export const superUserRequired = (decoratorProps = {}) => permissionCheck(({ user, isAuthenticated }) => (
     isAuthenticated && !!user && user.is_superuser
 ), 'superUserRequired', {
-    ...defaultDecoratorProps,
-    redirectRouteName: null, // superUserRequired works as permission denied
     ...decoratorProps,
 });

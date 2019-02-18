@@ -18,7 +18,7 @@ function* mutateRequestConfig(origRequestConfig, resource) {
     const requestConfig = origRequestConfig || {};
 
     let token = yield call(getToken);
-    if (!token && resource.routeName !== 'auth.refresh') {
+    if (!token && !resource.routeName.startsWith('auth.')) {
         token = yield call(refreshToken);
     }
 
@@ -44,13 +44,12 @@ function* refreshToken() {
         return;
     }
 
-    const location = yield select(getLocation);
-
     try {
         const { access } = yield api.auth.refresh.post(null, { refresh });
 
         saveToken(access);
 
+        const location = yield select(getLocation);
         const query = qs.parse(location.search, { ignoreQueryPrefix: true });
 
         // Act as auth-middleware, try to redirect to next url, if it is present
@@ -65,14 +64,20 @@ function* refreshToken() {
         saveToken();
 
         // Force current view to re-render
+        const location = yield select(getLocation);
         yield put(replace(location));
     }
 }
 
 function onRequestError(error, resource) {
-    const isError404 = error.isInvalidResponseCode && [404, 403, 401].includes(error.statusCode);
+    const shouldReportError = ![
+        error.isInvalidResponseCode && [404, 403, 401].includes(error.statusCode),
+        error.isValidationError,
+        error.isNetworkError,
+        error.isAbortError,
+    ].some(Boolean);
 
-    if (!error.isValidationError && !isError404) {
+    if (shouldReportError) {
         if (process.env.NODE_ENV === 'production') {
             Sentry.captureException(error);
         } else {
