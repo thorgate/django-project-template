@@ -32,13 +32,11 @@ const Login = ({ status, isSubmitting }) => (
             labelSize={4}
         />
 
-        {status !== undefined
-            ? (
-                <Alert color={status.color}>
-                    {status.message}
-                </Alert>
-            ) : null
-        }
+        {status !== undefined && (
+            <Alert color="danger">
+                {status.message}
+            </Alert>
+        )}
 
         <Row>
             <Col sm={12} md={4} className="mt-3 ml-auto mr-auto">
