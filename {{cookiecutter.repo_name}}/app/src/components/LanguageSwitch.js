@@ -1,14 +1,14 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Button } from 'reactstrap';
 
-import { setActiveLanguage, selectors as appSelectors } from 'ducks/application';
+import { setActiveLanguage, applicationSelectors } from 'ducks/application';
 import SETTINGS from 'settings';
 
 
 const LanguageSwitch = ({ activeLanguage, onSwitch }) => (
-    <Fragment>
+    <>
         <p>
             Active language: {activeLanguage}
         </p>
@@ -17,7 +17,7 @@ const LanguageSwitch = ({ activeLanguage, onSwitch }) => (
                 {SETTINGS.LANGUAGES[languageCode]}
             </Button>
         ))}
-    </Fragment>
+    </>
 );
 
 LanguageSwitch.propTypes = {
@@ -27,7 +27,7 @@ LanguageSwitch.propTypes = {
 
 
 const mapStateToProps = (state) => ({
-    activeLanguage: appSelectors.activeLanguage(state),
+    activeLanguage: applicationSelectors.activeLanguage(state),
 });
 
 const mapDispatchToProps = (dispatch) => ({

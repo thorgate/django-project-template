@@ -1,6 +1,6 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { Row, Col, Alert } from 'reactstrap';
+import { Row, Col, Alert, Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { withFormik, Form } from 'formik';
 import * as Yup from 'yup';
@@ -17,7 +17,7 @@ const ResetPassword = ({ status, isSubmitting }) => {
     let formContent = null;
     if (status && status.success) {
         formContent = (
-            <Fragment>
+            <>
                 <Row>
                     <Col>
                         <h5>{gettext('Your password has been reset. Try to login with it now.')}</h5>
@@ -30,7 +30,7 @@ const ResetPassword = ({ status, isSubmitting }) => {
                         </Link>
                     </Col>
                 </Row>
-            </Fragment>
+            </>
         );
     } else if (is.object(status)) {
         statusMessage = (
@@ -42,7 +42,7 @@ const ResetPassword = ({ status, isSubmitting }) => {
 
     if (!(status && status.success)) {
         formContent = (
-            <Fragment>
+            <>
                 <Row>
                     <Col className="pb-4 text-center">
                         <h5>{gettext('Please enter your new password twice.')}</h5>
@@ -75,16 +75,16 @@ const ResetPassword = ({ status, isSubmitting }) => {
 
                 <Row>
                     <Col sm={3} className="mt-3 ml-auto mr-auto">
-                        <button
+                        <Button
                             type="submit"
                             disabled={isSubmitting}
                             className="btn btn-lg btn-block btn-success"
                         >
                             {pgettext('reset password', 'Confirm')}
-                        </button>
+                        </Button>
                     </Col>
                 </Row>
-            </Fragment>
+            </>
         );
     }
 

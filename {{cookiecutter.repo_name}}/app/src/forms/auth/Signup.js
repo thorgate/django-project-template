@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Row, Col, Alert } from 'reactstrap';
+import { Row, Col, Alert, Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { withFormik, Form } from 'formik';
 import * as Yup from 'yup';
@@ -51,20 +51,20 @@ const Signup = ({ status, isSubmitting }) => (
         />
 
         {status !== undefined && (
-            <Alert color="danger">
+            <Alert color={status.color === undefined ? 'danger' : status.color}>
                 {status.message}
             </Alert>
         )}
 
         <Row>
             <Col sm={12} md={4} className="mt-3 ml-auto mr-auto">
-                <button
+                <Button
                     type="submit"
                     disabled={isSubmitting}
                     className="btn btn-lg btn-block btn-success"
                 >
                     {pgettext('signup', 'Signup')}
-                </button>
+                </Button>
             </Col>
         </Row>
         <Row>

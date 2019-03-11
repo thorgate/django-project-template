@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { connect, getIn } from 'formik';
 import { Col, FormGroup, Label, Input, InputGroup, FormText } from 'reactstrap';
 
@@ -35,10 +35,10 @@ const FormField = ({ name, label, inputAddonPrepend, inputAddonAppend, formik, c
     }
 
     let inputComponent = (
-        <Fragment>
+        <>
             {input}
             {touched && error ? <FormText color="danger">{error}</FormText> : null}
-        </Fragment>
+        </>
     );
     if (labelSize !== null) {
         inputComponent = (

@@ -1,9 +1,9 @@
 import { getLocalStorage } from '@thorgate/spa-view';
+import addMinutes from 'date-fns/add_minutes';
 import { getContext } from 'redux-saga/effects';
 import Cookies from 'js-cookie';
 
 import SETTINGS from 'settings';
-import { addTimedelta } from 'utils/datetime';
 
 
 export function* getToken() {
@@ -24,7 +24,7 @@ export function saveToken(access = null, refresh = null) {
     }
 
     const cookieOptions = {
-        expires: addTimedelta(new Date(), SETTINGS.AUTH_TOKEN_LIFETIME),
+        expires: addMinutes(new Date(), SETTINGS.AUTH_TOKEN_LIFETIME),
     };
 
     if (process.env.NODE_ENV === 'production') {

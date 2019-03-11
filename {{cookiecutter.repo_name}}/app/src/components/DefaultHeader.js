@@ -4,7 +4,7 @@ import Helmet from 'react-helmet';
 import { connect } from 'react-redux';
 
 import SETTINGS from 'settings';
-import { selectors as appSelectors } from 'ducks/application';
+import { applicationSelectors } from 'ducks/application';
 
 
 const DefaultHeader = ({ activeLanguage, canonical }) => (

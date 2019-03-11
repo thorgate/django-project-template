@@ -9,7 +9,7 @@ import { RenderChildren } from 'tg-named-routes';
 
 import configureStore from 'configuration/configureStore';
 import routes from 'configuration/routes';
-import { setActiveLanguage, selectors as appSelectors } from 'ducks/application';
+import { setActiveLanguage, applicationSelectors } from 'ducks/application';
 import SETTINGS from 'settings';
 import Sentry from 'services/sentry';
 
@@ -32,7 +32,7 @@ if (process.env.NODE_ENV === 'production') {
 const { store, history } = configureStore(initialState);
 
 // Get correct language from store and cookies
-const stateLanguage = appSelectors.activeLanguage(store.getState());
+const stateLanguage = applicationSelectors.activeLanguage(store.getState());
 const cookieLanguage = Cookies.get(SETTINGS.LANGUAGE_COOKIE_NAME);
 
 // Get valid language

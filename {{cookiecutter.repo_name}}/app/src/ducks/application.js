@@ -3,8 +3,11 @@
 import SETTINGS from 'settings';
 
 
+// State mount point
+export const APP_STATE_KEY = 'application';
+
 // Action types
-export const SET_ACTIVE_LANGUAGE = 'application/SET_ACTIVE_LANGUAGE';
+export const SET_ACTIVE_LANGUAGE = '@@application/SET_ACTIVE_LANGUAGE';
 
 
 const initialState = {
@@ -44,11 +47,11 @@ export default combineReducers({
 export const setActiveLanguage = (language) => ({ type: SET_ACTIVE_LANGUAGE, language });
 
 
-export const selectors = {
+export const applicationSelectors = {
     /**
      * Get active language state
      * @param {Object} state Root state
      * @returns {null|string} Currently active language
      */
-    activeLanguage: (state) => state.application.activeLanguage,
+    activeLanguage: (state) => state[APP_STATE_KEY].activeLanguage,
 };{% endraw %}

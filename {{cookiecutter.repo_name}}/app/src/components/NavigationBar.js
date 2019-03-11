@@ -6,7 +6,7 @@ import { Link, withRouter } from 'react-router-dom';
 import { Nav, Navbar, NavbarBrand, NavItem, NavLink } from 'reactstrap';
 
 import { urlResolve } from 'configuration/routes';
-import { selectors as appSelectors } from 'ducks/application';
+import { applicationSelectors } from 'ducks/application';
 import SETTINGS from 'settings';
 import { gettext } from 'utils/i18n';
 import { UserShape } from 'utils/types';
@@ -74,7 +74,7 @@ NavigationBar.defaultProps = {
 
 const mapStateToProps = (state) => ({
     user: getUser(state),
-    activeLanguage: appSelectors.activeLanguage(state),
+    activeLanguage: applicationSelectors.activeLanguage(state),
     isAuthenticated: isAuthenticated(state),
 });
 

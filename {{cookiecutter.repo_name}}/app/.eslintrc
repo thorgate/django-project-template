@@ -4,11 +4,11 @@
         "jest": false,
         "describe": false,
         "test": false,
-        "expect": false,
+        "expect": false
     },
     "settings": {
         "react": {
-            "version": "16.6"
+            "version": "16.8"
         }
     },
     "rules": {
@@ -37,7 +37,7 @@
         // else-return improves readability sometimes, especially with one-liners.
         "no-else-return": "off",
 
-        // Unlike Airbnb, we don't keep spaces inside of curly braces for objects.
+        // Keep spaces inside of curly braces in objects for readabilty.
         "object-curly-spacing": ["error", "always"],
         "object-curly-newline": "off",
 
@@ -50,7 +50,7 @@
                 "allow": [
                     "__initial_state__",
                     "__REDUX_DEVTOOLS_EXTENSION_COMPOSE__",
-                    "__SAGA_MONITOR_EXTENSION__",
+                    "__SAGA_MONITOR_EXTENSION__"
                 ]
             }
         ],
@@ -69,6 +69,6 @@
         "function-paren-newline": ["error", "consistent"],
 
         // Show TODOs and FIXMEs as warnings
-        "no-warning-comments": ["warn", {"location": "anywhere"}],
+        "no-warning-comments": ["warn", {"location": "anywhere"}]
     }
 }

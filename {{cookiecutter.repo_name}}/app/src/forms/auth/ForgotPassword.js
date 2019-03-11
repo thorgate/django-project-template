@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Row, Col, Button, Alert } from 'reactstrap';
 import { Link } from 'react-router-dom';
@@ -14,7 +14,7 @@ import { getFormPropTypes } from 'utils/types';
 
 const ForgotPassword = ({ values, status, isSubmitting }) => {
     let formContent = (
-        <Fragment>
+        <>
             <Row>
                 <Col className="pb-4 text-center">
                     <h5>{gettext('Please enter your email below to receive a password reset link.')}</h5>
@@ -42,13 +42,13 @@ const ForgotPassword = ({ values, status, isSubmitting }) => {
                     </Button>
                 </Col>
             </Row>
-        </Fragment>
+        </>
     );
 
     let statusMessage = null;
     if (status && status.success) {
         formContent = (
-            <Fragment>
+            <>
                 <Row>
                     <Col className="pb-4">
                         <h5>{gettext('Reset link sent')}</h5>
@@ -79,7 +79,7 @@ const ForgotPassword = ({ values, status, isSubmitting }) => {
                         </Link>
                     </Col>
                 </Row>
-            </Fragment>
+            </>
         );
     } else if (is.object(status)) {
         statusMessage = (

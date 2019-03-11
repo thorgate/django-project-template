@@ -51,8 +51,6 @@ sphinx_rtd_theme = "==0.4.1"
 {% endif -%}
 gunicorn = "==19.8.1"
 raven = "==6.9.0"
-# https://github.com/PyCQA/pep8-naming/issues/92
-pep8-naming = "==0.7.0"
 
 [dev-packages]
 django-debug-toolbar = "==1.9.1"

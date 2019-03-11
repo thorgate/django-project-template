@@ -3,11 +3,11 @@ import Cookies from 'js-cookie';
 
 import SETTINGS from 'settings';
 import { SET_ACTIVE_LANGUAGE } from 'ducks/application';
-import { selectors as appSelectors } from 'ducks/application';
+import { applicationSelectors } from 'ducks/application';
 
 
 function* setActiveLanguage() {
-    const currentLanguage = yield select(appSelectors.activeLanguage);
+    const currentLanguage = yield select(applicationSelectors.activeLanguage);
     const cookieLanguage = Cookies.get(SETTINGS.LANGUAGE_COOKIE_NAME);
 
     // Update language cookie

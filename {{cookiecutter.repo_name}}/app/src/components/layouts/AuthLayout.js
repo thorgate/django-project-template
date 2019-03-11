@@ -1,11 +1,11 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import Helmet from 'react-helmet';
 import { Container, Row, Col, Card } from 'reactstrap';
 
 
 const AuthLayout = ({ children }) => (
-    <Fragment>
+    <>
         <Helmet defaultTitle="Authentication" />
         <Container>
             <Row>
@@ -16,7 +16,7 @@ const AuthLayout = ({ children }) => (
                 </Col>
             </Row>
         </Container>
-    </Fragment>
+    </>
 );
 
 AuthLayout.propTypes = {
