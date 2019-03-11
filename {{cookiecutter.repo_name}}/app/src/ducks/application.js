@@ -39,7 +39,7 @@ export default combineReducers({
 /**
  * Create set active language Redux action
  * @param {string} language Language code to activate
- * @returns {{type: string, language: *}} Created action
+ * @returns {{type: string, language: string}} Created action
  */
 export const setActiveLanguage = (language) => ({ type: SET_ACTIVE_LANGUAGE, language });
 
