@@ -7,7 +7,7 @@ import SETTINGS from 'settings';
 export const APP_STATE_KEY = 'application';
 
 // Action types
-export const SET_ACTIVE_LANGUAGE = '@@application/SET_ACTIVE_LANGUAGE';
+export const SET_ACTIVE_LANGUAGE = 'application/SET_ACTIVE_LANGUAGE';
 
 
 const initialState = {
