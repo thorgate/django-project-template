@@ -51,7 +51,7 @@
     "@thorgate/spa-view": "1.0.0-alpha.28",
     "@thorgate/spa-view-manager": "1.0.0-alpha.28",
     "babel-core": "^7.0.0-bridge.0",
-    "bootstrap": "4.1.1",
+    "bootstrap": "4.3.1",
     "classnames": "2.2.5",
     "connected-react-router": "6.3.1",
     "date-fns": "1.30.1",
