@@ -2,6 +2,7 @@ import json
 import os
 import subprocess
 import sys
+import re
 
 import cookiecutter
 
@@ -70,7 +71,6 @@ def validate_config():
     if hasattr(repo_name, 'isidentifier'):
         assert repo_name.isidentifier(), assert_msg
     else:
-        import re
         identifier_re = re.compile(r"[a-zA-Z_][a-zA-Z0-9_]*$")
         assert bool(identifier_re.match(repo_name)), assert_msg
 
@@ -82,12 +82,28 @@ def validate_config():
 
     valid_celery_key = ['yes', 'no']
     if "{{ cookiecutter.include_celery }}" not in valid_celery_key:
-        print("Include CMS '{{ cookiecutter.include_celery }}' is not valid!")
+        print("Include Celery '{{ cookiecutter.include_celery }}' is not valid!")
         print("Valid include Celery keys are: %s" % ', '.join(valid_celery_key))
         sys.exit(1)
 
-    if "{{ cookiecutter.python_version }}" not in ['3.6']:
+    valid_docs_key = ['yes', 'no']
+    if "{{ cookiecutter.include_docs }}" not in valid_docs_key:
+        print("Include docs '{{ cookiecutter.include_docs }}' is not valid!")
+        print("Valid include Docs keys are: %s" % ', '.join(valid_docs_key))
+        sys.exit(1)
+
+    if not re.match(r'(3\.[6-7](\.\d+)?)', "{{ cookiecutter.python_version }}"):
         print("Only allowed python version options are 3.6 or later.")
+        sys.exit(1)
+
+    if not re.match(r'((8|10|11)(\.\d+){0,2})', "{{ cookiecutter.node_version }}"):
+        print("Only allowed Node.js version's start from 8 or 10 and greater.")
+        sys.exit(1)
+
+    valid_dme_keys = ['S3', 'GCS']
+    if "{{ cookiecutter.django_media_engine }}" not in valid_dme_keys:
+        print("Django media engine '{{ cookiecutter.django_media_engine }}' is not valid!")
+        print("Valid media engines are: %s" % ', '.join(valid_dme_keys))
         sys.exit(1)
 
     if not FQDN("{{ cookiecutter.test_host }}").is_valid:
@@ -115,7 +131,7 @@ def validate_config():
 
 def copy_cookiecutter_config(local_filename='.cookiecutterrc'):
     """ Copy cookiecutter replay for template to project dir, unless it already exists.
-    
+
     This creates the initial .cookiecutterrc file when the project is first generated.
     """
 

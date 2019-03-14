@@ -6,13 +6,17 @@ from settings.base import *
 # # For development:
 # # Debug toolbar
 # INSTALLED_APPS.append('debug_toolbar')
-# INTERNAL_IPS = ('127.0.0.1',)
+# INTERNAL_IPS = ['127.0.0.1']
 # MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
+
+# # Trick to have debug toolbar when developing with docker
+# import socket  # noqa
+# hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+# INTERNAL_IPS += [ip[:-1] + '1' for ip in ips]
 
 # Uncomment to send emails from your local machine.
 # EMAIL_HOST_PASSWORD = 'TODO (api key)'
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-
 
 # Do run locally without docker uncomment following code lines
 # This overrides settings to use services from local machine instead
@@ -23,7 +27,6 @@ from settings.base import *
 #     # If defining different SITE_URLs, if not using 127.0.0.1
 #     # SITE_URL = 'http://YOUR_MACHINE_IP:8000'
 #     # DJANGO_SITE_URL = 'http://YOUR_MACHINE_IP:3000'
-#     # KOA_APP_PROXY = {key: DJANGO_SITE_URL for key in KOA_APP_PROXY.keys()}
 #
 #     # Add proper database name, user and password here, if necessary
 #     DATABASES = {
@@ -45,3 +48,13 @@ from settings.base import *
 #
 #     # Override media root for local
 #     MEDIA_ROOT = os.path.join(os.path.dirname(SITE_ROOT), '.data-media')
+
+{% if cookiecutter.django_media_engine == 'S3' -%}
+# AWS_ACCESS_KEY_ID = 'TODO (access key)'
+# AWS_SECRET_ACCESS_KEY = 'TODO (secret key)'
+{% endif %}{% if cookiecutter.django_media_engine == 'GCS' -%}
+# from google.oauth2 import service_account
+# GS_PROJECT_ID = 'TODO (project id)'
+# GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
+#     json.load('TODO (credentials json data)')
+# ){% endif %}

@@ -1,18 +1,34 @@
 # Development Dockerfile for Django app
+FROM python:{% if cookiecutter.python_version == '3.6' %}3.6.8{% else %}{{ cookiecutter.python_version }}{% endif %}-alpine3.8
 
-FROM python:{% if cookiecutter.python_version == '3.6' %}3.6.5{% else %}{{ cookiecutter.python_version }}{% endif %}-slim
+ENV PYTHONUNBUFFERED 0
 
-# Install system requirements
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y --no-install-recommends gcc gettext libpq-dev && \
-    rm -rf /var/lib/apt/lists/*
+# Expose our application port
+EXPOSE 80
 
+# Copy wait-for-it.sh script
 COPY ./wait-for-it.sh /usr/bin/
 
+# Install bash, libpq{% if cookiecutter.include_cms == 'yes' %}, libjpeg-turbo{% endif %} and gettext
+# Bash is required to support `wait-for-it.sh` script, should not add too much to docker image
+RUN apk add --no-cache bash gettext libpq{% if cookiecutter.include_cms == 'yes' %} libjpeg-turbo{% endif %}
+
+# Install build dependencies and mark them as virtual packages so they could be removed together
+RUN apk add --no-cache --virtual .build-deps \
+    ca-certificates alpine-sdk postgresql-dev python3-dev linux-headers musl-dev \
+    libffi-dev libxml2-dev libxslt-dev jpeg-dev zlib-dev bash gettext
+
 # Copy Python requirements dir and Install requirements
-COPY ./requirements /tmp/requirements
-RUN pip install --no-cache-dir -r /tmp/requirements/local.txt
+RUN pip install -U pipenv==2018.11.26 pip setuptools wheel
+
+COPY Pipfile /
+COPY Pipfile.lock /
+
+# Install all dependencies from Pipfile.lock file
+RUN pipenv install --system --ignore-pipfile --dev
+
+# Check for security warnings, will be enabled later when failing dependencies have been updated
+# RUN pipenv check --system
 
 # Set the default directory where CMD will execute
 WORKDIR /app

@@ -1,2 +1,2 @@
-include app.{{cookiecutter.repo_name}}.proxy.include;
+include conf.d/app.{{cookiecutter.repo_name}}.proxy.include;
 proxy_pass http://{{cookiecutter.repo_name}}_django;

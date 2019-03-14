@@ -1,16 +1,34 @@
 # Thorgate's Django template (SPA variant)
 
-[![Build status](https://gitlab.com/thorgate-public/django-project-template/badges/spa/pipeline.svg)](https://gitlab.com/thorgate-public/django-project-template/commits/spa) 
+[![Build status](https://gitlab.com/thorgate-public/django-project-template/badges/spa/pipeline.svg)](https://gitlab.com/thorgate-public/django-project-template/commits/spa)
 
 [Django](https://www.djangoproject.com/) project template that we use at [Thorgate](https://thorgate.eu).
 
 Best suited for single page web applications.
 
 See also the [default](https://gitlab.com/thorgate-public/django-project-template/tree/master)
-and [Bootstrap 4](https://gitlab.com/thorgate-public/django-project-template/tree/bootstrap4) variants.
+and [Bootstrap 3](https://gitlab.com/thorgate-public/django-project-template/tree/legacy-docker-bootstrap3) variants.
 
 _(note that the primary repo is in [Gitlab](https://gitlab.com/thorgate-public/django-project-template), with mirror in [Github](https://github.com/thorgate/django-project-template))_
 
+
+## Migrating to SPA version 3.0
+
+3.0 brings support for env based settings.
+
+- Upgrade template
+- Move all required bits to new `app` directory
+- Test that everything is still working
+- Commit changes
+- Servers
+    - Update Django to new settings
+        - Convert `<root>/<project>/settings/local.py` to `<root>/<project>/django.env`
+        - Or remove `DJANGO_PRODUCTION_MODE` and `DJANGO_SETTINGS_MODULE` env reference from `Dockerfile-django.production`
+    - Create `<root>/app/env/.env.production.local`
+        - `RAZZLE_SITE_URL`
+        - `RAZZLE_BACKEND_SITE_URL`
+        - `RAZZLE_RAVEN_PUBLIC_DSN`
+        - `RAZZLE_RAVEN_BACKEND_DSN`
 
 ## Features
 
@@ -36,35 +54,41 @@ _(note that the primary repo is in [Gitlab](https://gitlab.com/thorgate-public/d
       [ESLint](http://eslint.org/) and [stylelint](https://stylelint.io/)
     - [py.test](http://pytest.org/) and [coverage](https://coverage.readthedocs.io/) integration
     - Deploy helpers, using [Fabric](http://www.fabfile.org/)
-    - Out-of-the-box configuration for nginx, gunicorn, logrotate and crontab
+    - Media files are stored in a CDN like S3 or Google Cloud Storage
+    - Out-of-the-box configuration for nginx, gunicorn and logrotate
     - Includes [PyCharm](https://www.jetbrains.com/pycharm/) project config
-
-
-## Things to know
- 
-- System information from the django application goes to node application through a file called `constants.json`. 
-  `webpack_constants` django management command generates a file called `constants.json`. 
-  This command comes from 
-  [https://github.com/thorgate/tg-react/blob/master/tg_react/management/commands/webpack_constants.py]. 
-  `constants.json` is then used in the JS code. This file is ignored by version control.
 
 
 ## Usage
 
 To use this template, first ensure that you have
-[Cookiecutter](http://cookiecutter.readthedocs.org/en/latest/readme.html) available.
-You should probably create additional python3 virtual environment for cookiecutter, activate it
-and then install following packages by running following command:
-`pip install cookiecutter cookiecutter_repo_extensions fqdn`
+[Pipenv](https://pipenv.readthedocs.io/en/latest/) `2018.11.26` available.
 
+After that, you should:
 
-Then just execute:
+1. Install the requirements of the project template by running
+    ```
+    pipenv install
+    ```
+2. Activate the virtualenv created by pipenv:
+    ```
+    pipenv shell
+    ```
+3. Navigate to the directory where you'd like to create your project:
+    ```
+    cd /home/my-awesome-projects/
+    ```
 
+4. Create a new project by executing:
+    ```
     cookiecutter dir/to/django-project-template/
+    ```
+
 
 It will ask you a few questions, e.g. project's name.
 
-After generation completes, search for any TODOs in the code and make appropriate changes where needed.
+After generation completes, **you should deactivate virtual environment for cookiecutter**,
+search for any TODOs in the code and make appropriate changes where needed.
 
 See README.md in the generated project for instructions on how to set up your development environment.
 

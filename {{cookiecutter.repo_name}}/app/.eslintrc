@@ -1,0 +1,74 @@
+{
+    "extends": "react-app",
+    "globals": {
+        "jest": false,
+        "describe": false,
+        "test": false,
+        "expect": false
+    },
+    "settings": {
+        "react": {
+            "version": "16.8"
+        }
+    },
+    "rules": {
+        // We use 4 spaces for indentation. Everywhere.
+        "indent": ["error", 4, {"SwitchCase": 1}],
+        "react/jsx-indent": ["error", 4],
+        "react/jsx-indent-props": ["error", 4],
+
+        // We use always use ;
+        "semi": ["error", "always"],
+
+        // JSX files use .js extension
+        "react/jsx-filename-extension": ["error", {"extensions": [".js", ".jsx"]}],
+
+        // Warnings when not destructuring props assignment
+        "react/destructuring-assignment": [true, "never"],
+
+        // Set max line length to 120 chars. Smaller lengths feel too small on modern monitors.
+        "max-len": ["error", 120],
+
+        // Allow both single- as well as double quotes. This lets us use e.g. double quotes for user-visible strings and
+        //  single quotes for internals.
+        "quotes": ["error", "single"],
+        "jsx-quotes": ["error", "prefer-double"],
+
+        // else-return improves readability sometimes, especially with one-liners.
+        "no-else-return": "off",
+
+        // Keep spaces inside of curly braces in objects for readabilty.
+        "object-curly-spacing": ["error", "always"],
+        "object-curly-newline": "off",
+
+        // Allow unary ++ operator in for loop afterthoughts
+        "no-plusplus": ["error", {"allowForLoopAfterthoughts": true}],
+
+        // allow some underscore dangles
+        "no-underscore-dangle": [
+            "error", {
+                "allow": [
+                    "__initial_state__",
+                    "__REDUX_DEVTOOLS_EXTENSION_COMPOSE__",
+                    "__SAGA_MONITOR_EXTENSION__"
+                ]
+            }
+        ],
+
+        // Require parens for all arrow functions
+        "arrow-parens": ["error", "always"],
+
+        // Turn these into errors
+        "no-var": "error",
+
+        // and these into warnings
+        "class-methods-use-this": "warn",
+        "jsx-a11y/no-static-element-interactions": "warn",
+        "jsx-a11y/anchor-is-valid": [ "error", { "components": [ "Link" ], "specialLink": [ "to" ] } ],
+        "jsx-a11y/label-has-for": "warn",
+        "function-paren-newline": ["error", "consistent"],
+
+        // Show TODOs and FIXMEs as warnings
+        "no-warning-comments": ["warn", {"location": "anywhere"}]
+    }
+}

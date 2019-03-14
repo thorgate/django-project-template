@@ -7,12 +7,15 @@ PYTHON ?= python{{cookiecutter.python_version}}
 # Editor can be defined globally but defaults to nano
 EDITOR ?= nano
 
+# Put Pipenv virtual env inside project folder
+PIPENV_VENV_IN_PROJECT=1
+
 # By default we open the editor after copying settings, but can be overridden
 #  (e.g. EDIT_SETTINGS=no make settings).
 EDIT_SETTINGS ?= yes
 
 # Get root dir and project dir
-PROJECT_ROOT ?= $(PWD)
+PROJECT_ROOT ?= $(CURDIR)
 SITE_ROOT ?= $(PROJECT_ROOT)/{{cookiecutter.repo_name}}
 
 BLACK ?= \033[0;30m
@@ -26,8 +29,8 @@ GRAY ?= \033[0;37m
 COFF ?= \033[0m
 
 # Mark non-file targets as PHONY
-.PHONY: all help docker settings setup pycharm coverage node-install test clean quality eslint prospector stylelint docker-django
-.PHONY: bash docker-manage shell makemigrations migrate docker-logs makemessages compilemessages add-locale psql isort isort-fix
+.PHONY: all help docker settings setup pycharm coverage node-install test clean quality eslint prospector stylelint docker-django node-quality
+.PHONY: django-shell node-shell docker-manage shell makemigrations migrate docker-logs makemessages compilemessages add-locale psql isort isort-fix
 
 all: help
 
@@ -56,6 +59,8 @@ help:
 	@echo "$(CYAN)make isort-fix$(COFF) - Fix imports automatically with isort"
 	@echo ""
 
+Pipfile.lock:
+	pipenv --python=$(PYTHON) lock -v
 
 docker: settings
 	@docker-compose down
@@ -82,27 +87,30 @@ $(PROJECT_ROOT)/.idea:
 	@mkdir -p $(PROJECT_ROOT)/.idea && cp -R $(PROJECT_ROOT)/.idea_template/* $(PROJECT_ROOT)/.idea/
 
 
-settings: $(SITE_ROOT)/settings/local.py $(SITE_ROOT)/settings/local_test.py
+settings: Pipfile.lock $(SITE_ROOT)/settings/local.py $(SITE_ROOT)/settings/local_test.py $(SITE_ROOT)/django.env
 
 
 $(SITE_ROOT)/settings/local.py:
 	@echo "$(CYAN)Creating Django local.py settings file$(COFF)"
 	@cp $(SITE_ROOT)/settings/local.py.example $(SITE_ROOT)/settings/local.py
-	@cp $(SITE_ROOT)/settings/local_test.py.example $(SITE_ROOT)/settings/local_test.py
 	@if [ $(EDIT_SETTINGS) = "yes" ]; then\
 		$(EDITOR) $(SITE_ROOT)/settings/local.py;\
 	fi
+
 
 $(SITE_ROOT)/settings/local_test.py:
 	@echo "$(CYAN)Creating Django settings local_test.py file$(COFF)"
 	@cp $(SITE_ROOT)/settings/local_test.py.example $(SITE_ROOT)/settings/local_test.py
 
 
+$(SITE_ROOT)/django.env:
+	@echo "$(CYAN)Creating Django .env file$(COFF)"
+	@touch $(SITE_ROOT)/django.env
+
+
 coverage:
 	@echo "$(CYAN)Running automatic code coverage check$(COFF)"
-	@docker-compose run --rm django coverage run -m py.test
-	@docker-compose run --rm django coverage html
-	@docker-compose run --rm django coverage report
+	@docker-compose run --rm django py.test --cov --cov-report term-missing
 	@docker-compose run --rm node npm run test -- --coverage
 
 
@@ -110,22 +118,34 @@ node-install:
 	@docker-compose run --rm node npm install
 
 
+test-node-watch: clean
+	@docker-compose run --rm node npm run test -- --watchAll
+
+
 test-node: clean
 	@echo "$(CYAN)Running automatic node.js tests$(COFF)"
 	@docker-compose run --rm node npm run test
+
 
 test-django: clean
 	@echo "$(CYAN)Running automatic django tests$(COFF)"
 	@docker-compose run --rm django py.test
 
+
 test: test-node test-django
+
 
 clean:
 	@echo "$(CYAN)Cleaning pyc files$(COFF)"
 	@cd $(SITE_ROOT) && find . -name "*.pyc" -exec rm -rf {} \;
 
 
-quality: stylelint eslint prospector isort
+quality: node-quality prospector isort pipenv-check
+
+
+node-quality:
+	@echo "$(CYAN)Running Node Quality(COFF)"
+	@docker-compose run --rm node npm run quality
 
 
 eslint:
@@ -152,13 +172,24 @@ isort-fix:
 	@echo "$(CYAN)Fixing imports with isort$(COFF)"
 	docker-compose run --rm django isort --recursive -p .
 
+pipenv-check:
+	pipenv --python=$(PYTHON) check
+
+
+py-install-deps:
+	pipenv --python=$(PYTHON) install $(cmd)
+
 
 docker-django:
 	docker-compose run --rm django $(cmd)
 
 
-bash:
-	docker-compose run --rm django bash
+django-shell:
+	docker-compose run --rm django /bin/sh
+
+
+node-shell:
+	docker-compose run --rm node /bin/sh
 
 
 docker-manage:
@@ -183,14 +214,11 @@ docker-logs:
 
 makemessages:
 	docker-compose run --rm django ./manage.py makemessages -a
-	docker-compose run --rm django ./manage.py makemessages -a -d djangojs
 
 
 compilemessages:
 	docker-compose run --rm django ./manage.py compilemessages
 
-constants:
-	docker-compose run --rm django ./manage.py webpack_constants
 
 add-locale: $(SITE_ROOT)/locale
 ifdef LOCALE
@@ -206,3 +234,8 @@ endif
 
 psql:
 	docker-compose exec postgres psql --user {{cookiecutter.repo_name}} --dbname {{cookiecutter.repo_name}}
+
+{% if cookiecutter.include_docs == 'yes' %}
+docs:
+	docker-compose run --rm django sphinx-build ./docs ./docs/_build
+{% endif %}

@@ -7,8 +7,10 @@ https://docs.djangoproject.com/en/dev/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/dev/ref/settings/
 """
-
 import os
+from datetime import timedelta
+
+import environ
 
 
 # Quick-start development settings - unsuitable for production
@@ -17,9 +19,19 @@ import os
 # Build paths inside the project like this: os.path.join(SITE_ROOT, ...)
 SITE_ROOT = os.path.dirname(os.path.dirname(__file__))
 
+# Load env to get settings
+ROOT_DIR = environ.Path(SITE_ROOT)
+env = environ.Env()
+
+READ_DOT_ENV_FILE = env.bool('DJANGO_READ_DOT_ENV_FILE', default=True)
+if READ_DOT_ENV_FILE:
+    # OS environment variables take precedence over variables from .env
+    # By default use django.env file from project root directory
+    env.read_env(str(ROOT_DIR.path('django.env')))
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool('DJANGO_DEBUG', default=True)
 
 ADMINS = (
     ('Admins', '{{ cookiecutter.admin_email }}'),
@@ -28,13 +40,19 @@ MANAGERS = ADMINS
 EMAIL_SUBJECT_PREFIX = '[{{cookiecutter.project_title}}] '  # subject prefix for managers & admins
 
 SESSION_COOKIE_NAME = '{{ cookiecutter.repo_name }}_ssid'
-SESSION_SAVE_EVERY_REQUEST = True  # Set cookie headers on every request - This is for api
+SESSION_COOKIE_DOMAIN = env.str('DJANGO_SESSION_COOKIE_DOMAIN', default=None)
+
+CSRF_COOKIE_DOMAIN = env.str('DJANGO_CSRF_COOKIE_DOMAIN', default=None)
+CSRF_COOKIE_HTTPONLY = False
+
 
 INSTALLED_APPS = [
+    # Local apps
     'accounts',
     '{{cookiecutter.repo_name}}',
 {%- if cookiecutter.include_cms == 'yes' %}
 
+    # CMS apps
     'cms',
     'treebeard',
     'menus',
@@ -50,11 +68,14 @@ INSTALLED_APPS = [
     'djangocms_text_ckeditor',
 {%- endif %}
 
+    # Third-party apps
     'rest_framework',
     'django_filters',
     'tg_react',
     'crispy_forms',
+    'corsheaders',
 
+    # Django apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -71,6 +92,7 @@ MIDDLEWARE = [
     {%- if cookiecutter.include_cms == 'yes' %}
     'cms.middleware.utils.ApphookReloadMiddleware',
     {%- endif %}
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -130,27 +152,27 @@ CMS_TEMPLATES = (
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'HOST': 'postgres',
-        'NAME': '{{cookiecutter.repo_name}}',
-        'USER': '{{cookiecutter.repo_name}}',
-        'PASSWORD': '{{cookiecutter.repo_name}}',
+        'HOST': env.str('DJANGO_DATABASE_HOST', default='postgres'),
+        'PORT': env.int('DJANGO_DATABASE_PORT', default=5432),
+        'NAME': env.str('DJANGO_DATABASE_NAME', default='{{cookiecutter.repo_name}}'),
+        'USER': env.str('DJANGO_DATABASE_USER', default='{{cookiecutter.repo_name}}'),
+        'PASSWORD': env.str('DJANGO_DATABASE_PASSWORD', default='{{cookiecutter.repo_name}}'),
     }
 }
 
 
 # Redis config (used for caching{% if cookiecutter.include_celery == 'yes' %} and celery{% endif %})
-REDIS_HOST = 'redis'
-REDIS_PORT = 6379
-REDIS_DB = 1
-REDIS_URL = 'redis://%s:%d/%d' % (REDIS_HOST, REDIS_PORT, REDIS_DB)
+REDIS_URL = env.str('DJANGO_REDIS_URL', default='redis://redis:6379/1')
+REDIS_CACHE_URL = env.str('DJANGO_REDIS_CACHE_URL', default=REDIS_URL)
+REDIS_CELERY_URL = env.str('DJANGO_REDIS_CELERY_URL', default=REDIS_URL)
 {%- if cookiecutter.include_celery == 'yes' %}
 
 
 # Celery configuration
-CELERY_RESULT_BACKEND = REDIS_URL
+CELERY_RESULT_BACKEND = REDIS_CELERY_URL
 CELERY_REDIS_CONNECT_RETRY = True
 CELERYD_HIJACK_ROOT_LOGGER = False
-BROKER_URL = REDIS_URL
+BROKER_URL = REDIS_CELERY_URL
 BROKER_TRANSPORT_OPTIONS = {'fanout_prefix': True}
 
 CELERY_TIMEZONE = 'UTC'
@@ -170,7 +192,7 @@ CELERYBEAT_SCHEDULE = {
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": REDIS_URL,
+        "LOCATION": REDIS_CACHE_URL,
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
@@ -194,16 +216,41 @@ USE_L10N = True
 USE_TZ = True
 
 
-# Static files and media (CSS, JavaScript, images)
-MEDIA_ROOT = '/files/media'
-MEDIA_URL = '/media/'
+# Media files (user uploaded/site generated)
+MEDIA_ROOT = env.str('DJANGO_MEDIA_ROOT', default='/files/media')
+MEDIA_URL = env.str('DJANGO_MEDIA_URL', default='/media/')
+MEDIAFILES_LOCATION = env.str('DJANGO_MEDIAFILES_LOCATION', default='media')
 
+# In staging/prod we use {{ cookiecutter.django_media_engine }} for file storage engine
+{% if cookiecutter.django_media_engine == 'S3' -%}
+AWS_ACCESS_KEY_ID = '<unset>'
+AWS_SECRET_ACCESS_KEY = '<unset>'
+AWS_STORAGE_BUCKET_NAME = '<unset>'
+AWS_DEFAULT_ACL = 'public-read'
+AWS_IS_GZIPPED = True
+AWS_S3_ENCRYPTION = True
+AWS_S3_FILE_OVERWRITE = False
+AWS_S3_REGION_NAME = 'eu-central-1'
+AWS_S3_SIGNATURE_VERSION = 's3v4'
+
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=1209600',  # 2 weeks in seconds
+}
+{%- endif %}{% if cookiecutter.django_media_engine == 'GCS' -%}
+GS_BUCKET_NAME = '<unset>'
+GS_PROJECT_ID = '<unset>'
+GS_CREDENTIALS = '<unset>'
+GS_DEFAULT_ACL = 'publicRead'
+GS_FILE_OVERWRITE = False
+GS_CACHE_CONTROL = 'max-age=1209600'  # 2 weeks in seconds{% endif %}
+
+# Static files (CSS, JavaScript, images)
 STATIC_ROOT = '/files/assets'
-STATIC_URL = '/static/'
-STATIC_WEBPACK_URL = '/static-webpack/'
+STATIC_URL = env.str('DJANGO_STATIC_URL', default='/assets/')
+
+
 STATICFILES_DIRS = (
     os.path.join(SITE_ROOT, 'static'),
-    os.path.join(SITE_ROOT, 'app', 'build'),
 )
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -212,15 +259,16 @@ STATICFILES_FINDERS = (
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'dummy key'
+SECRET_KEY = env.str('DJANGO_SECRET_KEY', default='dummy key')
 
 AUTH_USER_MODEL = 'accounts.User'
 
 # Static site url, used when we need absolute url but lack request object, e.g. in email sending.
-SITE_URL = 'http://127.0.0.1:8000'
-DJANGO_SITE_URL = 'http://127.0.0.1:3000'
-ALLOWED_HOSTS = ['django', 'localhost', '127.0.0.1']
-
+SITE_URL = env.str('RAZZLE_SITE_URL', default='http://127.0.0.1:8000')
+DJANGO_SITE_URL = env.str('RAZZLE_BACKEND_SITE_URL', default='http://127.0.0.1:3000')
+ALLOWED_HOSTS = env.list('DJANGO_ALLOWED_HOSTS', default=['django', 'localhost', '127.0.0.1'])
+CSRF_TRUSTED_ORIGINS = env.list('DJANGO_CSRF_TRUSTED_ORIGINS', default=ALLOWED_HOSTS)
+CORS_ORIGIN_WHITELIST = env.list('DJANGO_CORS_ORIGIN_WHITELIST', default=ALLOWED_HOSTS)
 
 {%- if cookiecutter.include_cms == 'yes' %}
 
@@ -254,9 +302,10 @@ SERVER_EMAIL = "{{cookiecutter.project_title}} server <server@{{ cookiecutter.li
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # SMTP  --> This is only used in staging and production
-EMAIL_HOST = 'smtp.sparkpostmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'SMTP_Injection'
+EMAIL_HOST = env.str('DJANGO_EMAIL_HOST', default='smtp.sparkpostmail.com')
+EMAIL_PORT = env.int('DJANGO_EMAIL_PORT', default=587)
+EMAIL_HOST_USER = env.str('DJANGO_EMAIL_HOST_USER', default='SMTP_Injection')
+EMAIL_HOST_PASSWORD = env.str('DJANGO_EMAIL_HOST_PASSWORD', default='')
 
 
 # Base logging config. Logs INFO and higher-level messages to console. Production-specific additions are in
@@ -307,72 +356,40 @@ SILENCED_SYSTEM_CHECKS = [
 REST_FRAMEWORK = {
     # Disable Basic auth
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # By default api session authentication is not used
+        # 'rest_framework.authentication.SessionAuthentication',
     ),
     'DEFAULT_FILTER_BACKENDS': (
         'django_filters.rest_framework.DjangoFilterBackend',
     ),
     # Change default full-url media files to be only stored path, needs /media prepended in frontend
     'UPLOADED_FILES_USE_URL': False,
+
+    # Default request format in tests is json
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
 }
-
-# Webpack settings exporter
-WEBPACK_CONSTANT_PROCESSORS = (
-    'tg_react.webpack.default_constants',
-    '{{cookiecutter.repo_name}}.webpack_constants.language_constants',
-    '{{cookiecutter.repo_name}}.webpack_constants.constants',
-)
-
-
-# Koa configuration
-API_BASE = '/api/'
-KOA_PORT = 80
-KOA_DJANGO_BASE = 'http://django'
-# If False Koa app will wait for initial data to finish before showing next route
-KOA_APP_IS_EAGER = False
-# If True, 404 are not treated as errors for sentry
-KOA_APP_IGNORE_404 = True
-
-# Proxy map, used by Koa app to proxy all to Django
-KOA_APP_PROXY = {
-    '/d/': KOA_DJANGO_BASE,  # Generic prefix, helpful if adding new urls to site to use Django views
-    '/api/': KOA_DJANGO_BASE,
-    MEDIA_URL: KOA_DJANGO_BASE,
-    STATIC_URL: KOA_DJANGO_BASE,
-    '/{{cookiecutter.django_admin_path}}/': KOA_DJANGO_BASE,
-}
-
-
 
 # Default values for sentry
-RAVEN_BACKEND_DSN = ''
-RAVEN_PUBLIC_DSN = ''
-RAVEN_CONFIG = {}
+RAVEN_BACKEND_DSN = env.str('DJANGO_RAVEN_BACKEND_DSN', default='https://TODO:TODO@sentry.thorgate.eu/TODO')
+RAVEN_PUBLIC_DSN = env.str('DJANGO_RAVEN_PUBLIC_DSN', default='https://TODO@sentry.thorgate.eu/TODO')
+RAVEN_CONFIG = {'dsn': RAVEN_BACKEND_DSN}
 
 
-# All these settings will be made available to javascript app
-SETTINGS_EXPORT = [
-    'DEBUG',
-    'SITE_URL',
-    'DJANGO_SITE_URL',
-    'MEDIA_URL',
-    'STATIC_URL',
-    'STATIC_WEBPACK_URL',
-    'RAVEN_PUBLIC_DSN',
-    'RAVEN_BACKEND_DSN',
-    'CSRF_COOKIE_NAME',
-    'SESSION_COOKIE_NAME',
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
 
-    'LOGIN_REDIRECT',
-    'LOGIN_URL',
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
 
-    'ALLOWED_HOSTS',
-    'KOA_PORT',
-    'API_BASE',
-    'KOA_API_BASE',
-    'KOA_APP_PROXY',
-    'KOA_APP_IS_EAGER',
-    'KOA_APP_IGNORE_404',
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'USER_ID_FIELD': 'pk',
+    'USER_ID_CLAIM': 'user_id',
+}
 
-    'APPEND_SLASH',
-]
+
+# CORS settings
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True

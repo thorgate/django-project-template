@@ -13,8 +13,10 @@ from StringIO import StringIO
 from distutils.version import LooseVersion
 
 from fabric import colors
-from fabric.api import env, task, require, abort, sudo, prefix, cd, put, get
+from fabric.api import abort, cd, env, prompt, require, sudo, task
 from fabric.contrib.console import confirm
+from fabric.operations import get, put
+from fabric.contrib.files import append, exists
 from fabric.utils import indent
 
 from django.utils.crypto import get_random_string
@@ -30,25 +32,26 @@ from hammer.docker_network import create_docker_network
 
 vcs = Vcs.init(project_root=os.path.dirname(os.path.dirname(__file__)), use_sudo=True)
 
+LOCAL_PY_TEMPLATE = """from settings.${target} import *
+"""
 
-LOCAL_SETTINGS = """from settings.${target} import *
+BASE_LOCAL_SETTINGS = """RAZZLE_SITE_URL=https://${node_site}
+RAZZLE_BACKEND_SITE_URL=https://${django_site}
+"""
 
-SECRET_KEY = '${secret_key}'
-
-DATABASES = {
-    'default': {
-        'ENGINE':'django.db.backends.postgresql_psycopg2',
-        'NAME': '{{cookiecutter.repo_name}}',
-        'USER': '{{cookiecutter.repo_name}}',
-        'PASSWORD': '${db_password}',
-        'HOST': 'postgres',
-        'PORT': '5432',
-    }
-}
+DJANGO_LOCAL_SETTINGS = """${prefix}_SECRET_KEY=${secret_key}
+${site_settings}
+${prefix}_ALLOWED_HOSTS=${allowed_hosts}
+${prefix}_DATABASE_HOST=postgres
+${prefix}_DATABASE_PORT=5432
+${prefix}_DATABASE_NAME={{cookiecutter.repo_name}}
+${prefix}_DATABASE_USER={{cookiecutter.repo_name}}
+${prefix}_DATABASE_PASSWORD=${db_password}
 """
 
 
 """ TARGETS """
+
 
 def defaults():
     # Use  .ssh/config  so that you can use hosts defined there.
@@ -62,6 +65,8 @@ def defaults():
     env.target = 'staging'
 
     env.code_dir = '/srv/{{cookiecutter.repo_name}}'
+
+    env.postgres_version = '{{cookiecutter.postgres_version}}'
 
     # Mapping of configuration files and their rules
     #
@@ -86,6 +91,16 @@ def defaults():
             {
                 "pattern": "common.include",
                 "filename": "app.{{cookiecutter.repo_name}}.include",
+                "remote_path": "/etc/nginx/conf.d/%(filename)s"
+            },
+            {
+                "pattern": "common.{{cookiecutter.repo_name}}.node.include",
+                "filename": "common.{{cookiecutter.repo_name}}.node.include",
+                "remote_path": "/etc/nginx/conf.d/%(filename)s"
+            },
+            {
+                "pattern": "common.{{cookiecutter.repo_name}}.django.include",
+                "filename": "common.{{cookiecutter.repo_name}}.django.include",
                 "remote_path": "/etc/nginx/conf.d/%(filename)s"
             },
             {
@@ -124,6 +139,8 @@ def test():
     """
 
     defaults()
+    env.node_site = '{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}'
+    env.django_site = '{{ cookiecutter.django_host_prefix|as_hostname }}.{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}'
     env.hosts = ['{{cookiecutter.test_host}}']
 
 
@@ -139,10 +156,13 @@ def live():
 
     defaults()
     env.target = 'production'
+    env.node_site = '{{ cookiecutter.live_hostname }}'
+    env.django_site = '{{ cookiecutter.django_host_prefix|as_hostname }}.{{ cookiecutter.live_hostname }}'
     env.hosts = ['{{cookiecutter.live_host}}']
 
 
 """ ACTIONS """
+
 
 @task
 def show_log(commit_id=None):
@@ -194,8 +214,8 @@ def migrate_diff(id=None, revset=None, silent=False):
     migrations = vcs.changed_files(revset, "\/(?P<model>\w+)\/migrations\/(?P<migration>.+)")
 
     if not silent and migrations:
-        print "Found %d migrations." % len(migrations)
-        print indent(migrations)
+        print("Found %d migrations." % len(migrations))
+        print(indent(migrations))
 
     return migrations
 
@@ -217,7 +237,7 @@ def version():
     require('code_dir')
 
     summary = get_current_version_summary()
-    print colors.yellow(summary)
+    print(colors.yellow(summary))
 
 
 @task
@@ -229,9 +249,9 @@ def deploy(id=None, silent=False, force=False, auto_nginx=True):
     if force:
         force = colors.blue('FORCED DEPLOY')
 
-        print '-' * 40
-        print force
-        print '-' * 40
+        print('-' * 40)
+        print(force)
+        print('-' * 40)
 
     # Ask for sudo at the beginning so we don't fail during deployment because of wrong pass
     if not sudo('whoami'):
@@ -244,45 +264,33 @@ def deploy(id=None, silent=False, force=False, auto_nginx=True):
         return
 
     # See if we have any requirements changes
-    requirements_changes = force or vcs.changed_files(revset, r' requirements/')
+    requirements_changes = force or vcs.changed_files(revset, r'Pipfile')
     if requirements_changes:
-        print colors.yellow("Will update requirements (and do migrations)")
-
-    # See if we have changes in app source or static files
-    app_patterns = [r' {{cookiecutter.repo_name}}/app', r' {{cookiecutter.repo_name}}/static',
-                    r' {{cookiecutter.repo_name}}/settings', r' {{cookiecutter.repo_name}}/package.json']
-    app_changed = force or vcs.changed_files(revset, app_patterns)
-    if app_changed:
-        print colors.yellow("Will run npm build")
+        print(colors.yellow("Will update requirements (and do migrations)"))
 
     # See if we have any changes to migrations between the revisions we're applying
     migrations = force or migrate_diff(revset=revset, silent=True)
     if migrations:
-        print colors.yellow("Will apply %d migrations:" % len(migrations))
-        print indent(migrations)
-
-    # See if we have any changes to crontab config
-    crontab_changed = force or vcs.changed_files(revset, r'deploy/crontab.conf')
-    if crontab_changed:
-        print colors.yellow("Will update cron entries")
+        print(colors.yellow("Will apply %d migrations:" % len(migrations)))
+        print(indent(migrations))
 
     # See if we have any changes to letsencrypt configurations
     letsencrypt_changed = force or vcs.changed_files(revset, get_config_modified_patterns('letsencrypt'))
     if letsencrypt_changed:
-        print colors.yellow("Will update letsencrypt configurations")
+        print(colors.yellow("Will update letsencrypt configurations"))
 
     # see if nginx conf has changed
     nginx_changed = vcs.changed_files(revset, get_config_modified_patterns('nginx'))
 
     if nginx_changed:
         if auto_nginx:
-            print colors.yellow("Nginx configuration change detected, updating automatically")
+            print(colors.yellow("Nginx configuration change detected, updating automatically"))
 
         else:
-            print colors.red("Warning: Nginx configuration change detected, also run: `fab %target% nginx_update`")
+            print(colors.red("Warning: Nginx configuration change detected, also run: `fab %target% nginx_update`"))
 
     elif force:
-        print colors.yellow("Updating nginx config")
+        print(colors.yellow("Updating nginx config"))
 
     if not silent:
         request_confirm("deploy")
@@ -292,12 +300,7 @@ def deploy(id=None, silent=False, force=False, auto_nginx=True):
     ensure_docker_networks()
     docker_compose('build')
 
-    management_cmd('webpack_constants')
-    collectstatic(npm_build=app_changed)
-
-    if crontab_changed:
-        with cd(env.code_dir):
-            sudo('cp deploy/crontab.conf /etc/cron.d/{{cookiecutter.repo_name}}')
+    collectstatic()
 
     if migrations or requirements_changes:
         migrate(silent=True)
@@ -305,7 +308,7 @@ def deploy(id=None, silent=False, force=False, auto_nginx=True):
     # Run deploy systemchecks
     check()
 
-    docker_up(silent=True)
+    docker_up(silent=True, force_recreate=force)
 
     # Update nginx after bringing up container
     if force or (nginx_changed and auto_nginx):
@@ -324,32 +327,85 @@ def setup_server(id=None):
     # Clone code repository
     vcs.clone(id or None)
 
-    # Create password for DB, secret key and the local settings
+    # Ensure default local.py file exists
+    ensure_local_py_exists()
+
+    # Create password for DB and the secret key
     db_password = generate_password()
     secret_key = generate_password()
-    local_settings = string.Template(LOCAL_SETTINGS).substitute(db_password=db_password, secret_key=secret_key, target=env.target)
+
+    # Create site settings for this env
+    allowed_hosts = [env.node_site]
+
+    if env.django_site not in allowed_hosts:
+        allowed_hosts.append(env.django_site)
+
+    allowed_hosts = ','.join(allowed_hosts)
+
+    node_site_settings = string.Template(BASE_LOCAL_SETTINGS).substitute(
+        node_site=env.node_site, django_site=env.django_site,
+    )
+
+    django_site_settings = string.Template(BASE_LOCAL_SETTINGS).substitute(
+        node_site=env.node_site, django_site=env.django_site,
+    )
+
+    django_local_settings = string.Template(DJANGO_LOCAL_SETTINGS).substitute(
+        db_password=db_password, secret_key=secret_key,
+        site_settings=django_site_settings,
+        allowed_hosts=allowed_hosts,
+        prefix='DJANGO',
+    )
+
+    # Upload local settings / env files
+    node_settings_file = env.code_dir + '/app/.env.production.local'
+    django_settings_file = env.code_dir + '/{{cookiecutter.repo_name}}/django.env'
+
+    put(local_path=StringIO(node_site_settings), remote_path=node_settings_file, use_sudo=True)
+    put(local_path=StringIO(django_local_settings), remote_path=django_settings_file, use_sudo=True)
+
+    print('Enter Django RAVEN_PUBLIC_DSN:')
+    add_secret_key('DJANGO_RAVEN_PUBLIC_DSN', [django_settings_file])
+
+    print('Enter Django RAVEN_BACKEND_DSN:')
+    add_secret_key('DJANGO_RAVEN_BACKEND_DSN', [django_settings_file])
+
+    print('Enter Node RAVEN_PUBLIC_DSN:')
+    add_secret_key('RAZZLE_RAVEN_PUBLIC_DSN', [node_settings_file])
+
+    print('Enter Node RAVEN_BACKEND_DSN:')
+    add_secret_key('RAZZLE_RAVEN_BACKEND_DSN', [node_settings_file])
+
+    print('Enter Django EMAIL_HOST_PASSWORD:')
+    add_secret_key('DJANGO_EMAIL_HOST_PASSWORD', [django_settings_file])
+
+    {% if cookiecutter.django_media_engine == 'S3' -%}
+    print('Enter Django DJANGO_AWS_ACCESS_KEY_ID:')
+    add_secret_key('DJANGO_AWS_ACCESS_KEY_ID', [django_settings_file])
+
+    print('Enter Django DJANGO_AWS_SECRET_ACCESS_KEY:')
+    add_secret_key('DJANGO_AWS_SECRET_ACCESS_KEY', [django_settings_file])
+    {%- endif %}{% if cookiecutter.django_media_engine == 'GCS' -%}
+    print('Enter Django DJANGO_GS_PROJECT_ID:')
+    add_secret_key('DJANGO_GS_PROJECT_ID', [django_settings_file])
+    with open('./google-credentials-{}.json'.format(env.target)) as f:
+        gcs_credentials_json = f.read().replace('\r', '').replace('\n', '')
+    add_secret_key('DJANGO_GS_CREDENTIALS', [django_settings_file], gcs_credentials_json){% endif %}
 
     # Create database
     sudo('echo "CREATE DATABASE {{cookiecutter.repo_name}}; '
          '      CREATE USER {{cookiecutter.repo_name}} WITH password \'{db_password}\'; '
          '      GRANT ALL PRIVILEGES ON DATABASE {{cookiecutter.repo_name}} to {{cookiecutter.repo_name}};" '
-         '| docker exec -i postgres-10 psql -U postgres'.format(db_password=db_password))
-
-    # Upload local settings
-    put(local_path=StringIO(local_settings), remote_path=env.code_dir + '/{{cookiecutter.repo_name}}/settings/local.py', use_sudo=True)
-
+         '| docker exec -i postgres-{postgres_version} psql -U postgres'.format(db_password=db_password,
+                                                                                postgres_version=env.postgres_version))
     # Create log dir
     sudo('mkdir -p /var/log/{{cookiecutter.repo_name}}/')
-
-    # webpack-stats.json must exist before the Django container is run. Otherwise docker-compose assumes it to be a
-    #  directory (because it's a volume).
-    sudo('touch %s/{{cookiecutter.repo_name}}/constants.json' % env.code_dir)
 
     ensure_docker_networks()
 
     docker_compose('build')
 
-    # migrations, constants, collectstatic
+    # migrations, collectstatic (both django & node)
     migrate(silent=True)
     collectstatic()
 
@@ -456,16 +512,17 @@ def letsencrypt_update(dry_run=False):
     for target_path in updated_files:
         # verify everything works using --dry-run
         if dry_run:
-            sudo("certbot-auto certonly --dry-run --noninteractive --agree-tos -c %s" % target_path)
+            sudo("certbot-auto --no-self-upgrade certonly --dry-run --noninteractive --agree-tos -c %s" % target_path)
 
         # Aquire the certificate
-        sudo("certbot-auto certonly --noninteractive --agree-tos -c %s" % target_path)
+        sudo("certbot-auto --no-self-upgrade certonly --noninteractive --agree-tos -c %s" % target_path)
 
     # Reload nginx
     sudo('docker exec nginx nginx -s reload')
 
 
 """ SERVER COMMANDS """
+
 
 @task
 def docker_down(silent=False):
@@ -479,24 +536,24 @@ def docker_down(silent=False):
 
 
 @task
-def docker_up(silent=False):
+def docker_up(silent=False, force_recreate=False):
     """ Starts all services
     """
 
     if not silent:
         request_confirm("docker_up")
 
-    docker_compose('up -d --remove-orphans')
+    docker_compose('up -d --remove-orphans{}'.format(' --force-recreate' if force_recreate else ''))
 
     # This is necessary to make nginx refresh IP addresses of containers.
     sudo('docker exec nginx nginx -s reload')
 
 
 @task
-def docker_restart(silent=False):
+def docker_restart(silent=False, force_recreate=False):
     # Stops and then starts all services
     docker_down(silent=silent)
-    docker_up(silent=silent)
+    docker_up(silent=silent, force_recreate=force_recreate)
 
 
 @task
@@ -524,7 +581,53 @@ def createsuperuser():
     management_cmd('createsuperuser')
 
 
+@task
+def add_secret_keys(component=None):
+    if not component:
+        print('Missing target component...')
+        return
+
+    require('hosts')
+    require('code_dir')
+
+    if not sudo('whoami'):
+        abort('Failed to elevate to root')
+        return
+
+    if component == 'node':
+        remote_path = env.code_dir + '/app/.env.production.local'
+    else:
+        remote_path = env.code_dir + '/{{cookiecutter.repo_name}}/django.env'
+
+    while True:
+        # Get key name
+        key = raw_input('Enter key name: ')
+
+        if not key:
+            abort('Missing key name.')
+
+        add_secret_key(key, [remote_path])
+
+        if not confirm(colors.yellow("Add additional secret keys?"), default=False):
+            break
+
+    print('To apply the keys, rebuild docker images and restart (force deploy should do it as well)')
+
+
 """ HELPERS """
+
+
+def add_secret_key(key, remote_paths, value=None):
+    require('code_dir')
+
+    # Get key value
+    if value is None:
+        value = raw_input('Enter "%s" value: ' % key)
+
+    # Append to correct file if line not exists
+    for remote_path in remote_paths:
+        append(remote_path, '%s=%s' % (key, value), escape=False, use_sudo=True)
+
 
 def repo_type():
     require('code_dir')
@@ -536,11 +639,8 @@ def repo_type():
         print("Current project is using: `%s`" % colors.red('NO VCS'))
 
 
-def collectstatic(npm_build=True):
-    if npm_build:
-        management_cmd('webpack_constants')
-        docker_compose_run('node', 'npm run build', name='{{cookiecutter.repo_name}}_npm_build')
-
+def collectstatic():
+    docker_compose_run('node', 'npm run export-assets', name='{{cookiecutter.repo_name}}_npm_export')
     management_cmd('collectstatic --noinput --ignore styles-src')
 
 
@@ -637,7 +737,8 @@ def ensure_docker_networks():
     # Ensure we have dedicated networks for communicating with Nginx and Postgres
     ensure_docker_network_exists('{{ cookiecutter.repo_name }}_default', [], internal=False)
     ensure_docker_network_exists('{{ cookiecutter.repo_name }}_nginx', ['nginx'])
-    ensure_docker_network_exists('{{ cookiecutter.repo_name }}_postgres', ['postgres-10'])
+    ensure_docker_network_exists('{{ cookiecutter.repo_name }}_postgres', ['postgres-{postgres_version}'.format(
+        postgres_version=env.postgres_version)])
 
 
 def ensure_docker_network_exists(network_name, connected_containers, internal=True):
@@ -649,3 +750,15 @@ def ensure_docker_network_exists(network_name, connected_containers, internal=Tr
 
     for container_name in connected_containers:
         sudo('docker network connect %s %s' % (network_name, container_name))
+
+
+def ensure_local_py_exists():
+    require('hosts')
+    require('code_dir')
+
+    django_local_settings = env.code_dir + '/{{ cookiecutter.repo_name }}/settings/local.py'
+
+    if not exists(django_local_settings, use_sudo=True):
+        content = string.Template("from settings.${target} import *\n").substitute(target=env.target)
+
+        put(StringIO(content), django_local_settings, use_sudo=True)

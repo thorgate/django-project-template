@@ -10,9 +10,6 @@ services:
         container_name: {{cookiecutter.repo_name}}_django
         restart: unless-stopped
         volumes:
-            - "./{{cookiecutter.repo_name}}/app/build:/app/app/build"
-            - "./{{cookiecutter.repo_name}}/constants.json:/app/constants.json"
-            - "/var/lib/docker-nginx/files/{{cookiecutter.repo_name}}/media:/files/media"
             - "/var/lib/docker-nginx/files/{{cookiecutter.repo_name}}/assets:/files/assets"
             - "/var/log/{{cookiecutter.repo_name}}:/var/log/{{cookiecutter.repo_name}}"
         # For some reason the command also has to be specified here, otherwise the entrypoint+command combination won't
@@ -26,7 +23,7 @@ services:
         depends_on:
             - redis
         external_links:
-            - postgres-10:postgres
+            - postgres-{{cookiecutter.postgres_version}}:postgres
 
     node:
         build:
@@ -36,15 +33,11 @@ services:
         restart: unless-stopped
         command: npm run start
         volumes:
-            - "./{{cookiecutter.repo_name}}/constants.json:/app/constants.json"
-            - "./{{cookiecutter.repo_name}}/app:/app/app"
-            - "./{{cookiecutter.repo_name}}/static:/app/static:ro"
+            - "/var/lib/docker-nginx/files/{{cookiecutter.repo_name}}/app/assets:/files/assets"
             - "/var/log/{{cookiecutter.repo_name}}:/var/log/{{cookiecutter.repo_name}}"
         networks:
             - default
             - {{cookiecutter.repo_name}}_nginx
-        depends_on:
-            - django
 
     {%- if cookiecutter.include_celery == 'yes' %}
 
@@ -54,6 +47,7 @@ services:
             dockerfile: Dockerfile-django.production
         restart: unless-stopped
         volumes:
+            - "/var/lib/docker-nginx/files/{{cookiecutter.repo_name}}/media:/files/media"
             - "/var/log/{{cookiecutter.repo_name}}:/var/log/{{cookiecutter.repo_name}}"
         networks:
             - default
@@ -61,7 +55,7 @@ services:
         depends_on:
             - redis
         external_links:
-            - postgres-10:postgres
+            - postgres-{{cookiecutter.postgres_version}}:postgres
         entrypoint: /usr/bin/wait-for-it.sh postgres:5432 -t 60 --
         command: celery worker --app {{cookiecutter.repo_name}} --autoscale 6,2 --loglevel INFO
 
@@ -85,7 +79,7 @@ services:
     {%- endif %}
 
     redis:
-        image: redis:4.0.9-alpine
+        image: redis:4.0.10-alpine
         restart: unless-stopped
         volumes:
             - "/var/lib/docker-{{cookiecutter.repo_name}}/redis:/data"

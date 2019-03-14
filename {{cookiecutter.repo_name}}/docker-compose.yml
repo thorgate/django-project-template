@@ -27,11 +27,11 @@ services:
             context: .
             dockerfile: Dockerfile-node
         ports:
-            - "8000:80"
+            - "8000:8000"
+            - "8001:8001"
         volumes:
-            - "./{{cookiecutter.repo_name}}:/app"
+            - "./app:/app"
             - ".data/node_modules:/app/node_modules"
-            - "./{{cookiecutter.repo_name}}/static:/app/static:ro"
         depends_on:
             - django
 
@@ -54,6 +54,7 @@ services:
             dockerfile: Dockerfile-django
         volumes:
             - "./{{cookiecutter.repo_name}}:/app"
+            - ".data/media:/files/media"
         depends_on:
             - postgres
             - redis
@@ -79,6 +80,6 @@ services:
     {%- endif %}
 
     redis:
-        image: redis:4.0.9-alpine
+        image: redis:4.0.10-alpine
         volumes:
             - ".data/redis:/data"

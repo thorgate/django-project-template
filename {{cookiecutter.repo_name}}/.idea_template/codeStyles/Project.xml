@@ -1,0 +1,23 @@
+<component name="ProjectCodeStyleConfiguration">
+  <!--
+  These code style settings are generated and can be changed in the Settings.
+  Go to Editor->Code Style->(CSS,HTML,JS,Python)
+  and look for the appropriate option.
+  -->
+  <code_scheme name="Project" version="173">
+    <CssCodeStyleSettings>
+      <option name="HEX_COLOR_UPPER_CASE" value="true" />
+      <option name="HEX_COLOR_LONG_FORMAT" value="true" />
+    </CssCodeStyleSettings>
+    <HTMLCodeStyleSettings>
+      <option name="HTML_SPACE_INSIDE_EMPTY_TAG" value="true" />
+    </HTMLCodeStyleSettings>
+    <JSCodeStyleSettings>
+      <option name="FORCE_SEMICOLON_STYLE" value="true" />
+      <option name="ENFORCE_TRAILING_COMMA" value="WhenMultiline" />
+    </JSCodeStyleSettings>
+    <codeStyleSettings language="Python">
+      <option name="BLANK_LINES_AFTER_IMPORTS" value="2" />
+    </codeStyleSettings>
+  </code_scheme>
+</component>
