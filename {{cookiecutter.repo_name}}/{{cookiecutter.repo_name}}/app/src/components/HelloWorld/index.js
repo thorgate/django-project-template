@@ -1,2 +1,2 @@
-export {default} from './HelloWorld';
+export default from './HelloWorld';
 

@@ -2,8 +2,8 @@
 const path = require('path');
 const webpack = require('webpack');
 // When MiniCssExtractPlugin becomes stable and supports all options, convert if needed
-const ExtractCssChunks = require("extract-css-chunks-webpack-plugin");
-const BundleTracker  = require('webpack-bundle-tracker');
+const ExtractCssChunks = require('extract-css-chunks-webpack-plugin');
+const BundleTracker = require('webpack-bundle-tracker');
 const autoprefixer = require('autoprefixer');
 const getLocalIdent = require('css-loader/lib/getLocalIdent');
 
@@ -31,7 +31,7 @@ function makeConfig(options) {
 
     return {
         entry: {
-            app: options.prependSources.concat(['babel-polyfill', 'main.js']),
+            app: options.prependSources.concat(['@babel/polyfill', 'main.js']),
             styles: options.prependSources.concat([path.resolve(project_root, 'static', 'styles-src', 'main.js')]),
         },
 

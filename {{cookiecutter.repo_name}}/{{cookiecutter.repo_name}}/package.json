@@ -3,20 +3,37 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
+    "@babel/core": "^7.4.0",
+    "@babel/plugin-proposal-class-properties": "^7.4.0",
+    "@babel/plugin-proposal-decorators": "^7.4.0",
+    "@babel/plugin-proposal-do-expressions": "^7.2.0",
+    "@babel/plugin-proposal-export-default-from": "^7.2.0",
+    "@babel/plugin-proposal-export-namespace-from": "^7.2.0",
+    "@babel/plugin-proposal-function-bind": "^7.2.0",
+    "@babel/plugin-proposal-function-sent": "^7.2.0",
+    "@babel/plugin-proposal-json-strings": "^7.2.0",
+    "@babel/plugin-proposal-logical-assignment-operators": "^7.2.0",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.2.0",
+    "@babel/plugin-proposal-numeric-separator": "^7.2.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.4.0",
+    "@babel/plugin-proposal-optional-chaining": "^7.2.0",
+    "@babel/plugin-proposal-pipeline-operator": "^7.3.2",
+    "@babel/plugin-proposal-throw-expressions": "^7.2.0",
+    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+    "@babel/plugin-syntax-import-meta": "^7.2.0",
+    "@babel/plugin-transform-runtime": "^7.4.0",
+    "@babel/polyfill": "^7.4.0",
+    "@babel/preset-env": "^7.4.2",
+    "@babel/preset-react": "^7.0.0",
     "autoprefixer": "8.4.1",
-    "babel-core": "6.26.3",
-    "babel-loader": "7.1.4",
-    "babel-plugin-transform-decorators-legacy": "1.3.5",
-    "babel-plugin-transform-function-bind": "6.22.0",
-    "babel-polyfill": "6.26.0",
-    "babel-preset-es2015": "6.24.1",
-    "babel-preset-react": "6.24.1",
-    "babel-preset-stage-1": "6.24.1",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-loader": "8.0.5",
+    "babel-plugin-transform-react-remove-prop-types": "0.4.21",
     "bootstrap": "4.3.1",
     "css-loader": "1.0.0",
     "extract-css-chunks-webpack-plugin": "3.1.1",
     "file-loader": "1.1.11",
-    "node-sass": "4.9.0",
+    "node-sass": "4.11.0",
     "optimize-css-assets-webpack-plugin": "5.0.1",
     "postcss-loader": "2.1.5",
     "prop-types": "15.6.2",
@@ -56,7 +73,8 @@
       "DJ_CONST": "{}"
     },
     "moduleFileExtensions": [
-      "js"
+      "js",
+      "json"
     ],
     "modulePaths": [
       "<rootDir>/app/src",
@@ -66,6 +84,9 @@
     "transform": {
       "^.+\\.js?$": "babel-jest"
     },
+    "transformIgnorePatterns": [
+        "<rootDir>/node_modules/"
+    ],
     "verbose": true
   },
   "scripts": {
