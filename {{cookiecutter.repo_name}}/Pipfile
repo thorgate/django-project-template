@@ -51,6 +51,8 @@ sphinx_rtd_theme = "==0.4.1"
 {% endif -%}
 gunicorn = "==19.8.1"
 raven = "==6.9.0"
+# TODO: Temporarily pinned pyyaml to avoid vulnerability, this should be removed
+pyyaml = ">=4.2b1"
 
 [dev-packages]
 django-debug-toolbar = "==1.9.1"
