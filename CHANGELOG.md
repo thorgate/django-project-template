@@ -14,6 +14,10 @@ Note: Try to add categories to changes and link to MRs/Issues
 
 - Switch `npm` to `yarn` for de-dupe during install and `resolution` overrides
 
+**Migration guide:**
+ - Remove existing `package-lock.json`
+ - Start development docker environment to generate `yarn.lock`
+ - Commit `yarn.lock` changes.
 
 ## 2019-02-07
 
