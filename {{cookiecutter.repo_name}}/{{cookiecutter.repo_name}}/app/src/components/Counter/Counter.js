@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 const Counter = ({initialCount}) => {
     const [count, setCount] = useState(initialCount);
-    const increment = () => setCount(count + 1);
+    const increment = useCallback(() => setCount(count + 1), [count]);
 
     return (
         <div>
