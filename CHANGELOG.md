@@ -10,6 +10,11 @@ CHANGES
 Note: Try to add categories to changes and link to MRs/Issues
 -->
 
+## 2019-03-16
+
+- Switch `npm` to `yarn` for de-dupe during install and `resolution` overrides
+
+
 ## 2019-02-07
 
 - [BUG] Fix issue with nginx and `app.<project>.proxy_<component>.include`, might occur only on newer server (see !46)

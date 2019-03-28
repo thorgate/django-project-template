@@ -15,13 +15,13 @@ VOLUME /files/assets
 
 # Copy package files
 COPY ./app/package.json ./
-COPY ./app/package-lock.json ./
+COPY ./app/yarn.lock ./
 
 # Install node build dependencies
 RUN apk add --no-cache --virtual .build-deps alpine-sdk python
 
 # Install node dependencies
-RUN npm install --silent
+RUN yarn install --frozen-lockfile
 
 # Remove node build dependencies
 RUN apk del .build-deps
@@ -36,7 +36,7 @@ COPY ./app/.stylelintrc ./
 COPY ./app /app
 
 # Build node app
-RUN npm run build
+RUN yarn build
 
 # Set the default command to execute when creating a new container
-CMD npm run start
+CMD yarn start
