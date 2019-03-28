@@ -107,8 +107,8 @@ Note that the production configuration lacks PostgreSQL, since it runs on a sepa
 |any command in Django container       |`make docker-django cmd=<command>`     |`docker-compose run --rm django $(cmd)`                                     |
 |run tests                             |`make test`                            |`docker-compose run --rm django py.test`                                    |
 |run linters                           |`make quality`                         |                                                                            |
-|run StyleLint                         |`make stylelint`                       |`docker-compose run --rm node npm run stylelint`                            |
-|run ESLint                            |`make eslint`                          |`docker-compose run --rm node npm run lint`                                 |
+|run StyleLint                         |`make stylelint`                       |`docker-compose run --rm node yarn stylelint`                               |
+|run ESLint                            |`make eslint`                          |`docker-compose run --rm node yarn lint`                                    |
 |run Prospector                        |`make prospector`                      |`docker-compose run --rm django prospector`                                 |
 |run isort                             |`make isort`                           |`docker-compose run --rm django isort --recursive --check-only -p . --diff` |
 |run psql                              |`make psql`                            |`docker-compose exec postgres psql --user {{cookiecutter.repo_name}} --dbname {{cookiecutter.repo_name}}` |
@@ -120,7 +120,7 @@ Note that the production configuration lacks PostgreSQL, since it runs on a sepa
 
 ## Installing new pip or npm packages
 
-Since `npm` is inside the container, currently the easiest way to install new packages is to add them
+Since `yarn` is inside the container, currently the easiest way to install new packages is to add them
 to the `package.json` file and rebuild the container.
 
 Python dependencies are a bit special. As we are using `pipenv` best option is to use `make py-install-deps cmd=<dependency>`.

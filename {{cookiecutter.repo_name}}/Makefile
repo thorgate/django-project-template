@@ -111,20 +111,20 @@ $(SITE_ROOT)/django.env:
 coverage:
 	@echo "$(CYAN)Running automatic code coverage check$(COFF)"
 	@docker-compose run --rm django py.test --cov --cov-report term-missing
-	@docker-compose run --rm node npm run test -- --coverage
+	@docker-compose run --rm node yarn test -- --coverage
 
 
 node-install:
-	@docker-compose run --rm node npm install
+	@docker-compose run --rm node yarn
 
 
 test-node-watch: clean
-	@docker-compose run --rm node npm run test -- --watchAll
+	@docker-compose run --rm node yarn test -- --watchAll
 
 
 test-node: clean
 	@echo "$(CYAN)Running automatic node.js tests$(COFF)"
-	@docker-compose run --rm node npm run test
+	@docker-compose run --rm node yarn test
 
 
 test-django: clean
@@ -145,12 +145,12 @@ quality: node-quality prospector isort pipenv-check
 
 node-quality:
 	@echo "$(CYAN)Running Node Quality(COFF)"
-	@docker-compose run --rm node npm run quality
+	@docker-compose run --rm node yarn quality
 
 
 eslint:
 	@echo "$(CYAN)Running ESLint$(COFF)"
-	@docker-compose run --rm node npm run lint
+	@docker-compose run --rm node yarn lint
 
 
 prospector:
@@ -160,7 +160,7 @@ prospector:
 
 stylelint:
 	@echo "$(CYAN)Running StyleLint$(COFF)"
-	@docker-compose run --rm node npm run stylelint
+	@docker-compose run --rm node yarn stylelint
 
 
 isort:

@@ -640,7 +640,7 @@ def repo_type():
 
 
 def collectstatic():
-    docker_compose_run('node', 'npm run export-assets', name='{{cookiecutter.repo_name}}_npm_export')
+    docker_compose_run('node', 'yarn export-assets', name='{{cookiecutter.repo_name}}_yarn_export')
     management_cmd('collectstatic --noinput --ignore styles-src')
 
 
