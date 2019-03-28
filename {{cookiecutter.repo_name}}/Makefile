@@ -107,20 +107,20 @@ coverage:
 	@docker-compose run --rm django coverage run -m py.test
 	@docker-compose run --rm django coverage html
 	@docker-compose run --rm django coverage report
-	@docker-compose run --rm node npm run test -- --coverage
+	@docker-compose run --rm node yarn test -- --coverage
 
 
 node-install:
-	@docker-compose run --rm node npm install
+	@docker-compose run --rm node yarn
 
 
 test-node-watch: clean
-	@docker-compose run --rm node npm run test -- --watchAll
+	@docker-compose run --rm node yarn test -- --watchAll
 
 
 test-node: clean
 	@echo "$(CYAN)Running automatic node.js tests$(COFF)"
-	@docker-compose run --rm node npm run test
+	@docker-compose run --rm node yarn test
 
 
 test-django: clean
@@ -141,7 +141,7 @@ quality: stylelint eslint prospector isort pipenv-check
 
 eslint:
 	@echo "$(CYAN)Running ESLint$(COFF)"
-	@docker-compose run --rm node npm run lint
+	@docker-compose run --rm node yarn lint
 
 
 prospector:
@@ -151,7 +151,7 @@ prospector:
 
 stylelint:
 	@echo "$(CYAN)Running StyleLint$(COFF)"
-	@docker-compose run --rm node npm run stylelint
+	@docker-compose run --rm node yarn stylelint
 
 
 isort:

@@ -10,6 +10,10 @@ CHANGES
 Note: Try to add categories to changes and link to MRs/Issues
 -->
 
+## 2019-03-16
+
+- Switch `npm` to `yarn` for de-dupe during install and `resolution` overrides
+
 ## 2019-02-01
 
 **Breaking:** This version changes of the base python docker images to alpine. If you have changed Django dockerfiles files in your projects make sure to port the changes over to alpine as well. This version also removes production Node dockerfile and builds node stuff inside the django dockerfile using docker multistage build.
