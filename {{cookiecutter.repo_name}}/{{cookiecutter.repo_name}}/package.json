@@ -94,7 +94,7 @@
     "build": "cd app && NODE_ENV=production webpack -p --config webpack/config.production.js --progress --profile --color",
     "build-quiet": "cd app && NODE_ENV=production webpack -p --config webpack/config.production.js",
     "clean": "cd app && rm -rf build/",
-    "prebuild": "npm run clean",
+    "prebuild": "yarn clean",
     "lint": "cd app/src && eslint .",
     "stylelint": "cd static/styles-src && stylelint '**/*.scss'",
     "test": "NODE_ENV=test jest",

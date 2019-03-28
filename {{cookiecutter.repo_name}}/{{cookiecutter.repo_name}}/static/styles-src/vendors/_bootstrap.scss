@@ -10,7 +10,7 @@
 @import "~bootstrap/scss/mixins";
 @import "~bootstrap/scss/root";
 // TODO: Bootstrap actually has the print styles as the last import here. For us however, it breaks CSS minification
-// (when running `npm run build`). The problem doesn't seem to exist in `spa` branch which has newer Webpack.
+// (when running `yarn build`). The problem doesn't seem to exist in `spa` branch which has newer Webpack.
 // See https://github.com/twbs/bootstrap/issues/24931 for context.
 @import "~bootstrap/scss/print";
 @import "~bootstrap/scss/reboot";
