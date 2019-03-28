@@ -31,7 +31,7 @@ services:
             dockerfile: Dockerfile-node.production
         container_name: {{cookiecutter.repo_name}}_node
         restart: unless-stopped
-        command: npm run start
+        command: yarn start
         volumes:
             - "/var/lib/docker-nginx/files/{{cookiecutter.repo_name}}/app/assets:/files/assets"
             - "/var/log/{{cookiecutter.repo_name}}:/var/log/{{cookiecutter.repo_name}}"

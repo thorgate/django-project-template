@@ -25,7 +25,7 @@ DefaultHeader.propTypes = {
 
 
 const mapStateToProps = (state) => ({
-    activeLanguage: appSelectors.activeLanguage(state),
+    activeLanguage: applicationSelectors.activeLanguage(state),
 });
 
 export default connect(
