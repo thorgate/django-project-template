@@ -8,4 +8,4 @@ RUN apk add --no-cache build-base python bash
 WORKDIR /app
 
 # Set the default command to execute when creating a new container
-CMD /bin/bash -c "npm install && npm run dev"
+CMD /bin/bash -c "yarn && yarn dev"

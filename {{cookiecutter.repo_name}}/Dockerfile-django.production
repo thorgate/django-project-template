@@ -75,17 +75,17 @@ COPY ./{{ cookiecutter.repo_name }}/.eslintignore .
 
 # Install node requirements
 COPY ./{{ cookiecutter.repo_name }}/package.json .
-COPY ./{{ cookiecutter.repo_name }}/package-lock.json ./
+COPY ./{{ cookiecutter.repo_name }}/yarn.lock.json ./
 
 # Install node dependencies
-RUN npm install --silent
+RUN yarn install --frozen-lockfile
 
 # Copy app assets
 COPY ./{{ cookiecutter.repo_name }}/app /app/app
 COPY ./{{ cookiecutter.repo_name }}/static /app/static
 
 # Build node stuff
-RUN npm run build
+RUN yarn build
 
 # Resume Django build
 FROM base

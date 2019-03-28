@@ -1,5 +1,5 @@
 .idea/
-npm-debug.log
+yarn-error.log
 .tox
 *.mo
 *.pyo
