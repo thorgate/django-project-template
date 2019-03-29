@@ -27,7 +27,7 @@ pylint-django = "==2.0.4"
 flake8 = "==3.5.0"
 isort = "==4.3.4"
 hashids = "==1.2.0"
-Django = "==1.11.16"
+Django = "==1.11.20"
 djangorestframework = "==3.7.7"
 djangorestframework_simplejwt = "==3.2.3"
 django-filter = "==1.0.4"
@@ -51,6 +51,8 @@ sphinx_rtd_theme = "==0.4.1"
 {% endif -%}
 gunicorn = "==19.8.1"
 raven = "==6.9.0"
+# TODO: Temporarily pinned pyyaml to avoid vulnerability, this should be removed
+pyyaml = ">=4.2b1"
 
 [dev-packages]
 django-debug-toolbar = "==1.9.1"
