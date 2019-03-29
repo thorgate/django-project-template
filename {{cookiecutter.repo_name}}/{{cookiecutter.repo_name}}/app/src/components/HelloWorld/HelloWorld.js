@@ -18,10 +18,10 @@ class HelloWorld extends React.Component {
 
     render() {
         return (
-            <div>
+            <>
                 <h1 className={styles.title}>{this.props.title}</h1>
                 <Counter />
-            </div>
+            </>
         );
     }
 }

@@ -1,37 +1,29 @@
-import React, {Component} from 'react';
+import React, {useState, useCallback} from 'react';
 import PropTypes from 'prop-types';
 
-class Counter extends Component {
-    static propTypes = {
-        initialCount: PropTypes.number,
-    };
+const Counter = ({initialCount}) => {
+    const [count, setCount] = useState(initialCount);
+    const increment = useCallback(() => setCount(count + 1), [count]);
 
-    static defaultProps = {
-        initialCount: 0,
-    };
+    return (
+        <div>
+            <h2>Count: {count}</h2>
+            <button
+                type="button"
+                onClick={increment}
+            >
+                Increment
+            </button>
+        </div>
+    );
+};
 
-    state = {
-        count: this.props.initialCount,
-    };
+Counter.propTypes = {
+    initialCount: PropTypes.number,
+};
 
-    increment = () => {
-        this.setState(state => ({count: state.count + 1}));
-    };
-
-    render() {
-        return (
-            <div>
-                <h2>Count: {this.state.count}</h2>
-
-                <button
-                    type="button"
-                    onClick={this.increment}
-                >
-                    Increment
-                </button>
-            </div>
-        );
-    }
-}
+Counter.defaultProps = {
+    initialCount: 0,
+};
 
 export default Counter;
