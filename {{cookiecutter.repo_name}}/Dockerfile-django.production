@@ -75,7 +75,7 @@ COPY ./{{ cookiecutter.repo_name }}/.eslintignore .
 
 # Install node requirements
 COPY ./{{ cookiecutter.repo_name }}/package.json .
-COPY ./{{ cookiecutter.repo_name }}/yarn.lock.json ./
+COPY ./{{ cookiecutter.repo_name }}/yarn.lock ./
 
 # Install node dependencies
 RUN yarn install --frozen-lockfile
