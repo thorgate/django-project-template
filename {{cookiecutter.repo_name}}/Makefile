@@ -164,7 +164,7 @@ isort-fix:
 	docker-compose run --rm django isort --recursive -p .
 
 pipenv-check:
-	pipenv --python=$(PYTHON) check
+	docker-compose run --rm django pipenv --python=$(PYTHON) check
 
 
 py-install-deps:
