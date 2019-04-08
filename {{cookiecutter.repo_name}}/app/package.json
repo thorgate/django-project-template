@@ -79,7 +79,7 @@
     "razzle-plugin-long-term-caching": "1.0.0-alpha.30",
     "react": "16.8.5",
     "react-dom": "16.8.5",
-    "react-helmet": "5.2.0",
+    "react-helmet": "6.0.0-beta",
     "react-redux": "7.0.0-beta.0",
     "react-router": "5.0.0",
     "react-router-config": "5.0.0",

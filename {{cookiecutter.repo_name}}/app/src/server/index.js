@@ -13,7 +13,7 @@ import koaUserAgent from 'koa-useragent';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { StaticRouter } from 'react-router';
-import Helmet from 'react-helmet';
+import { Helmet } from 'react-helmet';
 import { Provider } from 'react-redux';
 import serialize from 'serialize-javascript';
 import addYears from 'date-fns/add_years';

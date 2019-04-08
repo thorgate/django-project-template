@@ -2,7 +2,7 @@ import { ConnectedRedirect } from '@thorgate/spa-pending-data';
 import React from 'react';
 import PropTypes from 'prop-types';
 import qs from 'qs';
-import Helmet from 'react-helmet';
+import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
 
 import AuthLayout from 'components/layouts/AuthLayout';
