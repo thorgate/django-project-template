@@ -1,18 +1,18 @@
 {% if cookiecutter.include_celery == 'yes' -%}
-celery[redis]==4.2.0
+celery[redis]>=4.2.0,<4.3
 {% endif -%}
-Django==1.11.13
-tg-utils==0.3.0
+Django>=1.11.13,<1.12
+tg-utils>=0.3.0
 # Use binary variant of psycopg2, see warning at http://initd.org/psycopg/docs/install.html#binary-install-from-pypi
 psycopg2-binary==2.7.4
-django-redis==4.9.0
+django-redis>=4.9.0,<4.10
 django-crispy-forms==1.7.2
 django-webpack-loader==0.6.0
 django-settings-export==1.2.1
 
 # Tests and QA
-pytest==3.6.1
-pytest-django==3.2.1
+pytest>=3.6.1,<3.7
+pytest-django>=3.2.1,<3.3
 coverage==4.5.1
 prospector==0.12.11
 pylint==1.9.2
