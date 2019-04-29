@@ -21,9 +21,9 @@ function createTransport(level) {
             splat(),
             label({ label: `[worker-${SETTINGS.WORKER_ID}]` }),
             timestamp(),
-            printf((info) => {
-                return `${info.timestamp} [${info.level}]${info.label || ''}: ${info.message}`;
-            }),
+            printf((info) => (
+                `${info.timestamp} [${info.level}]${info.label || ''}: ${info.message}`
+            )),
         ),
     };
 

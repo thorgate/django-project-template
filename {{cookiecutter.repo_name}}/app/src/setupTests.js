@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 // add some helpful assertions
 require('jest-dom/extend-expect');
 

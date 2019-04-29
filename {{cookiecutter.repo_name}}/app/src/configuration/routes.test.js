@@ -9,7 +9,7 @@ import configureStore from './configureStore';
 
 
 describe('route config', () => {
-    test('Render does not break' ,() => {
+    test('Render does not break', () => {
         const { store } = configureStore({}, {
             location: '/',
         });
@@ -23,4 +23,3 @@ describe('route config', () => {
         ));
     });
 });
-

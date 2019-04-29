@@ -4,15 +4,15 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
 import { Nav, Navbar, NavbarBrand, NavItem, NavLink } from 'reactstrap';
+import { resolvePath as urlResolve } from 'tg-named-routes';
 
-import { urlResolve } from 'configuration/routes';
 import { applicationSelectors } from 'ducks/application';
 import SETTINGS from 'settings';
 import { gettext } from 'utils/i18n';
 import { UserShape } from 'utils/types';
 
 
-const NavigationBar = ({ user, isAuthenticated }) => {
+const NavigationBar = ({ user, isLoggedIn }) => {
     let authNav = (
         <Nav className="ml-auto" navbar>
             <NavItem>
@@ -24,7 +24,7 @@ const NavigationBar = ({ user, isAuthenticated }) => {
         </Nav>
     );
 
-    if (isAuthenticated) {
+    if (isLoggedIn) {
         authNav = (
             <Nav className="ml-auto" navbar>
                 <NavItem>
@@ -63,7 +63,7 @@ const NavigationBar = ({ user, isAuthenticated }) => {
 };
 
 NavigationBar.propTypes = {
-    isAuthenticated: PropTypes.bool.isRequired,
+    isLoggedIn: PropTypes.bool.isRequired,
     user: UserShape,
 };
 
@@ -75,7 +75,7 @@ NavigationBar.defaultProps = {
 const mapStateToProps = (state) => ({
     user: getUser(state),
     activeLanguage: applicationSelectors.activeLanguage(state),
-    isAuthenticated: isAuthenticated(state),
+    isLoggedIn: isAuthenticated(state),
 });
 
 const NavigationBarConnector = connect(

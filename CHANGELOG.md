@@ -10,6 +10,18 @@ CHANGES
 Note: Try to add categories to changes and link to MRs/Issues
 -->
 
+## 2019-04-28
+
+- [ENH] More strict eslint rules for more consistent code
+- [ENH] Split `routes.js` for better maintainability
+- [DEPRECATION] Import `urlResolve` from `configuration/routes` is now deprecated.
+  Use `import { resolvePath as urlResolve } from 'tg-named-routes';` instead.
+
+**Migration guide:**
+- Split the routes into viable groups based on `configuration/routes/authentication.js`
+- Commit changes
+
+
 ## 2019-03-16
 
 - Switch `npm` to `yarn` for de-dupe during install and `resolution` overrides

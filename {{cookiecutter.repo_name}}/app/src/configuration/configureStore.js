@@ -1,5 +1,6 @@
 import { routerMiddleware as routerMiddlewareFactory } from 'connected-react-router';
 import { createBrowserHistory, createMemoryHistory } from 'history';
+import serializeJS from 'serialize-javascript';
 import { createStore, applyMiddleware, compose } from 'redux';
 import { createLogger } from 'redux-logger';
 import createSagaMiddleware, { END } from 'redux-saga';
@@ -53,9 +54,8 @@ export default function configureStore(initialState = {}, options = {}) {
         const extraOptions = {};
 
         if (process.env.BUILD_TARGET === 'server') {
-            const serialize = require('serialize-javascript');
-            extraOptions.actionTransformer = (action) => serialize(action, { unsafe: true });
-            extraOptions.stateTransformer = (state) => serialize(state, { unsafe: true });
+            extraOptions.actionTransformer = (action) => serializeJS(action, { unsafe: true });
+            extraOptions.stateTransformer = (state) => serializeJS(state, { unsafe: true });
             extraOptions.titleFormatter = (action, time, took) => (
                 `action "${action}" @ ${time} (in ${took.toFixed(2)} ms)`
             );

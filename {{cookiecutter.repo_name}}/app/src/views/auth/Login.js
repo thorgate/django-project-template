@@ -24,11 +24,9 @@ Login.propTypes = {
 };
 
 
-const mapDispatchToProps = (dispatch) => ({
-    onLogin: (payload, actions) => (
-        dispatch(obtainToken(payload, actions))
-    ),
-});
+const mapDispatchToProps = {
+    onLogin: obtainToken,
+};
 
 
 const LoginConnector = connect(

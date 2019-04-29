@@ -1,3 +1,4 @@
+/* eslint-disable global-require */
 const SETTINGS = {
     API_BASE: '/api/',
     AUTH_TOKEN_NAME: '{{ cookiecutter.repo_name }}_token',

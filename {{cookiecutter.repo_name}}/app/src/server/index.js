@@ -15,7 +15,7 @@ import { renderToString } from 'react-dom/server';
 import { StaticRouter } from 'react-router';
 import { Helmet } from 'react-helmet';
 import { Provider } from 'react-redux';
-import serialize from 'serialize-javascript';
+import serializeJS from 'serialize-javascript';
 import addYears from 'date-fns/add_years';
 import { RenderChildren } from 'tg-named-routes';
 
@@ -86,7 +86,7 @@ router.get(
         ctx.state.styleTags = extractor.getStyleTags();
 
         // Serialize state
-        ctx.state.serializedState = serialize(store.getState());
+        ctx.state.serializedState = serializeJS(store.getState());
 
         return next();
     },

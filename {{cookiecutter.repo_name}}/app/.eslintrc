@@ -1,5 +1,8 @@
 {
-    "extends": "react-app",
+    "extends": [
+        "react-app",
+        "airbnb"
+    ],
     "globals": {
         "jest": false,
         "describe": false,
@@ -7,11 +10,21 @@
         "expect": false
     },
     "settings": {
-        "react": {
-            "version": "16.8"
+        "import/resolver": {
+            "node": {
+                "paths": [
+                    "src"
+                ]
+            }
         }
     },
+    "plugins": [
+        "react-hooks"
+    ],
     "rules": {
+        // We allow single named export as well
+        "import/prefer-default-export": 0,
+
         // We use 4 spaces for indentation. Everywhere.
         "indent": ["error", 4, {"SwitchCase": 1}],
         "react/jsx-indent": ["error", 4],
@@ -24,7 +37,8 @@
         "react/jsx-filename-extension": ["error", {"extensions": [".js", ".jsx"]}],
 
         // Warnings when not destructuring props assignment
-        "react/destructuring-assignment": [true, "never"],
+        "react/destructuring-assignment": ["warn", "always", { "ignoreClassFields": true }],
+        "react/jsx-one-expression-per-line": 0,
 
         // Set max line length to 120 chars. Smaller lengths feel too small on modern monitors.
         "max-len": ["error", 120],
@@ -64,6 +78,7 @@
         // and these into warnings
         "class-methods-use-this": "warn",
         "jsx-a11y/no-static-element-interactions": "warn",
+        "jsx-a11y/label-has-associated-control": "warn",
         "jsx-a11y/anchor-is-valid": [ "error", { "components": [ "Link" ], "specialLink": [ "to" ] } ],
         "jsx-a11y/label-has-for": "warn",
         "function-paren-newline": ["error", "consistent"],
