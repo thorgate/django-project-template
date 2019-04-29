@@ -21,11 +21,9 @@ ForgotPassword.propTypes = {
     onForgotPassword: PropTypes.func.isRequired,
 };
 
-const mapDispatchToProps = (dispatch) => ({
-    onForgotPassword: (payload, actions) => (
-        dispatch(forgotPassword(payload, actions))
-    ),
-});
+const mapDispatchToProps = {
+    onForgotPassword: forgotPassword,
+};
 
 const ForgotPasswordConnector = connect(
     null,

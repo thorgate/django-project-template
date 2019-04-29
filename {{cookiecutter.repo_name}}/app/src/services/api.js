@@ -1,14 +1,11 @@
 /* eslint-disable no-template-curly-in-string */
 import { FetchResource as Resource } from '@tg-resources/fetch';
 import { createSagaRouter } from '@tg-resources/redux-saga-router';
-import { userActions } from '@thorgate/spa-permissions';
-import { getLocalStorage } from '@thorgate/spa-view';
-import { getLocation, replace } from 'connected-react-router';
 import Cookies from 'js-cookie';
-import { call, select, put } from 'redux-saga/effects';
-import qs from 'qs';
+import { call } from 'redux-saga/effects';
 
 import SETTINGS from 'settings';
+import { refreshToken } from 'sagas/auth/authMiddleware';
 import { getToken, saveToken } from 'sagas/helpers/token';
 
 import Sentry from './sentry';
@@ -36,40 +33,8 @@ function* mutateRequestConfig(origRequestConfig, resource) {
     return requestConfig;
 }
 
-function* refreshToken() {
-    const refresh = getLocalStorage().getItem(SETTINGS.AUTH_REFRESH_TOKEN_NAME);
 
-    // If no refresh token, exit early
-    if (!refresh) {
-        return;
-    }
-
-    try {
-        const { access } = yield api.auth.refresh.post(null, { refresh });
-
-        saveToken(access);
-
-        const location = yield select(getLocation);
-        const query = qs.parse(location.search, { ignoreQueryPrefix: true });
-
-        // Act as auth-middleware, try to redirect to next url, if it is present
-        if (query && query.next) {
-            yield put(replace(query.next));
-        }
-
-        return access;
-    } catch (e) {
-        yield put(userActions.resetUser());
-
-        saveToken();
-
-        // Force current view to re-render
-        const location = yield select(getLocation);
-        yield put(replace(location));
-    }
-}
-
-function onRequestError(error, resource) {
+function onRequestError(error) {
     const shouldReportError = ![
         error.isInvalidResponseCode && [404, 403, 401].includes(error.statusCode),
         error.isValidationError,

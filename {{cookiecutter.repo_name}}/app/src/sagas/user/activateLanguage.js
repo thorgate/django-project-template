@@ -2,8 +2,7 @@ import { select, takeLatest } from 'redux-saga/effects';
 import Cookies from 'js-cookie';
 
 import SETTINGS from 'settings';
-import { SET_ACTIVE_LANGUAGE } from 'ducks/application';
-import { applicationSelectors } from 'ducks/application';
+import { applicationSelectors, SET_ACTIVE_LANGUAGE } from 'ducks/application';
 
 
 function* setActiveLanguage() {

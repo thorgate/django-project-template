@@ -37,7 +37,7 @@ export const RouterRouteShapeObject = {
 
 export const RouterRouteShape = PropTypes.shape({
     ...RouterRouteShapeObject,
-    routes: PropTypes.arrayOf(PropTypes.shape(RouterRouteShapeObject))
+    routes: PropTypes.arrayOf(PropTypes.shape(RouterRouteShapeObject)),
 });
 
 

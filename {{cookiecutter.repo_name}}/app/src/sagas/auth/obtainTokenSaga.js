@@ -2,8 +2,8 @@ import { createSaveAction, createFormSaveSaga } from '@thorgate/spa-forms';
 import { select, takeLatest, put } from 'redux-saga/effects';
 import { getLocation, push } from 'connected-react-router';
 import qs from 'qs';
+import { resolvePath as urlResolve } from 'tg-named-routes';
 
-import { urlResolve } from 'configuration/routes';
 import { saveToken } from 'sagas/helpers/token';
 import api from 'services/api';
 

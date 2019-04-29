@@ -2,8 +2,8 @@ import { userActions } from '@thorgate/spa-permissions';
 import { put, select } from 'redux-saga/effects';
 import qs from 'qs';
 import { getLocation, replace } from 'connected-react-router';
+import { resolvePath as urlResolve } from 'tg-named-routes';
 
-import { urlResolve } from 'configuration/routes';
 import { saveToken } from 'sagas/helpers/token';
 
 

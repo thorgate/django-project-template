@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 import qs from 'qs';
 import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
+import { resolvePath as urlResolve } from 'tg-named-routes';
 
 import AuthLayout from 'components/layouts/AuthLayout';
-import { urlResolve } from 'configuration/routes';
 import SignupForm from 'forms/auth/Signup';
 import withView from 'decorators/withView';
 import { signup } from 'sagas/auth/signupSaga';
@@ -50,11 +50,9 @@ Signup.defaultProps = {
 };
 
 
-const mapDispatchToProps = (dispatch) => ({
-    onSignup: (payload, actions) => (
-        dispatch(signup(payload, actions))
-    ),
-});
+const mapDispatchToProps = {
+    onSignup: signup,
+};
 
 
 export default withView()(connect(

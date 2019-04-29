@@ -1,0 +1,6 @@
+{% raw %}{% load i18n %}{% trans "Hi there," %}
+
+{% block content %}{% endblock content %}
+
+{% endraw %}{{cookiecutter.project_title}}{% raw %}
+{% endraw %}

@@ -5,8 +5,8 @@ import { Link } from 'react-router-dom';
 import is from 'is_js';
 import { withFormik, Form } from 'formik';
 import * as Yup from 'yup';
+import { resolvePath as urlResolve } from 'tg-named-routes';
 
-import { urlResolve } from 'configuration/routes';
 import FormField from 'forms/fields/FormField';
 import { gettext, pgettext } from 'utils/i18n';
 import { getFormPropTypes } from 'utils/types';

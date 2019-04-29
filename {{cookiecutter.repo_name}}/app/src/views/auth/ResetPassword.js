@@ -27,11 +27,9 @@ ResetPassword.propTypes = {
 };
 
 
-const mapDispatchToProps = (dispatch) => ({
-    onResetPassword: (payload, actions) => (
-        dispatch(resetPassword(payload, actions))
-    ),
-});
+const mapDispatchToProps = {
+    onResetPassword: resetPassword,
+};
 
 const ResetPasswordConnector = connect(
     null,
