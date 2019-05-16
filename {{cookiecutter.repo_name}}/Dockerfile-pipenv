@@ -1,4 +1,7 @@
-# Development Dockerfile for Django app
+# Dockerfile for Pipenv wrapper
+# Unfortunately it seems not possible to reuse the Django Dockerfile, as not installing any packages in it
+# will result in all .build-deps apks being deleted from it and pipenv failing to lock/install
+# The build steps of this file are taken from the Django Dockerfile to make the build a bit faster though.
 
 FROM python:{% if cookiecutter.python_version == '3.6' %}3.6.8{% else %}{{ cookiecutter.python_version }}{% endif %}-alpine3.8
 
