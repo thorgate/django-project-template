@@ -56,11 +56,8 @@ help:
 	@echo "$(CYAN)make isort-fix$(COFF) - Fix imports automatically with isort"
 	@echo ""
 
-Pipfile.lock:
-	# allow mounting Pipfile.lock as a _file_
-	/bin/touch Pipfile.lock
-	# pipenv can't write to Pipfile.lock if it's mounted, so need mount it under Pipfile.lock-target and cat into it
-	docker-compose -f docker-compose-init.yml run --rm pipenvwrapper sh -c 'pipenv lock -v && cat /Pipfile.lock > /Pipfile.lock-target'
+pipenv-lock:
+	docker-compose -f docker-compose-init.yml run --rm --workdir /src pipenvwrapper pipenv lock -v
 	docker rmi {{cookiecutter.repo_name}}_pipenvwrapper
 
 
@@ -68,8 +65,8 @@ pipenv-check:
 	docker-compose run --rm --workdir / django pipenv check
 
 
-py-install-deps:
-	docker-compose -f docker-compose-init.yml run --rm pipenvwrapper sh -c "pipenv install $(cmd) && cat /Pipfile.lock > /Pipfile.lock-target"
+pipenv-install:
+	docker-compose -f docker-compose-init.yml run --rm --workdir /src pipenvwrapper pipenv install $(cmd)
 	docker rmi {{cookiecutter.repo_name}}_pipenvwrapper
 
 
@@ -98,7 +95,7 @@ $(PROJECT_ROOT)/.idea:
 	@mkdir -p $(PROJECT_ROOT)/.idea && cp -R $(PROJECT_ROOT)/.idea_template/* $(PROJECT_ROOT)/.idea/
 
 
-settings: Pipfile.lock $(SITE_ROOT)/settings/local.py $(SITE_ROOT)/settings/local_test.py
+settings: pipenv-lock $(SITE_ROOT)/settings/local.py $(SITE_ROOT)/settings/local_test.py
 
 
 $(SITE_ROOT)/settings/local.py:

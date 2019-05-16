@@ -8,5 +8,5 @@ services:
             context: .
             dockerfile: Dockerfile-pipenv
         volumes:
-            - "./Pipfile:/Pipfile"
-            - "./Pipfile.lock:/Pipfile.lock-target"
+            # pipenv can't write to Pipfile.lock if it's mounted as file
+            - ".:/src"

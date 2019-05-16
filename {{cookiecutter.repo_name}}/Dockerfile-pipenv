@@ -1,6 +1,8 @@
-# Pipenv wrapper Dockerfile
+# Development Dockerfile for Django app
 
 FROM python:{% if cookiecutter.python_version == '3.6' %}3.6.8{% else %}{{ cookiecutter.python_version }}{% endif %}-alpine3.8
+
+COPY ./wait-for-it.sh /usr/bin/
 
 # Install bash, libpq{% if cookiecutter.include_cms == 'yes' %}, libjpeg-turbo{% endif %} and gettext
 # Bash is required to support `wait-for-it.sh` script, should not add too much to docker image
@@ -13,5 +15,3 @@ RUN apk add --no-cache --virtual .build-deps \
 
 # Copy Python requirements dir and Install requirements
 RUN pip install -U pipenv==2018.11.26 pip setuptools wheel
-
-COPY Pipfile /
