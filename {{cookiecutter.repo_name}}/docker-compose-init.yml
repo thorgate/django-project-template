@@ -1,0 +1,12 @@
+# Docker-compose configuration for development
+
+version: '2'
+
+services:
+    pipenvwrapper:
+        build:
+            context: .
+            dockerfile: Dockerfile-pipenv
+        volumes:
+            - "./Pipfile:/Pipfile"
+            - "./Pipfile.lock:/Pipfile.lock-target"

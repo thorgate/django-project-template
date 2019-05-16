@@ -7,9 +7,6 @@ PYTHON ?= python{{cookiecutter.python_version}}
 # Editor can be defined globally but defaults to nano
 EDITOR ?= nano
 
-# Put Pipenv virtual env inside project folder
-PIPENV_VENV_IN_PROJECT=1
-
 # By default we open the editor after copying settings, but can be overridden
 #  (e.g. EDIT_SETTINGS=no make settings).
 EDIT_SETTINGS ?= yes
@@ -60,7 +57,21 @@ help:
 	@echo ""
 
 Pipfile.lock:
-	pipenv --python=$(PYTHON) lock -v
+	# allow mounting Pipfile.lock as a _file_
+	/bin/touch Pipfile.lock
+	# pipenv can't write to Pipfile.lock if it's mounted, so need mount it under Pipfile.lock-target and cat into it
+	docker-compose -f docker-compose-init.yml run --rm pipenvwrapper sh -c 'pipenv lock -v && cat /Pipfile.lock > /Pipfile.lock-target'
+	docker rmi {{cookiecutter.repo_name}}_pipenvwrapper
+
+
+pipenv-check:
+	docker-compose run --rm --workdir / django pipenv check
+
+
+py-install-deps:
+	docker-compose -f docker-compose-init.yml run --rm pipenvwrapper sh -c "pipenv install $(cmd) && cat /Pipfile.lock > /Pipfile.lock-target"
+	docker rmi {{cookiecutter.repo_name}}_pipenvwrapper
+
 
 docker: settings
 	@docker-compose down
@@ -162,13 +173,6 @@ isort:
 isort-fix:
 	@echo "$(CYAN)Fixing imports with isort$(COFF)"
 	docker-compose run --rm django isort --recursive -p .
-
-pipenv-check:
-	docker-compose run --rm django pipenv --python=$(PYTHON) check
-
-
-py-install-deps:
-	pipenv --python=$(PYTHON) install $(cmd)
 
 
 docker-django:
