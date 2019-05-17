@@ -28,6 +28,7 @@ COFF ?= \033[0m
 # Mark non-file targets as PHONY
 .PHONY: all help docker settings setup pycharm coverage node-install test clean quality eslint prospector stylelint docker-django
 .PHONY: bash docker-manage shell makemigrations migrate docker-logs makemessages compilemessages add-locale psql isort isort-fix
+.PHONY: pipenv-lock pipenv-install pipenv-check
 
 all: help
 

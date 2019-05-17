@@ -112,15 +112,20 @@ Note that the production configuration lacks PostgreSQL, since it runs on a sepa
 
 ## Installing new pip or npm packages
 
+### Node
 Since `yarn` is inside the container, currently the easiest way to install new packages is to add them
 to the `package.json` file and rebuild the container.
 
-Python dependencies are a bit special. As we are using `pipenv` best option is to use `make py-install-deps cmd=<dependency>`.
-After package is added also don't forget to `make Pipfile.lock` to update lock file. This ensure when we are building production images
+### Python
+
+Python package management is handled by `pipenv`, and employs a lock file (`Pipfile.lock`) to store the package version information.
+The lock file ensures that when we are building production images
 we don't install conflicting packages and everything is resolved to matching version while developing.
 
-When using `pipenv` via make file it will create the virtualenv under project directory. To use `pipenv` manually without `Makefile`,
-prefix `pipenv` commands with `PIPENV_VENV_IN_PROJECT=1`.
+To install a new Python package, there are two options.
+* Edit the `Pipfile` and add the required package there, then run `make pipenv-lock` to regenerate the lock file.
+* Or run `make pipenv-install cmd=<package>` -- this will add the package to Pipenv and regenerate Pipfile.lock in one take.
+
 
 ## Rebuilding Docker images
 
@@ -306,8 +311,6 @@ There are basically two types of deploys:
 * Update packages in Pipenv file
 * run `make pipenv-lock` if it successfully generates lock file, then you are set
 * if previous command fails (due to package version clash), then do as it suggests - install the packages using the commands given and see what version is installed.
-
-To install a new package, either follow the instructions above, or run `make pipenv-install cmd=<package>` -- this will add the package to Pipenv and regenerate Pipfile.lock in one take.
 
 
 ### Using pipenv locally for pycharm
