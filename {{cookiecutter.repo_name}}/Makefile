@@ -11,9 +11,12 @@ EDITOR ?= nano
 #  (e.g. EDIT_SETTINGS=no make settings).
 EDIT_SETTINGS ?= yes
 
+# Project name
+PROJECT_NAME ?= {{cookiecutter.repo_name}}
+
 # Get root dir and project dir
 PROJECT_ROOT ?= $(CURDIR)
-SITE_ROOT ?= $(PROJECT_ROOT)/{{cookiecutter.repo_name}}
+SITE_ROOT ?= $(PROJECT_ROOT)/$(PROJECT_NAME)
 
 BLACK ?= \033[0;30m
 RED ?= \033[0;31m
@@ -62,7 +65,7 @@ Pipfile.lock:
 
 pipenv-lock:
 	docker-compose -f docker-compose-init.yml run --rm --workdir /src pipenvwrapper pipenv lock -v
-	docker rmi {{cookiecutter.repo_name}}_pipenvwrapper
+	docker rmi $(PROJECT_NAME)_pipenvwrapper
 
 
 pipenv-check:
@@ -71,7 +74,7 @@ pipenv-check:
 
 pipenv-install:
 	docker-compose -f docker-compose-init.yml run --rm --workdir /src pipenvwrapper pipenv install $(cmd)
-	docker rmi {{cookiecutter.repo_name}}_pipenvwrapper
+	docker rmi $(PROJECT_NAME)_pipenvwrapper
 
 
 docker: settings
@@ -226,7 +229,7 @@ endif
 
 
 psql:
-	docker-compose exec postgres psql --user {{cookiecutter.repo_name}} --dbname {{cookiecutter.repo_name}}
+	docker-compose exec postgres psql --user $(PROJECT_NAME) --dbname $(PROJECT_NAME)
 
 {% if cookiecutter.include_docs == 'yes' %}
 docs:
