@@ -57,6 +57,9 @@ help:
 	@echo "$(CYAN)make isort-fix$(COFF) - Fix imports automatically with isort"
 	@echo ""
 
+Pipfile.lock:
+	make pipenv-lock
+
 pipenv-lock:
 	docker-compose -f docker-compose-init.yml run --rm --workdir /src pipenvwrapper pipenv lock -v
 	docker rmi {{cookiecutter.repo_name}}_pipenvwrapper
@@ -96,7 +99,7 @@ $(PROJECT_ROOT)/.idea:
 	@mkdir -p $(PROJECT_ROOT)/.idea && cp -R $(PROJECT_ROOT)/.idea_template/* $(PROJECT_ROOT)/.idea/
 
 
-settings: pipenv-lock $(SITE_ROOT)/settings/local.py $(SITE_ROOT)/settings/local_test.py
+settings: Pipfile.lock $(SITE_ROOT)/settings/local.py $(SITE_ROOT)/settings/local_test.py
 
 
 $(SITE_ROOT)/settings/local.py:
