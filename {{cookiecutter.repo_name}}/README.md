@@ -29,14 +29,6 @@ After installing Docker you need to install [Docker Compose](https://docs.docker
 To run Docker commands without `sudo`, you also need to
 [create a Docker group and add your user to it](https://docs.docker.com/engine/installation/linux/ubuntulinux/#/create-a-docker-group).
 
-### Installing pipenv
-
-To ensure correct project dependencies are resolved `pipenv` is required to be installed locally.
-Easiest way is to create virtualenv for this.
-Keep this active when doing `make setup` or any time adding dependencies to project.
-
-Check commands info for `pipenv` helpers.
-
 ### Setting up {{cookiecutter.project_title}}
 
 The easy way is to use `make` to set up everything automatically:
@@ -98,9 +90,9 @@ Note that the production configuration lacks PostgreSQL, since it runs on a sepa
 
 |Action                                |Makefile shortcut                      |Actual command                                                              |
 |:-------------------------------------|:--------------------------------------|:---------------------------------------------------------------------------|
-|Installing Python dependencies        |`make py-install-deps cmd=<dependency>`|`pipenv --python=$(PYTHON) install $(cmd)`                                  |
-|Generate Pipfile.lock                 |`make Pipfile.lock`                    |`pipenv --python=$(PYTHON) lock`                                            |
-|Check Python package security warnings|`make pipenv-check`                    |`pipenv --python=$(PYTHON) check`                                           |
+|Installing Python packages            |`make pipenv-install cmd=<package>`    |Runs `pipenv install $(cmd)` in its own container                           |
+|(Re)Generate Pipfile.lock             |`make pipenv-lock`                     |Runs `pipenv lock -v` in its own container                                  |
+|Check Python package security warnings|`make pipenv-check`                    |`docker-compose run --rm --workdir / django pipenv check`                   |
 |make migrations                       |`make makemigrations cmd=<command>`    |`docker-compose run --rm django ./manage.py makemigrations $(cmd)`          |
 |migrating                             |`make migrate cmd=<command>`           |`docker-compose run --rm django ./manage.py migrate $(cmd)`                 |
 |manage.py commands                    |`make docker-manage cmd=<command>`     |`docker-compose run --rm django ./manage.py $(cmd)`                         |
@@ -309,12 +301,13 @@ There are basically two types of deploys:
     or comment out parts of fabfile (after fixing the problem) to avoid trying to e.g. create database twice. Ouch.
 
 
-### Updating packages in pipenv
+### Updating python packages
 
-* make sure you have pipenv installed
 * Update packages in Pipenv file
-* run `pipenv lock` if it successfully generates lock file, then you are set
+* run `make pipenv-lock` if it successfully generates lock file, then you are set
 * if previous command fails (due to package version clash), then do as it suggests - install the packages using the commands given and see what version is installed.
+
+To install a new package, either follow the instructions above, or run `make pipenv-install cmd=<package>` -- this will add the package to Pipenv and regenerate Pipfile.lock in one take.
 
 
 ### Using pipenv locally for pycharm
@@ -322,4 +315,4 @@ There are basically two types of deploys:
 * run `pipenv install` locally. Given, that you have pipenv installed.
 * When you ran previous command, it told you where it created the virtual environment something like /home/you/.virtualenvs/projectname-somehash
 * if you missed it you can see it by running `pipenv run which python`
-* Open your project in pycharm and under settings search of project interpreter or just interpreter. Pycharm is smart enough and should already have picked up your venv location but just in case you can make sure it matches the path you saw when you ran the install command
+* Open your project in pycharm and under settings search for _project interpreter_ or just _interpreter_. Pycharm is smart enough and should already have picked up your venv location but just in case you can make sure it matches the path you saw when you ran the install command
