@@ -1,0 +1,12 @@
+# Docker-compose configuration for development
+
+version: '2'
+
+services:
+    pipenvwrapper:
+        build:
+            context: .
+            dockerfile: Dockerfile-pipenv
+        volumes:
+            # pipenv can't write to Pipfile.lock if it's mounted as file
+            - ".:/src"

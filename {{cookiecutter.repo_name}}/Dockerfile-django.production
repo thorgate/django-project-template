@@ -1,28 +1,13 @@
 # Production Dockerfile for Django app
+
 FROM python:{% if cookiecutter.python_version == '3.6' %}3.6.8{% else %}{{ cookiecutter.python_version }}{% endif %}-alpine3.8
 
 ENV DJANGO_PRODUCTION_MODE 1
 
-# Set the default directory where CMD will execute
-WORKDIR /app
-
 # Create a directory for the logs
 RUN mkdir -p /var/log/{{cookiecutter.repo_name}}
 
-# Copy wait-for-it.sh script
 COPY ./wait-for-it.sh /usr/bin/
-
-# Expose our application port
-EXPOSE 80
-
-# Install bash and gettext
-# Bash is required to support `wait-for-it.sh` script, should not add too much to docker image
-RUN apk add --no-cache bash gettext
-
-# Install build dependencies and mark them as virtual package so they could be removed together
-RUN apk add --no-cache --virtual .build-deps \
-    ca-certificates alpine-sdk postgresql-dev python3-dev linux-headers musl-dev \
-    libffi-dev jpeg-dev zlib-dev
 
 # Install bash, libpq{% if cookiecutter.include_cms == 'yes' %}, libjpeg-turbo{% endif %} and gettext
 # Bash is required to support `wait-for-it.sh` script, should not add too much to docker image
@@ -65,6 +50,9 @@ RUN apk del .build-deps
 
 # Copy code
 COPY ./{{cookiecutter.repo_name}} /app
+
+# Set the default directory where CMD will execute
+WORKDIR /app
 
 # Compile translations to .mo files
 # Un-comment this when locale directory has been created
