@@ -3,7 +3,7 @@
 app/node_modules/
 venv/
 
-.data*/
+.data/
 
 **/__pycache__
 *.pyo
