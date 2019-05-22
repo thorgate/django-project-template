@@ -1,4 +1,16 @@
+.idea
+
 app/node_modules/
 venv/
 
 .data/
+
+**/__pycache__
+*.pyo
+*.pyc
+
+{{cookiecutter.repo_name}}/.cache
+{{cookiecutter.repo_name}}/.pytest_cache
+{{cookiecutter.repo_name}}/.coverage
+{{cookiecutter.repo_name}}/coverage
+{{cookiecutter.repo_name}}/cover/

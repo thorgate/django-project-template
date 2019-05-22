@@ -7,16 +7,16 @@ PYTHON ?= python{{cookiecutter.python_version}}
 # Editor can be defined globally but defaults to nano
 EDITOR ?= nano
 
-# Put Pipenv virtual env inside project folder
-PIPENV_VENV_IN_PROJECT=1
-
 # By default we open the editor after copying settings, but can be overridden
 #  (e.g. EDIT_SETTINGS=no make settings).
 EDIT_SETTINGS ?= yes
 
+# Project name
+PROJECT_NAME ?= {{cookiecutter.repo_name}}
+
 # Get root dir and project dir
 PROJECT_ROOT ?= $(CURDIR)
-SITE_ROOT ?= $(PROJECT_ROOT)/{{cookiecutter.repo_name}}
+SITE_ROOT ?= $(PROJECT_ROOT)/$(PROJECT_NAME)
 
 BLACK ?= \033[0;30m
 RED ?= \033[0;31m
@@ -29,8 +29,10 @@ GRAY ?= \033[0;37m
 COFF ?= \033[0m
 
 # Mark non-file targets as PHONY
-.PHONY: all help docker settings setup pycharm coverage node-install test clean quality eslint prospector stylelint docker-django node-quality
-.PHONY: django-shell node-shell docker-manage shell makemigrations migrate docker-logs makemessages compilemessages add-locale psql isort isort-fix
+.PHONY: all help docker settings setup pycharm coverage node-install test clean quality eslint prospector stylelint docker-django
+.PHONY: docker-manage shell makemigrations migrate docker-logs makemessages compilemessages add-locale psql isort isort-fix
+.PHONY: pipenv-lock pipenv-install pipenv-check
+.PHONY: django-shell node-shell node-quality
 
 all: help
 
@@ -60,7 +62,21 @@ help:
 	@echo ""
 
 Pipfile.lock:
-	pipenv --python=$(PYTHON) lock -v
+	make pipenv-lock
+
+pipenv-lock:
+	docker-compose -f docker-compose-init.yml run --rm --workdir /src pipenvwrapper pipenv lock -v
+	docker rmi $(PROJECT_NAME)_pipenvwrapper
+
+
+pipenv-check:
+	docker-compose run --rm --workdir / django pipenv check
+
+
+pipenv-install:
+	docker-compose -f docker-compose-init.yml run --rm --workdir /src pipenvwrapper pipenv install $(cmd)
+	docker rmi $(PROJECT_NAME)_pipenvwrapper
+
 
 docker: settings
 	@docker-compose down
@@ -91,12 +107,11 @@ settings: Pipfile.lock $(SITE_ROOT)/settings/local.py $(SITE_ROOT)/settings/loca
 
 
 $(SITE_ROOT)/settings/local.py:
-	@echo "$(CYAN)Creating Django local.py settings file$(COFF)"
-	@cp $(SITE_ROOT)/settings/local.py.example $(SITE_ROOT)/settings/local.py
-	@if [ $(EDIT_SETTINGS) = "yes" ]; then\
+	echo "$(CYAN)Creating Django local.py settings file$(COFF)"
+	cp $(SITE_ROOT)/settings/local.py.example $(SITE_ROOT)/settings/local.py
+	if [ $(EDIT_SETTINGS) = "yes" ]; then\
 		$(EDITOR) $(SITE_ROOT)/settings/local.py;\
 	fi
-
 
 $(SITE_ROOT)/settings/local_test.py:
 	@echo "$(CYAN)Creating Django settings local_test.py file$(COFF)"
@@ -172,13 +187,6 @@ isort-fix:
 	@echo "$(CYAN)Fixing imports with isort$(COFF)"
 	docker-compose run --rm django isort --recursive -p .
 
-pipenv-check:
-	pipenv --python=$(PYTHON) check
-
-
-py-install-deps:
-	pipenv --python=$(PYTHON) install $(cmd)
-
 
 docker-django:
 	docker-compose run --rm django $(cmd)
@@ -233,7 +241,7 @@ endif
 
 
 psql:
-	docker-compose exec postgres psql --user {{cookiecutter.repo_name}} --dbname {{cookiecutter.repo_name}}
+	docker-compose exec postgres psql --user $(PROJECT_NAME) --dbname $(PROJECT_NAME)
 
 {% if cookiecutter.include_docs == 'yes' %}
 docs:

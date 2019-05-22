@@ -1,12 +1,10 @@
-# Development Dockerfile for Django app
+# Dockerfile for Pipenv wrapper
+# Unfortunately it seems not possible to reuse the Django Dockerfile, as not installing any packages in it
+# will result in all .build-deps apks being deleted from it and pipenv failing to lock/install
+# The build steps of this file are taken from the Django Dockerfile to make the build a bit faster though.
+
 FROM python:{% if cookiecutter.python_version == '3.6' %}3.6.8{% else %}{{ cookiecutter.python_version }}{% endif %}-alpine3.8
 
-ENV PYTHONUNBUFFERED 0
-
-# Expose our application port
-EXPOSE 80
-
-# Copy wait-for-it.sh script
 COPY ./wait-for-it.sh /usr/bin/
 
 # Install bash, libpq{% if cookiecutter.include_cms == 'yes' %}, libjpeg-turbo{% endif %} and gettext
@@ -20,18 +18,3 @@ RUN apk add --no-cache --virtual .build-deps \
 
 # Copy Python requirements dir and Install requirements
 RUN pip install -U pipenv==2018.11.26 pip setuptools wheel
-
-COPY Pipfile /
-COPY Pipfile.lock /
-
-# Install all dependencies from Pipfile.lock file
-RUN pipenv install --system --ignore-pipfile --dev
-
-# Check for security warnings, will be enabled later when failing dependencies have been updated
-# RUN pipenv check --system
-
-# Set the default directory where CMD will execute
-WORKDIR /app
-
-# Run Django's runserver by default
-CMD python manage.py runserver 0.0.0.0:80

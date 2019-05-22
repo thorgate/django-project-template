@@ -10,6 +10,12 @@ CHANGES
 Note: Try to add categories to changes and link to MRs/Issues
 -->
 
+## 2019-04-05
+
+- [ENH] Specify indent style of Makefile to be tabs in `.editorconfig`
+- [BUG] Run `pipenv-check` through docker. Otherwise it will fail in CI.
+
+
 ## 2019-04-28
 
 - [ENH] More strict eslint rules for more consistent code
