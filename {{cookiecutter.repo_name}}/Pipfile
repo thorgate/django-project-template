@@ -4,54 +4,57 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-{% if cookiecutter.include_celery == 'yes' -%}
-celery = {version = "~=4.2.0", extras = ["redis"]}
-{% endif -%}
-tg-utils = "~=0.3.0"
-"psycopg2-binary" = "~=2.7.5"
-django-redis = "~=4.9.0"
-django-crispy-forms = "~=1.7.2"
-django-webpack-loader = "~=0.6.0"
-django-settings-export = "~=1.2.1"
-"django-storages{% if cookiecutter.django_media_engine == 'GCS' %}[google]{% endif %}" = "~=1.7.1"
 {% if cookiecutter.django_media_engine == 'S3' -%}
-boto3 = "~=1.9.60"
+boto3 = "==1.9.*"
 {% endif -%}
-pytest = "~=3.8.0"
-pytest-django = "~=3.4.2"
-coverage = "~=4.5.1"
-prospector = "~=1.1.3"
-pycodestyle = "~=2.3.1"
-pylint = "~=2.1.1"
-pylint-django = "~=2.0"
-flake8 = "~=3.5.0"
-isort = "~=4.3.4"
-hashids = "~=1.2.0"
-Django = "~=1.11.20"
-django-environ = "~=0.4.5"
+{% if cookiecutter.include_celery == 'yes' -%}
+celery = {version = "==4.2.*", extras = ["redis"]}
+{% endif -%}
+Django = "==1.11.*"
+django-crispy-forms = "==1.7.*"
+django-environ = "*"
+django-redis = "==4.9.*"
+django-settings-export = "==1.2.*"
+"django-storages{% if cookiecutter.django_media_engine == 'GCS' %}[google]{% endif %}" = "==1.7.*"
+django-webpack-loader = "==0.6.*"
 {% if cookiecutter.include_cms == 'yes' -%}
-django-cms = "~=3.4.5"
-django-reversion = "~=2.0.10"
-djangocms-file = "~=2.0.2"
-djangocms-link = "~=2.1.2"
-djangocms-picture = "~=2.0.6"
-djangocms-text-ckeditor = "~=3.6.0"
-django-mptt = "~=0.8.7"
-easy-thumbnails = "~=2.4.2"
-django-filer = "~=1.3.0"
-redis = "~=2.10.6"
+django-cms = "==3.4.*"
+djangocms-file = "==2.0.*"
+djangocms-link = "==2.1.*"
+djangocms-picture = "==2.0.*"
+djangocms-text-ckeditor = "==3.6.*"
+django-filer = "==1.3.*"
+django-mptt = "==0.8.*"
+django-reversion = "==2.0.*"
+easy-thumbnails = "==2.4.*"
+hashids = "==1.2.*"
 {% endif -%}
+gunicorn = "==19.*"
+"psycopg2-binary" = "==2.7.*"
+pyyaml = "==5.*"
+raven = "==6.*"
+redis = "==2.10.*"
 {% if cookiecutter.include_docs == 'yes' -%}
-Sphinx = "~=1.7.8"
-sphinx_rtd_theme = "~=0.4.1"
+Sphinx = "*"
+sphinx_rtd_theme = "*"
 {% endif -%}
-gunicorn = "~=19.8.1"
-raven = "~=6.9.0"
-# TODO: Temporarily pinned pyyaml to avoid vulnerability, this should be removed
-pyyaml = ">=4.2b1"
+tg-utils = "*"
+
+# Testing & quality tools
+# NOTE: the versions below are selected due to prospector==1.1.6.2 requirements
+#  which are a bit OOD.
+coverage = "*"
+flake8 = "==3.5.*"
+isort = "==4.*"
+pytest = "==4.*"
+pytest-django = "*"
+prospector = "==1.*"
+pycodestyle = "*"
+pylint = "<2.3"
+pylint-django = "*"
 
 [dev-packages]
-django-debug-toolbar = "~=1.9.1"
+django-debug-toolbar = "*"
 
 [requires]
 python_version = "{{cookiecutter.python_version}}"
