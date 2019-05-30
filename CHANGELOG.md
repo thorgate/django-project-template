@@ -10,6 +10,15 @@ CHANGES
 Note: Try to add categories to changes and link to MRs/Issues
 -->
 
+## 2019-05-28
+
+- [ENH] Do not pin versions to minor releases to allow security updates !74
+- [ENH] Use variable for project name in Makefile !79
+- [BUG] Run pipenv inside docker !77
+- [NEW] Disable google indexing on test servers !76
+- [ENH] Bump pyyaml version !73
+- [BUG] Fix Docker Compose install in pipeline, ensures build dependencies in CI !68
+
 ## 2019-04-05
 
 - [ENH] Specify indent style of Makefile to be tabs in `.editorconfig`
