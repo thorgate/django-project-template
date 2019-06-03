@@ -27,7 +27,6 @@ django-filer = "==1.3.*"
 django-mptt = "==0.8.*"
 django-reversion = "==2.0.*"
 easy-thumbnails = "==2.4.*"
-hashids = "==1.2.*"
 {% endif -%}
 gunicorn = "==19.*"
 "psycopg2-binary" = "==2.7.*"
@@ -38,7 +37,7 @@ redis = "==2.10.*"
 Sphinx = "*"
 sphinx_rtd_theme = "*"
 {% endif -%}
-tg-utils = "*"
+tg-utils = {version = "*", extras = ["model-hash"]}
 
 # Testing & quality tools
 # NOTE: the versions below are selected due to prospector==1.1.6.2 requirements
