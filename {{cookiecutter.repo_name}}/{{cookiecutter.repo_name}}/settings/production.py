@@ -16,8 +16,13 @@ RAVEN_BACKEND_DSN = env.str('DJANGO_RAVEN_BACKEND_DSN', default='https://TODO:TO
 RAVEN_PUBLIC_DSN = env.str('DJANGO_RAVEN_PUBLIC_DSN', default='https://TODO@sentry.thorgate.eu/TODO')
 RAVEN_CONFIG['dsn'] = RAVEN_BACKEND_DSN
 
-# CORS overrides
-CORS_ORIGIN_WHITELIST = env.list('DJANGO_CORS_ORIGIN_WHITELIST', default=ALLOWED_HOSTS)
+# CORS whitelist
+CORS_ORIGIN_WHITELIST = [
+    'https://{host}'.format(host=host)
+    for host in env.list('DJANGO_CORS_ORIGIN_WHITELIST', default=ALLOWED_HOSTS)
+]
+
+# CSRF Trusted hosts
 CSRF_TRUSTED_ORIGINS = env.list('DJANGO_CSRF_TRUSTED_ORIGINS', default=ALLOWED_HOSTS)
 
 # Enable {{ cookiecutter.django_media_engine }} storage

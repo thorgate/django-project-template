@@ -3,12 +3,12 @@
 # will result in all .build-deps apks being deleted from it and pipenv failing to lock/install
 # The build steps of this file are taken from the Django Dockerfile to make the build a bit faster though.
 
-FROM python:{% if cookiecutter.python_version == '3.6' %}3.6.8{% else %}{{ cookiecutter.python_version }}{% endif %}-alpine3.8
+FROM python:{{ cookiecutter.python_version }}-alpine3.8
 
-COPY ./wait-for-it.sh /usr/bin/
+VOLUME /src
+WORKDIR /src
 
 # Install bash, libpq{% if cookiecutter.include_cms == 'yes' %}, libjpeg-turbo{% endif %} and gettext
-# Bash is required to support `wait-for-it.sh` script, should not add too much to docker image
 RUN apk add --no-cache bash gettext libpq{% if cookiecutter.include_cms == 'yes' %} libjpeg-turbo{% endif %}
 
 # Install build dependencies and mark them as virtual packages so they could be removed together

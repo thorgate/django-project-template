@@ -31,7 +31,7 @@ COFF ?= \033[0m
 # Mark non-file targets as PHONY
 .PHONY: all help docker settings setup pycharm coverage node-install test clean quality eslint prospector stylelint docker-django
 .PHONY: docker-manage shell makemigrations migrate docker-logs makemessages compilemessages add-locale psql isort isort-fix
-.PHONY: pipenv-lock pipenv-install pipenv-check
+.PHONY: build-pipenv-helper run-pipenv-helper pipenv-check pipenv-lock pipenv-install
 .PHONY: django-shell node-shell node-quality
 
 all: help
@@ -61,21 +61,30 @@ help:
 	@echo "$(CYAN)make isort-fix$(COFF) - Fix imports automatically with isort"
 	@echo ""
 
-Pipfile.lock:
-	make pipenv-lock
+build-pipenv-helper:
+	@docker build $(PROJECT_ROOT) -f Dockerfile-pipenv --tag $(PROJECT_NAME)_pipenv_wrapper
+
+
+run-pipenv-helper: build-pipenv-helper
+	@docker run --rm --name $(PROJECT_NAME)_pipenv_wrapper -v $(PROJECT_ROOT):/src $(PROJECT_NAME)_pipenv_wrapper $(cmd)
+	@echo "Restoring file permissions"
+	@sudo chown `id -un`:`id -gn` $(PROJECT_ROOT)/Pipfile.lock $(PROJECT_ROOT)/Pipfile || echo "Missing sudo"
+
 
 pipenv-lock:
-	docker-compose -f docker-compose-init.yml run --rm --workdir /src pipenvwrapper pipenv lock -v
-	docker rmi $(PROJECT_NAME)_pipenvwrapper
+	@make run-pipenv-helper cmd="pipenv lock"
+
+
+Pipfile.lock:
+	@make pipenv-lock
 
 
 pipenv-check:
-	docker-compose run --rm --workdir / django pipenv check
+	@make run-pipenv-helper cmd="pipenv check"
 
 
 pipenv-install:
-	docker-compose -f docker-compose-init.yml run --rm --workdir /src pipenvwrapper pipenv install $(cmd)
-	docker rmi $(PROJECT_NAME)_pipenvwrapper
+	@make run-pipenv-helper cmd="pipenv install $(cmd)"
 
 
 docker: settings

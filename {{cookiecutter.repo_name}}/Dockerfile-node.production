@@ -1,5 +1,5 @@
 # Based on Node {{ cookiecutter.node_version }} Alpine image
-FROM node:{% if cookiecutter.node_version == '10' %}10.15.1{% else %}{{ cookiecutter.node_version }}{% endif %}-alpine
+FROM node:{{ cookiecutter.node_version }}-alpine
 
 # Set the default directory where CMD will execute
 WORKDIR /app

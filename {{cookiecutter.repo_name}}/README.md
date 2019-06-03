@@ -1,4 +1,4 @@
-# README for {{cookiecutter.project_title}}
+# {{cookiecutter.project_title}}
 
 {% if cookiecutter.gitlab_repo_url -%}
 [![Build status]({{ cookiecutter.gitlab_repo_url }}/badges/master/pipeline.svg)]({{ cookiecutter.gitlab_repo_url }}/commits/master)

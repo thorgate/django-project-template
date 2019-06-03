@@ -64,8 +64,14 @@ RAVEN_CONFIG['dsn'] = RAVEN_BACKEND_DSN
 # CORS overrides
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_EXPOSE_HEADERS = default_headers
-CORS_ORIGIN_WHITELIST = env.list('DJANGO_CORS_ORIGIN_WHITELIST', default=ALLOWED_HOSTS)
+CORS_ORIGIN_WHITELIST = [
+    'https://{host}'.format(host=host)
+    for host in env.list('DJANGO_CORS_ORIGIN_WHITELIST', default=ALLOWED_HOSTS)
+]
+
+# CSRF Trusted hosts
 CSRF_TRUSTED_ORIGINS = env.list('DJANGO_CSRF_TRUSTED_ORIGINS', default=ALLOWED_HOSTS)
+
 
 # Enable {{ cookiecutter.django_media_engine }} storage
 DEFAULT_FILE_STORAGE = '{{ cookiecutter.repo_name }}.storages.MediaStorage'

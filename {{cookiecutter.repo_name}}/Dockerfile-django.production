@@ -1,6 +1,6 @@
 # Production Dockerfile for Django app
 
-FROM python:{% if cookiecutter.python_version == '3.6' %}3.6.8{% else %}{{ cookiecutter.python_version }}{% endif %}-alpine3.8
+FROM python:{{ cookiecutter.python_version }}-alpine3.8 as base
 
 ENV DJANGO_PRODUCTION_MODE 1
 
