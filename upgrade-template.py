@@ -201,24 +201,6 @@ def update_template(path, template_path, tmp_dir):
     template_vcs = get_vcs(template_path)
     template_version = template_vcs.get_version(template_path) if template_vcs else None
 
-    project_name = basename(abspath(path))
-    tmp_path = join(tmp_dir, project_name)
-
-    assert vcs.has_branch('template'), "Template branch does not exist or is active (checkout a different branch)"
-    assert not isdir(tmp_path), "Can't clone temporary repo, target directory \"{}\" isn't empty".format(tmp_path)
-
-    vcs.clone(source=path, target=tmp_path, branch='template')
-
-    # clean up everything except for VCS directories and cookiecutter config
-    for f in listdir(tmp_path):
-        if f in ['.git', '.hg', '.cookiecutterrc']:
-            continue
-        real_path = join(tmp_path, f)
-        if isdir(real_path):
-            shutil.rmtree(join(tmp_path, f))
-        else:
-            os.remove(real_path)
-
     # find or create cookiecutter context
     template_context_path = join(template_path, 'cookiecutter.json')
     context_path = join(path, '.cookiecutterrc')
@@ -230,14 +212,35 @@ def update_template(path, template_path, tmp_dir):
     dumped_context = deepcopy(context)
     if '_template' in dumped_context['cookiecutter']:
         del dumped_context['cookiecutter']['_template']
+
+    tmp_path = join(tmp_dir, dumped_context['cookiecutter']['repo_name'])
+
+    assert vcs.has_branch('template'), "Template branch does not exist or is active (checkout a different branch)"
+    assert not isdir(tmp_path), "Can't clone temporary repo, target directory \"{}\" isn't empty".format(tmp_path)
+
+    vcs.clone(source=path, target=tmp_path, branch='template')
     dump_context(join(tmp_path, '.cookiecutterrc'), dumped_context)
 
-    generate_files(
+    # clean up everything except for VCS directories and cookiecutter config
+    for f in listdir(tmp_path):
+        if f in ['.git', '.hg', '.cookiecutterrc']:
+            continue
+        real_path = join(tmp_path, f)
+        if isdir(real_path):
+            shutil.rmtree(join(tmp_path, f))
+        else:
+            os.remove(real_path)
+
+    generated_dir = generate_files(
         repo_dir=template_path,
         context=context,
         overwrite_if_exists=True,
         output_dir=tmp_dir,
     )
+
+    # your git references are in tmp_path but template upgrade files in generated_dir
+    # but repo name should also be a valid Python identifier!
+    assert generated_dir == tmp_path, "Your .cookiecutterrc repo_name should not differ from the actual repo name"
 
     vcs.add_all(tmp_path)
 
