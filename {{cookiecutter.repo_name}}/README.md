@@ -293,8 +293,7 @@ There are basically two types of deploys:
     * A) waiting; around 1-2 hours max
         * files should still have been uploaded
             * can be confirmed by removing url params in browser (`?X-Amz-Algorithm=....`)
-    * B) adding `AWS_S3_ADDRESSING_STYLE = "path"` to django settings. This help get around a [bug in boto3](https://github.com/boto/boto3/issues/1644).
-    Someone using django-storages (which we also do) which uses boto3 internally also discovered this: [django-storages issue](https://github.com/jschneier/django-storages/issues/649), 
+    * B) make sure that `AWS_S3_ADDRESSING_STYLE = "path"` is in django settings. See details in this issue: [django-storages issue](https://github.com/jschneier/django-storages/issues/649), 
   * More information about working with S3 can be found [here](https://github.com/Fueled/django-init/wiki/Working-with-S3).
 {% endif %}{% if cookiecutter.django_media_engine == 'GCS' -%}
 1. Create a service account ([Google Getting Started Guide](https://cloud.google.com/docs/authentication/getting-started)).
