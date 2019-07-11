@@ -787,9 +787,6 @@ def restore_media():
     require('code_dir')
     print(colors.blue('Restoring the media from the remote server'))
 
-    media_dir = get_media_dir(local=True)
-    volumes_dir = os.path.dirname(media_dir)
-
     # this can fail when it asks you to write your password again, as the std out will be replaced
     std_out = management_cmd(
         'settings --keys '
@@ -805,8 +802,12 @@ def restore_media():
 
     print(colors.blue('Copying media files from ' + ('S3 bucket' if is_s3 else 'remote server')))
 
+    media_dir = get_media_dir(local=True)
+    volumes_dir = os.path.dirname(media_dir)
+
     # You need to be the owner of the ".data/media" directory to allow downloading into .data folder
     user = os.getlogin()
+
     print(colors.yellow('%s needs to be the owner of the ".data" and ".data/media" directory!' % user))
     if os.path.isdir(volumes_dir):
         operations.local('sudo chown %s %s' % (user, volumes_dir))

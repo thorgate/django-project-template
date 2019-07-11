@@ -7,7 +7,7 @@ from django.core.management.base import BaseCommand
 # package might not be installed
 try:
     import environ
-except:
+except ImportError:
     environ = None
 
 
