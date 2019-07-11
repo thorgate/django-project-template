@@ -218,6 +218,10 @@ AWS_S3_FILE_OVERWRITE = False
 AWS_S3_REGION_NAME = 'eu-central-1'
 AWS_S3_SIGNATURE_VERSION = 's3v4'
 
+# This helps get around a bug in boto3 (https://github.com/boto/boto3/issues/1644)
+# Details in https://github.com/jschneier/django-storages/issues/649
+AWS_S3_ADDRESSING_STYLE = "path"
+
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=1209600',  # 2 weeks in seconds
 }
