@@ -10,6 +10,19 @@ CHANGES
 Note: Try to add categories to changes and link to MRs/Issues
 -->
 
+## 2019-07-11
+
+- [NEW] Add fabric command to mirror media files and database from
+  the remote server to local !85
+
+## 2019-06-28
+
+- [BUG] Add an AWS setting to fix a boto3 bug !87
+
+## 2019-06-20
+
+- [BUG] Add another way of fixing a boto3 bug into readme !86
+
 ## 2019-05-28
 
 - [ENH] Do not pin versions to minor releases to allow security updates !74
