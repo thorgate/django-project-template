@@ -10,6 +10,12 @@ CHANGES
 Note: Try to add categories to changes and link to MRs/Issues
 -->
 
+## 2019-07-23
+
+- [ENH] Add `i18n` integration to frontend app !89
+- [ENH] Bump razzle to v3 final !89
+
+
 ## 2019-05-28
 
 - [ENH] Do not pin versions to minor releases to allow security updates !74

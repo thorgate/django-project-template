@@ -44,14 +44,14 @@ tg-react = "*"
 
 # Testing & quality tools
 # NOTE: the versions below are selected due to prospector==1.1.6.2 requirements
-#  which are a bit OOD.
+#  which are a bit OOD. Currently cannot select newer prospector because pylint plugin does not run
 coverage = "*"
 flake8 = "==3.5.*"
 isort = "==4.*"
 pytest = "==4.*"
 pytest-django = "*"
 pytest-cov = "*"
-prospector = "==1.*"
+prospector = "==1.1.6.2"
 pycodestyle = "*"
 pylint = "<2.3"
 pylint-django = "*"

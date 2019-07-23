@@ -28,7 +28,7 @@ venv/
 app/build/
 app/coverage/
 
-# Django env
-{{cookiecutter.repo_name}}/django.env
+# Missing translations file
+**/locales/**/*.missing.json
 
 {% if cookiecutter.include_docs == 'yes' %}{{cookiecutter.repo_name}}/docs/_build{% endif %}

@@ -5,11 +5,13 @@ import { hydrate } from 'react-dom';
 import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'connected-react-router';
 import Cookies from 'js-cookie';
+import { useSSR } from 'react-i18next';
 import { RenderChildren } from 'tg-named-routes';
 
 import configureStore from 'configuration/configureStore';
+import { setupI18Next } from 'configuration/i18n';
 import routes from 'configuration/routes';
-import { setActiveLanguage, applicationSelectors } from 'ducks/application';
+import { setActiveLanguage } from 'sagas/user/activateLanguage';
 import SETTINGS from 'settings';
 import Sentry from 'services/sentry';
 
@@ -32,30 +34,35 @@ if (process.env.NODE_ENV === 'production') {
 const { store, history } = configureStore(initialState);
 
 // Get correct language from store and cookies
-const stateLanguage = applicationSelectors.activeLanguage(store.getState());
+const initialLanguage = window.__initial_language__;
 const cookieLanguage = Cookies.get(SETTINGS.LANGUAGE_COOKIE_NAME);
 
 // Get valid language
-const currentLanguage = stateLanguage || cookieLanguage || SETTINGS.DEFAULT_LANGUAGE;
+const currentLanguage = initialLanguage || cookieLanguage || SETTINGS.DEFAULT_LANGUAGE;
 
 
-const renderApp = (appRoutes) => {
-    hydrate(
+// eslint-disable-next-line
+const App = ({ appRoutes }) => {
+    useSSR(window.__initial_i18n_store__, initialLanguage);
+    return (
         <Provider store={store}>
             <ConnectedRouter history={history}>
                 <RenderChildren routes={appRoutes} />
             </ConnectedRouter>
-        </Provider>,
+        </Provider>
+    );
+};
+
+const renderApp = (appRoutes) => {
+    hydrate(
+        <App appRoutes={appRoutes} />,
         document.getElementById('root'),
     );
 };
 
 
-loadableReady().then(() => {
-    // Update language if necessary
-    if (stateLanguage !== currentLanguage) {
-        store.dispatch(setActiveLanguage(currentLanguage));
-    }
+loadableReady().then(() => setupI18Next(currentLanguage)).then(async () => {
+    store.dispatch(setActiveLanguage(currentLanguage));
 
     renderApp(routes);
 });

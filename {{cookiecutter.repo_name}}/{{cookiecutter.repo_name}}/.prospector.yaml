@@ -150,10 +150,10 @@ pep8:
         - N815 #	mixedCase variable in class scope
         - N816 #	mixedCase variable in global scope
     options:
-        max-line-length: 120
+        max-line-length: 140
 
 pylint:
     disable:
         - unused-argument
     options:
-        max-line-length: 120
+        max-line-length: 140

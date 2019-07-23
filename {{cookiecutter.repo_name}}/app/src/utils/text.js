@@ -19,7 +19,4 @@ export const nl2br = (text) => {
 };
 
 
-// No-op methods for translations
-// This is kept here to find correct usages for upgrade to new `tg-i18n`
-export const gettext = (text) => text;
-export const pgettext = (context, text) => text;
+export const tNoop = (key) => key;

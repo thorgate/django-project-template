@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect, getIn } from 'formik';
+import { useTranslation } from 'react-i18next';
 import { Col, FormGroup, Label, Input, InputGroup, FormText } from 'reactstrap';
 
 import { FieldProps } from 'utils/types';
@@ -8,6 +9,7 @@ import { FieldProps } from 'utils/types';
 const MAX_GRID_SIZE = 12;
 
 const FormField = ({ name, label, inputAddonPrepend, inputAddonAppend, formik, check, labelSize, ...props }) => {
+    const { t } = useTranslation();
     const error = getIn(formik.errors, name, null);
     const value = getIn(formik.values, name, undefined);
     const touched = getIn(formik.touched, name, false);
@@ -37,7 +39,14 @@ const FormField = ({ name, label, inputAddonPrepend, inputAddonAppend, formik, c
     let inputComponent = (
         <>
             {input}
-            {touched && error ? <FormText color="danger">{error}</FormText> : null}
+            {touched && error
+                ? (
+                    <FormText color="danger">
+                        {t(error)}
+                    </FormText>
+                )
+                : null
+            }
         </>
     );
     if (labelSize !== null) {
