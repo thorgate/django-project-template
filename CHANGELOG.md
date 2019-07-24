@@ -12,7 +12,7 @@ Note: Try to add categories to changes and link to MRs/Issues
 
 ## 2019-07-24
 
-- [ENH] Add `i18n` integration to frontend app (see !89)
+- [ENH] Add [react-i18next](https://react.i18next.com/) integration to frontend app (see !89)
   - Translations are stored in `.json` files
   - Supports runtime discovery
   - Add all new translations with make command
