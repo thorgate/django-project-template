@@ -1,9 +1,12 @@
-import path from 'path';
-import { ChunkExtractor, ChunkExtractorManager } from '@loadable/server';
+{% raw %}import { ChunkExtractor, ChunkExtractorManager } from '@loadable/server';
 import '@tg-resources/fetch-runtime';
 import { isAuthenticated } from '@thorgate/spa-permissions';
 import { createLocationAction, ServerViewManagerWorker } from '@thorgate/spa-view-manager';
+import i18next from 'i18next';
+import { I18nextProvider } from 'react-i18next';
+import I18NextFSBackend from 'i18next-node-fs-backend';
 import Koa from 'koa';
+import koaBody from 'koa-bodyparser';
 import koaServe from 'koa-static';
 import koaHelmet from 'koa-helmet';
 import Router from 'koa-router';
@@ -16,28 +19,66 @@ import { StaticRouter } from 'react-router';
 import { Helmet } from 'react-helmet';
 import { Provider } from 'react-redux';
 import serializeJS from 'serialize-javascript';
-import addYears from 'date-fns/add_years';
 import { RenderChildren } from 'tg-named-routes';
 
 import configureStore from 'configuration/configureStore';
 import routes from 'configuration/routes';
-import { setActiveLanguage } from 'ducks/application';
+import { setActiveLanguage } from 'sagas/user/activateLanguage';
 import SETTINGS from 'settings';
 
 import proxyFactory from './appProxy';
 import errorHandler from './errorHandler';
+import { loadTranslationsHandler, missingKeyHandler, koaI18NextMiddleware } from './i18n';
 import logger from './logger';
+import { statsFile, publicDir } from './paths';
 
 
-const statsFile = path.resolve(path.join(__dirname, '..', 'build', 'loadable-stats.json'));
+i18next
+    // Load translations through the filesystem on the server side
+    .use(I18NextFSBackend)
+    .init({
+        fallbackLng: SETTINGS.DEFAULT_LANGUAGE,
+        load: 'languageOnly', // No region-specific locales (en-US, de-DE, etc.)
+        ns: ['translations'],
+        defaultNS: 'translations',
+        preload: SETTINGS.LANGUAGE_ORDER,
+        returnEmptyString: false,
+        saveMissing: true,
+        saveMissingTo: 'all',
+        interpolation: {
+            escapeValue: false, // Not needed for React
+        },
+        react: {
+            // Currently Suspense is not server ready
+            useSuspense: false,
+        },
+        backend: {
+            loadPath: `${publicDir}/locales/{{lng}}/{{ns}}.json`,
+            addPath: `${publicDir}/locales/{{lng}}/{{ns}}.missing.json`,
+        },
 
-// Initialize `koa-router` and setup a route listening on `GET /*`
+        // Disable async loading
+        initImmediate: false,
+    });
+
+// Initialize `koa-router`
+const router = new Router();
+
+// Only enable adding missing keys when not in production
+if (process.env.NODE_ENV !== 'production') {
+    router.post('/locales/add/:lng/:ns', missingKeyHandler(i18next));
+}
+
+// Add multi-loading i18next backend support
+router.get('/locales/resources.json', loadTranslationsHandler(i18next));
+
+// Setup a route listening on `GET /*`
 // Logic has been splitted into two chained middleware functions
 // @see https://github.com/alexmingoia/koa-router#multiple-middleware
-const router = new Router();
 router.get(
     '*',
     async (ctx, next) => {
+        const { i18n } = ctx.state;
         const { store } = configureStore({}, {
             sagaMiddleware: {
                 context: {
@@ -66,11 +107,13 @@ router.get(
 
         ctx.state.markup = renderToString((
             <ChunkExtractorManager extractor={extractor}>
-                <Provider store={store}>
-                    <StaticRouter context={context} location={ctx.url}>
-                        <RenderChildren routes={routes} />
-                    </StaticRouter>
-                </Provider>
+                <I18nextProvider i18n={i18n}>
+                    <Provider store={store}>
+                        <StaticRouter context={context} location={ctx.url}>
+                            <RenderChildren routes={routes} />
+                        </StaticRouter>
+                    </Provider>
+                </I18nextProvider>
             </ChunkExtractorManager>
         ));
         ctx.state.helmet = Helmet.renderStatic();
@@ -87,6 +130,12 @@ router.get(
 
         // Serialize state
         ctx.state.serializedState = serializeJS(store.getState());
+
+        // Serialize i18next store
+        const initialI18nStore = i18n.languages.reduce((acc, lng) => (
+            Object.assign(acc, { [lng]: i18n.services.resourceStore.data[lng] })
+        ), {});
+        ctx.state.initialI18nStore = serializeJS(initialI18nStore);
 
         return next();
     },
@@ -105,7 +154,11 @@ router.get(
         <body ${ctx.state.helmet.bodyAttributes.toString()}>
             <div id="root">${ctx.state.markup}</div>
             ${ctx.state.scriptTags}
-            <script>window.__initial_state__ = ${ctx.state.serializedState};</script>
+            <script>
+                window.__initial_state__ = ${ctx.state.serializedState};
+                window.__initial_i18n_store__ = ${ctx.state.initialI18nStore};
+                window.__initial_language__ = '${ctx.state.language}';
+            </script>
         </body>
     </html>`;
         return next();
@@ -135,21 +188,13 @@ server
     // `koa-helmet` provides security headers to help prevent common, well known attacks
     // @see https://helmetjs.github.io/
     .use(koaHelmet())
+    // Parse body of the request, required for adding missing translations
+    .use(koaBody())
     // Process language to context state
-    .use((ctx, next) => {
-        const language = ctx.cookies.get(SETTINGS.LANGUAGE_COOKIE_NAME) || SETTINGS.DEFAULT_LANGUAGE;
-
-        ctx.state.language = language;
-        ctx.logger.debug('Language: %s', language);
-        ctx.cookies.set(SETTINGS.LANGUAGE_COOKIE_NAME, language, {
-            expires: addYears(new Date(), 1), httpOnly: false,
-        });
-
-        return next();
-    })
+    .use(koaI18NextMiddleware(i18next))
     // Serve static files located under `process.env.RAZZLE_PUBLIC_DIR`
     .use(koaServe(process.env.RAZZLE_PUBLIC_DIR))
     .use(router.routes())
     .use(router.allowedMethods());
 
-export default server;
+export default server;{% endraw %}

@@ -233,6 +233,9 @@ makemessages:
 	docker-compose run --rm django ./manage.py makemessages -a
 
 
+extract-i18n:
+	docker-compose run --rm node yarn extract-i18n
+
 compilemessages:
 	docker-compose run --rm django ./manage.py compilemessages
 

@@ -1,25 +1,26 @@
 import { getUser, isAuthenticated } from '@thorgate/spa-permissions';
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
 import { Nav, Navbar, NavbarBrand, NavItem, NavLink } from 'reactstrap';
 import { resolvePath as urlResolve } from 'tg-named-routes';
 
-import { applicationSelectors } from 'ducks/application';
 import SETTINGS from 'settings';
-import { gettext } from 'utils/i18n';
 import { UserShape } from 'utils/types';
 
 
 const NavigationBar = ({ user, isLoggedIn }) => {
+    const { t } = useTranslation();
+
     let authNav = (
         <Nav className="ml-auto" navbar>
             <NavItem>
-                <NavLink tag={Link} to={urlResolve('auth:signup')}>{gettext('Signup')}</NavLink>
+                <NavLink tag={Link} to={urlResolve('auth:signup')}>{t('Signup')}</NavLink>
             </NavItem>
             <NavItem>
-                <NavLink tag={Link} to={urlResolve('auth:login')}>{gettext('Login')}</NavLink>
+                <NavLink tag={Link} to={urlResolve('auth:login')}>{t('Login')}</NavLink>
             </NavItem>
         </Nav>
     );
@@ -31,7 +32,7 @@ const NavigationBar = ({ user, isLoggedIn }) => {
                     <NavLink href="#">{user.email}</NavLink>
                 </NavItem>
                 <NavItem>
-                    <NavLink tag={Link} to={urlResolve('auth:logout')}>{gettext('Logout')}</NavLink>
+                    <NavLink tag={Link} to={urlResolve('auth:logout')}>{t('Logout')}</NavLink>
                 </NavItem>
             </Nav>
         );
@@ -42,7 +43,7 @@ const NavigationBar = ({ user, isLoggedIn }) => {
         devUrls = (
             <NavItem>
                 <NavLink href={SETTINGS.SITE_URL + SETTINGS.DJANGO_ADMIN_PANEL} target="_blank">
-                    {gettext('Admin panel')}
+                    {t('Admin panel')}
                 </NavLink>
             </NavItem>
         );
@@ -53,7 +54,7 @@ const NavigationBar = ({ user, isLoggedIn }) => {
             <NavbarBrand tag={Link} to={urlResolve('landing')}>HOME</NavbarBrand>
             <Nav navbar>
                 <NavItem>
-                    <NavLink tag={Link} to={urlResolve('restricted')}>{gettext('Restricted view')}</NavLink>
+                    <NavLink tag={Link} to={urlResolve('restricted')}>{t('Restricted view')}</NavLink>
                 </NavItem>
                 {devUrls}
             </Nav>
@@ -74,7 +75,6 @@ NavigationBar.defaultProps = {
 
 const mapStateToProps = (state) => ({
     user: getUser(state),
-    activeLanguage: applicationSelectors.activeLanguage(state),
     isLoggedIn: isAuthenticated(state),
 });
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Trans, useTranslation } from 'react-i18next';
 import { Row, Col, Alert, Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { withFormik, Form } from 'formik';
@@ -8,11 +9,12 @@ import is from 'is_js';
 import { resolvePath as urlResolve } from 'tg-named-routes';
 
 import FormField from 'forms/fields/FormField';
-import { gettext, pgettext } from 'utils/i18n';
+import { tNoop } from 'utils/text';
 import { getFormPropTypes } from 'utils/types';
 
 
 const ResetPassword = ({ status, isSubmitting }) => {
+    const { t } = useTranslation();
     let statusMessage = null;
     let formContent = null;
     if (status && status.success) {
@@ -20,13 +22,17 @@ const ResetPassword = ({ status, isSubmitting }) => {
             <>
                 <Row>
                     <Col>
-                        <h5>{gettext('Your password has been reset. Try to login with it now.')}</h5>
+                        <h5>
+                            <Trans>
+                                Your password has been reset. Try to login with it now.
+                            </Trans>
+                        </h5>
                     </Col>
                 </Row>
                 <Row>
                     <Col sm={4} className="my-4">
                         <Link to={urlResolve('auth:login')} className="pt-2">
-                            {pgettext('forgot password', 'Back to login')}
+                            {t('Back to login')}
                         </Link>
                     </Col>
                 </Row>
@@ -45,7 +51,9 @@ const ResetPassword = ({ status, isSubmitting }) => {
             <>
                 <Row>
                     <Col className="pb-4 text-center">
-                        <h5>{gettext('Please enter your new password twice.')}</h5>
+                        <h5>
+                            <Trans>Please enter your new password twice.</Trans>
+                        </h5>
                     </Col>
                 </Row>
 
@@ -53,8 +61,8 @@ const ResetPassword = ({ status, isSubmitting }) => {
                     id="password"
                     name="password"
                     type="password"
-                    label={gettext('Password')}
-                    placeholder={gettext('Password')}
+                    label={t('Password')}
+                    placeholder={t('Password')}
                     disabled={isSubmitting}
                     labelSize={4}
                 />
@@ -62,8 +70,8 @@ const ResetPassword = ({ status, isSubmitting }) => {
                     id="password_confirm"
                     name="password_confirm"
                     type="password"
-                    label={gettext('Confirm password')}
-                    placeholder={gettext('Confirm password')}
+                    label={t('Confirm password')}
+                    placeholder={t('Confirm password')}
                     disabled={isSubmitting}
                     labelSize={4}
                 />
@@ -80,7 +88,7 @@ const ResetPassword = ({ status, isSubmitting }) => {
                             disabled={isSubmitting}
                             className="btn btn-lg btn-block btn-success"
                         >
-                            {pgettext('reset password', 'Confirm')}
+                            {t('Confirm')}
                         </Button>
                     </Col>
                 </Row>
@@ -107,8 +115,8 @@ const ResetPasswordForm = withFormik({
     }),
 
     validationSchema: Yup.object().shape({
-        password: Yup.string().required(pgettext('form error', 'Password is required')),
-        password_confirm: Yup.string().required(pgettext('form error', 'Password confirmation is required')),
+        password: Yup.string().required(tNoop('Password is required')),
+        password_confirm: Yup.string().required(tNoop('Password confirmation is required')),
     }),
 
     handleSubmit: (values, { props, ...formik }) => (

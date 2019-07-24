@@ -1,21 +1,29 @@
-import { select, takeLatest } from 'redux-saga/effects';
+{% raw %}import { takeLatest } from 'redux-saga/effects';
 import Cookies from 'js-cookie';
 
 import SETTINGS from 'settings';
-import { applicationSelectors, SET_ACTIVE_LANGUAGE } from 'ducks/application';
 
 
-function* setActiveLanguage() {
-    const currentLanguage = yield select(applicationSelectors.activeLanguage);
+const SET_ACTIVE_LANGUAGE = 'sagas/app/SET_ACTIVE_LANGUAGE';
+
+/**
+ * Create set active language Redux action
+ * @param {string} language Language code to activate
+ * @returns {{type: string, language: string}} Created action
+ */
+export const setActiveLanguage = (language) => ({ type: SET_ACTIVE_LANGUAGE, language });
+
+
+function setActiveLanguageWorker({ language }) {
     const cookieLanguage = Cookies.get(SETTINGS.LANGUAGE_COOKIE_NAME);
 
     // Update language cookie
-    if (currentLanguage !== cookieLanguage) {
-        Cookies.set(SETTINGS.LANGUAGE_COOKIE_NAME, currentLanguage, { expires: 365 });
+    if (language !== cookieLanguage) {
+        Cookies.set(SETTINGS.LANGUAGE_COOKIE_NAME, language, { expires: 365 });
     }
 }
 
 
 export default function* activeLanguageWatcher() {
-    yield takeLatest(SET_ACTIVE_LANGUAGE, setActiveLanguage);
-}
+    yield takeLatest(SET_ACTIVE_LANGUAGE, setActiveLanguageWorker);
+}{% endraw %}

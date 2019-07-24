@@ -1,6 +1,7 @@
-import React from 'react';
+{% raw %}import React from 'react';
 import PropTypes from 'prop-types';
 import { Row, Col, Button, Alert } from 'reactstrap';
+import { Trans, useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import is from 'is_js';
 import { withFormik, Form } from 'formik';
@@ -8,16 +9,22 @@ import * as Yup from 'yup';
 import { resolvePath as urlResolve } from 'tg-named-routes';
 
 import FormField from 'forms/fields/FormField';
-import { gettext, pgettext } from 'utils/i18n';
+import { tNoop } from 'utils/text';
 import { getFormPropTypes } from 'utils/types';
 
 
 const ForgotPassword = ({ values, status, isSubmitting }) => {
+    const { t } = useTranslation();
+
     let formContent = (
         <>
             <Row>
                 <Col className="pb-4 text-center">
-                    <h5>{gettext('Please enter your email below to receive a password reset link.')}</h5>
+                    <h5>
+                        <Trans>
+                            Please enter your email below to receive a password reset link.
+                        </Trans>
+                    </h5>
                 </Col>
             </Row>
 
@@ -25,8 +32,8 @@ const ForgotPassword = ({ values, status, isSubmitting }) => {
                 id="email"
                 name="email"
                 type="text"
-                label={gettext('Email')}
-                placeholder={gettext('Enter email')}
+                label={t('Email')}
+                placeholder={t('Enter email')}
                 disabled={isSubmitting}
                 labelSize={3}
             />
@@ -38,12 +45,14 @@ const ForgotPassword = ({ values, status, isSubmitting }) => {
                         disabled={isSubmitting}
                         className="btn btn-lg btn-block btn-success"
                     >
-                        {pgettext('forgot password', 'Send link')}
+                        {t('Send link')}
                     </Button>
                 </Col>
             </Row>
         </>
     );
+
+    const { email } = values;
 
     let statusMessage = null;
     if (status && status.success) {
@@ -51,14 +60,14 @@ const ForgotPassword = ({ values, status, isSubmitting }) => {
             <>
                 <Row>
                     <Col className="pb-4">
-                        <h5>{gettext('Reset link sent')}</h5>
+                        <h5>{t('Reset link sent')}</h5>
                     </Col>
                 </Row>
                 <Row>
                     <Col>
-                        <span>{pgettext('forgot password', 'We have sent you an email to ')}</span>
-                        <strong>{values.email}</strong>
-                        <span>{pgettext('forgot password', ' with a link to reset your password')}</span>
+                        <Trans>
+                            We have sent you an email to <strong>{{ email }}</strong>  with a link to reset your password
+                        </Trans>
                     </Col>
                 </Row>
                 <Row>
@@ -68,14 +77,14 @@ const ForgotPassword = ({ values, status, isSubmitting }) => {
                             to={urlResolve('auth:forgot-password')}
                             className="btn btn-lg btn-block btn-success"
                         >
-                            {pgettext('forgot password', 'Resend link')}
+                            {t('Resend link')}
                         </Button>
                     </Col>
                 </Row>
                 <Row>
                     <Col sm={4} className="mt-3">
                         <Link to={urlResolve('auth:login')} className="pt-2">
-                            {pgettext('forgot password', 'Back to login')}
+                            {t('Back to login')}
                         </Link>
                     </Col>
                 </Row>
@@ -108,8 +117,8 @@ const ForgotPasswordForm = withFormik({
 
     validationSchema: Yup.object().shape({
         email: Yup.string()
-            .email(pgettext('form error', 'Invalid email address'))
-            .required(pgettext('form error', 'Email address is required')),
+            .email(tNoop('Invalid email address'))
+            .required(tNoop('Email address is required')),
     }),
 
     handleSubmit: (values, { props, ...formik }) => (
@@ -125,4 +134,4 @@ ForgotPasswordForm.propTypes = {
 };
 
 
-export default ForgotPasswordForm;
+export default ForgotPasswordForm;{% endraw %}
