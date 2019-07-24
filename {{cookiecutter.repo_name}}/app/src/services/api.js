@@ -6,7 +6,7 @@ import { call } from 'redux-saga/effects';
 
 import SETTINGS from 'settings';
 import { refreshToken } from 'sagas/auth/authMiddleware';
-import { getToken, saveToken } from 'sagas/helpers/token';
+import { getToken } from 'sagas/helpers/token';
 
 import Sentry from './sentry';
 

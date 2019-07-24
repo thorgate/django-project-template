@@ -8,7 +8,7 @@ const LoadablePlugin = require('@loadable/webpack-plugin');
 const cssLoaderFinder = makeLoaderFinder('css-loader');
 
 module.exports = {
-    plugins: [{
+    plugins: ['eslint', {
         name: 'long-term-caching',
         options: {
             aggressiveCaching: true,

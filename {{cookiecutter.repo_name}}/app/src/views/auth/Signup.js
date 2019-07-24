@@ -3,6 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import qs from 'qs';
 import { Helmet } from 'react-helmet';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { resolvePath as urlResolve } from 'tg-named-routes';
 
@@ -10,11 +11,12 @@ import AuthLayout from 'components/layouts/AuthLayout';
 import SignupForm from 'forms/auth/Signup';
 import withView from 'decorators/withView';
 import { signup } from 'sagas/auth/signupSaga';
-import { pgettext } from 'utils/i18n';
 import { RouterLocationShape } from 'utils/types';
 
 
 const Signup = ({ location, isAuthenticated, onSignup }) => {
+    const { t } = useTranslation();
+
     const query = qs.parse(location.search, { ignoreQueryPrefix: true });
     const { permissionDenied } = location.state || {};
 
@@ -32,7 +34,7 @@ const Signup = ({ location, isAuthenticated, onSignup }) => {
     return (
         <AuthLayout>
             <Helmet>
-                <title>{pgettext('view', 'Signup')}</title>
+                <title>{t('Signup')}</title>
             </Helmet>
             <SignupForm onSignup={onSignup} />
         </AuthLayout>

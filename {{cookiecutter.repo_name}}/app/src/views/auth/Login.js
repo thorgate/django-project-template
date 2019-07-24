@@ -2,22 +2,25 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 import AuthLayout from 'components/layouts/AuthLayout';
 import LoginForm from 'forms/auth/Login';
 import withView from 'decorators/withView';
 import { obtainToken } from 'sagas/auth/obtainTokenSaga';
-import { pgettext } from 'utils/i18n';
 
 
-const Login = ({ onLogin }) => (
-    <AuthLayout>
-        <Helmet>
-            <title>{pgettext('view', 'Login')}</title>
-        </Helmet>
-        <LoginForm onLogin={onLogin} />
-    </AuthLayout>
-);
+const Login = ({ onLogin }) => {
+    const { t } = useTranslation();
+    return (
+        <AuthLayout>
+            <Helmet>
+                <title>{t('Login')}</title>
+            </Helmet>
+            <LoginForm onLogin={onLogin} />
+        </AuthLayout>
+    );
+};
 
 Login.propTypes = {
     onLogin: PropTypes.func.isRequired,

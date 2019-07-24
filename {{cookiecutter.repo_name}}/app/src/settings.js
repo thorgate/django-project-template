@@ -1,5 +1,15 @@
 /* eslint-disable global-require */
+const i18nSettings = require('../i18n.json');
+
 const SETTINGS = {
+    // Define settings and load from base JSON
+    TRANSLATION_NAMESPACE: '',
+    DEFAULT_LANGUAGE: '',
+    FALLBACK_LANGUAGE: '',
+    LANGUAGE_ORDER: [],
+    LANGUAGES: {},
+    ...i18nSettings,
+
     API_BASE: '/api/',
     AUTH_TOKEN_NAME: '{{ cookiecutter.repo_name }}_token',
     // KEEP `AUTH_TOKEN_LIFETIME` IN SYNC WITH backend ACCESS_TOKEN_LIFETIME
@@ -7,15 +17,7 @@ const SETTINGS = {
     AUTH_REFRESH_TOKEN_NAME: '{{ cookiecutter.repo_name }}_refresh_token',
     LANGUAGE_COOKIE_NAME: '{{ cookiecutter.repo_name }}_language',
     CSRF_COOKIE_NAME: 'csrftoken',
-    DEFAULT_LANGUAGE: 'et',
-    LANGUAGE_ORDER: [
-        'en',
-        'et',
-    ],
-    LANGUAGES: {
-        en: 'English',
-        et: 'Eesti keel',
-    },
+
     DJANGO_URL_PREFIX: '/d/',
     DJANGO_MEDIA_URL: '/media/',
     DJANGO_STATIC_URL: '/assets/',
