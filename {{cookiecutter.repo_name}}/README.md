@@ -203,7 +203,7 @@ new language you can safely use `makemessages` and `compilemessages`
 
 ## SPA translations
 
-Frontend app uses `i18next` for translations and locale data is stored in `public/locale/**/translations.json`.
+Frontend app uses [i18next](https://github.com/i18next/i18next) for translations and locale data is stored in `public/locale/**/translations.json`.
 Translation discovery is handled in runtime and with command `extract-i18n`. During runtime discovered translations
 will be put in `translations.missing.json`, This file can be referred to for new translations added.
 **Notice: Only used translations will be automatically discovered. Other usages require manual extraction.** 
