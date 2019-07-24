@@ -134,5 +134,4 @@ ForgotPasswordForm.propTypes = {
 };
 
 
-export default ForgotPasswordForm;
-{% endraw %}
+export default ForgotPasswordForm;{% endraw %}

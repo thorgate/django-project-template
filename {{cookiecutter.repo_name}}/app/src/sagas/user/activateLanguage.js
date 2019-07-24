@@ -26,5 +26,4 @@ function setActiveLanguageWorker({ language }) {
 
 export default function* activeLanguageWatcher() {
     yield takeLatest(SET_ACTIVE_LANGUAGE, setActiveLanguageWorker);
-}
-{% endraw %}
+}{% endraw %}
