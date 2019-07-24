@@ -10,10 +10,14 @@ CHANGES
 Note: Try to add categories to changes and link to MRs/Issues
 -->
 
-## 2019-07-23
+## 2019-07-24
 
-- [ENH] Add `i18n` integration to frontend app !89
-- [ENH] Bump razzle to v3 final !89
+- [ENH] Add `i18n` integration to frontend app (see !89)
+  - Translations are stored in `.json` files
+  - Supports runtime discovery
+  - Add all new translations with make command
+- [DEPRECATION] Placeholders for `gettext` has been removed (see !89)
+- [ENH] Bump razzle to v3 final (see !89)
 
 
 ## 2019-05-28
