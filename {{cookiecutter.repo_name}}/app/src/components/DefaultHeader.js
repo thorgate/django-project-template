@@ -10,7 +10,7 @@ const DefaultHeader = ({ canonical }) => {
     const { i18n } = useTranslation();
 
     return (
-        <Helmet titleTemplate="%s - i18n_test" defaultTitle="i18n_test">
+        <Helmet titleTemplate="%s - {{cookiecutter.project_title}}" defaultTitle="{{cookiecutter.project_title}}">
             <html lang={i18n.language} />
             <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
             <meta charSet="utf-8" />
