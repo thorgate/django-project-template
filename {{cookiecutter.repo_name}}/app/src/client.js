@@ -31,7 +31,9 @@ if (process.env.NODE_ENV === 'production') {
     window.__initial_state__ = null;
 }
 
-const { store, history } = configureStore(initialState);
+const { store, history } = configureStore(initialState, {
+    sagaMiddleware: { context: { i18n: { t: i18n.t.bind(i18n), i18n } } },
+});
 
 // Get correct language from store and cookies
 const initialLanguage = window.__initial_language__;

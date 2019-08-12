@@ -24,9 +24,9 @@ module.exports = {
         func: { extensions: [] },
         trans: { extensions: [] },
         lngs: i18nSettings.LANGUAGE_ORDER,
-        ns: [i18nSettings.TRANSLATION_NAMESPACE],
+        ns: i18nSettings.TRANSLATION_NAMESPACES,
         defaultLng: i18nSettings.DEFAULT_LANGUAGE,
-        defaultNs: i18nSettings.TRANSLATION_NAMESPACE,
+        defaultNs: i18nSettings.DEFAULT_NAMESPACE,
         defaultValue: '',
         resource: {
             loadPath: '{{lng}}/{{ns}}.json',

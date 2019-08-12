@@ -1,5 +1,9 @@
 {
-  "TRANSLATION_NAMESPACE": "translations",
+  "DEFAULT_NAMESPACE": "translations",
+  "TRANSLATION_NAMESPACES": [
+    "auth",
+    "translations"
+  ],
   "FALLBACK_LANGUAGE": "en",
   "DEFAULT_LANGUAGE": "en",
   "LANGUAGE_ORDER": [

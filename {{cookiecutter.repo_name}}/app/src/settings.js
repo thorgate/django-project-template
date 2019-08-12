@@ -3,7 +3,8 @@ const i18nSettings = require('../i18n.json');
 
 const SETTINGS = {
     // Define settings and load from base JSON
-    TRANSLATION_NAMESPACE: '',
+    DEFAULT_NAMESPACE: '',
+    TRANSLATION_NAMESPACES: [],
     DEFAULT_LANGUAGE: '',
     FALLBACK_LANGUAGE: '',
     LANGUAGE_ORDER: [],

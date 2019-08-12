@@ -39,8 +39,8 @@ i18next
     .init({
         fallbackLng: SETTINGS.DEFAULT_LANGUAGE,
         load: 'languageOnly', // No region-specific locales (en-US, de-DE, etc.)
-        ns: ['translations'],
-        defaultNS: 'translations',
+        ns: SETTINGS.TRANSLATION_NAMESPACES,
+        defaultNS: SETTINGS.DEFAULT_NAMESPACE,
         preload: SETTINGS.LANGUAGE_ORDER,
         returnEmptyString: false,
         saveMissing: true,
@@ -83,6 +83,7 @@ router.get(
             sagaMiddleware: {
                 context: {
                     token: ctx.cookies.get(SETTINGS.AUTH_TOKEN_NAME),
+                    i18n: { t: i18n.t.bind(i18n), i18n },
                 },
             },
             location: ctx.originalUrl,

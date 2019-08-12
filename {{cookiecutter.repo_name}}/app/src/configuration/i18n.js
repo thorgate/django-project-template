@@ -9,8 +9,8 @@ import SETTINGS from 'settings';
 const defaultOptions = {
     load: 'languageOnly', // No region-specific locales (en-US, de-DE, etc.)
     fallbackLng: SETTINGS.DEFAULT_LANGUAGE,
-    ns: [SETTINGS.TRANSLATION_NAMESPACE],
-    defaultNS: SETTINGS.TRANSLATION_NAMESPACE,
+    ns: SETTINGS.TRANSLATION_NAMESPACES,
+    defaultNS: SETTINGS.DEFAULT_NAMESPACE,
     returnEmptyString: false,
     saveMissing: true,
     saveMissingTo: 'all',
