@@ -14,12 +14,13 @@ import koaLogger from 'koa-logger';
 import koaResponseTime from 'koa-response-time';
 import koaUserAgent from 'koa-useragent';
 import React from 'react';
+import qs from 'qs';
 import { renderToString } from 'react-dom/server';
 import { StaticRouter } from 'react-router';
 import { Helmet } from 'react-helmet';
 import { Provider } from 'react-redux';
 import serializeJS from 'serialize-javascript';
-import { RenderChildren } from 'tg-named-routes';
+import { RenderChildren, stringifyLocation } from 'tg-named-routes';
 
 import configureStore from 'configuration/configureStore';
 import routes from 'configuration/routes';
@@ -98,7 +99,10 @@ router.get(
 
         store.close();
 
-        await task.toPromise();
+        const sagaContext = await task.toPromise();
+        if (sagaContext.location) {
+            return ctx.redirect(stringifyLocation(sagaContext.location));
+        }
 
         const authState = isAuthenticated(store.getState());
         ctx.logger.debug('Got auth state: %s', authState);

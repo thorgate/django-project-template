@@ -1,3 +1,4 @@
+import { ssrRedirectMiddleware } from '@thorgate/spa-view-manager';
 import { routerMiddleware as routerMiddlewareFactory } from 'connected-react-router';
 import { createBrowserHistory, createMemoryHistory } from 'history';
 import serializeJS from 'serialize-javascript';
@@ -48,6 +49,10 @@ export default function configureStore(initialState = {}, options = {}) {
 
     // create list of middleware to spread later, makes easier way to add based on environment
     const middlewares = [routerMiddlewareFactory(history)];
+
+    if (process.env.BUILD_TARGET === 'server') {
+        middlewares.unshift(ssrRedirectMiddleware());
+    }
 
     // if not production, add redux logger
     if (process.env.NODE_ENV !== 'production') {
