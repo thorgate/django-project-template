@@ -1,15 +1,13 @@
 /* eslint-disable global-require */
 const i18nSettings = require('../i18n.json');
 
-const SETTINGS = {
-    // Define settings and load from base JSON
+const settings = {
     DEFAULT_NAMESPACE: '',
     TRANSLATION_NAMESPACES: [],
     DEFAULT_LANGUAGE: '',
     FALLBACK_LANGUAGE: '',
     LANGUAGE_ORDER: [],
     LANGUAGES: {},
-    ...i18nSettings,
 
     API_BASE: '/api/',
     AUTH_TOKEN_NAME: '{{ cookiecutter.repo_name }}_token',
@@ -31,36 +29,54 @@ const SETTINGS = {
     APP_PROXY: {},
     MAX_WORKERS: process.env.RAZZLE_MAX_WORKERS || 0,
     DEBUG: process.env.NODE_ENV !== 'production' ? true : process.env.VERBOSE,
+
+    // Overwrite client settings from server runtime
+    ...(!!window && (window as any).__settings__) || {},
+
+    // Define settings and load from base JSON
+    ...i18nSettings,
 };
 
 if (process.env.BUILD_TARGET === 'server') {
-    SETTINGS.CLUSTERED = false;
-    SETTINGS.FILE_LOGGING = process.env.RAZZLE_FILE_LOGGING === 'true';
-    SETTINGS.LOGGING_DIR = process.env.RAZZLE_LOGGING_DIR || '/var/log/{{ cookiecutter.repo_name }}/';
-    SETTINGS.LOGGING_FILE_PREFIX = process.env.RAZZLE_LOGGING_FILE_PREFIX || 'node';
+    settings.CLUSTERED = false;
+    settings.FILE_LOGGING = process.env.RAZZLE_FILE_LOGGING === 'true';
+    settings.LOGGING_DIR = process.env.RAZZLE_LOGGING_DIR || '/var/log/{{ cookiecutter.repo_name }}/';
+    settings.LOGGING_FILE_PREFIX = process.env.RAZZLE_LOGGING_FILE_PREFIX || 'node';
 
     const docker = require('is-docker');
     // If in development and inside docker, change django url to http://django
     if (process.env.NODE_ENV !== 'production' && docker()) {
-        SETTINGS.BACKEND_SITE_URL = process.env.RAZZLE_INTERNAL_BACKEND_SITE_URL;
+        settings.BACKEND_SITE_URL = process.env.RAZZLE_INTERNAL_BACKEND_SITE_URL;
     }
 
     if (process.env.NODE_ENV !== 'production') {
-        SETTINGS.APP_PROXY = {
-            [SETTINGS.API_BASE]: SETTINGS.BACKEND_SITE_URL,
-            [SETTINGS.DJANGO_URL_PREFIX]: SETTINGS.BACKEND_SITE_URL,
-            [SETTINGS.DJANGO_MEDIA_URL]: SETTINGS.BACKEND_SITE_URL,
-            [SETTINGS.DJANGO_STATIC_URL]: SETTINGS.BACKEND_SITE_URL,
-            [SETTINGS.DJANGO_ADMIN_PANEL]: SETTINGS.BACKEND_SITE_URL,
+        settings.APP_PROXY = {
+            [settings.API_BASE]: settings.BACKEND_SITE_URL,
+            [settings.DJANGO_URL_PREFIX]: settings.BACKEND_SITE_URL,
+            [settings.DJANGO_MEDIA_URL]: settings.BACKEND_SITE_URL,
+            [settings.DJANGO_STATIC_URL]: settings.BACKEND_SITE_URL,
+            [settings.DJANGO_ADMIN_PANEL]: settings.BACKEND_SITE_URL,
         };
     } else {
         const cluster = require('cluster');
         if (cluster.isWorker) {
-            SETTINGS.CLUSTERED = true;
+            settings.CLUSTERED = true;
 
-            SETTINGS.WORKER_ID = cluster.worker.id;
+            settings.WORKER_ID = cluster.worker.id;
         }
     }
 }
 
-export default Object.freeze(SETTINGS);
+export const getRuntimeConfig = () => {
+    const { __VERSION__, BACKEND_SITE_URL, SITE_URL, SENTRY_PUBLIC_DSN } = settings;
+    return {
+        __VERSION__,
+        BACKEND_SITE_URL,
+        SITE_URL,
+        SENTRY_PUBLIC_DSN,
+    };
+};
+
+export const SETTINGS = Object.freeze(settings);
+
+export default SETTINGS;

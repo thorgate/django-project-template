@@ -50,7 +50,7 @@
     "@thorgate/spa-pending-data": "1.0.0-alpha.37",
     "@thorgate/spa-permissions": "1.0.0-alpha.37",
     "@thorgate/spa-view": "1.0.0-alpha.37",
-    "@thorgate/spa-view-manager": "1.0.0-alpha.37",
+    "@thorgate/spa-view-manager": "1.0.0-alpha.38",
     "babel-core": "^7.0.0-bridge.0",
     "bootstrap": "4.3.1",
     "classnames": "2.2.5",

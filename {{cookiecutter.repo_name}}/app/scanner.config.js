@@ -8,7 +8,7 @@ const VirtualFile = require('vinyl');
 
 const i18nSettings = require('./i18n.json');
 
-const appDir = path.resolve(__dirname, '..');
+const appDir = path.resolve(__dirname);
 
 
 module.exports = {

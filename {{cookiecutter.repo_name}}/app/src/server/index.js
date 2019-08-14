@@ -25,7 +25,7 @@ import { RenderChildren, stringifyLocation } from 'tg-named-routes';
 import configureStore from 'configuration/configureStore';
 import routes from 'configuration/routes';
 import { setActiveLanguage } from 'sagas/user/activateLanguage';
-import SETTINGS from 'settings';
+import SETTINGS, { getRuntimeConfig } from 'settings';
 
 import proxyFactory from './appProxy';
 import errorHandler from './errorHandler';
@@ -95,12 +95,17 @@ router.get(
         store.dispatch(setActiveLanguage(language));
         ctx.logger.debug('Set language to: %s', language);
 
-        const task = store.runSaga(ServerViewManagerWorker, routes, createLocationAction(store.getState().router));
+        const sagaContext = {};
+        const task = store.runSaga(
+            ServerViewManagerWorker, routes, createLocationAction(store.getState().router), sagaContext,
+        );
 
+        // Stop task propagation and wait for all task to finish
         store.close();
+        await task.toPromise();
 
-        const sagaContext = await task.toPromise();
-        if (sagaContext.location) {
+        // Handle saga redirects
+        if (sagaContext?.location) {
             return ctx.redirect(stringifyLocation(sagaContext.location));
         }
 
@@ -121,11 +126,13 @@ router.get(
                 </I18nextProvider>
             </ChunkExtractorManager>
         ));
-        ctx.state.helmet = Helmet.renderStatic();
 
         if (context.url) {
             return ctx.redirect(context.url);
         }
+
+        // Parse Helmet context
+        ctx.state.helmet = Helmet.renderStatic();
 
         // Provide script tags forward
         ctx.state.statusCode = context.statusCode;
@@ -135,6 +142,9 @@ router.get(
 
         // Serialize state
         ctx.state.serializedState = serializeJS(store.getState());
+
+        // Serialize runtime settings
+        ctx.state.runtimeConfig = serializeJS(getRuntimeConfig());
 
         // Serialize i18next store
         const initialI18nStore = i18n.languages.reduce((acc, lng) => (
