@@ -105,7 +105,7 @@ router.get(
         await task.toPromise();
 
         // Handle saga redirects
-        if (sagaContext?.location) {
+        if (sagaContext.location) {
             return ctx.redirect(stringifyLocation(sagaContext.location));
         }
 

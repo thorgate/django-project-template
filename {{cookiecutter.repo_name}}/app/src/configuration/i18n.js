@@ -56,4 +56,6 @@ export const setupI18Next = async (language) => {
     }
 
     return i18next;
-};{% endraw %}
+};
+
+export default i18next;{% endraw %}

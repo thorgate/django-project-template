@@ -31,7 +31,7 @@ const settings = {
     DEBUG: process.env.NODE_ENV !== 'production' ? true : process.env.VERBOSE,
 
     // Overwrite client settings from server runtime
-    ...(!!window && (window as any).__settings__) || {},
+    ...(typeof window !== 'undefined' && window.__settings__) || {},
 
     // Define settings and load from base JSON
     ...i18nSettings,
@@ -68,12 +68,12 @@ if (process.env.BUILD_TARGET === 'server') {
 }
 
 export const getRuntimeConfig = () => {
-    const { __VERSION__, BACKEND_SITE_URL, SITE_URL, SENTRY_PUBLIC_DSN } = settings;
+    const { __VERSION__, BACKEND_SITE_URL, SITE_URL, RAVEN_PUBLIC_DSN } = settings;
     return {
         __VERSION__,
         BACKEND_SITE_URL,
         SITE_URL,
-        SENTRY_PUBLIC_DSN,
+        RAVEN_PUBLIC_DSN,
     };
 };
 

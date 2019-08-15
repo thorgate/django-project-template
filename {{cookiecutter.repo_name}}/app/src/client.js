@@ -9,7 +9,7 @@ import { useSSR } from 'react-i18next';
 import { RenderChildren } from 'tg-named-routes';
 
 import configureStore from 'configuration/configureStore';
-import { setupI18Next } from 'configuration/i18n';
+import i18n, { setupI18Next } from 'configuration/i18n';
 import routes from 'configuration/routes';
 import { setActiveLanguage } from 'sagas/user/activateLanguage';
 import SETTINGS from 'settings';
