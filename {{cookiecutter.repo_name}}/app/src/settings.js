@@ -77,6 +77,4 @@ export const getRuntimeConfig = () => {
     };
 };
 
-export const SETTINGS = Object.freeze(settings);
-
-export default SETTINGS;
+export default Object.freeze(settings);

@@ -14,7 +14,6 @@ import koaLogger from 'koa-logger';
 import koaResponseTime from 'koa-response-time';
 import koaUserAgent from 'koa-useragent';
 import React from 'react';
-import qs from 'qs';
 import { renderToString } from 'react-dom/server';
 import { StaticRouter } from 'react-router';
 import { Helmet } from 'react-helmet';
