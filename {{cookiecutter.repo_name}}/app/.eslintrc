@@ -62,6 +62,7 @@
         "no-underscore-dangle": [
             "error", {
                 "allow": [
+                    "__settings__",
                     "__initial_state__",
                     "__initial_i18n_store__",
                     "__initial_language__",
