@@ -169,6 +169,7 @@ router.get(
             <div id="root">${ctx.state.markup}</div>
             ${ctx.state.scriptTags}
             <script>
+                window.__settings__ = ${ctx.state.runtimeConfig};
                 window.__initial_state__ = ${ctx.state.serializedState};
                 window.__initial_i18n_store__ = ${ctx.state.initialI18nStore};
                 window.__initial_language__ = '${ctx.state.language}';
