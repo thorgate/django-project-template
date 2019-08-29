@@ -64,10 +64,7 @@ i18next
 // Initialize `koa-router`
 const router = new Router();
 
-// Only enable adding missing keys when not in production
-if (process.env.NODE_ENV !== 'production') {
-    router.post('/locales/add/:lng/:ns', missingKeyHandler(i18next));
-}
+router.post('/locales/add/:lng/:ns', missingKeyHandler(i18next));
 
 // Add multi-loading i18next backend support
 router.get('/locales/resources.json', loadTranslationsHandler(i18next));

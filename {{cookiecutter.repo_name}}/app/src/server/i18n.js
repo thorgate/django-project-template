@@ -1,4 +1,5 @@
 import addYears from 'date-fns/add_years';
+import * as Sentry from '@sentry/node';
 
 import SETTINGS from 'settings';
 
@@ -107,7 +108,12 @@ export const missingKeyHandler = (i18next, options) => {
                 return;
             }
 
-            i18next.services.backendConnector.saveMissing([lng], ns, field, body[field]);
+            // Report to sentry in production and add missing keys when not in production
+            if (process.env.NODE_ENV === 'production') {
+                Sentry.captureException(`Missing translation for ${field}: ${body[field]}. Language ${lng}, namespace ${ns}.`);
+            } else {
+                i18next.services.backendConnector.saveMissing([lng], ns, field, body[field]);
+            }
         });
 
         ctx.status = 200;
