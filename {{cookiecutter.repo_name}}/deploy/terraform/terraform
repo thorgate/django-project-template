@@ -1,0 +1,37 @@
+#!/bin/bash
+# Terraform wrapper, all arguments passed on to terraform
+# Forces use of TF_WORKSPACE to avoid confusion about which state the command
+# will affect
+vars_ok="yes"
+for aws_var in 'AWS_ACCESS_KEY_ID' 'AWS_SECRET_ACCESS_KEY' 'TF_WORKSPACE'; do
+  if [[ ! -v $aws_var ]] ; then
+    printf "Environment variable not set: %s\n" "${aws_var}" >&2
+    printf "export %s=...\n" "${aws_var}" >&2
+    vars_ok="no"
+  fi
+done
+if [[ $vars_ok = "no" ]] ; then
+  exit 1
+fi
+
+terraform_path=$(realpath "${0%/*}")
+
+printf "Terraform workspace: %s\n" "$TF_WORKSPACE" >&2
+
+terraform() {
+  docker \
+      run \
+          --rm \
+          -it \
+          -v "${terraform_path}":/app \
+          -w "/app" \
+          -e AWS_ACCESS_KEY_ID \
+          -e AWS_SECRET_ACCESS_KEY \
+          -e TF_WORKSPACE \
+          -e TF_LOG \
+      hashicorp/terraform:light \
+      "$@"
+}
+
+
+terraform "$@"
