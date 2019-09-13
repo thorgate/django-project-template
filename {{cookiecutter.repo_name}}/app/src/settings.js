@@ -68,10 +68,10 @@ if (process.env.BUILD_TARGET === 'server') {
 }
 
 export const getRuntimeConfig = () => {
-    const { __VERSION__, BACKEND_SITE_URL, SITE_URL, RAVEN_PUBLIC_DSN } = settings;
+    const { __VERSION__, SITE_URL, RAVEN_PUBLIC_DSN } = settings;
     return {
         __VERSION__,
-        BACKEND_SITE_URL,
+        BACKEND_SITE_URL: process.env.RAZZLE_BACKEND_SITE_URL,
         SITE_URL,
         RAVEN_PUBLIC_DSN,
     };
