@@ -93,11 +93,12 @@ router.get(
 
         const sagaContext = {};
         const task = store.runSaga(
-            ServerViewManagerWorker, routes, createLocationAction(store.getState().router), sagaContext,
+            ServerViewManagerWorker, routes, createLocationAction(store.getState().router), {
+                allowLogger: false,
+            }, sagaContext,
         );
 
         // Stop task propagation and wait for all task to finish
-        store.close();
         await task.toPromise();
 
         // Handle saga redirects
