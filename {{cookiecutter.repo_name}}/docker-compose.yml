@@ -1,6 +1,6 @@
 # Docker-compose configuration for development
 
-version: '2'
+version: '2.1'
 
 services:
     django:
@@ -76,5 +76,8 @@ services:
 
     redis:
         image: redis:4.0.10-alpine
+        sysctls:
+            # To allow maintaining TCP backlog setting that defaults to 511
+            net.core.somaxconn: 512
         volumes:
             - ".data/redis:/data"
