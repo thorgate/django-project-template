@@ -1,6 +1,6 @@
 # Docker-compose configuration for production
 
-version: '2'
+version: '2.1'
 
 services:
     django:
@@ -81,6 +81,9 @@ services:
     redis:
         image: redis:4.0.10-alpine
         restart: unless-stopped
+        sysctls:
+            # To allow maintaining TCP backlog setting that defaults to 511
+            net.core.somaxconn: 512
         volumes:
             - "/var/lib/docker-{{cookiecutter.repo_name}}/redis:/data"
         networks:
