@@ -9,7 +9,6 @@ import LoginForm from 'forms/auth/Login';
 import withView from 'decorators/withView';
 import { obtainToken } from 'sagas/auth/obtainTokenSaga';
 
-
 const Login = ({ onLogin }) => {
     const { t } = useTranslation();
     return (
@@ -26,11 +25,9 @@ Login.propTypes = {
     onLogin: PropTypes.func.isRequired,
 };
 
-
 const mapDispatchToProps = {
     onLogin: obtainToken,
 };
-
 
 const LoginConnector = connect(
     null,

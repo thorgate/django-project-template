@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 
-
 export const UserShape = PropTypes.shape({
     id: PropTypes.number,
     email: PropTypes.string,
@@ -11,7 +10,6 @@ export const UserShape = PropTypes.shape({
     last_login: PropTypes.string,
     date_joined: PropTypes.string,
 });
-
 
 export const UsersShape = PropTypes.shape({
     isAuthenticated: PropTypes.bool.isRequired,

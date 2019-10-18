@@ -3,7 +3,6 @@ import http from 'http';
 
 import SETTINGS from 'settings';
 
-
 const createServer = () => {
     const PORT = process.env.PORT;
 
@@ -12,14 +11,16 @@ const createServer = () => {
 
     const server = http.createServer(currentHandler);
 
-    server.listen(PORT, (error) => {
+    server.listen(PORT, error => {
         if (error) {
             console.log(error);
         }
 
         if (process.env.NODE_ENV !== 'production') {
             console.log(`Application started on ${PORT}`);
-            console.log(`==> Listening on port ${PORT}. Open up ${process.env.RAZZLE_SITE_URL} in your browser.`);
+            console.log(
+                `==> Listening on port ${PORT}. Open up ${process.env.RAZZLE_SITE_URL} in your browser.`,
+            );
         }
     });
 
@@ -31,7 +32,7 @@ if (process.env.NODE_ENV === 'production' && SETTINGS.MAX_WORKERS > 1) {
 
     throng({
         workers: SETTINGS.MAX_WORKERS,
-        start: (id) => {
+        start: id => {
             console.log(`Booting worker: ${id}`);
             createServer();
         },

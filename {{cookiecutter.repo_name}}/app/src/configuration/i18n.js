@@ -5,7 +5,6 @@ import i18nFetchBackend from 'i18next-fetch-backend';
 
 import SETTINGS from 'settings';
 
-
 const defaultOptions = {
     load: 'languageOnly', // No region-specific locales (en-US, de-DE, etc.)
     fallbackLng: SETTINGS.DEFAULT_LANGUAGE,
@@ -40,13 +39,9 @@ const defaultOptions = {
     },
 };
 
+i18next.use(i18nFetchBackend).use(initReactI18next);
 
-i18next
-    .use(i18nFetchBackend)
-    .use(initReactI18next);
-
-
-export const setupI18Next = async (language) => {
+export const setupI18Next = async language => {
     if (!i18next.isInitialized) {
         // Initialize with default options while setting language as well
         await i18next.init({

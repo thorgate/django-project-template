@@ -11,7 +11,6 @@ import FormField from 'forms/fields/FormField';
 import { tNoop } from 'utils/text';
 import { getFormPropTypes } from 'utils/types';
 
-
 const Signup = ({ status, isSubmitting }) => {
     const { t } = useTranslation();
     return (
@@ -54,7 +53,9 @@ const Signup = ({ status, isSubmitting }) => {
             />
 
             {status !== undefined && (
-                <Alert color={status.color === undefined ? 'danger' : status.color}>
+                <Alert
+                    color={status.color === undefined ? 'danger' : status.color}
+                >
                     {status.message}
                 </Alert>
             )}
@@ -72,7 +73,10 @@ const Signup = ({ status, isSubmitting }) => {
             </Row>
             <Row>
                 <Col sm={4} className="mt-3 ml-auto mr-auto">
-                    <Link to={urlResolve('auth:forgot-password')} className="pt-2">
+                    <Link
+                        to={urlResolve('auth:forgot-password')}
+                        className="pt-2"
+                    >
                         {t('Forgot password?')}
                     </Link>
                 </Col>
@@ -80,7 +84,6 @@ const Signup = ({ status, isSubmitting }) => {
         </Form>
     );
 };
-
 
 Signup.propTypes = {
     ...getFormPropTypes(['email', 'password']),
@@ -94,35 +97,29 @@ const SignupForm = withFormik({
         repeatPassword: '',
     }),
     validationSchema: Yup.object().shape({
-        name: Yup.string()
-            .required(tNoop('Name is required')),
+        name: Yup.string().required(tNoop('Name is required')),
         email: Yup.string()
             .email(tNoop('Invalid email address'))
             .required(tNoop('Email is required')),
-        password: Yup.string()
-            .required(tNoop('Password is required')),
-        repeatPassword: Yup.string()
-            .test(
-                'password-match',
-                tNoop('Passwords do not match'),
-                function passwordTest(value) {
-                    const { password } = this.parent;
-                    return password === value;
-                },
-            ),
+        password: Yup.string().required(tNoop('Password is required')),
+        repeatPassword: Yup.string().test(
+            'password-match',
+            tNoop('Passwords do not match'),
+            function passwordTest(value) {
+                const { password } = this.parent;
+                return password === value;
+            },
+        ),
     }),
 
-    handleSubmit: (values, { props, ...formik }) => (
-        props.onSignup({ data: values }, formik)
-    ),
+    handleSubmit: (values, { props, ...formik }) =>
+        props.onSignup({ data: values }, formik),
 
     displayName: 'SignupForm', // helps with React DevTools
 })(Signup);
 
-
 SignupForm.propTypes = {
     onSignup: PropTypes.func.isRequired,
 };
-
 
 export default SignupForm;

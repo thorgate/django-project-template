@@ -7,14 +7,12 @@ import signupWatcher from 'sagas/auth/signupSaga';
 import forgotPasswordWatcher from 'sagas/auth/forgotPasswordSaga';
 import resetPasswordWatcher from 'sagas/auth/resetPasswordSaga';
 
-
 const LoginView = loadable(() => import('views/auth/Login'));
 const SignupView = loadable(() => import('views/auth/Signup'));
 const ForgotPasswordView = loadable(() => import('views/auth/ForgotPassword'));
 const ResetPasswordView = loadable(() => import('views/auth/ResetPassword'));
 
-
-export const createAuthenticationRoutes = (PageNotFoundRoute) => ({
+export const createAuthenticationRoutes = PageNotFoundRoute => ({
     path: '/auth',
     name: 'auth',
     component: RenderChildren,

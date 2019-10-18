@@ -5,7 +5,6 @@ import { Row, Col } from 'reactstrap';
 import withView from 'decorators/withView';
 import { loginRequired } from 'decorators/permissions';
 
-
 const Restricted = () => (
     <div className="page-container">
         <Helmet title="Example" />
@@ -17,7 +16,6 @@ const Restricted = () => (
         </Row>
     </div>
 );
-
 
 const RestrictedView = withView()(loginRequired()(Restricted));
 

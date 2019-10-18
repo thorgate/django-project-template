@@ -12,6 +12,17 @@ Note: Try to add categories to changes and link to MRs/Issues
 
 ## 2019-10-18
 
+- [ENH] Apply code formatting
+
+**Migration guide:**
+- Upgrade template to !97
+- Run code formatting
+- Upgrade template to !98
+- Commit changes
+
+
+## 2019-10-18
+
 - [ENH] Added Prettier formatter for JavaScript (see !97)
 - [ENH] Added Black formatter for Python (see !97)
 - [BUG] Fixed issue with SSR using refresh token saga

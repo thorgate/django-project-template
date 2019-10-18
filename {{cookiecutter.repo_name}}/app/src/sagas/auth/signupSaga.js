@@ -7,13 +7,11 @@ import { resolvePath as urlResolve } from 'tg-named-routes';
 import { saveToken } from 'sagas/helpers/token';
 import api from 'services/api';
 
-
 /**
  * Trigger Signup watcher saga.
  * @returns Created trigger action
  */
 export const signup = createSaveAction('@@sagas/auth/SIGNUP_POST');
-
 
 function* successHook(result) {
     const { access, refresh } = result;
@@ -29,12 +27,10 @@ function* successHook(result) {
     yield put(push(next));
 }
 
-
 const signupSaga = createFormSaveSaga({
     resource: api.user.signup,
     successHook,
 });
-
 
 export default function* loginWatcherSaga() {
     yield takeLatest(signup.getType(), signupSaga, null);

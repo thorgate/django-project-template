@@ -15,7 +15,6 @@ import { setActiveLanguage } from 'sagas/user/activateLanguage';
 import SETTINGS from 'settings';
 import Sentry from 'services/sentry';
 
-
 // Configure Sentry only in production
 if (process.env.NODE_ENV === 'production') {
     Sentry.init({
@@ -40,8 +39,8 @@ const initialLanguage = window.__initial_language__;
 const cookieLanguage = Cookies.get(SETTINGS.LANGUAGE_COOKIE_NAME);
 
 // Get valid language
-const currentLanguage = initialLanguage || cookieLanguage || SETTINGS.DEFAULT_LANGUAGE;
-
+const currentLanguage =
+    initialLanguage || cookieLanguage || SETTINGS.DEFAULT_LANGUAGE;
 
 // eslint-disable-next-line
 const App = ({ appRoutes }) => {
@@ -55,19 +54,17 @@ const App = ({ appRoutes }) => {
     );
 };
 
-const renderApp = (appRoutes) => {
-    hydrate(
-        <App appRoutes={appRoutes} />,
-        document.getElementById('root'),
-    );
+const renderApp = appRoutes => {
+    hydrate(<App appRoutes={appRoutes} />, document.getElementById('root'));
 };
 
+loadableReady()
+    .then(() => setupI18Next(currentLanguage))
+    .then(async () => {
+        store.dispatch(setActiveLanguage(currentLanguage));
 
-loadableReady().then(() => setupI18Next(currentLanguage)).then(async () => {
-    store.dispatch(setActiveLanguage(currentLanguage));
-
-    renderApp(routes);
-});
+        renderApp(routes);
+    });
 
 if (module.hot) {
     module.hot.accept('./configuration/routes', () => {

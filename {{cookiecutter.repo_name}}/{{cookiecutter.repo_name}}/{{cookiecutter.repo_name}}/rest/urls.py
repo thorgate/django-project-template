@@ -19,6 +19,6 @@ from django.conf.urls import include, url
 # And finally add include here:
 #     url(r'^some_app/', include('some_app.rest.urls')),
 urlpatterns = [
-    url(r'^auth/', include('accounts.jwt.urls')),
-    url(r'^user/', include('accounts.rest.urls')),
+    url(r"^auth/", include("accounts.jwt.urls")),
+    url(r"^user/", include("accounts.rest.urls")),
 ]

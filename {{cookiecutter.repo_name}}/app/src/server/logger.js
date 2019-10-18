@@ -5,7 +5,6 @@ import SETTINGS from 'settings';
 
 const { combine, colorize, label, splat, printf, timestamp } = format;
 
-
 const levelOnly = format((info, opts) => {
     if (opts.level !== info.level && opts.enabled) {
         return false;
@@ -21,14 +20,22 @@ function createTransport(level) {
             splat(),
             label({ label: `[worker-${SETTINGS.WORKER_ID}]` }),
             timestamp(),
-            printf((info) => (
-                `${info.timestamp} [${info.level}]${info.label || ''}: ${info.message}`
-            )),
+            printf(
+                info =>
+                    `${info.timestamp} [${info.level}]${info.label || ''}: ${
+                        info.message
+                    }`,
+            ),
         ),
     };
 
     if (SETTINGS.FILE_LOGGING) {
-        cfg.filename = normalize(join(SETTINGS.LOGGING_DIR, `${SETTINGS.LOGGING_FILE_PREFIX}-${level}.log`));
+        cfg.filename = normalize(
+            join(
+                SETTINGS.LOGGING_DIR,
+                `${SETTINGS.LOGGING_FILE_PREFIX}-${level}.log`,
+            ),
+        );
     }
 
     if (level === 'error' || level === 'debug') {
@@ -45,15 +52,17 @@ function createTransport(level) {
 const loggerTransports = [];
 const exceptionHandlers = [];
 if (process.env.NODE_ENV !== 'production') {
-    loggerTransports.push(new transports.Console({
-        level: 'debug',
-        handleExceptions: true,
-        format: combine(
-            colorize({ all: true }),
-            splat(),
-            printf((nfo) => `[${nfo.level}]: ${nfo.message}`),
-        ),
-    }));
+    loggerTransports.push(
+        new transports.Console({
+            level: 'debug',
+            handleExceptions: true,
+            format: combine(
+                colorize({ all: true }),
+                splat(),
+                printf(nfo => `[${nfo.level}]: ${nfo.message}`),
+            ),
+        }),
+    );
 } else {
     const exceptionTransport = createTransport('exception');
 
@@ -64,9 +73,7 @@ if (process.env.NODE_ENV !== 'production') {
         exceptionTransport,
     );
 
-    exceptionHandlers.push(
-        exceptionTransport,
-    );
+    exceptionHandlers.push(exceptionTransport);
 
     if (SETTINGS.DEBUG) {
         loggerTransports.push(createTransport('debug'));

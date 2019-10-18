@@ -11,7 +11,6 @@ import FormField from 'forms/fields/FormField';
 import { tNoop } from 'utils/text';
 import { getFormPropTypes } from 'utils/types';
 
-
 const Login = ({ status, isSubmitting }) => {
     const { t } = useTranslation();
     return (
@@ -36,7 +35,9 @@ const Login = ({ status, isSubmitting }) => {
             />
 
             {status !== undefined && (
-                <Alert color={status.color === undefined ? 'danger' : status.color}>
+                <Alert
+                    color={status.color === undefined ? 'danger' : status.color}
+                >
                     {status.message}
                 </Alert>
             )}
@@ -54,7 +55,10 @@ const Login = ({ status, isSubmitting }) => {
             </Row>
             <Row>
                 <Col sm={4} className="mt-3 ml-auto mr-auto">
-                    <Link to={urlResolve('auth:forgot-password')} className="pt-2">
+                    <Link
+                        to={urlResolve('auth:forgot-password')}
+                        className="pt-2"
+                    >
                         {t('Forgot password?')}
                     </Link>
                 </Col>
@@ -62,7 +66,6 @@ const Login = ({ status, isSubmitting }) => {
         </Form>
     );
 };
-
 
 Login.propTypes = {
     ...getFormPropTypes(['email', 'password']),
@@ -78,17 +81,14 @@ const LoginForm = withFormik({
         password: Yup.string(),
     }),
 
-    handleSubmit: (values, { props, ...formik }) => (
-        props.onLogin({ data: values }, formik)
-    ),
+    handleSubmit: (values, { props, ...formik }) =>
+        props.onLogin({ data: values }, formik),
 
     displayName: 'LoginForm', // helps with React DevTools
 })(Login);
 
-
 LoginForm.propTypes = {
     onLogin: PropTypes.func.isRequired,
 };
-
 
 export default LoginForm;

@@ -222,7 +222,7 @@ clean:
 	@cd $(SITE_ROOT) && find . -name "*.pyc" -exec rm -rf {} \;
 
 
-quality: node-quality prospector isort pipenv-check
+quality: prettier-check-all black-check-all node-quality prospector isort pipenv-check black-check-all
 
 
 node-quality:

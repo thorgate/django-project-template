@@ -7,13 +7,11 @@ import { resolvePath as urlResolve } from 'tg-named-routes';
 import { saveToken } from 'sagas/helpers/token';
 import api from 'services/api';
 
-
 /**
  * Trigger obtain token watcher saga.
  * @returns Created trigger action
  */
 export const obtainToken = createSaveAction('@@sagas/auth/OBTAIN_TOKEN');
-
 
 function* successHook(result) {
     const { access, refresh } = result;
@@ -28,7 +26,6 @@ function* successHook(result) {
 
     yield put(push(next));
 }
-
 
 const obtainTokenSaga = createFormSaveSaga({
     resource: api.auth.obtain,

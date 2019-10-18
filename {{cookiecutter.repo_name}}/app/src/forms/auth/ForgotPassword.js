@@ -12,7 +12,6 @@ import FormField from 'forms/fields/FormField';
 import { tNoop } from 'utils/text';
 import { getFormPropTypes } from 'utils/types';
 
-
 const ForgotPassword = ({ values, status, isSubmitting }) => {
     const { t } = useTranslation();
 
@@ -22,7 +21,8 @@ const ForgotPassword = ({ values, status, isSubmitting }) => {
                 <Col className="pb-4 text-center">
                     <h5>
                         <Trans>
-                            Please enter your email below to receive a password reset link.
+                            Please enter your email below to receive a password
+                            reset link.
                         </Trans>
                     </h5>
                 </Col>
@@ -66,7 +66,9 @@ const ForgotPassword = ({ values, status, isSubmitting }) => {
                 <Row>
                     <Col>
                         <Trans>
-                            We have sent you an email to <strong>{{ email }}</strong>  with a link to reset your password
+                            We have sent you an email to{' '}
+                            <strong>{{ email }}</strong> with a link to reset
+                            your password
                         </Trans>
                     </Col>
                 </Row>
@@ -91,11 +93,7 @@ const ForgotPassword = ({ values, status, isSubmitting }) => {
             </>
         );
     } else if (is.object(status)) {
-        statusMessage = (
-            <Alert color="danger">
-                {status.message}
-            </Alert>
-        );
+        statusMessage = <Alert color="danger">{status.message}</Alert>;
     }
 
     return (
@@ -106,9 +104,7 @@ const ForgotPassword = ({ values, status, isSubmitting }) => {
     );
 };
 
-
 ForgotPassword.propTypes = { ...getFormPropTypes(['email', 'password']) };
-
 
 const ForgotPasswordForm = withFormik({
     mapPropsToValues: () => ({
@@ -121,17 +117,14 @@ const ForgotPasswordForm = withFormik({
             .required(tNoop('Email address is required')),
     }),
 
-    handleSubmit: (values, { props, ...formik }) => (
-        props.onForgotPassword({ data: values }, formik)
-    ),
+    handleSubmit: (values, { props, ...formik }) =>
+        props.onForgotPassword({ data: values }, formik),
 
     displayName: 'ForgotPasswordForm', // helps with React DevTools
 })(ForgotPassword);
 
-
 ForgotPasswordForm.propTypes = {
     onForgotPassword: PropTypes.func.isRequired,
 };
-
 
 export default ForgotPasswordForm;{% endraw %}

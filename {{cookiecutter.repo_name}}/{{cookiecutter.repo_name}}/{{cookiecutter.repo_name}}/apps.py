@@ -5,7 +5,7 @@ from tg_utils.checks import check_production_settings, check_sentry_config
 
 
 class {{cookiecutter.repo_name|as_appconfigname}}Config(AppConfig):
-    name = '{{cookiecutter.repo_name}}'
+    name = "{{cookiecutter.repo_name}}"
     verbose_name = "{{cookiecutter.project_title}}"
 
     def ready(self):

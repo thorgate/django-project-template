@@ -10,7 +10,6 @@ import withView from 'decorators/withView';
 import { resetPassword } from 'sagas/auth/resetPasswordSaga';
 import { RouterMatchShape } from 'utils/types';
 
-
 const ResetPassword = ({ match, onResetPassword }) => {
     const { t } = useTranslation();
     return (
@@ -28,7 +27,6 @@ ResetPassword.propTypes = {
     match: RouterMatchShape.isRequired,
     onResetPassword: PropTypes.func.isRequired,
 };
-
 
 const mapDispatchToProps = {
     onResetPassword: resetPassword,

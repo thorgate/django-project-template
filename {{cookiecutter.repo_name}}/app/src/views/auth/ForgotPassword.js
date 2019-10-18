@@ -9,7 +9,6 @@ import ForgotPasswordForm from 'forms/auth/ForgotPassword';
 import withView from 'decorators/withView';
 import { forgotPassword } from 'sagas/auth/forgotPasswordSaga';
 
-
 const ForgotPassword = ({ onForgotPassword }) => {
     const { t } = useTranslation();
     return (

@@ -1,7 +1,10 @@
 import SETTINGS from 'settings';
 
-
-const resolveAsset = (url, basePath = null, sitePath = SETTINGS.BACKEND_SITE_URL) => {
+const resolveAsset = (
+    url,
+    basePath = null,
+    sitePath = SETTINGS.BACKEND_SITE_URL,
+) => {
     let path = `${basePath || ''}${url}`;
 
     if (!path.startsWith('/') && !/https?:\/\//.test(path)) {
@@ -23,4 +26,4 @@ const resolveAsset = (url, basePath = null, sitePath = SETTINGS.BACKEND_SITE_URL
  * @param {string} url Path to media file without `/media` prefix.
  * @returns {string} Path for media file with correct prefix
  */
-export const resolveMedia = (url) => resolveAsset(url, SETTINGS.DJANGO_MEDIA_URL);
+export const resolveMedia = url => resolveAsset(url, SETTINGS.DJANGO_MEDIA_URL);

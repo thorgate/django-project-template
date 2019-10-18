@@ -3,7 +3,6 @@ import { put } from 'redux-saga/effects';
 
 import api from 'services/api';
 
-
 export default function* fetchUserDetails() {
     try {
         const user = yield api.user.details.fetch();

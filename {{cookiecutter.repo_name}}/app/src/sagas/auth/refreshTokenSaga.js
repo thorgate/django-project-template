@@ -9,7 +9,6 @@ import api from 'services/api';
 import { resolveToken, REQUEST_TOKEN } from 'sagas/auth/authMiddleware';
 import { getToken, saveToken } from 'sagas/helpers/token';
 
-
 function* refreshToken() {
     const token = yield call(getToken);
 
@@ -65,7 +64,8 @@ export default function* watcher() {
         try {
             // Get new access token, retry 3 times on network errors
             token = yield retry(3, 100, refreshToken);
-        } catch (e) { // ignore failed 3rd attempt
+        } catch (e) {
+            // ignore failed 3rd attempt
         }
 
         // And send it to action listeners

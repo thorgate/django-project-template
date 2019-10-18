@@ -4,6 +4,8 @@ from accounts.forms import LoginForm
 
 
 def login(request):
-    response = django_login(request, template_name='accounts/login.html', authentication_form=LoginForm)
+    response = django_login(
+        request, template_name="accounts/login.html", authentication_form=LoginForm
+    )
 
     return response
