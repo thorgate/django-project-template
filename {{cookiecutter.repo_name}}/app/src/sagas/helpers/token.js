@@ -1,5 +1,5 @@
 import { getLocalStorage } from '@thorgate/spa-view';
-import addMinutes from 'date-fns/add_minutes';
+import addMinutes from 'date-fns/addMinutes';
 import { getContext } from 'redux-saga/effects';
 import Cookies from 'js-cookie';
 

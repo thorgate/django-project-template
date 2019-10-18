@@ -1,7 +1,9 @@
 {
     "extends": [
         "react-app",
-        "airbnb"
+        "airbnb",
+        "prettier",
+        "prettier/react"
     ],
     "globals": {
         "jest": false,
@@ -19,19 +21,14 @@
         }
     },
     "plugins": [
-        "react-hooks"
+        "react-hooks",
+        "prettier"
     ],
     "rules": {
+        "prettier/prettier": "warn",
+
         // We allow single named export as well
         "import/prefer-default-export": 0,
-
-        // We use 4 spaces for indentation. Everywhere.
-        "indent": ["error", 4, {"SwitchCase": 1}],
-        "react/jsx-indent": ["error", 4],
-        "react/jsx-indent-props": ["error", 4],
-
-        // We use always use ;
-        "semi": ["error", "always"],
 
         // JSX files use .js extension
         "react/jsx-filename-extension": ["error", {"extensions": [".js", ".jsx"]}],
@@ -40,23 +37,15 @@
         "react/destructuring-assignment": ["warn", "always", { "ignoreClassFields": true }],
         "react/jsx-one-expression-per-line": 0,
 
-        // Set max line length to 140 chars. Smaller lengths feel too small on modern monitors.
-        "max-len": ["error", 140],
-
-        // Allow both single- as well as double quotes. This lets us use e.g. double quotes for user-visible strings and
-        //  single quotes for internals.
-        "quotes": ["error", "single"],
-        "jsx-quotes": ["error", "prefer-double"],
+        // Set max line length to 140 chars. Prettier formats to 80.
+        // Using this rule so comments would be kept in more readable format
+        "max-len": ["warn", 140],
 
         // else-return improves readability sometimes, especially with one-liners.
         "no-else-return": "off",
 
-        // Keep spaces inside of curly braces in objects for readabilty.
-        "object-curly-spacing": ["error", "always"],
-        "object-curly-newline": "off",
-
         // Allow unary ++ operator in for loop afterthoughts
-        "no-plusplus": ["error", {"allowForLoopAfterthoughts": true}],
+        "no-plusplus": "off",
 
         // allow some underscore dangles
         "no-underscore-dangle": [
@@ -72,9 +61,6 @@
             }
         ],
 
-        // Require parens for all arrow functions
-        "arrow-parens": ["error", "always"],
-
         // Turn these into errors
         "no-unused-vars": ["error", { "argsIgnorePattern": "_[0-9]*", "varsIgnorePattern": "_[0-9]*" }],
         "no-var": "error",
@@ -85,7 +71,6 @@
         "jsx-a11y/label-has-associated-control": "warn",
         "jsx-a11y/anchor-is-valid": [ "error", { "components": [ "Link" ], "specialLink": [ "to" ] } ],
         "jsx-a11y/label-has-for": "warn",
-        "function-paren-newline": ["error", "consistent"],
 
         // Show TODOs and FIXMEs as warnings
         "no-warning-comments": ["warn", {"location": "anywhere"}]

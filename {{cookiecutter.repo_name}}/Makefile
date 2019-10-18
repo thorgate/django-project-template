@@ -33,6 +33,9 @@ COFF ?= \033[0m
 .PHONY: docker-manage shell makemigrations migrate docker-logs makemessages compilemessages add-locale psql isort isort-fix
 .PHONY: build-pipenv-helper run-pipenv-helper pipenv-check pipenv-lock pipenv-install
 .PHONY: django-shell node-shell node-quality
+.PHONY: build-prettier-helper run-prettier prettier-check prettier-check-all prettier-format prettier-format-all
+.PHONY: build-black-helper run-black black-check black-check-all black-format black-format-all
+.PHONY: build-formatting-helpers
 
 all: help
 
@@ -59,6 +62,10 @@ help:
 	@echo "$(CYAN)make quality$(COFF)  - Runs automatic code quality tests on your code"
 	@echo ""
 	@echo "$(CYAN)make isort-fix$(COFF) - Fix imports automatically with isort"
+	@echo ""
+	@echo "$(CYAN)make black-format-all$(COFF) - Format all Python code"
+	@echo ""
+	@echo "$(CYAN)make prettier-format-all$(COFF) - Format all JavaScript code"
 	@echo ""
 
 build-pipenv-helper:
@@ -87,7 +94,58 @@ pipenv-install:
 	@make run-pipenv-helper cmd="pipenv install $(cmd)"
 
 
-docker: settings
+build-prettier-helper:
+	@docker build $(PROJECT_ROOT) -f $(PROJECT_ROOT)/.helpers/Dockerfile-prettier --tag $(PROJECT_NAME)_prettier_wrapper
+
+
+run-prettier: build-prettier-helper
+	@docker run --rm --name $(PROJECT_NAME)_prettier_wrapper -v $(PROJECT_ROOT):/app $(PROJECT_NAME)_prettier_wrapper $(cmd)
+
+
+prettier-check:
+	@make run-prettier cmd="prettier --check $(cmd)"
+
+
+prettier-check-all:
+	@make prettier-check cmd="'app/src/**/*.{js,jsx,ts,tsx}'"
+
+
+prettier-format:
+	@make run-prettier cmd="prettier --write $(cmd)"
+
+
+prettier-format-all:
+	@make prettier-format cmd="'app/src/**/*.{js,jsx,ts,tsx}'"
+
+
+build-black-helper:
+	@docker build $(PROJECT_ROOT) -f $(PROJECT_ROOT)/.helpers/Dockerfile-black --tag $(PROJECT_NAME)_black_wrapper
+
+
+run-black: build-black-helper
+	@docker run --rm --name $(PROJECT_NAME)_black_wrapper -v $(PROJECT_ROOT):/app $(PROJECT_NAME)_black_wrapper $(cmd)
+
+
+black-check:
+	@make run-black cmd="black --exclude fabfile.py\|docs\|local.py\|local_test.py --check $(cmd)"
+
+
+black-check-all:
+	@make run-black cmd="black --exclude fabfile.py\|docs\|local.py\|local_test.py --check $(PROJECT_NAME)"
+
+
+black-format:
+	@make run-black cmd="black --exclude fabfile.py\|docs\|local.py\|local_test.py $(cmd)"
+
+
+black-format-all:
+	@make run-black cmd="black --exclude fabfile.py\|docs\|local.py\|local_test.py $(PROJECT_NAME)"
+
+
+build-formatting-helpers: build-black-helper build-prettier-helper
+
+
+docker: build-formatting-helpers settings
 	@docker-compose down
 	@docker-compose build
 	@docker-compose up -d

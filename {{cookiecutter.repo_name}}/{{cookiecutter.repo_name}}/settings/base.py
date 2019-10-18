@@ -39,6 +39,9 @@ ADMINS = (
 MANAGERS = ADMINS
 EMAIL_SUBJECT_PREFIX = '[{{cookiecutter.project_title}}] '  # subject prefix for managers & admins
 
+# Tg React Url configurations should be same as frontend forgot password URL
+TGR_PASSWORD_RECOVERY_URL = "/auth/reset-password/%s"
+
 SESSION_COOKIE_NAME = '{{ cookiecutter.repo_name }}_ssid'
 SESSION_COOKIE_DOMAIN = env.str('DJANGO_SESSION_COOKIE_DOMAIN', default=None)
 

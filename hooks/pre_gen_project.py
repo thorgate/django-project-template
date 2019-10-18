@@ -96,7 +96,7 @@ def validate_config():
         print("Only allowed python version options are 3.6 or later.")
         sys.exit(1)
 
-    if not re.match(r'((8|10|11)(\.\d+){0,2})', "{{ cookiecutter.node_version }}"):
+    if not re.match(r'((8|10|12)(\.\d+){0,2})', "{{ cookiecutter.node_version }}"):
         print("Only allowed Node.js version's start from 8 or 10 and greater.")
         sys.exit(1)
 

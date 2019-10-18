@@ -1,4 +1,4 @@
-import addYears from 'date-fns/add_years';
+import addYears from 'date-fns/addYears';
 import * as Sentry from '@sentry/node';
 
 import SETTINGS from 'settings';
