@@ -47,6 +47,11 @@ if env.str('DJANGO_DISABLE_FILE_LOGGING', default='n') != 'y':
     })
     LOGGING['loggers']['']['handlers'] = ['info_log', 'error_log', 'sentry']
 
+else:
+    LOGGING["handlers"].update(
+        {"console": {"class": "logging.StreamHandler", "formatter": "default"}}
+    )
+
 # Sentry error logging
 INSTALLED_APPS += (
     'raven.contrib.django.raven_compat',
