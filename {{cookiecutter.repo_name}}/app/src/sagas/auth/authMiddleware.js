@@ -15,6 +15,9 @@ export function* refreshToken() {
 
     if (token) {
         return token;
+    } else if (process.env.BUILD_TARGET === 'server') {
+        // Refresh is not used for server
+        return null;
     }
 
     yield put(requestToken());

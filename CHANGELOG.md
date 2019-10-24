@@ -10,6 +10,14 @@ CHANGES
 Note: Try to add categories to changes and link to MRs/Issues
 -->
 
+## 2019-10-18
+
+- [ENH] Added Prettier formatter for JavaScript (see !97)
+- [ENH] Added Black formatter for Python (see !97)
+- [BUG] Fixed issue with SSR using refresh token saga
+- [BUG] Fixed missing `tg-react` forgot password url configuration
+
+
 ## 2019-07-24
 
 - [ENH] Add [react-i18next](https://react.i18next.com/) integration to frontend app (see !89)
