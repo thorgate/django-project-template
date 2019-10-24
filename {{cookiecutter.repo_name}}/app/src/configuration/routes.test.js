@@ -7,19 +7,21 @@ import { RenderChildren } from 'tg-named-routes';
 import routes from './routes';
 import configureStore from './configureStore';
 
-
 describe('route config', () => {
     test('Render does not break', () => {
-        const { store } = configureStore({}, {
-            location: '/',
-        });
+        const { store } = configureStore(
+            {},
+            {
+                location: '/',
+            },
+        );
 
-        render((
+        render(
             <Provider store={store}>
                 <StaticRouter location="/">
                     <RenderChildren routes={routes} />
                 </StaticRouter>
-            </Provider>
-        ));
+            </Provider>,
+        );
     });
 });

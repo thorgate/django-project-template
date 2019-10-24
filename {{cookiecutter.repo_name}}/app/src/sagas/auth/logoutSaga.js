@@ -6,7 +6,6 @@ import { resolvePath as urlResolve } from 'tg-named-routes';
 
 import { saveToken } from 'sagas/helpers/token';
 
-
 export default function* logoutWorker() {
     let url = urlResolve('landing');
 

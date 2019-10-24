@@ -2,7 +2,6 @@ import { PageError } from '@thorgate/spa-components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-
 const NotFound = () => {
     const { t } = useTranslation();
     return (
@@ -14,6 +13,5 @@ const NotFound = () => {
         />
     );
 };
-
 
 export default NotFound;

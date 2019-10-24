@@ -12,7 +12,6 @@ import FormField from 'forms/fields/FormField';
 import { tNoop } from 'utils/text';
 import { getFormPropTypes } from 'utils/types';
 
-
 const ResetPassword = ({ status, isSubmitting }) => {
     const { t } = useTranslation();
     let statusMessage = null;
@@ -24,7 +23,8 @@ const ResetPassword = ({ status, isSubmitting }) => {
                     <Col>
                         <h5>
                             <Trans>
-                                Your password has been reset. Try to login with it now.
+                                Your password has been reset. Try to login with
+                                it now.
                             </Trans>
                         </h5>
                     </Col>
@@ -39,11 +39,7 @@ const ResetPassword = ({ status, isSubmitting }) => {
             </>
         );
     } else if (is.object(status)) {
-        statusMessage = (
-            <Alert color="danger">
-                {status.message}
-            </Alert>
-        );
+        statusMessage = <Alert color="danger">{status.message}</Alert>;
     }
 
     if (!(status && status.success)) {
@@ -76,9 +72,7 @@ const ResetPassword = ({ status, isSubmitting }) => {
                     labelSize={4}
                 />
                 <Row>
-                    <Col>
-                        {statusMessage}
-                    </Col>
+                    <Col>{statusMessage}</Col>
                 </Row>
 
                 <Row>
@@ -96,19 +90,13 @@ const ResetPassword = ({ status, isSubmitting }) => {
         );
     }
 
-    return (
-        <Form>
-            {formContent}
-        </Form>
-    );
+    return <Form>{formContent}</Form>;
 };
-
 
 ResetPassword.propTypes = { ...getFormPropTypes(['email', 'password']) };
 
-
 const ResetPasswordForm = withFormik({
-    mapPropsToValues: (props) => ({
+    mapPropsToValues: props => ({
         password: '',
         password_confirm: '',
         uid_and_token_b64: props.token,
@@ -116,21 +104,20 @@ const ResetPasswordForm = withFormik({
 
     validationSchema: Yup.object().shape({
         password: Yup.string().required(tNoop('Password is required')),
-        password_confirm: Yup.string().required(tNoop('Password confirmation is required')),
+        password_confirm: Yup.string().required(
+            tNoop('Password confirmation is required'),
+        ),
     }),
 
-    handleSubmit: (values, { props, ...formik }) => (
-        props.onResetPassword({ data: values }, formik)
-    ),
+    handleSubmit: (values, { props, ...formik }) =>
+        props.onResetPassword({ data: values }, formik),
 
     displayName: 'ResetPasswordForm', // helps with React DevTools
 })(ResetPassword);
-
 
 ResetPasswordForm.propTypes = {
     token: PropTypes.string.isRequired,
     onResetPassword: PropTypes.func.isRequired,
 };
-
 
 export default ResetPasswordForm;

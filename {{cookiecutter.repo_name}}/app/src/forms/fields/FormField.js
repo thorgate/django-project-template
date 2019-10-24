@@ -5,10 +5,18 @@ import { Col, FormGroup, Label, Input, InputGroup, FormText } from 'reactstrap';
 
 import { FieldProps } from 'utils/types';
 
-
 const MAX_GRID_SIZE = 12;
 
-const FormField = ({ name, label, inputAddonPrepend, inputAddonAppend, formik, check, labelSize, ...props }) => {
+const FormField = ({
+    name,
+    label,
+    inputAddonPrepend,
+    inputAddonAppend,
+    formik,
+    check,
+    labelSize,
+    ...props
+}) => {
     const { t } = useTranslation();
     const error = getIn(formik.errors, name, null);
     const value = getIn(formik.values, name, undefined);
@@ -39,21 +47,14 @@ const FormField = ({ name, label, inputAddonPrepend, inputAddonAppend, formik, c
     let inputComponent = (
         <>
             {input}
-            {touched && error
-                ? (
-                    <FormText color="danger">
-                        {t(error)}
-                    </FormText>
-                )
-                : null
-            }
+            {touched && error ? (
+                <FormText color="danger">{t(error)}</FormText>
+            ) : null}
         </>
     );
     if (labelSize !== null) {
         inputComponent = (
-            <Col md={MAX_GRID_SIZE - labelSize}>
-                {inputComponent}
-            </Col>
+            <Col md={MAX_GRID_SIZE - labelSize}>{inputComponent}</Col>
         );
     }
 

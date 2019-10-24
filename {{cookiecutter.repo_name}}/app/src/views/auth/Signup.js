@@ -13,7 +13,6 @@ import withView from 'decorators/withView';
 import { signup } from 'sagas/auth/signupSaga';
 import { RouterLocationShape } from 'utils/types';
 
-
 const Signup = ({ location, isAuthenticated, onSignup }) => {
     const { t } = useTranslation();
 
@@ -26,9 +25,7 @@ const Signup = ({ location, isAuthenticated, onSignup }) => {
             nextUrl = query.next;
         }
 
-        return (
-            <ConnectedRedirect to={nextUrl} />
-        );
+        return <ConnectedRedirect to={nextUrl} />;
     }
 
     return (
@@ -51,13 +48,13 @@ Signup.defaultProps = {
     isAuthenticated: false,
 };
 
-
 const mapDispatchToProps = {
     onSignup: signup,
 };
 
-
-export default withView()(connect(
-    null,
-    mapDispatchToProps,
-)(Signup));
+export default withView()(
+    connect(
+        null,
+        mapDispatchToProps,
+    )(Signup),
+);

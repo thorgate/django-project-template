@@ -11,10 +11,8 @@ import fetchUserDetails from 'sagas/user/fetchUserDetails';
 
 import { createAuthenticationRoutes } from './routes/authentication';
 
-
 const Home = loadable(() => import('views/Home'));
 const RestrictedView = loadable(() => import('views/RestrictedView'));
-
 
 const NotFoundRoute = {
     name: '404',
@@ -25,12 +23,8 @@ const NotFoundRoute = {
 const routes = [
     {
         component: App,
-        initial: [
-            fetchUserDetails,
-        ],
-        watcher: [
-            activateLanguage,
-        ],
+        initial: [fetchUserDetails],
+        watcher: [activateLanguage],
         routes: [
             {
                 path: '/',
@@ -51,9 +45,7 @@ const routes = [
     },
 ];
 
-
 buildUrlCache(routes);
-
 
 /**
  * Resolve url name to valid path.

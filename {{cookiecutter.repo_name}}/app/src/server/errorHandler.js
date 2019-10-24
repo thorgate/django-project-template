@@ -2,24 +2,23 @@ import * as Sentry from '@sentry/node';
 
 import logger from './logger';
 
-
 const SURROGATE_PAIR_REGEXP = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g;
 const NON_ALPHANUMERIC_REGEXP = /([^\\#-~| !])/g;
 
-
 export function encodeEntities(value) {
-    return value.replace(/&/g, '&amp;').replace(SURROGATE_PAIR_REGEXP, (val) => {
-        const hi = val.charCodeAt(0);
-        const low = val.charCodeAt(1);
-        return `&#${(((hi - 0xD800) * 0x400) + (low - 0xDC00) + 0x10000)};`;
-    }).replace(NON_ALPHANUMERIC_REGEXP, (val) => (
-        `&#${val.charCodeAt(0)};`
-    )).replace(/</g, '&lt;')
+    return value
+        .replace(/&/g, '&amp;')
+        .replace(SURROGATE_PAIR_REGEXP, val => {
+            const hi = val.charCodeAt(0);
+            const low = val.charCodeAt(1);
+            return `&#${(hi - 0xd800) * 0x400 + (low - 0xdc00) + 0x10000};`;
+        })
+        .replace(NON_ALPHANUMERIC_REGEXP, val => `&#${val.charCodeAt(0)};`)
+        .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
 }
 
-
-const errorTemplate = (title, message, language, errorStack = null) => (
+const errorTemplate = (title, message, language, errorStack = null) =>
     `<!DOCTYPE html>
 <html lang="${language}">
 <head>
@@ -83,11 +82,9 @@ const errorTemplate = (title, message, language, errorStack = null) => (
         </div>
     </div>
 </body>
-</html>`
-);
+</html>`;
 
-
-export default (dsn) => {
+export default dsn => {
     if (process.env.NODE_ENV === 'production') {
         Sentry.init({
             dsn,
@@ -104,12 +101,16 @@ export default (dsn) => {
                 Sentry.captureException(error);
             }
 
-            logger.error('Error occurred while processing request: %s %s', error, error.stack);
+            logger.error(
+                'Error occurred while processing request: %s %s',
+                error,
+                error.stack,
+            );
 
             const title = (error && error.title) || 'Error';
-            const message = (error && error.message) || (
-                'The server encountered an internal error and was unable to complete your request.'
-            );
+            const message =
+                (error && error.message) ||
+                'The server encountered an internal error and was unable to complete your request.';
 
             let errorStack = null;
             if (process.env.NODE_ENV !== 'production') {
@@ -117,7 +118,12 @@ export default (dsn) => {
             }
 
             ctx.status = error.statusCode || error.status || 500;
-            ctx.body = errorTemplate(title, encodeEntities(message), ctx.state.language || 'en', errorStack);
+            ctx.body = errorTemplate(
+                title,
+                encodeEntities(message),
+                ctx.state.language || 'en',
+                errorStack,
+            );
         }
     };
 };

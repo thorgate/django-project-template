@@ -1,6 +1,5 @@
 import path from 'path';
 
-
 // Resolves to <projectRoot>/app
 export const appDir = path.resolve(path.join(__dirname, '..'));
 
@@ -9,9 +8,7 @@ export const appDir = path.resolve(path.join(__dirname, '..'));
  * @param relativePath
  * @returns {string}
  */
-export const resolveApp = (relativePath) => (
-    path.resolve(appDir, relativePath)
-);
+export const resolveApp = relativePath => path.resolve(appDir, relativePath);
 
 // Resolves to <projectRoot>/app/public
 export const publicDir = resolveApp('public');

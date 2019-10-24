@@ -1,7 +1,10 @@
 {% raw %}import { ChunkExtractor, ChunkExtractorManager } from '@loadable/server';
 import '@tg-resources/fetch-runtime';
 import { isAuthenticated } from '@thorgate/spa-permissions';
-import { createLocationAction, ServerViewManagerWorker } from '@thorgate/spa-view-manager';
+import {
+    createLocationAction,
+    ServerViewManagerWorker,
+} from '@thorgate/spa-view-manager';
 import i18next from 'i18next';
 import { I18nextProvider } from 'react-i18next';
 import I18NextFSBackend from 'i18next-node-fs-backend';
@@ -28,10 +31,13 @@ import SETTINGS, { getRuntimeConfig } from 'settings';
 
 import proxyFactory from './appProxy';
 import errorHandler from './errorHandler';
-import { loadTranslationsHandler, missingKeyHandler, koaI18NextMiddleware } from './i18n';
+import {
+    loadTranslationsHandler,
+    missingKeyHandler,
+    koaI18NextMiddleware,
+} from './i18n';
 import logger from './logger';
 import { statsFile, publicDir } from './paths';
-
 
 i18next
     // Load translations through the filesystem on the server side
@@ -76,15 +82,18 @@ router.get(
     '*',
     async (ctx, next) => {
         const { i18n } = ctx.state;
-        const { store } = configureStore({}, {
-            sagaMiddleware: {
-                context: {
-                    token: ctx.cookies.get(SETTINGS.AUTH_TOKEN_NAME),
-                    i18n: { t: i18n.t.bind(i18n), i18n },
+        const { store } = configureStore(
+            {},
+            {
+                sagaMiddleware: {
+                    context: {
+                        token: ctx.cookies.get(SETTINGS.AUTH_TOKEN_NAME),
+                        i18n: { t: i18n.t.bind(i18n), i18n },
+                    },
                 },
+                location: ctx.originalUrl,
             },
-            location: ctx.originalUrl,
-        });
+        );
 
         // Set the language
         const { language } = ctx.state;
@@ -93,9 +102,13 @@ router.get(
 
         const sagaContext = {};
         const task = store.runSaga(
-            ServerViewManagerWorker, routes, createLocationAction(store.getState().router), {
+            ServerViewManagerWorker,
+            routes,
+            createLocationAction(store.getState().router),
+            {
                 allowLogger: false,
-            }, sagaContext,
+            },
+            sagaContext,
         );
 
         // Stop task propagation and wait for all task to finish
@@ -110,9 +123,12 @@ router.get(
         ctx.logger.debug('Got auth state: %s', authState);
 
         const context = {};
-        const extractor = new ChunkExtractor({ statsFile, entrypoints: ['client'] });
+        const extractor = new ChunkExtractor({
+            statsFile,
+            entrypoints: ['client'],
+        });
 
-        ctx.state.markup = renderToString((
+        ctx.state.markup = renderToString(
             <ChunkExtractorManager extractor={extractor}>
                 <I18nextProvider i18n={i18n}>
                     <Provider store={store}>
@@ -121,8 +137,8 @@ router.get(
                         </StaticRouter>
                     </Provider>
                 </I18nextProvider>
-            </ChunkExtractorManager>
-        ));
+            </ChunkExtractorManager>,
+        );
 
         if (context.url) {
             return ctx.redirect(context.url);
@@ -144,9 +160,13 @@ router.get(
         ctx.state.runtimeConfig = serializeJS(getRuntimeConfig());
 
         // Serialize i18next store
-        const initialI18nStore = i18n.languages.reduce((acc, lng) => (
-            Object.assign(acc, { [lng]: i18n.services.resourceStore.data[lng] })
-        ), {});
+        const initialI18nStore = i18n.languages.reduce(
+            (acc, lng) =>
+                Object.assign(acc, {
+                    [lng]: i18n.services.resourceStore.data[lng],
+                }),
+            {},
+        );
         ctx.state.initialI18nStore = serializeJS(initialI18nStore);
 
         return next();
@@ -177,7 +197,6 @@ router.get(
         return next();
     },
 );
-
 
 const server = new Koa();
 server.context.logger = logger;

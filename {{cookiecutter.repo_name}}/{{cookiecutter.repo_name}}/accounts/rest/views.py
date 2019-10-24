@@ -18,18 +18,24 @@ class SignUpView(TgReactSignUpView):
 
     def post(self, request):
         # TG_REACT_UPGRADE: Code is copied over to correctly create Organizations
-        serializer = self.serializer_class(data=request.data, context={'request': request})
+        serializer = self.serializer_class(
+            data=request.data, context={"request": request}
+        )
         if serializer.is_valid():
             data: dict = serializer.validated_data.copy()
-            password = data.pop('password', None)
+            password = data.pop("password", None)
 
             user = get_user_model()(**data)
             user.set_password(password)
             user.save()
 
-            serializer = TokenObtainPairSerializer(data={'email': user.email, 'password': password})
+            serializer = TokenObtainPairSerializer(
+                data={"email": user.email, "password": password}
+            )
             serializer.is_valid()
             # serializer = TokenObtainPairSerializer(data=request.data)
             return Response(serializer.validated_data)
 
-        return Response({'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
+        )

@@ -3,7 +3,6 @@ import Cookies from 'js-cookie';
 
 import SETTINGS from 'settings';
 
-
 const SET_ACTIVE_LANGUAGE = 'sagas/app/SET_ACTIVE_LANGUAGE';
 
 /**
@@ -11,8 +10,10 @@ const SET_ACTIVE_LANGUAGE = 'sagas/app/SET_ACTIVE_LANGUAGE';
  * @param {string} language Language code to activate
  * @returns {{type: string, language: string}} Created action
  */
-export const setActiveLanguage = (language) => ({ type: SET_ACTIVE_LANGUAGE, language });
-
+export const setActiveLanguage = language => ({
+    type: SET_ACTIVE_LANGUAGE,
+    language,
+});
 
 function setActiveLanguageWorker({ language }) {
     const cookieLanguage = Cookies.get(SETTINGS.LANGUAGE_COOKIE_NAME);
@@ -22,7 +23,6 @@ function setActiveLanguageWorker({ language }) {
         Cookies.set(SETTINGS.LANGUAGE_COOKIE_NAME, language, { expires: 365 });
     }
 }
-
 
 export default function* activeLanguageWatcher() {
     yield takeLatest(SET_ACTIVE_LANGUAGE, setActiveLanguageWorker);

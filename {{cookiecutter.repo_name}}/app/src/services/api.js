@@ -10,7 +10,6 @@ import { getToken } from 'sagas/helpers/token';
 
 import Sentry from './sentry';
 
-
 function* mutateRequestConfig(origRequestConfig, resource) {
     const requestConfig = origRequestConfig || {};
 
@@ -33,10 +32,10 @@ function* mutateRequestConfig(origRequestConfig, resource) {
     return requestConfig;
 }
 
-
 function onRequestError(error) {
     const shouldReportError = ![
-        error.isInvalidResponseCode && [404, 403, 401].includes(error.statusCode),
+        error.isInvalidResponseCode &&
+            [404, 403, 401].includes(error.statusCode),
         error.isValidationError,
         error.isNetworkError,
         error.isAbortError,
@@ -46,37 +45,41 @@ function onRequestError(error) {
         if (process.env.NODE_ENV === 'production') {
             Sentry.captureException(error);
         } else {
+            // eslint-disable-next-line no-console
             console.log(error);
         }
     }
 }
 
-
-const api = createSagaRouter({
-    auth: {
-        obtain: 'auth/token/',
-        refresh: 'auth/token/refresh/',
-        verify: 'auth/token/verify/',
+const api = createSagaRouter(
+    {
+        auth: {
+            obtain: 'auth/token/',
+            refresh: 'auth/token/refresh/',
+            verify: 'auth/token/verify/',
+        },
+        user: {
+            details: 'user/me',
+            signup: 'user/signup',
+            forgotPassword: 'user/forgot_password',
+            forgotPasswordToken: 'user/forgot_password/token',
+        },
     },
-    user: {
-        details: 'user/me',
-        signup: 'user/signup',
-        forgotPassword: 'user/forgot_password',
-        forgotPasswordToken: 'user/forgot_password/token',
+    {
+        apiRoot: SETTINGS.BACKEND_SITE_URL + SETTINGS.API_BASE,
+
+        headers: () => ({
+            Accept: 'application/json',
+            'X-CSRFToken': Cookies.get(SETTINGS.CSRF_COOKIE_NAME),
+            'Accept-Language': Cookies.get(SETTINGS.LANGUAGE_COOKIE_NAME),
+        }),
+
+        withCredentials: true,
+
+        mutateRequestConfig,
+        onRequestError,
     },
-}, {
-    apiRoot: SETTINGS.BACKEND_SITE_URL + SETTINGS.API_BASE,
-
-    headers: () => ({
-        Accept: 'application/json',
-        'X-CSRFToken': Cookies.get(SETTINGS.CSRF_COOKIE_NAME),
-        'Accept-Language': Cookies.get(SETTINGS.LANGUAGE_COOKIE_NAME),
-    }),
-
-    withCredentials: true,
-
-    mutateRequestConfig,
-    onRequestError,
-}, Resource);
+    Resource,
+);
 
 export default api;

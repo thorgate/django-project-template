@@ -6,7 +6,6 @@ import Cookies from 'js-cookie';
 import SETTINGS from 'settings';
 import { isValidIpAddress } from 'utils/validators/ipAddress';
 
-
 export function* getToken() {
     if (process.env.BUILD_TARGET === 'server') {
         return yield getContext('token');
@@ -16,14 +15,15 @@ export function* getToken() {
     return Cookies.get(SETTINGS.AUTH_TOKEN_NAME);
 }
 
-
 export function saveToken(access = null, refresh = null) {
     const cookieOptions = {
         expires: addMinutes(new Date(), SETTINGS.AUTH_TOKEN_LIFETIME),
     };
 
     // Replace http protocol and strip port if present
-    const domain = `${SETTINGS.SITE_URL}`.replace(/^https?:\/\//, '').replace(/:\d+$/, '');
+    const domain = `${SETTINGS.SITE_URL}`
+        .replace(/^https?:\/\//, '')
+        .replace(/:\d+$/, '');
 
     if (process.env.NODE_ENV === 'production' || !isValidIpAddress(domain)) {
         cookieOptions.domain = `.${domain}`;

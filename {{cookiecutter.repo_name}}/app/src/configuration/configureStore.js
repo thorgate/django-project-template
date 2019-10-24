@@ -11,13 +11,16 @@ import rootReducer from 'configuration/reducers';
 import rootSaga from 'sagas';
 import { onComponentError } from 'services/sentry';
 
-
 // Are we using development mode & client app
-const isDevClient = process.env.BUILD_TARGET === 'client' && process.env.NODE_ENV !== 'production';
+const isDevClient =
+    process.env.BUILD_TARGET === 'client' &&
+    process.env.NODE_ENV !== 'production';
 
 // Enable Redux devTools in development (only on development client app)
-const composeEnhancers = isDevClient && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
-    ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ : compose;
+const composeEnhancers =
+    isDevClient && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+        ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+        : compose;
 
 // Enable Redux-Saga devTools in development (only on development client app)
 const sagaMonitor = isDevClient ? window.__SAGA_MONITOR_EXTENSION__ : null;
@@ -44,7 +47,9 @@ export default function configureStore(initialState = {}, options = {}) {
     if (process.env.BUILD_TARGET === 'client') {
         history = createBrowserHistory();
     } else {
-        history = createMemoryHistory({ initialEntries: [options.location || '/'] });
+        history = createMemoryHistory({
+            initialEntries: [options.location || '/'],
+        });
     }
 
     // create list of middleware to spread later, makes easier way to add based on environment
@@ -59,20 +64,23 @@ export default function configureStore(initialState = {}, options = {}) {
         const extraOptions = {};
 
         if (process.env.BUILD_TARGET === 'server') {
-            extraOptions.actionTransformer = (action) => serializeJS(action, { unsafe: true });
-            extraOptions.stateTransformer = (state) => serializeJS(state, { unsafe: true });
-            extraOptions.titleFormatter = (action, time, took) => (
-                `action "${action}" @ ${time} (in ${took.toFixed(2)} ms)`
-            );
+            extraOptions.actionTransformer = action =>
+                serializeJS(action, { unsafe: true });
+            extraOptions.stateTransformer = state =>
+                serializeJS(state, { unsafe: true });
+            extraOptions.titleFormatter = (action, time, took) =>
+                `action "${action}" @ ${time} (in ${took.toFixed(2)} ms)`;
             extraOptions.colors = false;
         }
 
-        middlewares.push(createLogger({
-            collapsed: true,
-            duration: true,
-            logger: console,
-            ...extraOptions,
-        }));
+        middlewares.push(
+            createLogger({
+                collapsed: true,
+                duration: true,
+                logger: console,
+                ...extraOptions,
+            }),
+        );
     }
 
     // Add saga middleware as the final middleware
@@ -82,7 +90,11 @@ export default function configureStore(initialState = {}, options = {}) {
     storeEnhancers.unshift(applyMiddleware(...middlewares));
 
     // Root reducer will be wrapped in connectedRouter reducer which maps to `router`
-    const store = createStore(rootReducer(history), initialState, composeEnhancers(...storeEnhancers));
+    const store = createStore(
+        rootReducer(history),
+        initialState,
+        composeEnhancers(...storeEnhancers),
+    );
 
     // Add support to stop all sagas
     store.close = () => store.dispatch(END);
@@ -98,18 +110,19 @@ export default function configureStore(initialState = {}, options = {}) {
 
     /* eslint-disable global-require */
     if (module.hot) {
-        module.hot.accept(
-            './reducers', () => {
-                const nextRootReducer = require('./reducers').default;
-                store.replaceReducer(nextRootReducer(history));
-            },
-        );
+        module.hot.accept('./reducers', () => {
+            const nextRootReducer = require('./reducers').default;
+            store.replaceReducer(nextRootReducer(history));
+        });
 
         if (process.env.BUILD_TARGET === 'client') {
             module.hot.accept('../sagas', () => {
-                sagaHotReloader.replaceRootSaga(require('../sagas').default).then(() => {
-                    console.log('🔁  HMR Reloaded `./sagas` ...');
-                });
+                sagaHotReloader
+                    .replaceRootSaga(require('../sagas').default)
+                    .then(() => {
+                        // eslint-disable-next-line no-console
+                        console.log('🔁  HMR Reloaded `./sagas` ...');
+                    });
             });
         }
     }

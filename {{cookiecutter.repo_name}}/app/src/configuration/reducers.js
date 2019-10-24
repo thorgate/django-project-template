@@ -5,11 +5,11 @@ import { userReducer } from '@thorgate/spa-permissions';
 import { connectRouter } from 'connected-react-router';
 import { combineReducers } from 'redux';
 
-
-export default (history) => combineReducers({
-    router: connectRouter(history),
-    error: errorReducer,
-    entities: entitiesReducer,
-    loading: loadingReducer,
-    user: userReducer,
-});
+export default history =>
+    combineReducers({
+        router: connectRouter(history),
+        error: errorReducer,
+        entities: entitiesReducer,
+        loading: loadingReducer,
+        user: userReducer,
+    });

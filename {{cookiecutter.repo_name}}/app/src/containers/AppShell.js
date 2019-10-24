@@ -11,7 +11,6 @@ import { RouterMatchShape, RouterRouteShape } from 'utils/types';
 // Load main styles
 import 'styles/main.scss';
 
-
 const App = ({ route, match }) => (
     <ErrorBoundary onComponentError={onComponentError}>
         <DefaultHeader canonical={match.url} />

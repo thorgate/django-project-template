@@ -12,9 +12,11 @@
     "start": "NODE_ENV=production node build/server.js",
     "export-assets": "cp -uR ./build/public/static /files/assets/",
     "extract-i18n": "i18next-scanner --config ./scanner.config.js",
+    "prettier-check": "prettier --check 'src/**/*.{js,jsx,ts,tsx}'",
+    "prettier-fix": "prettier --write 'src/**/*.{js,jsx,ts,tsx}'",
     "lint": "eslint ./src/",
     "stylelint": "stylelint 'src/**/*.scss'",
-    "quality": "yarn lint; yarn stylelint"
+    "quality": "yarn lint && yarn stylelint"
   },
   "dependencies": {
     "@babel/core": "7.6.4",
