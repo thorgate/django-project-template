@@ -32,6 +32,7 @@ COFF ?= \033[0m
 .PHONY: all help docker settings setup pycharm coverage node-install test clean quality eslint prospector stylelint docker-django
 .PHONY: bash docker-manage shell makemigrations migrate docker-logs makemessages compilemessages add-locale psql isort isort-fix
 .PHONY: build-pipenv-helper run-pipenv-helper pipenv-check pipenv-lock pipenv-install
+.PHONY: setup-terraform
 
 all: help
 
@@ -102,6 +103,10 @@ setup: pycharm settings
 	@echo "$(CYAN)===================================================================="
 	@echo "SETUP SUCCEEDED"
 	@echo "Run 'make docker' to start Django development server and Webpack.$(COFF)"
+
+setup-terraform:
+	@echo "$(CYAN)Setting up terraform$(COFF)"
+	@./deploy/terraform/setup.sh $(workspace)
 
 pycharm: $(PROJECT_ROOT)/.idea
 

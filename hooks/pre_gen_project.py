@@ -92,6 +92,11 @@ def validate_config():
         print("Valid include Docs keys are: %s" % ', '.join(valid_docs_key))
         sys.exit(1)
 
+    valid_thorgate_key = ['yes', 'no']
+    if "{{ cookiecutter.thorgate }}" not in valid_thorgate_key:
+        print("Thorgate '{{ cookiecutter.thorgate }}' is not valid!")
+        print("Valid thorgate keys are: %s" % ', '.join(valid_thorgate_key))
+
     if not re.match(r'(3\.[4-7](\.\d+)?)', "{{ cookiecutter.python_version }}"):
         print("Only allowed python version options are 3.4.x, 3.5.x, 3.6.x and 3.7.x.")
         sys.exit(1)

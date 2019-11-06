@@ -22,6 +22,9 @@ def handle_react():
     if '{{ cookiecutter.include_docs }}' == 'no':
         cleanup_paths += ['{{ cookiecutter.repo_name }}/docs']
 
+    if '{{ cookiecutter.thorgate }}' == 'no':
+        cleanup_paths += ['deploy/terraform']
+
     # If using specific vcs, add some extra cleanup paths
     repo_type = '{{ cookiecutter.vcs }}'.lower()
     if repo_type not in {'git', 'hg', 'none'}:
