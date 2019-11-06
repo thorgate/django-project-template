@@ -243,6 +243,7 @@ There are basically two types of deploys:
 * Add the server's SSH key (`/root/.ssh/id_rsa.pub`) to the project repo as deployment key.
 * Ensure you've committed and pushed all relevant changes.
 {% if cookiecutter.django_media_engine == 'S3' -%}
+{% if cookiecutter.thorgate == 'yes' %}
 * Ensure you have sufficient permissions in AWS to create a bucket and assume the terraform role (see manual steps below if not using terraform)
 * Look over the terraform definitions
   * ./deploy/terraform/variables.tf Make sure that the region is the closest one to the user of the project.
@@ -259,6 +260,8 @@ There are basically two types of deploys:
 <summary>Manual steps when not using terraform</summary>
 
 * These steps only apply when not using terraform
+{% endif %}
+
 * [Create the bucket for media files](http://docs.aws.amazon.com/AmazonS3/latest/UG/CreatingaBucket.html):
   * Bucket name: {{ cookiecutter.repo_name }}-{ENV} where `ENV` is either `staging` or `production`.
   * Region: Closest to the users of the project.
@@ -311,7 +314,10 @@ There are basically two types of deploys:
             * can be confirmed by removing url params in browser (`?X-Amz-Algorithm=....`)
     * B) make sure that `AWS_S3_ADDRESSING_STYLE = "path"` is in django settings. See details in this issue: [django-storages issue](https://github.com/jschneier/django-storages/issues/649), 
   * More information about working with S3 can be found [here](https://github.com/Fueled/django-init/wiki/Working-with-S3).
+  
+{% if cookiecutter.thorgate == 'yes' %}
 </details>
+{% endif %}
 
 {% endif %}{% if cookiecutter.django_media_engine == 'GCS' -%}
 1. Create a service account ([Google Getting Started Guide](https://cloud.google.com/docs/authentication/getting-started)).
