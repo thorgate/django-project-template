@@ -22,13 +22,25 @@ from settings.base import *
 # MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
 
 # # Trick to have debug toolbar when developing with docker
+# # Explanation: debug toolbar checks if the REMOTE_ADDR is in INTERNAL_IPS;
+# # for docker, the REMOTE_ADDR would be the container network's `router`,
+# # aka its internal IP address with the last octet replaced by .1,
+# # e.g. '192.168.96.10' => '192.168.96.1'
 # import socket
 # hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
-# INTERNAL_IPS += [ip[:-1] + '1' for ip in ips]
+# INTERNAL_IPS += ['.'.join(ip.split('.')[:-1]) + '.1' for ip in ips]
 
+# ---- Mail ----
 # Uncomment to send emails from your local machine.
-# EMAIL_HOST_PASSWORD = 'TODO (api key)'
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+# To use a local Mailhog container:
+# EMAIL_HOST = 'mailhog'
+# EMAIL_PORT = 1025
+
+# To use an external service
+# EMAIL_HOST_PASSWORD = 'TODO (api key)'
+# ---- END Mail ----
 
 {% if cookiecutter.django_media_engine == 'S3' -%}
 # AWS_ACCESS_KEY_ID = 'TODO (access key)'
