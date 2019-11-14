@@ -12,7 +12,10 @@ DJANGO_SITE_URL = env.str("RAZZLE_BACKEND_SITE_URL", default="https://{{ cookiec
 
 CSRF_COOKIE_DOMAIN = env.str("DJANGO_CSRF_COOKIE_DOMAIN", default=".{{ cookiecutter.live_hostname }}")
 
-EMAIL_HOST_PASSWORD = env.str("DJANGO_EMAIL_HOST_PASSWORD", default="TODO")
+EMAIL_HOST = env.str("DJANGO_EMAIL_HOST", default="smtp.sparkpostmail.com")
+EMAIL_PORT = env.int("DJANGO_EMAIL_PORT", default=587)
+EMAIL_HOST_USER = env.str("DJANGO_EMAIL_HOST_USER", default="TODO")
+EMAIL_HOST_PASSWORD = env.str("DJANGO_EMAIL_HOST_PASSWORD", default="TODO (api key)")
 
 RAVEN_BACKEND_DSN = env.str(
     "DJANGO_RAVEN_BACKEND_DSN", default="https://TODO:TODO@sentry.thorgate.eu/TODO"
