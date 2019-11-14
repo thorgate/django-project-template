@@ -10,6 +10,11 @@ CHANGES
 Note: Try to add categories to changes and link to MRs/Issues
 -->
 
+## 2019-11-14
+
+- [ENH] Add Mailhog for testing emails in local development
+
+
 ## 2019-07-11
 
 - [NEW] Add fabric command to mirror media files and database from

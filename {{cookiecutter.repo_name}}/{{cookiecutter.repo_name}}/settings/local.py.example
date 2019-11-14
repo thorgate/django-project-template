@@ -30,17 +30,9 @@ from settings.base import *
 # hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
 # INTERNAL_IPS += ['.'.join(ip.split('.')[:-1]) + '.1' for ip in ips]
 
-# ---- Mail ----
-# Uncomment to send emails from your local machine.
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-
-# To use a local Mailhog container:
-# EMAIL_HOST = 'mailhog'
-# EMAIL_PORT = 1025
-
-# To use an external service
+# To use an external SMTP service, set:
+# EMAIL_HOST_USER = 'TODO'
 # EMAIL_HOST_PASSWORD = 'TODO (api key)'
-# ---- END Mail ----
 
 {% if cookiecutter.django_media_engine == 'S3' -%}
 # AWS_ACCESS_KEY_ID = 'TODO (access key)'
