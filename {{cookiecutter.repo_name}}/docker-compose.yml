@@ -21,6 +21,7 @@ services:
         depends_on:
             - postgres
             - redis
+            - mailhog
 
     node:
         build:
@@ -86,3 +87,10 @@ services:
             net.core.somaxconn: 512
         volumes:
             - ".data/redis:/data"
+
+    mailhog:
+        image: mailhog/mailhog:v1.0.0
+        ports:
+            - "8025:8025"
+        logging:
+            driver: "none"

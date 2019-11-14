@@ -10,13 +10,17 @@ from settings.base import *
 # MIDDLEWARE.append("debug_toolbar.middleware.DebugToolbarMiddleware")
 
 # # Trick to have debug toolbar when developing with docker
-# import socket  # noqa
+# # Explanation: debug toolbar checks if the REMOTE_ADDR is in INTERNAL_IPS;
+# # for docker, the REMOTE_ADDR would be the container network's `router`,
+# # aka its internal IP address with the last octet replaced by .1,
+# # e.g. '192.168.96.10' => '192.168.96.1'
+# import socket
 # hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
-# INTERNAL_IPS += [ip[:-1] + "1" for ip in ips]
+# INTERNAL_IPS += ['.'.join(ip.split('.')[:-1]) + '.1' for ip in ips]
 
-# Uncomment to send emails from your local machine.
+# To use an external SMTP service, set:
+# EMAIL_HOST_USER = "TODO"
 # EMAIL_HOST_PASSWORD = "TODO (api key)"
-# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
 # Do run locally without docker uncomment following code lines
 # This overrides settings to use services from local machine instead

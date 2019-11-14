@@ -1,5 +1,5 @@
 # Based on Node 10 Alpine image
-FROM python:3.6-alpine3.8
+FROM python:{{ cookiecutter.python_version }}-alpine3.8
 
 # Install system requirements
 RUN apk add --no-cache alpine-sdk python bash
