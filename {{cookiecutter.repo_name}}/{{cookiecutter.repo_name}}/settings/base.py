@@ -207,10 +207,17 @@ AWS_SECRET_ACCESS_KEY = "<unset>"
 AWS_STORAGE_BUCKET_NAME = "<unset>"
 AWS_DEFAULT_ACL = "public-read"
 AWS_IS_GZIPPED = True
-AWS_S3_ENCRYPTION = True
 AWS_S3_FILE_OVERWRITE = False
 AWS_S3_REGION_NAME = "eu-central-1"
 AWS_S3_SIGNATURE_VERSION = "s3v4"
+
+# Only set DJANGO_AWS_S3_ENDPOINT_URL if it's defined in environment, fallback to default value in other cases
+# Useful for s3 provided by other parties than AWS, like DO.
+if env.str("DJANGO_AWS_S3_ENDPOINT_URL", default=""):
+    AWS_S3_ENDPOINT_URL = env.str("DJANGO_AWS_S3_ENDPOINT_URL")
+
+# Should be True unless using s3 provider that doesn't support it (like DO)
+AWS_S3_ENCRYPTION = env.bool("DJANGO_AWS_S3_ENCRYPTION", default=True)
 
 # This helps get around a bug in boto3 (https://github.com/boto/boto3/issues/1644)
 # Details in https://github.com/jschneier/django-storages/issues/649
