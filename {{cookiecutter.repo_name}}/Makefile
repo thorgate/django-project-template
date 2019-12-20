@@ -38,37 +38,36 @@ all: help
 
 
 help:
-	@echo "+------<<<<                                 Configuration                                >>>>------+"
-	@echo ""
-	@echo "ENV: $(ENV)"
-	@echo "PYTHON: $(PYTHON)"
-	@echo "PROJECT_ROOT: $(PROJECT_ROOT)"
-	@echo "SITE_ROOT: $(SITE_ROOT)"
-	@echo ""
-	@echo "+------<<<<                                     Tasks                                    >>>>------+"
-	@echo ""
-	@echo "$(CYAN)make setup$(COFF)    - Sets up the project in your local machine"
-	@echo "                This includes copying PyCharm files, creating local settings file, and setting up Docker."
-	@echo ""
-	@echo "$(CYAN)make pycharm$(COFF)  - Copies default PyCharm settings (unless they already exist)"
-	@echo ""
-	@echo "$(CYAN)make test$(COFF)     - Runs automatic tests on your python code"
-	@echo ""
-	@echo "$(CYAN)make coverage$(COFF) - Runs code test coverage calculation"
-	@echo ""
-	@echo "$(CYAN)make quality$(COFF)  - Runs automatic code quality tests on your code"
-	@echo ""
-	@echo "$(CYAN)make isort-fix$(COFF) - Fix imports automatically with isort"
-	@echo ""
+	@echo -e "+------<<<<                                 Configuration                                >>>>------+"
+	@echo -e ""
+	@echo -e "ENV: $(ENV)"
+	@echo -e "PYTHON: $(PYTHON)"
+	@echo -e "PROJECT_ROOT: $(PROJECT_ROOT)"
+	@echo -e "SITE_ROOT: $(SITE_ROOT)"
+	@echo -e ""
+	@echo -e "+------<<<<                                     Tasks                                    >>>>------+"
+	@echo -e ""
+	@echo -e "$(CYAN)make setup$(COFF)    - Sets up the project in your local machine"
+	@echo -e "                This includes copying PyCharm files, creating local settings file, and setting up Docker."
+	@echo -e ""
+	@echo -e "$(CYAN)make pycharm$(COFF)  - Copies default PyCharm settings (unless they already exist)"
+	@echo -e ""
+	@echo -e "$(CYAN)make test$(COFF)     - Runs automatic tests on your python code"
+	@echo -e ""
+	@echo -e "$(CYAN)make coverage$(COFF) - Runs code test coverage calculation"
+	@echo -e ""
+	@echo -e "$(CYAN)make quality$(COFF)  - Runs automatic code quality tests on your code"
+	@echo -e ""
+	@echo -e "$(CYAN)make isort-fix$(COFF) - Fix imports automatically with isort"
+	@echo -e ""
 
 build-pipenv-helper:
 	@docker build $(PROJECT_ROOT) -f Dockerfile-pipenv --tag $(PROJECT_NAME)_pipenv_wrapper
 
 
 run-pipenv-helper: build-pipenv-helper
-	@docker run --rm --name $(PROJECT_NAME)_pipenv_wrapper -v $(PROJECT_ROOT):/src $(PROJECT_NAME)_pipenv_wrapper $(cmd)
-	@echo "Restoring file permissions"
-	@sudo chown `id -un`:`id -gn` $(PROJECT_ROOT)/Pipfile.lock $(PROJECT_ROOT)/Pipfile || echo "Missing sudo"
+	@docker run --rm --name $(PROJECT_NAME)_pipenv_wrapper -v $(PROJECT_ROOT):/src $(PROJECT_NAME)_pipenv_wrapper \
+	 sh -c "$(cmd) && chown `id -u`:`id -g` Pipfile.lock"
 
 
 pipenv-lock:
