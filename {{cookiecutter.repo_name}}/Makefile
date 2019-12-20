@@ -4,6 +4,8 @@ ENV ?= local
 # PYTHON specifies the python binary to use when creating virtualenv
 PYTHON ?= python{{cookiecutter.python_version}}
 
+PYTHON_BASE_IMAGE ?= registry.gitlab.com/thorgate-public/docker-images/python{{ cookiecutter.python_version }}-base
+
 # Editor can be defined globally but defaults to nano
 EDITOR ?= nano
 
@@ -61,13 +63,9 @@ help:
 	@echo -e "$(CYAN)make isort-fix$(COFF) - Fix imports automatically with isort"
 	@echo -e ""
 
-build-pipenv-helper:
-	@docker build $(PROJECT_ROOT) -f Dockerfile-pipenv --tag $(PROJECT_NAME)_pipenv_wrapper
-
-
-run-pipenv-helper: build-pipenv-helper
-	@docker run --rm --name $(PROJECT_NAME)_pipenv_wrapper -v $(PROJECT_ROOT):/src $(PROJECT_NAME)_pipenv_wrapper \
-	 sh -c "$(cmd) && chown `id -u`:`id -g` Pipfile.lock"
+run-pipenv-helper:
+	@docker run --rm -v $(PROJECT_ROOT):/app $(PYTHON_BASE_IMAGE) sh -c \
+	 "cd /app && $(cmd) && chown `id -un`:`id -gn` $(PROJECT_ROOT)/Pipfile.lock"
 
 
 pipenv-lock:
