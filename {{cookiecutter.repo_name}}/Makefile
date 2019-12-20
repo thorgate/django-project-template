@@ -65,15 +65,13 @@ help:
 
 run-pipenv-helper:
 	@docker run --rm -v $(PROJECT_ROOT):/app $(PYTHON_BASE_IMAGE) sh -c \
-	 "cd /app && $(cmd) && chown `id -un`:`id -gn` $(PROJECT_ROOT)/Pipfile.lock"
+	 "cd /app && $(cmd) && chown `id -un`:`id -gn` Pipfile.lock"
 
+
+Pipfile.lock: pipenv-lock
 
 pipenv-lock:
 	@make run-pipenv-helper cmd="pipenv lock"
-
-
-Pipfile.lock:
-	@make pipenv-lock
 
 
 pipenv-check:
