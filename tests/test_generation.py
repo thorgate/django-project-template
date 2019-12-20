@@ -76,7 +76,10 @@ def test_cms_generate(cookies, default_project):
 
     assert result.project.join('%(repo_name)s/templates/cms_main.html' % default_project).exists()
 
-    validate_project_works(result, default_project)
+    # This will be accounted for in cms+celery config
+    # we don't have any cms-specific tests anyway
+    # so let's not run the full test suite to save time.
+    # validate_project_works(result, default_project)
 
 
 @pytest.mark.env("CELERY")
@@ -91,7 +94,10 @@ def test_celery_generate(cookies, default_project):
         contents = f.read()
     assert 'celery:' in contents
 
-    validate_project_works(result, default_project)
+    # This will be accounted for in cms+celery config
+    # we don't have any celery-specific tests anyway
+    # so let's not run the full test suite to save time.
+    # validate_project_works(result, default_project)
 
 
 @pytest.mark.env("DOC")
@@ -104,7 +110,9 @@ def test_doc_generate(cookies, default_project):
     assert result.project.join('%(repo_name)s/docs/conf.py' % default_project).exists()
     assert result.project.join('%(repo_name)s/docs/index.rst' % default_project).exists()
 
-    validate_project_works(result, default_project)
+    # we don't have any docs-specific tests anyway
+    # so let's not run the full test suite to save time.
+    # validate_project_works(result, default_project)
 
 
 def test_doc_not_generate(cookies, default_project):
