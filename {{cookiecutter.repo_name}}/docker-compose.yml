@@ -51,6 +51,8 @@ services:
         build:
             context: .
             dockerfile: Dockerfile-django
+            args:
+              DEV: "yes"
         volumes:
             - "./{{cookiecutter.repo_name}}:/app"
         depends_on:
@@ -65,6 +67,8 @@ services:
         build:
             context: .
             dockerfile: Dockerfile-django
+            args:
+              DEV: "yes"
         container_name: {{cookiecutter.repo_name}}_celery_beat
         volumes:
             - "./{{cookiecutter.repo_name}}:/app"

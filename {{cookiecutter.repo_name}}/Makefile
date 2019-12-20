@@ -1,10 +1,10 @@
 # ENV defaults to local (so that requirements/local.txt are installed), but can be overridden
 #  (e.g. ENV=production make setup).
 ENV ?= local
-# PYTHON specifies the python binary to use when creating virtualenv
+# PYTHON specifies the python version to use
 PYTHON ?= python{{cookiecutter.python_version}}
 
-PYTHON_BASE_IMAGE ?= registry.gitlab.com/thorgate-public/docker-images/python{{ cookiecutter.python_version }}-base
+PYTHON_BASE_IMAGE ?= registry.gitlab.com/thorgate-public/docker-images/$(PYTHON)-base
 
 # Editor can be defined globally but defaults to nano
 EDITOR ?= nano
