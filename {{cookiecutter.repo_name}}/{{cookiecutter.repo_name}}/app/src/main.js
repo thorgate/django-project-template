@@ -4,6 +4,7 @@ import Raven from 'raven-js';
 import {Provider} from 'react-redux';
 
 import HelloWorld from 'components/HelloWorld';
+import NavigationBar from 'components/NavigationBar';
 
 import rootReducer from './reducers';
 import configureStore from './store';
@@ -28,6 +29,25 @@ if (process.env.NODE_ENV === 'production') {
 // Create Redux store
 const store = configureStore(rootReducer);
 
+function initNavigationBar() {
+    const container = document.getElementById('navigation-bar');
+    const cmsMenus = Array.from(document.getElementById("cms-show-menu").children);
+    var menus = [];
+    cmsMenus.forEach((item) => {
+        menus.push({
+            title: item.firstElementChild.text,
+            url: item.firstElementChild.href,
+        })
+    });
+
+    if (container) {
+        ReactDOM.render(
+            <NavigationBar menus={menus}/>,
+            container
+        );
+    }
+}
+
 function init() {
     const elem = document.getElementById("hello-container");
     if (!elem) {
@@ -43,4 +63,4 @@ function init() {
 }
 
 
-export {init}; // eslint-disable-line import/prefer-default-export
+export {init, initNavigationBar}; // eslint-disable-line import/prefer-default-export

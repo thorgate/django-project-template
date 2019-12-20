@@ -348,10 +348,19 @@ WEBPACK_LOADER = {
     }
 }
 
+from django.urls import reverse_lazy
+
+LOGIN_REVERSE_URL = reverse_lazy('login')
+LOGOUT_REVERSE_URL = reverse_lazy('logout')
+PROJECT_TITLE = '{{ cookiecutter.project_title }}'
+
 # All these settings will be made available to javascript app
 SETTINGS_EXPORT = [
     'DEBUG',
     'SITE_URL',
     'STATIC_URL',
     'RAVEN_PUBLIC_DSN',
+    'LOGIN_REVERSE_URL',
+    'LOGOUT_REVERSE_URL',
+    'PROJECT_TITLE'
 ]
