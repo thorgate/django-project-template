@@ -10,6 +10,8 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 
 import os
 
+from django.urls import reverse_lazy
+
 import environ
 
 
@@ -347,8 +349,6 @@ WEBPACK_LOADER = {
         'STATS_FILE': os.path.join(SITE_ROOT, 'app', 'webpack-stats.json'),
     }
 }
-
-from django.urls import reverse_lazy
 
 LOGIN_REVERSE_URL = reverse_lazy('login')
 LOGOUT_REVERSE_URL = reverse_lazy('logout')
