@@ -1,22 +1,15 @@
 import React, {Fragment} from 'react';
+import PropTypes from 'prop-types';
 
 import {Container, Nav, Navbar} from 'react-bootstrap';
 
 
 class NavigationBar extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            menus: props.menus
-        }
-    }
-
     static renderCMSItems(menus) {
-        if (!menus) return;
+        const items = [];
 
-        var items = [];
         menus.forEach((item) => {
-            items.push(<Nav.Link href={item.url}>{item.title}</Nav.Link>)
+            items.push(<Nav.Link href={item.url}>{item.title}</Nav.Link>);
         });
 
         return (
@@ -49,11 +42,11 @@ class NavigationBar extends React.Component {
             <Navbar bg="dark" className="mb-4" variant="dark" expand="lg">
                 <Container>
                     <Navbar.Brand>{DJ_CONST.PROJECT_TITLE}</Navbar.Brand>
-                      <Navbar.Toggle aria-controls="headerNavigation" />
+                    <Navbar.Toggle aria-controls="headerNavigation" />
                     <Navbar.Collapse id="headerNavigation">
                         <Nav className="mr-auto">
                             {NavigationBar.renderItemsLeft()}
-                            {NavigationBar.renderCMSItems(this.state.menus)}
+                            {NavigationBar.renderCMSItems(this.props.menus)}
                         </Nav>
                         <Nav className="ml-auto">
                             {NavigationBar.renderItemsRight()}
@@ -64,5 +57,16 @@ class NavigationBar extends React.Component {
         );
     }
 }
+
+NavigationBar.propTypes = {
+    menus: PropTypes.arrayOf(PropTypes.shape({
+        url: PropTypes.string,
+        title: PropTypes.string,
+    })),
+};
+
+NavigationBar.defaultProps = {
+    menus: [],
+};
 
 export default NavigationBar;

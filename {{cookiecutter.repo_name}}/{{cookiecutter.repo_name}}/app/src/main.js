@@ -32,18 +32,18 @@ const store = configureStore(rootReducer);
 function initNavigationBar() {
     const container = document.getElementById('navigation-bar');
     const cmsMenus = Array.from(document.getElementById("cms-show-menu").children);
-    var menus = [];
+    const menus = [];
     cmsMenus.forEach((item) => {
         menus.push({
             title: item.firstElementChild.text,
             url: item.firstElementChild.href,
-        })
+        });
     });
 
     if (container) {
         ReactDOM.render(
-            <NavigationBar menus={menus}/>,
-            container
+            <NavigationBar menus={menus} />,
+            container,
         );
     }
 }
