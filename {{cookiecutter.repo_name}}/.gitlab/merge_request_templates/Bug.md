@@ -15,6 +15,11 @@ What alternative solutions did you consider?
 
 How one can reproduce the issue.
 
+## Parts that were changed during refactoring
+
+If you refactored something outside the scope of the task, please
+add a list of system components that were affected by the changes.
+
 ## Author's checklist
 
 - [ ] My changes are documented, existing documentation is updated
@@ -34,6 +39,7 @@ run `makemigrations` even if there were no database changes)
 - [ ] There is no apparent way to improve the performance & design of the new code
 - [ ] The covered test cases are reasonable, there are no other obvious things to test
 - [ ] There are no other obvious edge/special cases that should be explicitly covered in code/tests
+- [ ] The refactored parts were described in the MR description
 
 /assign me
 /label ~bug
