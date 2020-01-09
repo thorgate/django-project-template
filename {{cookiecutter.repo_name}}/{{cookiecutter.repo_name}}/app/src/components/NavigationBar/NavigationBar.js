@@ -1,15 +1,34 @@
 import React, {Fragment} from 'react';
 import PropTypes from 'prop-types';
 
-import {Container, Nav, Navbar} from 'react-bootstrap';
+import {Container, Nav, Navbar, NavDropdown} from 'react-bootstrap';
 
 
 class NavigationBar extends React.Component {
+    static renderCMSDropdownMenus(menu) {
+        const dropdownItems = [];
+        const childrenMenus = menu.children[0];
+        childrenMenus.forEach((item) => {
+            dropdownItems.push(<NavDropdown.Item href={item.url}>{item.title}</NavDropdown.Item>);
+        });
+
+        return (
+            <NavDropdown title={menu.title} href={menu.url}>
+                {dropdownItems}
+            </NavDropdown>
+        );
+    }
+
     static renderCMSItems(menus) {
+        if (!menus) return false;
         const items = [];
 
         menus.forEach((item) => {
-            items.push(<Nav.Link href={item.url}>{item.title}</Nav.Link>);
+            if (item.children.length) {
+                items.push(this.renderCMSDropdownMenus(item));
+            } else {
+                items.push(<Nav.Link href={item.url}>{item.title}</Nav.Link>);
+            }
         });
 
         return (

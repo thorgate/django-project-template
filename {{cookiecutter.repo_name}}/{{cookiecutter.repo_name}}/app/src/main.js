@@ -8,6 +8,7 @@ import NavigationBar from 'components/NavigationBar';
 
 import rootReducer from './reducers';
 import configureStore from './store';
+import childrenMatches from './utils/navbar';
 
 // Install Raven in production envs
 if (process.env.NODE_ENV === 'production') {
@@ -32,12 +33,27 @@ const store = configureStore(rootReducer);
 function initNavigationBar() {
     const container = document.getElementById('navigation-bar');
     const cmsMenus = Array.from(document.getElementById("cms-show-menu").children);
+
     const menus = [];
     cmsMenus.forEach((item) => {
-        menus.push({
+        const childUl = childrenMatches(item, 'ul');
+        const menu = {
             title: item.firstElementChild.text,
             url: item.firstElementChild.href,
-        });
+            children: [],
+        };
+
+        if (childUl.length) {
+            const nestChild = [...childUl[0].children];
+            const result = nestChild.map(nestChildItem => ({
+                title: nestChildItem.firstElementChild.text,
+                url: nestChildItem.firstElementChild.href,
+                children: [],
+            }));
+            menu.children.push(result);
+        }
+
+        menus.push(menu);
     });
 
     if (container) {
@@ -47,6 +63,7 @@ function initNavigationBar() {
         );
     }
 }
+
 
 function init() {
     const elem = document.getElementById("hello-container");
