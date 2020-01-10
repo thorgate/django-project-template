@@ -4,11 +4,10 @@ import Raven from 'raven-js';
 import {Provider} from 'react-redux';
 
 import HelloWorld from 'components/HelloWorld';
-import NavigationBar from 'components/NavigationBar';
+import renderNavigationBar from 'components/NavigationBar';
 
 import rootReducer from './reducers';
 import configureStore from './store';
-import childrenMatches from './utils/navbar';
 
 // Install Raven in production envs
 if (process.env.NODE_ENV === 'production') {
@@ -31,39 +30,8 @@ if (process.env.NODE_ENV === 'production') {
 const store = configureStore(rootReducer);
 
 function initNavigationBar() {
-    const container = document.getElementById('navigation-bar');
-    const cmsMenus = Array.from(document.getElementById("cms-show-menu").children);
-
-    const menus = [];
-    cmsMenus.forEach((item) => {
-        const childUl = childrenMatches(item, 'ul');
-        const menu = {
-            title: item.firstElementChild.text,
-            url: item.firstElementChild.href,
-            children: [],
-        };
-
-        if (childUl.length) {
-            const nestChild = [...childUl[0].children];
-            const result = nestChild.map(nestChildItem => ({
-                title: nestChildItem.firstElementChild.text,
-                url: nestChildItem.firstElementChild.href,
-                children: [],
-            }));
-            menu.children.push(result);
-        }
-
-        menus.push(menu);
-    });
-
-    if (container) {
-        ReactDOM.render(
-            <NavigationBar menus={menus} />,
-            container,
-        );
-    }
+    renderNavigationBar({% if cookiecutter.include_cms == 'yes' %}'navigation-bar', 'cms-show-menu'{% else %}'navigation-bar'{% endif %});
 }
-
 
 function init() {
     const elem = document.getElementById("hello-container");

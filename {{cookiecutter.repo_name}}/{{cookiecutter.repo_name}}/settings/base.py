@@ -61,6 +61,9 @@ INSTALLED_APPS = [
     'djangocms_link',
     'djangocms_picture',
     'djangocms_text_ckeditor',
+{%- else -%}
+
+    'django_js_reverse',
 {%- endif %}
 
     'crispy_forms',
@@ -364,3 +367,8 @@ SETTINGS_EXPORT = [
     'LOGOUT_REVERSE_URL',
     'PROJECT_TITLE'
 ]
+
+# django-js-reverse
+JS_REVERSE_JS_VAR_NAME = 'reverse'
+JS_REVERSE_JS_GLOBAL_OBJECT_NAME = 'DJ_CONST'
+JS_REVERSE_EXCLUDE_NAMESPACES = ['admin', 'djdt']

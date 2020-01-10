@@ -2,6 +2,8 @@
 {% load i18n %}
 {% load render_bundle from webpack_loader %}{% endraw %}{%- if cookiecutter.include_cms == 'yes' %}
 {% raw %}{% load cms_tags sekizai_tags menu_tags %}{% endraw %}
+{%- else -%}
+{% raw %}{% load js_reverse %}{% endraw %}
 {%- endif %}{% raw %}
 <!DOCTYPE html>
 <html lang="en">
@@ -27,7 +29,12 @@
                 user: null,
             {% endif %}
         };
+        {% endraw %}{%- if cookiecutter.include_cms == 'no' %}{% raw %}
+            {% js_reverse_inline %}
+        {% endraw %}{% endif %}{% raw %}
     </script>
+
+    <script type="text/javascript" src="{% url 'javascript-catalog' %}">
 
     {% render_bundle 'runtime' %}
     {% render_bundle 'vendors' %}
@@ -56,11 +63,17 @@
     <![endif]-->
 
     <div id="navigation-bar">
+        {% endraw %}{%- if cookiecutter.include_cms == 'yes' %}
         <ul class="navbar-nav" id="cms-show-menu">
-            {% endraw %}{%- if cookiecutter.include_cms == 'yes' %}
-            {% raw %}{% show_menu 0 0 0 0 %}{% endraw %}
-            {%- endif %}{% raw %}
+        {% raw %}{% show_menu 0 0 0 0 %}{% endraw %}
         </ul>
+        {%- else -%}
+        {% raw %}<header class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" href="{% url 'home' %}">{% endraw %}{{cookiecutter.project_title}}{% raw %}</a>
+            </div>
+        </header>{% endraw %}
+        {%- endif %}{% raw %}
     </div>
 
     <div class="container">
