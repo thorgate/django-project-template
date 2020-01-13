@@ -4,7 +4,7 @@ ENV ?= local
 # PYTHON specifies the python version to use
 PYTHON ?= python{{cookiecutter.python_version}}
 
-PYTHON_BASE_IMAGE ?= registry.gitlab.com/thorgate-public/docker-images/$(PYTHON)-base
+PYTHON_BASE_IMAGE ?= registry.gitlab.com/thorgate-public/docker-images/python-{{cookiecutter.python_version}}
 
 # Editor can be defined globally but defaults to nano
 EDITOR ?= nano
@@ -65,7 +65,7 @@ help:
 
 run-pipenv-helper:
 	@docker run --rm -v $(PROJECT_ROOT):/app $(PYTHON_BASE_IMAGE) sh -c \
-	 "cd /app && $(cmd) && chown `id -un`:`id -gn` Pipfile.lock"
+	 "cd /app && $(cmd) && chown `id -u`:`id -g` Pipfile.lock"
 
 
 Pipfile.lock: pipenv-lock
