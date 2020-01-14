@@ -2,9 +2,9 @@
 {% load i18n %}
 {% load render_bundle from webpack_loader %}{% endraw %}{%- if cookiecutter.include_cms == 'yes' %}
 {% raw %}{% load cms_tags sekizai_tags menu_tags %}{% endraw %}
-{%- else -%}
-{% raw %}{% load js_reverse %}{% endraw %}
-{%- endif %}{% raw %}
+{%- endif %}
+{% raw %}{% load js_reverse %}{% endraw %}{% raw %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -29,12 +29,11 @@
                 user: null,
             {% endif %}
         };
-        {% endraw %}{%- if cookiecutter.include_cms == 'no' %}{% raw %}
-            {% js_reverse_inline %}
-        {% endraw %}{% endif %}{% raw %}
+        {% js_reverse_inline %}
+
     </script>
 
-    <script type="text/javascript" src="{% url 'javascript-catalog' %}">
+    <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
 
     {% render_bundle 'runtime' %}
     {% render_bundle 'vendors' %}

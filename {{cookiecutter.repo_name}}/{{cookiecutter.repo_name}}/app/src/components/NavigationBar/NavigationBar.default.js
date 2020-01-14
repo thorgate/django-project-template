@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom';
 
 import {Container, Nav, Navbar} from 'react-bootstrap';
 
-import reverseUrl from '../../utils/urls';
 import {gettext} from '../../utils/text';
+import reverseUrl from '../../utils/urls';
 
 
 class NavigationBar extends React.Component {

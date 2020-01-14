@@ -1,10 +1,13 @@
 import React, {Fragment} from 'react';
+import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 
 import {Container, Nav, Navbar, NavDropdown} from 'react-bootstrap';
+
 import styles from './NavigationBar.scss';
 import childrenMatches from '../../utils/navbar';
-import {gettext} from "../../utils/text";
+import {gettext} from '../../utils/text';
+import reverseUrl from '../../utils/urls';
 
 
 class NavigationBar extends React.Component {
@@ -78,8 +81,8 @@ class NavigationBar extends React.Component {
         return (
             <Fragment>
                 { DJ_CONST.user ? <Nav.Link disabled>{DJ_CONST.user.name || DJ_CONST.user.email}</Nav.Link> : null }
-                { DJ_CONST.user ? <Nav.Link href={DJ_CONST.LOGOUT_REVERSE_URL}>{gettext('Log out')}</Nav.Link> : null }
-                { !DJ_CONST.user ? <Nav.Link href={DJ_CONST.LOGIN_REVERSE_URL}>{gettext('Log in')}</Nav.Link> : null }
+                { DJ_CONST.user ? <Nav.Link href={reverseUrl('logout')}>{gettext('Log out')}</Nav.Link> : null }
+                { !DJ_CONST.user ? <Nav.Link href={reverseUrl('login')}>{gettext('Log in')}</Nav.Link> : null }
             </Fragment>
         );
     }

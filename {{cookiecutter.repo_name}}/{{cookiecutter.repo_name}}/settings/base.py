@@ -10,8 +10,6 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 
 import os
 
-from django.urls import reverse_lazy
-
 import environ
 
 
@@ -61,10 +59,9 @@ INSTALLED_APPS = [
     'djangocms_link',
     'djangocms_picture',
     'djangocms_text_ckeditor',
-{%- else -%}
+{%- endif %}
 
     'django_js_reverse',
-{%- endif %}
 
     'crispy_forms',
     'webpack_loader',
@@ -353,8 +350,6 @@ WEBPACK_LOADER = {
     }
 }
 
-LOGIN_REVERSE_URL = reverse_lazy('login')
-LOGOUT_REVERSE_URL = reverse_lazy('logout')
 PROJECT_TITLE = '{{ cookiecutter.project_title }}'
 
 # All these settings will be made available to javascript app
@@ -363,8 +358,6 @@ SETTINGS_EXPORT = [
     'SITE_URL',
     'STATIC_URL',
     'RAVEN_PUBLIC_DSN',
-    'LOGIN_REVERSE_URL',
-    'LOGOUT_REVERSE_URL',
     'PROJECT_TITLE'
 ]
 
