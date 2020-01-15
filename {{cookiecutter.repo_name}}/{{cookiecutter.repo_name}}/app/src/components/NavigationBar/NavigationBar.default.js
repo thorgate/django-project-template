@@ -28,7 +28,7 @@ class NavigationBar extends React.Component {
 
     render() {
         return (
-            <Navbar bg="dark" variant="dark" expand="lg">
+            <Navbar className="mb-4" bg="dark" variant="dark" expand="lg">
                 <Container>
                     <Navbar.Brand href={reverseUrl('home')}>{DJ_CONST.PROJECT_TITLE}</Navbar.Brand>
                     <Navbar.Toggle aria-controls="headerNavigation" />

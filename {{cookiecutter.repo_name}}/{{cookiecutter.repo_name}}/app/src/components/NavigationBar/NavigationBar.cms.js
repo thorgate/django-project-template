@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 import {Container, Nav, Navbar, NavDropdown} from 'react-bootstrap';
 
 import styles from './NavigationBar.scss';
-import childrenMatches from '../../utils/navbar';
 import {gettext} from '../../utils/text';
 import reverseUrl from '../../utils/urls';
 
@@ -118,6 +117,10 @@ NavigationBar.propTypes = {
 NavigationBar.defaultProps = {
     menus: [],
 };
+
+const childrenMatches = (elem, selector) => (
+    Array.prototype.filter.call(elem.children, child => child.matches(selector))
+);
 
 const getMenus = (element) => {
     const menus = [];
