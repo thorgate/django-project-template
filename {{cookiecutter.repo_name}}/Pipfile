@@ -28,6 +28,7 @@ django-mptt = "==0.8.*"
 django-reversion = "==2.0.*"
 easy-thumbnails = "==2.4.*"
 {% endif -%}
+django-js-reverse = "==0.9.1"
 gunicorn = "==19.*"
 "psycopg2-binary" = "==2.7.*"
 pyyaml = "==5.*"

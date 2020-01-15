@@ -12,7 +12,15 @@ def handle_react():
     symlinks = []
 
     if '{{ cookiecutter.include_cms }}' == 'no':
-        cleanup_paths += ['{{ cookiecutter.repo_name }}/templates/cms_main.html']
+        cleanup_paths += [
+            '{{ cookiecutter.repo_name }}/templates/cms_main.html',
+            '{{cookiecutter.repo_name}}/app/src/components/NavigationBar/NavigationBar.cms.js',
+            '{{cookiecutter.repo_name}}/app/src/components/NavigationBar/NavigationBar.scss'
+        ]
+    else:
+        cleanup_paths += [
+            '{{cookiecutter.repo_name}}/app/src/components/NavigationBar/NavigationBar.default.js'
+        ]
 
     if '{{ cookiecutter.include_celery}}' == 'no':
         cleanup_paths += ['{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}/celery.py',
@@ -68,6 +76,12 @@ def handle_react():
 
     for src, dst in symlinks:
         os.symlink(src, dst)
+
+    subprocess.check_output([
+        "mv",
+        "{{cookiecutter.repo_name}}/app/src/components/NavigationBar/NavigationBar.{}.js".format('cms' if '{{ cookiecutter.include_cms }}' == 'yes' else 'default'),
+        "{{cookiecutter.repo_name}}/app/src/components/NavigationBar/NavigationBar.js"
+    ], cwd=cwd)
 
 
 def is_git_repository(path):
