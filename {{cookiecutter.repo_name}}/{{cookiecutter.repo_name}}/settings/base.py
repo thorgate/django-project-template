@@ -131,6 +131,10 @@ THUMBNAIL_PROCESSORS = (
     'filer.thumbnail_processors.scale_and_crop_with_subject_location',
 )
 
+CMS_PAGE_CACHE = env.str('DJANGO_CMS_PAGE_CACHE', default=True)
+CMS_PLACEHOLDER_CACHE = env.str('DJANGO_CMS_PLACEHOLDER_CACHE', default=True)
+CMS_PLUGIN_CACHE = env.str('DJANGO_CMS_PLUGIN_CACHE', default=True)
+
 CMS_TEMPLATES = (
     ('cms_main.html', 'Main template'),
 )

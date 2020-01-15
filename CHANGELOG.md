@@ -12,6 +12,11 @@ Note: Try to add categories to changes and link to MRs/Issues
 
 ## development
 
+- [NEW] Run `manage.py compilemessages` during production django image build !108
+  - Note: For cms variant one needs to make sure their django cms is updated to at-least 3.6.0
+- [ENH] CMS: Upgrade to django-cms 3.6.x !108
+- [ENH] CMS: Allow configuring cms cache settings via environment !108
+- [ENH] Ensure default AppConfig classname uses PascalCase !108
 - [NEW] Enable JS translations with [Django Javascript catalog](https://docs.djangoproject.com/en/1.11/topics/i18n/translation/#internationalization-in-javascript-code) !106
 - [ENH] Render main menu with react-bootstrap instead of as HTML. This also includes CMS variant where
    we will just parse the existing CMS menu and then re-render it with react - see !106 for details

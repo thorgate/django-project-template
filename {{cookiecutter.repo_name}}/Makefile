@@ -230,13 +230,17 @@ compilemessages:
 	docker-compose run --rm django ./manage.py compilemessages
 
 
+$(SITE_ROOT)/locale:
+	mkdir -p $(SITE_ROOT)/locale
+
+
 add-locale: $(SITE_ROOT)/locale
 ifdef LOCALE
 	@echo "Adding new locale $(LOCALE)"
 	docker-compose run --rm django ./manage.py makemessages -l $(LOCALE)
 	docker-compose run --rm django ./manage.py makemessages -d djangojs -i node_modules -l $(LOCALE)
-	@echo "$(YELLOW)Also change the the ownership of the locale files to the current user:$(COFF)"
-	@echo '    - sudo chown -R $$USER: locale/ $(SITE_ROOT)/locale/'
+	@echo "Restoring file permissions"
+	@docker-compose run --rm django sh -c "chown -R `id -u`:`id -g` ./locale/"
 else
 	@echo "$(RED)Please specify the locale you would like to add via LOCALE (e.g. make add-locale LOCALE='et')$(COFF)"
 endif

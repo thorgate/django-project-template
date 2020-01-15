@@ -18,7 +18,7 @@ django-settings-export = "==1.2.*"
 "django-storages{% if cookiecutter.django_media_engine == 'GCS' %}[google]{% endif %}" = "==1.7.*"
 django-webpack-loader = "==0.6.*"
 {% if cookiecutter.include_cms == 'yes' -%}
-django-cms = "==3.4.*"
+django-cms = "==3.6.*"
 djangocms-file = "==2.0.*"
 djangocms-link = "==2.1.*"
 djangocms-picture = "==2.0.*"
