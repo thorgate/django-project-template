@@ -10,10 +10,29 @@ CHANGES
 Note: Try to add categories to changes and link to MRs/Issues
 -->
 
+## development
+
+- [NEW] Enable JS translations with [Django Javascript catalog](https://docs.djangoproject.com/en/1.11/topics/i18n/translation/#internationalization-in-javascript-code) !106
+- [ENH] Render main menu with react-bootstrap instead of as HTML. This also includes CMS variant where
+   we will just parse the existing CMS menu and then re-render it with react - see !106 for details
+- [ENH] Provide `reverseUrl` utility function via [django-js-reverse](https://pypi.org/project/django-js-reverse) !106
+
+## 2020-01-02
+
+- [ENH] Update merge request templates with section about refactoring !103
+- [NEW] Add simple django tests !102
+
 ## 2019-11-14
 
-- [ENH] Add Mailhog for testing emails in local development
+- [NEW] Add Mailhog for testing emails in local development !99 and !101
+- [ENH] Ensure INTERNAL_IPS variable is set correctly during local development in local.py !99
+- [BUG] Add missing STDOUT logger handler for production
+- [ENH] Optimize kernel settings for Redis !95
+- [ENH] Gather repo name from .cookiecutter instead of project dir basename !84
 
+**Thorgate specific:**
+
+- [ENH] Added terraform for automatic infrastructure setup !93
 
 ## 2019-07-11
 
