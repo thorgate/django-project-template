@@ -4,6 +4,7 @@ import Raven from 'raven-js';
 import {Provider} from 'react-redux';
 
 import HelloWorld from 'components/HelloWorld';
+import renderNavigationBar from 'components/NavigationBar';
 
 import rootReducer from './reducers';
 import configureStore from './store';
@@ -28,6 +29,10 @@ if (process.env.NODE_ENV === 'production') {
 // Create Redux store
 const store = configureStore(rootReducer);
 
+function initNavigationBar() {
+    renderNavigationBar({% if cookiecutter.include_cms == 'yes' %}'navigation-bar', 'cms-show-menu'{% else %}'navigation-bar'{% endif %});
+}
+
 function init() {
     const elem = document.getElementById("hello-container");
     if (!elem) {
@@ -43,4 +48,4 @@ function init() {
 }
 
 
-export {init}; // eslint-disable-line import/prefer-default-export
+export {init, initNavigationBar}; // eslint-disable-line import/prefer-default-export

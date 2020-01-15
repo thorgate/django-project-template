@@ -61,6 +61,8 @@ INSTALLED_APPS = [
     'djangocms_text_ckeditor',
 {%- endif %}
 
+    'django_js_reverse',
+
     'crispy_forms',
     'webpack_loader',
 
@@ -348,10 +350,18 @@ WEBPACK_LOADER = {
     }
 }
 
+PROJECT_TITLE = '{{ cookiecutter.project_title }}'
+
 # All these settings will be made available to javascript app
 SETTINGS_EXPORT = [
     'DEBUG',
     'SITE_URL',
     'STATIC_URL',
     'RAVEN_PUBLIC_DSN',
+    'PROJECT_TITLE'
 ]
+
+# django-js-reverse
+JS_REVERSE_JS_VAR_NAME = 'reverse'
+JS_REVERSE_JS_GLOBAL_OBJECT_NAME = 'DJ_CONST'
+JS_REVERSE_EXCLUDE_NAMESPACES = ['admin', 'djdt']
