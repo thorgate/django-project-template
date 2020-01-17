@@ -55,7 +55,10 @@ COPY ./{{cookiecutter.repo_name}} /app
 WORKDIR /app
 
 # Compile translations to .mo files
-# RUN python manage.py compilemessages
+{% if cookiecutter.include_cms == 'yes' -%}
+# Note: DJANGO_CMS_PAGE_CACHE=False ensures django-cms does not try to connect to redis during the image build
+{% endif -%}
+RUN cd /app && {% if cookiecutter.include_cms == 'yes' %}DJANGO_CMS_PAGE_CACHE=False {% endif %}python manage.py compilemessages
 
 # Based on Node 10.x LTS image
 FROM node:{% if cookiecutter.node_version == '10' %}10.15.1{% else %}{{ cookiecutter.node_version }}{% endif %}-alpine as node_builder

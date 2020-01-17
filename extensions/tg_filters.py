@@ -1,3 +1,5 @@
+import stringcase
+
 from jinja2.ext import Extension
 
 
@@ -6,8 +8,13 @@ def as_hostname(value):
     return value.replace('_', '-')
 
 
-class CleanHostnameModule(Extension):
+def snake_to_pascal_case(value):
+    return stringcase.pascalcase(value)
+
+
+class TGFiltersModule(Extension):
     def __init__(self, environment):
         super().__init__(environment)
 
         environment.filters['as_hostname'] = as_hostname
+        environment.filters['snake_to_pascal_case'] = snake_to_pascal_case
