@@ -97,12 +97,12 @@ def validate_config():
         print("Thorgate '{{ cookiecutter.thorgate }}' is not valid!")
         print("Valid thorgate keys are: %s" % ', '.join(valid_thorgate_key))
 
-    if not re.match(r'(3\.[4-7](\.\d+)?)', "{{ cookiecutter.python_version }}"):
-        print("Only allowed python version options are 3.4.x, 3.5.x, 3.6.x and 3.7.x.")
+    if not re.match(r'(3\.[6-8](\.\d+)?)', "{{ cookiecutter.python_version }}"):
+        print("Only allowed python version options are 3.6 or later.")
         sys.exit(1)
 
-    if not re.match(r'((8|9|10|11)(\.\d+){0,2})', "{{ cookiecutter.node_version }}"):
-        print("Only allowed Node.js version's start from 8.")
+    if not re.match(r'((8|10|12)(\.\d+){0,2})', "{{ cookiecutter.node_version }}"):
+        print("Only allowed Node.js version's start from 8 or 10 and greater.")
         sys.exit(1)
 
     valid_dme_keys = ['S3', 'GCS']
