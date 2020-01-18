@@ -2,6 +2,8 @@ import os
 import subprocess
 import yaml
 
+import pytest
+
 from cookiecutter.config import USER_CONFIG_PATH
 from cookiecutter.exceptions import FailedHookException
 
@@ -21,9 +23,6 @@ def generate_project(cookies, config):
 
 
 def validate_project_works(result, config):
-    # Note: If we want to use tox to cross test this on multiple python/django/etc versions,
-    #       we should create a temporary venv for the created project before installing
-
     project_dir = str(result.project)
     project_inner_dir = str(result.project.join(config['repo_name']))
 
@@ -68,6 +67,7 @@ def test_base_generate(cookies, default_project):
     validate_project_works(result, default_project)
 
 
+@pytest.mark.env("CMS")
 def test_cms_generate(cookies, default_project):
     default_project.update({
         'include_cms': 'yes',
@@ -79,6 +79,7 @@ def test_cms_generate(cookies, default_project):
     validate_project_works(result, default_project)
 
 
+@pytest.mark.env("CELERY")
 def test_celery_generate(cookies, default_project):
     default_project.update({
         'include_celery': 'yes',
@@ -93,6 +94,7 @@ def test_celery_generate(cookies, default_project):
     validate_project_works(result, default_project)
 
 
+@pytest.mark.env("DOC")
 def test_doc_generate(cookies, default_project):
     default_project.update({
         'include_docs': 'yes',
@@ -114,6 +116,7 @@ def test_doc_not_generate(cookies, default_project):
     assert not result.project.join('%s/docs' % (default_project['repo_name'],)).exists()
 
 
+@pytest.mark.env("CELERY_CMS")
 def test_celery_and_cms_generate(cookies, default_project):
     default_project.update({
         'include_cms': 'yes',
