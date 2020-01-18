@@ -23,7 +23,9 @@ export default function nl2br(text) {
  */
 if (typeof window !== 'undefined' && (!window.django || !window.django.gettext)) {
     const docsUrl = 'https://docs.djangoproject.com/en/2.2/topics/i18n/translation/#module-django.views.i18n';
+    // eslint-disable-next-line no-console
     console.error('Did not find window.gettext - is Django JavascriptCatalog installed correctly?');
+    // eslint-disable-next-line no-console
     console.error(`  see more at ${docsUrl}`);
 }
 

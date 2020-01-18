@@ -23,7 +23,27 @@ before_script:
   - export TPL_PLAYGROUND="${SHARED_PATH}/tpl-playground"
   - mkdir -p $TPL_PLAYGROUND
 
-build:
-  stage: build
+test_main:
+  stage: test
   script:
-    - pytest --maxfail=1 -v
+    - pytest -E main --maxfail=1 -v
+
+test_CMS:
+  stage: test
+  script:
+    - pytest -E CMS --maxfail=1 -v
+
+test_CELERY:
+  stage: test
+  script:
+    - pytest -E CELERY --maxfail=1 -v
+
+test_DOC:
+  stage: test
+  script:
+    - pytest -E DOC --maxfail=1 -v
+
+test_CELERY_CMS:
+  stage: test
+  script:
+    - pytest -E CELERY_CMS --maxfail=1 -v

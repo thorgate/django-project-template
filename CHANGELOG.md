@@ -22,6 +22,10 @@ Note: Try to add categories to changes and link to MRs/Issues
    we will just parse the existing CMS menu and then re-render it with react - see !106 for details
 - [ENH] Provide `reverseUrl` utility function via [django-js-reverse](https://pypi.org/project/django-js-reverse) !106
 
+**Internal changes:**
+
+- [ENH] CI: Test generation of different project configurations in parallel
+
 ## 2020-01-02
 
 - [ENH] Update merge request templates with section about refactoring !103
