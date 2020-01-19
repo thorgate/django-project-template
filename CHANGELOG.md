@@ -10,14 +10,14 @@ CHANGES
 Note: Try to add categories to changes and link to MRs/Issues
 -->
 
-## development
+## 2020-01-19
 
 - [ENH] Added Prettier formatter for JavaScript (see !112 and originally !97)
 - [ENH] Added Black formatter for Python (see !112 and originally !97)
 
 **Migration guide:**
 
-- Upgrade template to commit `2c33bf8`
+- Upgrade template to commit `dc3fc23`
 - Run code formatting
 - Upgrade template to version `TODO: update to correct value`
 - Commit changes
