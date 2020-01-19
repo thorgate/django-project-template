@@ -19,7 +19,7 @@ Note: Try to add categories to changes and link to MRs/Issues
 
 - Upgrade template to commit `dc3fc23`
 - Run code formatting
-- Upgrade template to version `TODO: update to correct value`
+- Upgrade template to this version
 - Commit changes
 
 ## 2020-01-19

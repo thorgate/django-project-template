@@ -1,13 +1,12 @@
-import React, {Fragment} from 'react';
+import React, { Fragment } from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 
-import {Container, Nav, Navbar, NavDropdown} from 'react-bootstrap';
+import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap';
 
 import styles from './NavigationBar.scss';
-import {gettext} from '../../utils/text';
+import { gettext } from '../../utils/text';
 import reverseUrl from '../../utils/urls';
-
 
 class NavigationBar extends React.Component {
     static renderSubMenu(menu) {
@@ -28,22 +27,28 @@ class NavigationBar extends React.Component {
     static renderCMSDropdownMenus(menu) {
         const dropdownItems = [];
         const childrenMenus = menu.children[0];
-        childrenMenus.forEach((item) => {
+        childrenMenus.forEach(item => {
             let children;
 
             if (item.children.length) {
                 children = NavigationBar.renderSubMenu(item);
             }
 
-            dropdownItems.push((
+            dropdownItems.push(
                 <NavDropdown.Item key={item.url} href={item.url}>
-                    {item.title}{children}
-                </NavDropdown.Item>
-            ));
+                    {item.title}
+                    {children}
+                </NavDropdown.Item>,
+            );
         });
 
         return (
-            <NavDropdown className={styles['tg-menu']} key={menu.url} title={menu.title} href={menu.url}>
+            <NavDropdown
+                className={styles['tg-menu']}
+                key={menu.url}
+                title={menu.title}
+                href={menu.url}
+            >
                 {dropdownItems}
             </NavDropdown>
         );
@@ -53,19 +58,19 @@ class NavigationBar extends React.Component {
         if (!menus) return false;
         const items = [];
 
-        menus.forEach((item) => {
+        menus.forEach(item => {
             if (item.children.length) {
                 items.push(this.renderCMSDropdownMenus(item));
             } else {
-                items.push(<Nav.Link key={item.url} href={item.url}>{item.title}</Nav.Link>);
+                items.push(
+                    <Nav.Link key={item.url} href={item.url}>
+                        {item.title}
+                    </Nav.Link>,
+                );
             }
         });
 
-        return (
-            <Fragment>
-                {items}
-            </Fragment>
-        );
+        return <Fragment>{items}</Fragment>;
     }
 
     static renderItemsLeft() {
@@ -79,9 +84,21 @@ class NavigationBar extends React.Component {
     static renderItemsRight() {
         return (
             <Fragment>
-                { DJ_CONST.user ? <Nav.Link disabled>{DJ_CONST.user.name || DJ_CONST.user.email}</Nav.Link> : null }
-                { DJ_CONST.user ? <Nav.Link href={reverseUrl('logout')}>{gettext('Log out')}</Nav.Link> : null }
-                { !DJ_CONST.user ? <Nav.Link href={reverseUrl('login')}>{gettext('Log in')}</Nav.Link> : null }
+                {DJ_CONST.user ? (
+                    <Nav.Link disabled>
+                        {DJ_CONST.user.name || DJ_CONST.user.email}
+                    </Nav.Link>
+                ) : null}
+                {DJ_CONST.user ? (
+                    <Nav.Link href={reverseUrl('logout')}>
+                        {gettext('Log out')}
+                    </Nav.Link>
+                ) : null}
+                {!DJ_CONST.user ? (
+                    <Nav.Link href={reverseUrl('login')}>
+                        {gettext('Log in')}
+                    </Nav.Link>
+                ) : null}
             </Fragment>
         );
     }
@@ -108,23 +125,26 @@ class NavigationBar extends React.Component {
 }
 
 NavigationBar.propTypes = {
-    menus: PropTypes.arrayOf(PropTypes.shape({
-        url: PropTypes.string,
-        title: PropTypes.string,
-    })),
+    menus: PropTypes.arrayOf(
+        PropTypes.shape({
+            url: PropTypes.string,
+            title: PropTypes.string,
+        }),
+    ),
 };
 
 NavigationBar.defaultProps = {
     menus: [],
 };
 
-const childrenMatches = (elem, selector) => (
-    Array.prototype.filter.call(elem.children, child => child.matches(selector))
-);
+const childrenMatches = (elem, selector) =>
+    Array.prototype.filter.call(elem.children, child =>
+        child.matches(selector),
+    );
 
-const getMenus = (element) => {
+const getMenus = element => {
     const menus = [];
-    element.forEach((item) => {
+    element.forEach(item => {
         const childUl = childrenMatches(item, 'ul');
         const menu = {
             title: item.firstElementChild.text,
@@ -152,12 +172,9 @@ const renderNavigationBar = (containerID, menuId) => {
     const menus = getMenus(cmsMenus);
 
     if (container) {
-        ReactDOM.render(
-            <NavigationBar menus={menus} />,
-            container,
-        );
+        ReactDOM.render(<NavigationBar menus={menus} />, container);
     }
 };
 
 export default renderNavigationBar;
-export {NavigationBar};
+export { NavigationBar };

@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Raven from 'raven-js';
-import {Provider} from 'react-redux';
+import { Provider } from 'react-redux';
 
 import HelloWorld from 'components/HelloWorld';
 import renderNavigationBar from 'components/NavigationBar';
@@ -13,7 +13,7 @@ import configureStore from './store';
 if (process.env.NODE_ENV === 'production') {
     Raven.config(DJ_CONST.RAVEN_PUBLIC_DSN).install(); // eslint-disable-line
     // handle rejected promises
-    window.addEventListener('unhandledrejection', (evt) => {
+    window.addEventListener('unhandledrejection', evt => {
         Raven.captureException(evt.reason);
     });
     // If we have authenticated user, pass its data on to Raven
@@ -34,7 +34,7 @@ function initNavigationBar() {
 }
 
 function init() {
-    const elem = document.getElementById("hello-container");
+    const elem = document.getElementById('hello-container');
     if (!elem) {
         return;
     }
@@ -47,5 +47,4 @@ function init() {
     );
 }
 
-
-export {init, initNavigationBar}; // eslint-disable-line import/prefer-default-export
+export { init, initNavigationBar };

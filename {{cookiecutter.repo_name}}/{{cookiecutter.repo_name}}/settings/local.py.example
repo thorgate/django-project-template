@@ -3,12 +3,12 @@ from settings.base import *
 
 # Add proper database name, user and password here, if necessary
 # DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'HOST': 'postgres',
-#         'NAME': '{{cookiecutter.repo_name}}',
-#         'USER': '{{cookiecutter.repo_name}}',
-#         'PASSWORD': '{{cookiecutter.repo_name}}',
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql_psycopg2",
+#         "HOST": "postgres",
+#         "NAME": "{{cookiecutter.repo_name}}",
+#         "USER": "{{cookiecutter.repo_name}}",
+#         "PASSWORD": "{{cookiecutter.repo_name}}",
 #     }
 # }
 
@@ -17,29 +17,29 @@ from settings.base import *
 
 # # For development:
 # # Debug toolbar
-# INSTALLED_APPS.append('debug_toolbar')
-# INTERNAL_IPS = ['127.0.0.1']
-# MIDDLEWARE.append('debug_toolbar.middleware.DebugToolbarMiddleware')
+# INSTALLED_APPS.append("debug_toolbar")
+# INTERNAL_IPS = ["127.0.0.1"]
+# MIDDLEWARE.append("debug_toolbar.middleware.DebugToolbarMiddleware")
 
 # # Trick to have debug toolbar when developing with docker
 # # Explanation: debug toolbar checks if the REMOTE_ADDR is in INTERNAL_IPS;
 # # for docker, the REMOTE_ADDR would be the container network's `router`,
 # # aka its internal IP address with the last octet replaced by .1,
-# # e.g. '192.168.96.10' => '192.168.96.1'
+# # e.g. "192.168.96.10" => "192.168.96.1"
 # import socket
 # hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
-# INTERNAL_IPS += ['.'.join(ip.split('.')[:-1]) + '.1' for ip in ips]
+# INTERNAL_IPS += [".".join(ip.split(".")[:-1]) + ".1" for ip in ips]
 
 # To use an external SMTP service, set:
-# EMAIL_HOST_USER = 'TODO'
-# EMAIL_HOST_PASSWORD = 'TODO (api key)'
+# EMAIL_HOST_USER = "TODO"
+# EMAIL_HOST_PASSWORD = "TODO (api key)"
 
-{% if cookiecutter.django_media_engine == 'S3' -%}
-# AWS_ACCESS_KEY_ID = 'TODO (access key)'
-# AWS_SECRET_ACCESS_KEY = 'TODO (secret key)'
-{% endif %}{% if cookiecutter.django_media_engine == 'GCS' -%}
+{% if cookiecutter.django_media_engine == "S3" -%}
+# AWS_ACCESS_KEY_ID = "TODO (access key)"
+# AWS_SECRET_ACCESS_KEY = "TODO (secret key)"
+{% endif %}{% if cookiecutter.django_media_engine == "GCS" -%}
 # from google.oauth2 import service_account
-# GS_PROJECT_ID = 'TODO (project id)'
+# GS_PROJECT_ID = "TODO (project id)""
 # GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
-#     json.load('TODO (credentials json data)')
+#     json.load("TODO (credentials json data)")
 # ){% endif %}

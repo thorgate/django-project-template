@@ -224,7 +224,7 @@ clean:
 	@cd $(SITE_ROOT) && find . -name "*.pyc" -exec rm -rf {} \;
 
 
-quality: stylelint eslint prospector isort pipenv-check
+quality: prettier-check-all eslint prospector isort pipenv-check black-check-all
 
 
 eslint:
