@@ -10,6 +10,18 @@ CHANGES
 Note: Try to add categories to changes and link to MRs/Issues
 -->
 
+## development
+
+- [ENH] Added Prettier formatter for JavaScript (see !112 and originally !97)
+- [ENH] Added Black formatter for Python (see !112 and originally !97)
+
+**Migration guide:**
+
+- Upgrade template to commit `TODO: add commit hash`
+- Run code formatting
+- Upgrade template to version `TODO: update to correct value`
+- Commit changes
+
 ## 2020-01-19
 
 - [NEW] Run `manage.py compilemessages` during production django image build !108

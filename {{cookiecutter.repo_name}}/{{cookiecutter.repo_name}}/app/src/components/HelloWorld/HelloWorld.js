@@ -9,17 +9,21 @@ import styles from './HelloWorld.scss';
 class HelloWorld extends React.Component {
     static propTypes = {
         title: PropTypes.string.isRequired,
-        createTitle: PropTypes.func.isRequired,
+        setTitle: PropTypes.func.isRequired,
     };
 
     componentDidMount() {
-        this.props.createTitle('Hello world from Redux!');
+        const {setTitle} = this.props;
+
+        setTitle('Hello world from Redux!');
     }
 
     render() {
+        const {title} = this.props;
+
         return (
             <>
-                <h1 className={styles.title}>{this.props.title}</h1>
+                <h1 className={styles.title}>{title}</h1>
                 <Counter />
             </>
         );
@@ -31,7 +35,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    createTitle: title => dispatch(createTitle(title)),
+    setTitle: title => dispatch(createTitle(title)),
 });
 
 export default connect(

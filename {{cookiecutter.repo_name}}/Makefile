@@ -33,6 +33,9 @@ COFF ?= \033[0m
 .PHONY: bash docker-manage shell makemigrations migrate docker-logs makemessages compilemessages add-locale psql isort isort-fix
 .PHONY: build-pipenv-helper run-pipenv-helper pipenv-check pipenv-lock pipenv-install
 .PHONY: setup-terraform
+.PHONY: build-prettier-helper run-prettier prettier-check prettier-check-all prettier-format prettier-format-all
+.PHONY: build-black-helper run-black black-check black-check-all black-format black-format-all
+.PHONY: build-formatting-helpers
 
 all: help
 
@@ -60,6 +63,10 @@ help:
 	@echo -e ""
 	@echo -e "$(CYAN)make isort-fix$(COFF) - Fix imports automatically with isort"
 	@echo -e ""
+	@echo -e "$(CYAN)make black-format-all$(COFF) - Format all Python code"
+	@echo -e ""
+	@echo -e "$(CYAN)make prettier-format-all$(COFF) - Format all JavaScript code"
+	@echo -e ""
 
 build-pipenv-helper:
 	@docker build $(PROJECT_ROOT) -f Dockerfile-pipenv --tag $(PROJECT_NAME)_pipenv_wrapper
@@ -86,7 +93,58 @@ pipenv-install:
 	@make run-pipenv-helper cmd="pipenv install $(cmd)"
 
 
-docker: settings
+build-prettier-helper:
+	@docker build $(PROJECT_ROOT) -f $(PROJECT_ROOT)/.helpers/Dockerfile-prettier --tag $(PROJECT_NAME)_prettier_wrapper
+
+
+run-prettier: build-prettier-helper
+	@docker run --rm --name $(PROJECT_NAME)_prettier_wrapper -v $(PROJECT_ROOT):/app $(PROJECT_NAME)_prettier_wrapper $(cmd)
+
+
+prettier-check:
+	@make run-prettier cmd="prettier --check $(cmd)"
+
+
+prettier-check-all:
+	@make prettier-check cmd="'{{cookiecutter.repo_name}}/app/src/**/*.{js,jsx,ts,tsx}'"
+
+
+prettier-format:
+	@make run-prettier cmd="prettier --write $(cmd)"
+
+
+prettier-format-all:
+	@make prettier-format cmd="'{{cookiecutter.repo_name}}/app/src/**/*.{js,jsx,ts,tsx}'"
+
+
+build-black-helper:
+	@docker build $(PROJECT_ROOT) -f $(PROJECT_ROOT)/.helpers/Dockerfile-black --tag $(PROJECT_NAME)_black_wrapper
+
+
+run-black: build-black-helper
+	@docker run --rm --name $(PROJECT_NAME)_black_wrapper -v $(PROJECT_ROOT):/app $(PROJECT_NAME)_black_wrapper $(cmd)
+
+
+black-check:
+	@make run-black cmd="black --exclude fabfile.py\|docs\|local.py\|local_test.py --check $(cmd)"
+
+
+black-check-all:
+	@make run-black cmd="black --exclude fabfile.py\|docs\|local.py\|local_test.py --check $(PROJECT_NAME)"
+
+
+black-format:
+	@make run-black cmd="black --exclude fabfile.py\|docs\|local.py\|local_test.py $(cmd)"
+
+
+black-format-all:
+	@make run-black cmd="black --exclude fabfile.py\|docs\|local.py\|local_test.py $(PROJECT_NAME)"
+
+
+build-formatting-helpers: build-black-helper build-prettier-helper
+
+
+docker: build-formatting-helpers settings
 	@docker-compose down
 	@docker-compose build
 	@docker-compose up -d
@@ -94,24 +152,26 @@ docker: settings
 
 
 setup: pycharm settings
-	@echo "$(CYAN)Creating Docker images$(COFF)"
+	@echo -e "$(CYAN)Creating Docker images$(COFF)"
 	@docker-compose build
-	@echo "$(CYAN)Running django migrations$(COFF)"
+	@echo -e "$(CYAN)Running django migrations$(COFF)"
 	@make migrate
+	@echo -e "$(CYAN)Building formatting helpers$(COFF)"
+	@make build-formatting-helpers
 
-	@echo "$(CYAN)===================================================================="
+	@echo -e "$(CYAN)===================================================================="
 	@echo "SETUP SUCCEEDED"
 	@echo "Run 'make docker' to start Django development server and Webpack.$(COFF)"
 
 setup-terraform:
-	@echo "$(CYAN)Setting up terraform$(COFF)"
+	@echo -e "$(CYAN)Setting up terraform$(COFF)"
 	@./deploy/terraform/setup.sh $(workspace)
 
 pycharm: $(PROJECT_ROOT)/.idea
 
 
 $(PROJECT_ROOT)/.idea:
-	@echo "$(CYAN)Creating pycharm settings from template$(COFF)"
+	@echo -e "$(CYAN)Creating pycharm settings from template$(COFF)"
 	@mkdir -p $(PROJECT_ROOT)/.idea && cp -R $(PROJECT_ROOT)/.idea_template/* $(PROJECT_ROOT)/.idea/
 
 
@@ -131,7 +191,7 @@ $(SITE_ROOT)/settings/local_test.py:
 
 
 coverage:
-	@echo "$(CYAN)Running automatic code coverage check$(COFF)"
+	@echo -e "$(CYAN)Running automatic code coverage check$(COFF)"
 	@docker-compose run --rm django coverage run -m py.test
 	@docker-compose run --rm django coverage html
 	@docker-compose run --rm django coverage report
@@ -147,12 +207,12 @@ test-node-watch: clean
 
 
 test-node: clean
-	@echo "$(CYAN)Running automatic node.js tests$(COFF)"
+	@echo -e "$(CYAN)Running automatic node.js tests$(COFF)"
 	@docker-compose run --rm node yarn test
 
 
 test-django: clean
-	@echo "$(CYAN)Running automatic django tests$(COFF)"
+	@echo -e "$(CYAN)Running automatic django tests$(COFF)"
 	@docker-compose run --rm django py.test
 
 
@@ -160,7 +220,7 @@ test: test-node test-django
 
 
 clean:
-	@echo "$(CYAN)Cleaning pyc files$(COFF)"
+	@echo -e "$(CYAN)Cleaning pyc files$(COFF)"
 	@cd $(SITE_ROOT) && find . -name "*.pyc" -exec rm -rf {} \;
 
 
@@ -168,27 +228,27 @@ quality: stylelint eslint prospector isort pipenv-check
 
 
 eslint:
-	@echo "$(CYAN)Running ESLint$(COFF)"
+	@echo -e "$(CYAN)Running ESLint$(COFF)"
 	@docker-compose run --rm node yarn lint
 
 
 prospector:
-	@echo "$(CYAN)Running Prospector$(COFF)"
+	@echo -e "$(CYAN)Running Prospector$(COFF)"
 	@docker-compose run --rm django prospector
 
 
 stylelint:
-	@echo "$(CYAN)Running StyleLint$(COFF)"
+	@echo -e "$(CYAN)Running StyleLint$(COFF)"
 	@docker-compose run --rm node yarn stylelint
 
 
 isort:
-	@echo "$(CYAN)Checking imports with isort$(COFF)"
+	@echo -e "$(CYAN)Checking imports with isort$(COFF)"
 	docker-compose run --rm django isort --recursive --check-only -p . --diff
 
 
 isort-fix:
-	@echo "$(CYAN)Fixing imports with isort$(COFF)"
+	@echo -e "$(CYAN)Fixing imports with isort$(COFF)"
 	docker-compose run --rm django isort --recursive -p .
 
 
@@ -235,13 +295,13 @@ $(SITE_ROOT)/locale:
 
 add-locale: $(SITE_ROOT)/locale
 ifdef LOCALE
-	@echo "Adding new locale $(LOCALE)"
+	@echo -e "Adding new locale $(LOCALE)"
 	docker-compose run --rm django ./manage.py makemessages -l $(LOCALE)
 	docker-compose run --rm django ./manage.py makemessages -d djangojs -i node_modules -l $(LOCALE)
-	@echo "Restoring file permissions"
+	@echo -e "Restoring file permissions"
 	@docker-compose run --rm django sh -c "chown -R `id -u`:`id -g` ./locale/"
 else
-	@echo "$(RED)Please specify the locale you would like to add via LOCALE (e.g. make add-locale LOCALE='et')$(COFF)"
+	@echo -e "$(RED)Please specify the locale you would like to add via LOCALE (e.g. make add-locale LOCALE='et')$(COFF)"
 endif
 
 
