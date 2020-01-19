@@ -157,11 +157,10 @@ Read more about contributing to docs from `/docs/contributing.rst`.
 
 ### Coverage
 
-You can also calculate tests coverage with `coverage run -m py.test && coverage html`,
+You can also calculate tests coverage via `make coverage`. The results will be in the following directories:
 
-TODO: Expose this directory outside of docker
-the results will be in `cover/` directory.
-
+- python: `{{cookiecutter.repo_name}}/cover`
+- javascript: `{{cookiecutter.repo_name}}/coverage`
 
 ## Running linters
 

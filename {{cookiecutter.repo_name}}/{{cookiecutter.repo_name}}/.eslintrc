@@ -8,7 +8,7 @@
     },
     "globals": {
         "DJ_CONST": false,
-        "gettext": false,
+        "django": false,
     },
     "settings": {
         "import/resolver": {

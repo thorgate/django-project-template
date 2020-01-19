@@ -11,7 +11,7 @@ stringcase = "==1.2.*"
 
 [dev-packages]
 docker-compose = "==1.25.*"
-pyyaml = ">=4.2b1"  # currently needs `--pre` argument, can't update to 5.x until docker-compose 1.25.2 is available
+pyyaml = "==5.3.*"
 pytest = "==5.3.*"
 # Released version of pytest-cookies (0.4.0) has the following in dependencies array inside its setup.py:
 #

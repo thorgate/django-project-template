@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "3dee7b8d82e4356d765c47a06588199676c65aff7c3e93e30bbaccac5fcbe87d"
+            "sha256": "c7ba89ca2416e21b7154306d5c00624c0f47845f84ac571ae15eb58e06d52ade"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -320,11 +320,11 @@
         },
         "docker-compose": {
             "hashes": [
-                "sha256:68a2cfa3f5edade86393225ed85c3d27e5207eab683ddb991f944125d0c2d0d9",
-                "sha256:d94bcd991c2501af46a7b1a3377218c90e4ebb01913e075f861e62f7f1c8b726"
+                "sha256:93f8a0eb1909aebbefaeeb172b35507a4d04b88962b02ac11c08c92a545678cd",
+                "sha256:ce9d257500ed288f6316b7b6676f8a46ef186631fc3a0fa3e985311df9e9fe28"
             ],
             "index": "pypi",
-            "version": "==1.25.2rc2"
+            "version": "==1.25.2"
         },
         "dockerpty": {
             "hashes": [
@@ -442,11 +442,11 @@
         },
         "pytest": {
             "hashes": [
-                "sha256:9f8d44f4722b3d06b41afaeb8d177cfbe0700f8351b1fc755dd27eedaa3eb9e0",
-                "sha256:f5d3d0e07333119fe7d4af4ce122362dc4053cdd34a71d2766290cf5369c64ad"
+                "sha256:1d122e8be54d1a709e56f82e2d85dcba3018313d64647f38a91aec88c239b600",
+                "sha256:c13d1943c63e599b98cf118fcb9703e4d7bde7caa9a432567bcdcae4bf512d20"
             ],
             "index": "pypi",
-            "version": "==5.3.3"
+            "version": "==5.3.4"
         },
         "pytest-cookies": {
             "git": "https://github.com/Jyrno42/pytest-cookies.git",
