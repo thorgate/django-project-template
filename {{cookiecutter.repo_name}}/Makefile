@@ -98,23 +98,23 @@ build-prettier-helper:
 
 
 run-prettier: build-prettier-helper
-	@docker run --rm --name $(PROJECT_NAME)_prettier_wrapper -v $(PROJECT_ROOT):/app $(PROJECT_NAME)_prettier_wrapper $(cmd)
+	@docker run --rm --name $(PROJECT_NAME)_prettier_wrapper -v $(SITE_ROOT):/app $(PROJECT_NAME)_prettier_wrapper $(cmd)
 
 
 prettier-check:
-	@make run-prettier cmd="prettier --check $(cmd)"
+	@make run-prettier cmd="yarn prettier-check $(cmd)"
 
 
 prettier-check-all:
-	@make prettier-check cmd="'{{cookiecutter.repo_name}}/app/src/**/*.{js,jsx,ts,tsx}'"
+	@make run-prettier cmd="yarn prettier-check-all $(cmd)"
 
 
 prettier-format:
-	@make run-prettier cmd="prettier --write $(cmd)"
+	@make run-prettier cmd="yarn prettier-format $(cmd)"
 
 
 prettier-format-all:
-	@make prettier-format cmd="'{{cookiecutter.repo_name}}/app/src/**/*.{js,jsx,ts,tsx}'"
+	@make run-prettier cmd="yarn prettier-format-all $(cmd)"
 
 
 build-black-helper:
