@@ -17,7 +17,7 @@ Note: Try to add categories to changes and link to MRs/Issues
 
 **Migration guide:**
 
-- Upgrade template to commit `TODO: add commit hash`
+- Upgrade template to commit `2c33bf8`
 - Run code formatting
 - Upgrade template to version `TODO: update to correct value`
 - Commit changes
