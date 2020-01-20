@@ -27,7 +27,7 @@ def validate_project_works(result, config):
     project_inner_dir = str(result.project.join(config['repo_name']))
 
     with open(os.path.join(project_dir, '.gitlab-ci.yml')) as f:
-        gitlab_ci = yaml.load(f)
+        gitlab_ci = yaml.load(f, Loader=yaml.FullLoader)
 
     # Grab commands and environment from gitlab-ci
     commands = gitlab_ci['test']['script']
@@ -62,7 +62,7 @@ def test_base_generate(cookies, default_project):
 
     assert result.project.join('.hgignore').exists()
     assert result.project.join('.gitignore').exists()
-    assert not result.project.join('%s/templates/cms_main.html' % (default_project['repo_name'],)).exists()
+    assert not result.project.join('%(repo_name)s/templates/cms_main.html' % default_project).exists()
 
     validate_project_works(result, default_project)
 
@@ -74,7 +74,7 @@ def test_cms_generate(cookies, default_project):
     })
     result = generate_project(cookies, default_project)
 
-    assert result.project.join('%s/templates/cms_main.html' % (default_project['repo_name'],)).exists()
+    assert result.project.join('%(repo_name)s/templates/cms_main.html' % default_project).exists()
 
     validate_project_works(result, default_project)
 
@@ -101,8 +101,8 @@ def test_doc_generate(cookies, default_project):
     })
     result = generate_project(cookies, default_project)
 
-    assert result.project.join('%s/docs/conf.py' % (default_project['repo_name'],)).exists()
-    assert result.project.join('%s/docs/index.rst' % (default_project['repo_name'],)).exists()
+    assert result.project.join('%(repo_name)s/docs/conf.py' % default_project).exists()
+    assert result.project.join('%(repo_name)s/docs/index.rst' % default_project).exists()
 
     validate_project_works(result, default_project)
 
@@ -113,7 +113,7 @@ def test_doc_not_generate(cookies, default_project):
     })
     result = generate_project(cookies, default_project)
 
-    assert not result.project.join('%s/docs' % (default_project['repo_name'],)).exists()
+    assert not result.project.join('%(repo_name)s/docs' % default_project).exists()
 
 
 @pytest.mark.env("CELERY_CMS")
@@ -124,7 +124,7 @@ def test_celery_and_cms_generate(cookies, default_project):
     })
     result = generate_project(cookies, default_project)
 
-    assert result.project.join('%s/templates/cms_main.html' % (default_project['repo_name'],)).exists()
+    assert result.project.join('%(repo_name)s/templates/cms_main.html' % default_project).exists()
 
     assert result.project.join('docker-compose.yml').exists()
     with open(result.project.join('docker-compose.yml')) as f:
