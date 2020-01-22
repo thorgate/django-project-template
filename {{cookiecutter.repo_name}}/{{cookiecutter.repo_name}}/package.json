@@ -69,9 +69,14 @@
     "stylelint-config-standard": "18.2.0"
   },
   "jest": {
+    "collectCoverageFrom": [
+        "app/src/**/*.{js,jsx}",
+        "!app/src/test-setup.js",
+        "!**/node_modules/**"
+    ],
     "globals": {
       "NODE_ENV": "test",
-      "DJ_CONST": "{}"
+      "DJ_CONST": {}
     },
     "moduleFileExtensions": [
       "js",

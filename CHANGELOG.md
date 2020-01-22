@@ -10,7 +10,7 @@ CHANGES
 Note: Try to add categories to changes and link to MRs/Issues
 -->
 
-## development
+## 2020-01-19
 
 - [NEW] Run `manage.py compilemessages` during production django image build !108
   - Note: For cms variant one needs to make sure their django cms is updated to at-least 3.6.0
@@ -25,6 +25,7 @@ Note: Try to add categories to changes and link to MRs/Issues
 **Internal changes:**
 
 - [ENH] CI: Test generation of different project configurations in parallel
+- [ENH] Update all root dependencies !111
 
 ## 2020-01-02
 
