@@ -1,6 +1,6 @@
 # Development Dockerfile for Django app
 
-FROM registry.gitlab.com/thorgate-public/docker-images/python{{ cookiecutter.python_version }}-base
+FROM registry.gitlab.com/thorgate-public/docker-images/python-{{ cookiecutter.python_version }}
 
 # Set to yes if building a development image (passed down to pipenv)
 ARG DEV="no"
