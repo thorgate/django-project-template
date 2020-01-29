@@ -1,11 +1,10 @@
-import React, {Fragment} from 'react';
+import React, { Fragment } from 'react';
 import ReactDOM from 'react-dom';
 
-import {Container, Nav, Navbar} from 'react-bootstrap';
+import { Container, Nav, Navbar } from 'react-bootstrap';
 
-import {gettext} from '../../utils/text';
+import { gettext } from '../../utils/text';
 import reverseUrl from '../../utils/urls';
-
 
 class NavigationBar extends React.Component {
     static renderItemsLeft() {
@@ -19,9 +18,21 @@ class NavigationBar extends React.Component {
     static renderItemsRight() {
         return (
             <Fragment>
-                { DJ_CONST.user ? <Nav.Link disabled>{DJ_CONST.user.name || DJ_CONST.user.email}</Nav.Link> : null }
-                { DJ_CONST.user ? <Nav.Link href={reverseUrl('logout')}>{gettext("Log out")}</Nav.Link> : null }
-                { !DJ_CONST.user ? <Nav.Link href={reverseUrl('login')}>{gettext("Log in")}</Nav.Link> : null }
+                {DJ_CONST.user ? (
+                    <Nav.Link disabled>
+                        {DJ_CONST.user.name || DJ_CONST.user.email}
+                    </Nav.Link>
+                ) : null}
+                {DJ_CONST.user ? (
+                    <Nav.Link href={reverseUrl('logout')}>
+                        {gettext('Log out')}
+                    </Nav.Link>
+                ) : null}
+                {!DJ_CONST.user ? (
+                    <Nav.Link href={reverseUrl('login')}>
+                        {gettext('Log in')}
+                    </Nav.Link>
+                ) : null}
             </Fragment>
         );
     }
@@ -30,7 +41,9 @@ class NavigationBar extends React.Component {
         return (
             <Navbar className="mb-4" bg="dark" variant="dark" expand="lg">
                 <Container>
-                    <Navbar.Brand href={reverseUrl('home')}>{DJ_CONST.PROJECT_TITLE}</Navbar.Brand>
+                    <Navbar.Brand href={reverseUrl('home')}>
+                        {DJ_CONST.PROJECT_TITLE}
+                    </Navbar.Brand>
                     <Navbar.Toggle aria-controls="headerNavigation" />
                     <Navbar.Collapse id="headerNavigation">
                         <Nav className="mr-auto">
@@ -46,7 +59,7 @@ class NavigationBar extends React.Component {
     }
 }
 
-const renderNavigationBar = (containerID) => {
+const renderNavigationBar = containerID => {
     const container = document.getElementById(containerID);
 
     if (container) {
@@ -55,4 +68,4 @@ const renderNavigationBar = (containerID) => {
 };
 
 export default renderNavigationBar;
-export {NavigationBar};
+export { NavigationBar };

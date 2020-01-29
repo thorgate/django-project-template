@@ -12,6 +12,18 @@ Note: Try to add categories to changes and link to MRs/Issues
 
 ## 2020-01-19
 
+- [ENH] Added Prettier formatter for JavaScript (see !112 and originally !97)
+- [ENH] Added Black formatter for Python (see !112 and originally !97)
+
+**Migration guide:**
+
+- Upgrade template to commit `dc3fc23`
+- Run code formatting
+- Upgrade template to this version
+- Commit changes
+
+## 2020-01-19
+
 - [NEW] Run `manage.py compilemessages` during production django image build !108
   - Note: For cms variant one needs to make sure their django cms is updated to at-least 3.6.0
 - [ENH] CMS: Upgrade to django-cms 3.6.x !108

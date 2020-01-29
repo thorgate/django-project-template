@@ -1,0 +1,14 @@
+# Based on Node 10 Alpine image
+FROM python:{{ cookiecutter.python_version }}-alpine3.8
+
+# Install system requirements
+RUN apk add --no-cache alpine-sdk python bash
+
+# Install black for formatting
+RUN pip install black
+
+# Set the default directory where CMD will execute
+WORKDIR /app
+VOLUME /app
+
+CMD black --exclude fabfile.py --check .

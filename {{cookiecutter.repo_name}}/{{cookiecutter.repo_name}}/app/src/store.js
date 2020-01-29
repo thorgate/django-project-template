@@ -1,13 +1,13 @@
-import {createStore, applyMiddleware, compose} from 'redux';
+import { createStore, applyMiddleware, compose } from 'redux';
 import thunk from 'redux-thunk';
-import {createLogger} from 'redux-logger';
+import { createLogger } from 'redux-logger';
 
 const __DEV__ = process.env.NODE_ENV === 'development';
 
 const composeEnhancers =
-    typeof window === 'object' &&
-    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
-        window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ : compose;
+    typeof window === 'object' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+        ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+        : compose;
 
 export default function createReduxStore(reducer) {
     /* eslint-disable */

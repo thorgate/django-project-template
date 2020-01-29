@@ -162,6 +162,46 @@ You can also calculate tests coverage via `make coverage`. The results will be i
 - python: `{{cookiecutter.repo_name}}/cover`
 - javascript: `{{cookiecutter.repo_name}}/coverage`
 
+## Running code formatting tools
+
+Code formatting tools are used to use same code style across the project.
+
+For JavaScript we use Prettier.
+```bash
+# To check Javascript code style use:
+make prettier-check-all
+
+# To check single Javascript file use:
+make prettier-check cmd="app/src/index.js" # File path should be relative to project root
+
+# To format Javascript code use:
+make prettier-format-all
+
+# To format single Javascript file use:
+make prettier-format cmd="app/src/index.js" # File path should be relative to project root
+```
+
+For Python we use Black formatter.
+```bash
+# To check Python code style use:
+make black-check-all
+
+# To check single Python file use:
+make black-check cmd="test_project/accounts/admin.py" # File path should be relative to project root
+
+# To format Python code use:
+make black-format-all
+
+# To format single Python file use:
+make black-format cmd="app/src/index.js" # File path should be relative to project root
+```
+
+There is also option to use file watchers.
+To use pre-built docker helpers for this, import `.idea_template/watchers.xml`.
+To make this process faster the first time then run `make build-formatting-helpers` to pre-build formatting helpers.
+
+Or use `prettier` and `black` directly if NodeJS and/or Python is available for you.
+
 ## Running linters
 
 Linters check your code for common problems. Running them is a good idea before submitting pull requests, to ensure you

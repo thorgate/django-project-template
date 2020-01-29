@@ -11,8 +11,8 @@ class UserChangeForm(auth_forms.UserChangeForm):
     def __init__(self, *args, **kwargs):
         super(UserChangeForm, self).__init__(*args, **kwargs)
 
-        if 'username' in self.fields:
-            del self.fields['username']
+        if "username" in self.fields:
+            del self.fields["username"]
 
 
 class UserCreationForm(auth_forms.UserCreationForm):
@@ -24,27 +24,34 @@ class UserCreationForm(auth_forms.UserCreationForm):
     def __init__(self, *args, **kwargs):
         super(UserCreationForm, self).__init__(*args, **kwargs)
 
-        if 'username' in self.fields:
-            del self.fields['username']
+        if "username" in self.fields:
+            del self.fields["username"]
 
 
 class CustomUserAdmin(UserAdmin):
     fieldsets = (
-        (None, {'fields': ('email', 'password')}),
-        (_('Personal info'), {'fields': ('name',)}),
-        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
-                                       'groups', 'user_permissions')}),
-        (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
+        (None, {"fields": ("email", "password")}),
+        (_("Personal info"), {"fields": ("name",)}),
+        (
+            _("Permissions"),
+            {
+                "fields": (
+                    "is_active",
+                    "is_staff",
+                    "is_superuser",
+                    "groups",
+                    "user_permissions",
+                )
+            },
+        ),
+        (_("Important dates"), {"fields": ("last_login", "date_joined")}),
     )
     add_fieldsets = (
-        (None, {
-            'classes': ('wide',),
-            'fields': ('email', 'password1', 'password2')
-        }),
+        (None, {"classes": ("wide",), "fields": ("email", "password1", "password2")}),
     )
-    list_display = ('id', 'email', 'name', 'is_staff')
-    search_fields = ('email', 'name')
-    ordering = ('email',)
+    list_display = ("id", "email", "name", "is_staff")
+    search_fields = ("email", "name")
+    ordering = ("email",)
 
     form = UserChangeForm
     add_form = UserCreationForm

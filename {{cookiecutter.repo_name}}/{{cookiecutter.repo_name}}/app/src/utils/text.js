@@ -1,7 +1,6 @@
 /* global django */
 import React from 'react';
 
-
 export default function nl2br(text) {
     const res = [];
     text.split('\n').forEach((x, i) => {
@@ -15,16 +14,16 @@ export default function nl2br(text) {
     return res;
 }
 
-/**
- * The gettext methods are global functions that get injected from Django. They allow for translations in JavaScript
- * to make their way to .po files. They are available via Django JavascriptCatalog:
- *
- * https://docs.djangoproject.com/en/2.2/topics/i18n/translation/#using-the-javascript-translation-catalog
- */
-if (typeof window !== 'undefined' && (!window.django || !window.django.gettext)) {
-    const docsUrl = 'https://docs.djangoproject.com/en/2.2/topics/i18n/translation/#module-django.views.i18n';
+if (
+    typeof window !== 'undefined' &&
+    (!window.django || !window.django.gettext)
+) {
+    const docsUrl =
+        'https://docs.djangoproject.com/en/2.2/topics/i18n/translation/#module-django.views.i18n';
     // eslint-disable-next-line no-console
-    console.error('Did not find window.gettext - is Django JavascriptCatalog installed correctly?');
+    console.error(
+        'Did not find window.gettext - is Django JavascriptCatalog installed correctly?',
+    );
     // eslint-disable-next-line no-console
     console.error(`  see more at ${docsUrl}`);
 }
@@ -51,7 +50,8 @@ export const pgettext = (context, value) => django.pgettext(context, value);
  *
  * @returns {String}
  */
-export const ngettext = (singular, plural, objectCount) => django.ngettext(singular, plural, objectCount);
+export const ngettext = (singular, plural, objectCount) =>
+    django.ngettext(singular, plural, objectCount);
 
 /**
  * @param {String} context
@@ -78,4 +78,5 @@ export const npgettext = (context, singular, plural, objectCount) =>
  *     'there are %(count)s of a total of %(total)s objects', d.count);
  * console.log(interpolate(fmts, d, true))
  */
-export const interpolate = (formats, obj, named) => django.interpolate(formats, obj, named);
+export const interpolate = (formats, obj, named) =>
+    django.interpolate(formats, obj, named);

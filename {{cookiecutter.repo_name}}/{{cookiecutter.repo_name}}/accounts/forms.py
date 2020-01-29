@@ -15,27 +15,23 @@ from accounts.models import User
 
 
 class LoginForm(AuthenticationForm):
-
     def __init__(self, *args, **kwargs):
         super(LoginForm, self).__init__(*args, **kwargs)
 
         self.helper = FormHelper()
-        self.helper.form_class = 'login-form'
+        self.helper.form_class = "login-form"
         self.helper.form_show_labels = False
         self.helper.layout = Layout(
-            Field('username', placeholder=_("Username")),
-            Field('password', placeholder=_("Password"))
+            Field("username", placeholder=_("Username")),
+            Field("password", placeholder=_("Password")),
         )
-        self.helper.add_input(Submit('submit', _('Log in')))
+        self.helper.add_input(Submit("submit", _("Log in")))
 
 
 class PasswordResetForm(auth_forms.PasswordResetForm):
     helper = FormHelper()
-    helper.form_class = 'login-form'
-    helper.layout = Layout(
-        'email',
-        Submit('submit', _('Reset my password'))
-    )
+    helper.form_class = "login-form"
+    helper.layout = Layout("email", Submit("submit", _("Reset my password")))
 
     # pylint: disable=arguments-differ
     def save(self, *args, **kwargs):
@@ -59,16 +55,13 @@ class PasswordResetForm(auth_forms.PasswordResetForm):
 
 class SetPasswordForm(auth_forms.SetPasswordForm):
     helper = FormHelper()
-    helper.form_class = 'login-form'
-    helper.layout = Layout(
-        'new_password1',
-        Submit('submit', _('Change my password'))
-    )
+    helper.form_class = "login-form"
+    helper.layout = Layout("new_password1", Submit("submit", _("Change my password")))
 
     def __init__(self, user, *args, **kwargs):
         super(SetPasswordForm, self).__init__(user, *args, **kwargs)
 
-        del self.fields['new_password2']
+        del self.fields["new_password2"]
 
 
 class ChangePasswordForm(forms.ModelForm):
@@ -76,25 +69,36 @@ class ChangePasswordForm(forms.ModelForm):
         model = User
         fields = []
 
-    password_old = forms.CharField(widget=forms.PasswordInput(),
-                                   label=_("Enter your old password for confirmation"), required=True)
-    password_new = forms.CharField(widget=forms.PasswordInput(), label=_("New password"), required=True)
+    password_old = forms.CharField(
+        widget=forms.PasswordInput(),
+        label=_("Enter your old password for confirmation"),
+        required=True,
+    )
+    password_new = forms.CharField(
+        widget=forms.PasswordInput(), label=_("New password"), required=True
+    )
 
     helper = FormHelper()
     helper.layout = Layout(
-        'password_old',
-        'password_new',
-        Submit('submit', _('Save changes'), css_class="btn btn-primary")
+        "password_old",
+        "password_new",
+        Submit("submit", _("Save changes"), css_class="btn btn-primary"),
     )
 
     def clean(self):
         cleaned_data = super(ChangePasswordForm, self).clean()
-        password_old = cleaned_data.get('password_old')
-        self.password_new = cleaned_data.get('password_new')
+        password_old = cleaned_data.get("password_old")
+        self.password_new = cleaned_data.get("password_new")
 
         # If either old or new password is None, then we get an inline error and don't want to raise ValidationError
-        if password_old and self.password_new and not self.instance.check_password(password_old):
-            raise forms.ValidationError(_("The old password you've entered is not correct!"))
+        if (
+            password_old
+            and self.password_new
+            and not self.instance.check_password(password_old)
+        ):
+            raise forms.ValidationError(
+                _("The old password you've entered is not correct!")
+            )
 
         return cleaned_data
 
