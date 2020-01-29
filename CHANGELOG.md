@@ -17,7 +17,7 @@ Note: Try to add categories to changes and link to MRs/Issues
 
 **Migration guide:**
 
-- Upgrade template to commit `dc3fc23`
+- Upgrade template to commit `808e88736838c3d5cefca4d22963b54bc3d9fbf9`
 - Run code formatting
 - Upgrade template to this version
 - Commit changes
