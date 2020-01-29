@@ -10,7 +10,7 @@ CHANGES
 Note: Try to add categories to changes and link to MRs/Issues
 -->
 
-## 2020-01-19
+## 2020-01-29
 
 - [ENH] Added Prettier formatter for JavaScript (see !112 and originally !97)
 - [ENH] Added Black formatter for Python (see !112 and originally !97)
