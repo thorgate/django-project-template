@@ -13,7 +13,7 @@ before_script:
   - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   - apk update
   - apk upgrade
-  - apk add python3 python3-dev build-base
+  - apk add python3 python3-dev build-base libffi-dev openssl-dev git postgresql-dev
   - pip3 install docker-compose
 
 stages:
