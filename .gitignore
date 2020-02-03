@@ -1,6 +1,5 @@
 .idea/
 yarn-error.log
-.tox
 *.mo
 *.pyo
 *.pyc
