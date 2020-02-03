@@ -10,7 +10,7 @@ TODO: verify that the following info is correct:
 
  - Python:  {{cookiecutter.python_version}}
  - DB:      PostgreSQL 10
- - Node:    8.x LTS
+ - Node:    {{cookiecutter.node_version}} LTS
  - NPM:     5.x
  - React:   16.x
 
