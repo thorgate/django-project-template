@@ -1,6 +1,6 @@
 # Development Dockerfile for Django app
 
-FROM python:{{ cookiecutter.python_version }}-alpine3.8
+FROM {{ cookiecutter.python_version|python_image }}
 
 COPY ./wait-for-it.sh /usr/bin/
 
