@@ -10,6 +10,27 @@ CHANGES
 Note: Try to add categories to changes and link to MRs/Issues
 -->
 
+## 2020-02-03
+
+- [ENH] Node 12  !114
+- [ENH] Python 3.8  !114
+- [ENH] Django 2.2  !114
+- [ENH] Django CMS 3.7  !114
+- [ENH] django-reversions removed as it is no longer supported by django-cms  !114
+- [ENH] various other python dependency bumps  !114
+- [BUG] Work around wait-for-it.sh bug where busybox has changed `timeout` call signature  !114
+- [ENH] Disable formatting related linting rules as we are using black  !114
+- [BUG] Fix gitlab-ci builds failing from docker:latest image update  !114
+
+**Migration guide:**
+
+- https://docs.djangoproject.com/en/2.2/howto/upgrade-version/
+
+- http://docs.django-cms.org/en/latest/upgrade/3.7.html
+
+Note, if you have django cms <=3.4 and are using django-reversions, keep in mind that django-cms no longer supports django reversions.
+See: https://www.django-cms.org/en/blog/2017/02/03/back-in-time-with-django-cms/
+
 ## 2020-01-29
 
 - [ENH] Added Prettier formatter for JavaScript (see !112 and originally !97)
