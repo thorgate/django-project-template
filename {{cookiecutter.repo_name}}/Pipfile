@@ -56,6 +56,7 @@ pylint-django = "*"
 
 [dev-packages]
 django-debug-toolbar = "*"
+ipdb = "*"
 
 [requires]
 python_version = "{{cookiecutter.python_version}}"
