@@ -1,9 +1,10 @@
 from django.conf import settings
-from django.conf.urls import include, url{%- if cookiecutter.include_cms == "yes" %}
+{%- if cookiecutter.include_cms == "yes" %}
 from django.conf.urls.i18n import i18n_patterns
 {%- endif %}
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.urls import include, path, re_path
 from django.views.generic.base import TemplateView
 from django.views.i18n import JavaScriptCatalog
 
@@ -11,14 +12,14 @@ from django.views.i18n import JavaScriptCatalog
 admin.autodiscover()
 
 urlpatterns = {% if cookiecutter.include_cms == "yes" %}i18n_patterns({% else %}[{% endif %}
-    url(r"", include("accounts.urls")),
-    url(r"^$", TemplateView.as_view(template_name="home.html"), name="home"),
-    url(r"^jsi18n/$", JavaScriptCatalog.as_view(), name="javascript-catalog"),
-    url(r"^{{cookiecutter.django_admin_path}}/", admin.site.urls),
+    path("", include("accounts.urls")),
+    path("", TemplateView.as_view(template_name="home.html"), name="home"),
+    path("jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"),
+    path("{{cookiecutter.django_admin_path}}/", admin.site.urls),
     {%- if cookiecutter.include_cms == "yes" %}
-    url(r"^filer/", include("filer.urls")),
+    path("filer/", include("filer.urls")),
     # CMS urls should be handled last to avoid possible conflicts
-    url(r"^cms/", include("cms.urls")),
+    path("cms/", include("cms.urls")),
     {%- endif %}
 {% if cookiecutter.include_cms == "yes" %}){% else %}]{% endif %}
 
@@ -34,7 +35,7 @@ if settings.DEBUG:
         import debug_toolbar
 
         urlpatterns += [
-            url(r"^__debug__/", include(debug_toolbar.urls)),
+            path("^__debug__", include(debug_toolbar.urls)),
         ]
     except ImportError:
         pass
