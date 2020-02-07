@@ -383,3 +383,8 @@ There are basically two types of deploys:
 * When you ran previous command, it told you where it created the virtual environment something like /home/you/.virtualenvs/projectname-somehash
 * if you missed it you can see it by running `pipenv run which python`
 * Open your project in pycharm and under settings search for _project interpreter_ or just _interpreter_. Pycharm is smart enough and should already have picked up your venv location but just in case you can make sure it matches the path you saw when you ran the install command
+
+
+### Gotchas
+
+* Keep `react`, `react-dom` and `react-testing-library` node package versions in sync. Otherwise it causes `jest` error
