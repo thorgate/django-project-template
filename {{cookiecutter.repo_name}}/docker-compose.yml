@@ -28,6 +28,8 @@ services:
         build:
             context: .
             dockerfile: Dockerfile-node
+        ports:
+            - "6006:80"
         volumes:
             - ".data/node_modules:/app/node_modules"
             - "./{{cookiecutter.repo_name}}:/app"
