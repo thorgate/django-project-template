@@ -46,3 +46,11 @@ test_CELERY_CMS:
   stage: test
   script:
     - pytest -E CELERY_CMS --maxfail=1 -v
+
+test_merge_spa_to_master:
+  stage: test
+  only:
+    - master
+  script:
+    - git merge origin/spa || echo "Automatic merge failed $?"
+    - git status
