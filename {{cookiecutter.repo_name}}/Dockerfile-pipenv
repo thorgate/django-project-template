@@ -3,7 +3,7 @@
 # will result in all .build-deps apks being deleted from it and pipenv failing to lock/install
 # The build steps of this file are taken from the Django Dockerfile to make the build a bit faster though.
 
-FROM python:{{ cookiecutter.python_version }}-alpine3.8
+FROM {{ cookiecutter.python_version|python_image }}
 
 VOLUME /src
 WORKDIR /src

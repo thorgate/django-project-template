@@ -1,6 +1,6 @@
 # Production Dockerfile for Django app
 
-FROM python:{{ cookiecutter.python_version }}-alpine3.8 as base
+FROM {{ cookiecutter.python_version|python_image }} as base
 
 ENV DJANGO_PRODUCTION_MODE 1
 

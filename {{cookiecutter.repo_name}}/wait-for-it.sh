@@ -146,7 +146,15 @@ QUIET=${QUIET:-0}
 TIMEOUT_PATH=$(realpath $(which timeout))
 if [[ $TIMEOUT_PATH =~ "busybox" ]]; then
         ISBUSY=1
-        BUSYTIMEFLAG="-t"
+        # Determine how timeout expects arguments
+        timeout -t 0 true 2>/dev/null;
+        if [[ $? == 0 ]] ; then
+            # Busybox, but only old versions, new versions don't use -t
+            # https://github.com/mirror/busybox/commit/c9720a761e88e83265b4d75808533cdfbc66075b
+            BUSYTIMEFLAG="-t"
+        else
+            BUSYTIMEFLAG=""
+        fi
 else
         ISBUSY=0
         BUSYTIMEFLAG=""

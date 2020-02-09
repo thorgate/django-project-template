@@ -78,7 +78,7 @@
     "koa-useragent": "1.2.1",
     "lodash.template": "4.5.0",
     "lorem-ipsum": "1.0.6",
-    "node-sass": "4.9.4",
+    "node-sass": "4.13.1",
     "normalizr": "3.4.1",
     "prop-types": "15.7.2",
     "qs": "6.5.2",
