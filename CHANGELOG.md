@@ -10,6 +10,20 @@ CHANGES
 Note: Try to add categories to changes and link to MRs/Issues
 -->
 
+## 2020-02-09
+
+- [ENH] Node 12
+- [ENH] Python 3.8
+- [ENH] Django 2.2
+- [ENH] various other python dependency bumps
+- [BUG] Work around wait-for-it.sh bug where busybox has changed `timeout` call signature
+- [ENH] Disable formatting related linting rules as we are using black
+- [BUG] Fix gitlab-ci builds failing from docker:latest image update
+
+**Migration guide:**
+
+- https://docs.djangoproject.com/en/2.2/howto/upgrade-version/
+
 ## 2019-11-14
 
 - [ENH] Add Mailhog for testing emails in local development

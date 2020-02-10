@@ -10,7 +10,7 @@ TODO: verify that the following info is correct:
 
  - Python:  {{cookiecutter.python_version}}
  - DB:      PostgreSQL {{cookiecutter.postgres_version}}
- - Node:    {% if cookiecutter.node_version == '10' %}10.15.1{% else %}{{ cookiecutter.node_version }}{% endif %}
+ - Node:    {{cookiecutter.node_version}}
  - React:   16.8+
 
 Browser support is defined in the `{{ cookiecutter.repo_name }}/browserslist` file that is used for autoprefixing CSS.
