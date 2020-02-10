@@ -58,7 +58,6 @@ INSTALLED_APPS = [
     "menus",
     "sekizai",
     "djangocms_admin_style",
-    "reversion",
     "easy_thumbnails",
     "filer",
     "mptt",

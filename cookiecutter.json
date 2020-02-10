@@ -1,7 +1,8 @@
 {
     "_extensions": [
         "cookiecutter_repo_extensions:Extension",
-        "tg_filters:TGFiltersModule"
+        "tg_filters:TGFiltersModule",
+        "tg_dockerimage_lookup:TGDockerImageModule"
     ],
     "_0":  "\n\t Some information before the generation!\n",
     "_1":  "\n\t        project_title: User-visible title of the project.",
@@ -33,9 +34,9 @@
     "live_host": "production.{{cookiecutter.live_hostname}}",
     "admin_email": "info@{{cookiecutter.live_hostname}}",
     "vcs": "git",
-    "python_version": "3.6",
-    "node_version": "10",
-    "postgres_version": "10",
+    "python_version": "3.8",
+    "node_version": "12",
+    "postgres_version": "12",
     "django_admin_path": "adminpanel",
     "django_host_prefix": "office",
     "django_media_engine": "S3",
