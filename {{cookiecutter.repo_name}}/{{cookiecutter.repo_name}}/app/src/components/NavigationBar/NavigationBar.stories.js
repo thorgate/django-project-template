@@ -1,6 +1,6 @@
 import React from 'react';
-import {NavigationBar} from "./NavigationBar";
+import { NavigationBar } from './NavigationBar';
 
-export default { title: "NavigationBar" }
+export default { title: 'NavigationBar' };
 
-export const defaultBar = () => <NavigationBar />
+export const defaultBar = () => <NavigationBar />;

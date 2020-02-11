@@ -51,6 +51,7 @@ def default_project():
         "include_cms": "no",
         "include_celery": "no",
         "include_docs": "yes",
+        "include_storybook": "no",
         "test_host": "test1.thorgate.eu",
         "live_host": "test2.thorgate.eu",
         "vcs": None,

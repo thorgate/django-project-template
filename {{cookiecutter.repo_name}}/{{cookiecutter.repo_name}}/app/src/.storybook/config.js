@@ -7,7 +7,9 @@ global.django = {
     ngettext: (a, b, count) => (count === 1 ? a : b),
     interpolate: (fmt, obj, named) => {
         if (named) {
-            return fmt.replace(/%\(\w+\)s/g, match => String(obj[match.slice(2, -2)]));
+            return fmt.replace(/%\(\w+\)s/g, match =>
+                String(obj[match.slice(2, -2)]),
+            );
         } else {
             return fmt.replace(/%s/g, () => String(obj.shift()));
         }
@@ -19,17 +21,17 @@ global.django = {
         }
         return value;
     },
-    reverseUrl: (name) => name,
+    reverseUrl: name => name,
 };
 
 global.DJ_CONST = {
     user: {
         id: 1,
-        email: "r@r.ee",
-        name: "Example User",
+        email: 'r@r.ee',
+        name: 'Example User',
     },
-    PROJECT_TITLE: "{{ cookiecutter.project_title }}",
-    SITE_URL: "127.0.0.1:8000",
+    PROJECT_TITLE: '{{ cookiecutter.project_title }}',
+    SITE_URL: '127.0.0.1:8000',
     STATIC_URL: '/static/',
 };
-global.DJ_CONST['reverse'] = (text) => text;
+global.DJ_CONST['reverse'] = text => text;
