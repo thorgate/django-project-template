@@ -68,8 +68,7 @@ run-pipenv-helper:
 	 "cd /app && $(cmd) && chown `id -u`:`id -g` Pipfile.lock"
 
 
-Pipfile.lock: pipenv-lock
-
+Pipfile.lock:
 pipenv-lock:
 	@make run-pipenv-helper cmd="pipenv lock"
 
