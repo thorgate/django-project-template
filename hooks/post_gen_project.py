@@ -35,7 +35,6 @@ def handle_react():
             '{{cookiecutter.repo_name}}/app/src/.storybook',
             '{{cookiecutter.repo_name}}/app/src/storyshots.test.js',
             '{{cookiecutter.repo_name}}/app/src/stylesStub.js',
-            '{{cookiecutter.repo_name}}/app/src/test-setup.js',
             '{{cookiecutter.repo_name}}/app/src/components/Counter/Counter.stories.js',
             '{{cookiecutter.repo_name}}/app/src/components/HelloWorld/HelloWorld.stories.js',
             '{{cookiecutter.repo_name}}/app/src/components/NavigationBar/NavigationBar.stories.js',
