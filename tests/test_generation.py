@@ -107,7 +107,6 @@ def test_doc_generate(cookies, default_project):
     validate_project_works(result, default_project)
 
 
-@pytest.mark.env("STORYBOOK")
 def test_storybook_generate(cookies, default_project):
     default_project.update({
         'include_storybook': 'yes',
