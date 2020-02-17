@@ -64,8 +64,11 @@ help:
 	@echo -e ""
 
 run-pipenv-helper:
-	@docker run --rm -v $(PROJECT_ROOT):/app $(PYTHON_BASE_IMAGE) sh -c \
-	 "cd /app && $(cmd) && chown `id -u`:`id -g` Pipfile.lock"
+	@docker run --rm \
+	  -v $(PROJECT_ROOT):/app \
+	  -v $(PROJECT_ROOT)/.data/pipenv:/root/.cache \
+	  $(PYTHON_BASE_IMAGE) \
+	  sh -c "cd /app && $(cmd) && chown `id -u`:`id -g` Pipfile.lock"
 
 
 Pipfile.lock:
