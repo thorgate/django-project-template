@@ -92,6 +92,12 @@ def validate_config():
         print("Valid include Docs keys are: %s" % ', '.join(valid_docs_key))
         sys.exit(1)
 
+    valid_storybook_replies = ['yes', 'no']
+    if "{{ cookiecutter.include_storybook }}" not in valid_storybook_replies:
+        print("Your answer to Include Storybook: '{{ cookiecutter.include_storybook }}' is invalid!")
+        print("Valid choices are: %s" % ', '.join(valid_docs_key))
+        sys.exit(1)
+
     valid_thorgate_key = ['yes', 'no']
     if "{{ cookiecutter.thorgate }}" not in valid_thorgate_key:
         print("Thorgate '{{ cookiecutter.thorgate }}' is not valid!")

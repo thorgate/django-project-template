@@ -53,6 +53,10 @@
     "webpack-cli": "3.1.0"
   },
   "devDependencies": {
+{%- if cookiecutter.include_storybook == 'yes' %}
+    "@storybook/addon-storyshots": "^5.3.12",
+    "@storybook/react": "^5.3.12",
+{%- endif %}
     "babel-eslint": "8.2.3",
     "babel-jest": "^23.6.0",
     "eslint": "4.19.1",
@@ -67,6 +71,9 @@
     "jest": "^23.6.0",
     "jest-dom": "^1.12.0",
     "prettier": "1.18.2",
+{%- if cookiecutter.include_storybook == 'yes' %}
+    "react-test-renderer": "16.8.5",
+{%- endif %}
     "react-testing-library": "^5.0.1",
     "stylelint": "9.2.0",
     "stylelint-config-standard": "18.2.0"
@@ -85,6 +92,12 @@
       "js",
       "json"
     ],
+{%- if cookiecutter.include_storybook == 'yes' %}
+    "moduleNameMapper": {
+      "styles-src": "<rootDir>app/src/stylesStub.js",
+      "\\.(css|less|scss)$": "<rootDir>app/src/stylesStub.js"
+    },
+{%- endif %}
     "modulePaths": [
       "<rootDir>/app/src",
       "<rootDir>/node_modules"
@@ -102,6 +115,10 @@
     "dev": "cd app && NODE_ENV=development webpack --config webpack/config.dev.js --watch --progress --profile --color",
     "build": "cd app && NODE_ENV=production webpack -p --config webpack/config.production.js --progress --profile --color",
     "build-quiet": "cd app && NODE_ENV=production webpack -p --config webpack/config.production.js",
+    {%- if cookiecutter.include_storybook == 'yes' %}
+    "build-storybook": "build-storybook -c app/src/.storybook",
+    {%- endif %}
+
     "clean": "cd app && rm -rf build/",
     "prebuild": "yarn clean",
     "prettier-check": "prettier --check",
@@ -109,8 +126,14 @@
     "prettier-format": "prettier --write",
     "prettier-format-all": "yarn prettier-format 'app/src/**/*.{js,jsx,ts,tsx}'",
     "lint": "cd app/src && eslint .",
+    {%- if cookiecutter.include_storybook == 'yes' %}
+    "storybook": "start-storybook -c app/src/.storybook -p 80",
+    {%- endif %}
     "stylelint": "cd static/styles-src && stylelint '**/*.scss'",
     "test": "NODE_ENV=test jest",
+{%- if cookiecutter.include_storybook == 'yes' %}
+    "test:update": "NODE_ENV=test jest -u",
+{%- endif %}
     "test:watch": "NODE_ENV=test jest --watch"
   }
 }

@@ -30,6 +30,16 @@ def handle_react():
     if '{{ cookiecutter.include_docs }}' == 'no':
         cleanup_paths += ['{{ cookiecutter.repo_name }}/docs']
 
+    if '{{ cookiecutter.include_storybook }}' == 'no':
+        cleanup_paths += [
+            '{{cookiecutter.repo_name}}/app/src/.storybook',
+            '{{cookiecutter.repo_name}}/app/src/storyshots.test.js',
+            '{{cookiecutter.repo_name}}/app/src/stylesStub.js',
+            '{{cookiecutter.repo_name}}/app/src/components/Counter/Counter.stories.js',
+            '{{cookiecutter.repo_name}}/app/src/components/HelloWorld/HelloWorld.stories.js',
+            '{{cookiecutter.repo_name}}/app/src/components/NavigationBar/NavigationBar.stories.js',
+        ]
+
     if '{{ cookiecutter.thorgate }}' == 'no':
         cleanup_paths += ['deploy/terraform']
 

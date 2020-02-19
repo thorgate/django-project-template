@@ -312,3 +312,9 @@ psql:
 docs:
 	docker-compose run --rm django sphinx-build ./docs ./docs/_build
 {% endif %}
+
+{%- if cookiecutter.include_storybook == 'yes' %}
+storybook:
+	@echo "Open http://127.0.0.1:6006 to view after storybook starts"
+	docker-compose run --rm -p 6006:80 node yarn storybook
+{%- endif %}

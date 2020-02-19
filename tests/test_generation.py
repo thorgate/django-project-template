@@ -107,6 +107,26 @@ def test_doc_generate(cookies, default_project):
     validate_project_works(result, default_project)
 
 
+def test_storybook_generate(cookies, default_project):
+    default_project.update({
+        'include_storybook': 'yes',
+    })
+    result = generate_project(cookies, default_project)
+
+    assert result.project.join('%(repo_name)s/app/src/.storybook/' % default_project).exists()
+
+    validate_project_works(result, default_project)
+
+
+def test_storybook_not_generate(cookies, default_project):
+    default_project.update({
+        'include_storybook': 'no',
+    })
+    result = generate_project(cookies, default_project)
+
+    assert not result.project.join('%(repo_name)s/app/src/.storybook/' % default_project).exists()
+
+
 def test_doc_not_generate(cookies, default_project):
     default_project.update({
         'include_docs': 'no',

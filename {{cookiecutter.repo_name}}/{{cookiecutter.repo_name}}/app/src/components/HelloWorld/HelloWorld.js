@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { createTitle } from 'ducks/title';
-import Counter from 'components/Counter';
+import Counter from '../Counter';
 import styles from './HelloWorld.scss';
 
-class HelloWorld extends React.Component {
+export class HelloWorld extends React.Component {
     static propTypes = {
         title: PropTypes.string.isRequired,
         setTitle: PropTypes.func.isRequired,
