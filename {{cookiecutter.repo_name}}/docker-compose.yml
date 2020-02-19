@@ -28,6 +28,10 @@ services:
         build:
             context: .
             dockerfile: Dockerfile-node
+    {%- if cookiecutter.include_storybook == 'yes' %}
+        ports:
+            - "6006:80"
+    {%- endif %}
         volumes:
             - ".data/node_modules:/app/node_modules"
             - "./{{cookiecutter.repo_name}}:/app"
