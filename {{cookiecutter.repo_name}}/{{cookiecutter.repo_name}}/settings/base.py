@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 """
 
 import os
+from urllib.parse import quote
 
 import environ
 
@@ -135,14 +136,19 @@ CMS_TEMPLATES = (("cms_main.html", "Main template"),)
 
 # Database
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "HOST": env.str("DJANGO_DATABASE_HOST", default="postgres"),
-        "PORT": env.int("DJANGO_DATABASE_PORT", default=5432),
-        "NAME": env.str("DJANGO_DATABASE_NAME", default="{{cookiecutter.repo_name}}"),
-        "USER": env.str("DJANGO_DATABASE_USER", default="{{cookiecutter.repo_name}}"),
-        "PASSWORD": env.str("DJANGO_DATABASE_PASSWORD", default="{{cookiecutter.repo_name}}"),
-    }
+    # When using DJANGO_DATABASE_URL, unsafe characters in the url should be encoded.
+    # See: https://django-environ.readthedocs.io/en/latest/#using-unsafe-characters-in-urls
+    "default": env.db_url(
+        "DJANGO_DATABASE_URL",
+        default="psql://{user}:{password}@{host}:{port}/{name}?sslmode={sslmode}".format(
+            host=env.str("DJANGO_DATABASE_HOST", default="postgres"),
+            port=env.int("DJANGO_DATABASE_PORT", default=5432),
+            name=quote(env.str("DJANGO_DATABASE_NAME", default="{{cookiecutter.repo_name}}")),
+            user=quote(env.str("DJANGO_DATABASE_USER", default="{{cookiecutter.repo_name}}")),
+            password=quote(env.str("DJANGO_DATABASE_PASSWORD", default="{{cookiecutter.repo_name}}")),
+            sslmode=env.str("DJANGO_DATABASE_SSLMODE", "disable"),
+        ),
+    )
 }
 
 
