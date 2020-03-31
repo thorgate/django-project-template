@@ -10,6 +10,12 @@ CHANGES
 Note: Try to add categories to changes and link to MRs/Issues
 -->
 
+## 2020-03-30
+
+- [ENH] Add support for database settings from url
+- [ENH] Add support for `sslmode` option via environment variables (default=`disable`)
+
+
 ## 2020-02-09
 
 - [ENH] Node 12
