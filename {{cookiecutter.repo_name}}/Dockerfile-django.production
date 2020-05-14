@@ -21,9 +21,6 @@ RUN apk add --no-cache --virtual .build-deps \
 # Copy Python requirements dir and Install requirements
 RUN pip install -U pipenv==2020.4.1b1 pip setuptools wheel
 
-# Copy code
-COPY ./{{cookiecutter.repo_name}} /app
-
 # Set the default directory where CMD will execute
 WORKDIR /app
 
@@ -53,6 +50,12 @@ RUN find /usr/local \
 
 # Remove build dependencies
 RUN apk del .build-deps
+
+# Copy code
+COPY ./{{cookiecutter.repo_name}} /app
+
+# Set the default directory where CMD will execute
+WORKDIR /app
 
 # Compile translations to .mo files
 {% if cookiecutter.include_cms == 'yes' -%}
