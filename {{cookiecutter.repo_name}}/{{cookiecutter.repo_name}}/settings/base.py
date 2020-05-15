@@ -164,19 +164,10 @@ DATABASES = {
 REDIS_URL = env.str("DJANGO_REDIS_URL", default="redis://redis:6379/1")
 REDIS_CACHE_URL = env.str("DJANGO_REDIS_CACHE_URL", default=REDIS_URL)
 REDIS_CELERY_URL = env.str("DJANGO_REDIS_CELERY_URL", default=REDIS_URL)
+
 {%- if cookiecutter.include_celery == "yes" %}
-
-
-# Celery configuration
-CELERY_RESULT_BACKEND = REDIS_CELERY_URL
-CELERY_REDIS_CONNECT_RETRY = True
-CELERYD_HIJACK_ROOT_LOGGER = False
-BROKER_URL = REDIS_CELERY_URL
-BROKER_TRANSPORT_OPTIONS = {"fanout_prefix": True}
-
-CELERY_TIMEZONE = "UTC"
-
 # Set your Celerybeat tasks/schedule here
+# Rest of Celery configuration lives in celery_settings.py
 CELERYBEAT_SCHEDULE = {
     "default-task": {
         # TODO: Remove the default task after confirming that Celery works.
