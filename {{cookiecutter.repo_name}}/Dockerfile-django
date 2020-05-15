@@ -14,10 +14,13 @@ RUN apk add --no-cache --virtual .build-deps \
     libffi-dev libxml2-dev libxslt-dev jpeg-dev zlib-dev bash gettext
 
 # Copy Python requirements dir and Install requirements
-RUN pip install -U pipenv==2018.11.26 pip setuptools wheel
+RUN pip install -U pipenv==2020.4.1b1 pip setuptools wheel
 
-COPY Pipfile /
-COPY Pipfile.lock /
+# Set the default directory where CMD will execute
+WORKDIR /app
+
+COPY Pipfile /app
+COPY Pipfile.lock /app
 
 # Install all dependencies from Pipfile.lock file
 RUN pipenv install --system --ignore-pipfile --dev
@@ -45,9 +48,6 @@ RUN find /usr/local \
 
 # Remove build dependencies
 RUN apk del .build-deps
-
-# Set the default directory where CMD will execute
-WORKDIR /app
 
 # Run Django's runserver by default
 CMD python manage.py runserver 0.0.0.0:80
