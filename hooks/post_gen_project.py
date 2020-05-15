@@ -24,6 +24,7 @@ def handle_react():
 
     if '{{ cookiecutter.include_celery}}' == 'no':
         cleanup_paths += ['{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}/celery.py',
+                          '{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}/celery_settings.py',
                           '{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}/tasks.py',
                           ]
 

@@ -10,6 +10,12 @@ CHANGES
 Note: Try to add categories to changes and link to MRs/Issues
 -->
 
+## 2020-05-12
+
+- [ENH] Pipenv 2020.4.1b1
+- [ENH] Update of Celery settings
+
+
 ## 2020-03-30
 
 - [ENH] Add support for database settings from url
