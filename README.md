@@ -16,9 +16,9 @@ _(note that the primary repo is in [Gitlab](https://gitlab.com/thorgate-public/d
 
 - Django-based backend
 
-    - [Django](https://www.djangoproject.com/) 1.11 (because it's LTS)
+    - [Django](https://www.djangoproject.com/)
     - Separate settings for different environments (local/staging/production)
-    - Python 3.4 / 3.5 / 3.6
+    - Python 3.6 or later
 
 - Frontend app with JavaScript (ES2015), React and Sass
 

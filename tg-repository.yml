@@ -1,0 +1,14 @@
+_version: 1.0.0
+name: Django project template
+description: Thorgate's Django project template - Django, React, Sass, Docker and more
+type: internal
+status: active
+codeOwners:
+  - jyrno@thorgate.eu
+  - jorgen@thorgate.eu
+  - sergey@thorgate.eu
+slack: "#it"
+jiraProject: IN
+tags:
+  - template
+  - opensource
