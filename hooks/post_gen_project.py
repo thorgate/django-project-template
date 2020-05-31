@@ -42,7 +42,7 @@ def handle_react():
         ]
 
     if '{{ cookiecutter.thorgate }}' == 'no':
-        cleanup_paths += ['deploy/terraform']
+        cleanup_paths += ['deploy/terraform', 'tg-repository.yml']
 
     # If using specific vcs, add some extra cleanup paths
     repo_type = '{{ cookiecutter.vcs }}'.lower()

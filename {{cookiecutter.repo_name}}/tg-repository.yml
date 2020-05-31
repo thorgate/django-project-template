@@ -1,0 +1,22 @@
+# reference https://gitlab.com/thorgate/tg-project/-/blob/master/tg_project/schema/schema-1.0.0.json
+_version: 1.0.0
+name: {{ cookiecutter.project_title }}
+description: {{ cookiecutter.project_title }}
+type: internal
+status: active
+slack: "#TODO"
+jiraProject: TODO
+#team: ATEAM | THUNDERSTRUCK | DREAMTEAM | ULTIMATHULE
+#codeOwners:
+#  - example@thorgate.eu
+#servers:
+#  test:
+#    name: test
+#    fqdn: https://{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}
+#  live:
+#    name: live
+#    fqdn: https://{{ cookiecutter.live_hostname }}
+tags:
+  - django2
+  - postgres10
+  - python{{ cookiecutter.python_version }}
