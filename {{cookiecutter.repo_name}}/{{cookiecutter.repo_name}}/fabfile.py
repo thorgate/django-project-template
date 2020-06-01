@@ -335,18 +335,18 @@ def setup_server(id=None):
     print('Enter Django EMAIL_HOST_PASSWORD:')
     add_secret_key('DJANGO_EMAIL_HOST_PASSWORD', [django_env_file_path])
 
-    {% if cookiecutter.django_media_engine == 'S3' - %}
+    {%if cookiecutter.django_media_engine == 'S3' -%}
     print('Enter Django DJANGO_AWS_ACCESS_KEY_ID:')
     add_secret_key('DJANGO_AWS_ACCESS_KEY_ID', [django_env_file_path])
 
     print('Enter Django DJANGO_AWS_SECRET_ACCESS_KEY:')
     add_secret_key('DJANGO_AWS_SECRET_ACCESS_KEY', [django_env_file_path])
-    {%- endif % }{ % if cookiecutter.django_media_engine == 'GCS' - %}
+    {%- endif %}{% if cookiecutter.django_media_engine == 'GCS' -%}
     print('Enter Django DJANGO_GS_PROJECT_ID:')
     add_secret_key('DJANGO_GS_PROJECT_ID', [django_env_file_path])
     with open('./google-credentials-{}.json'.format(env.target)) as f:
         gcs_credentials_json = f.read().replace('\r', '').replace('\n', '')
-    add_secret_key('DJANGO_GS_CREDENTIALS', [django_env_file_path], gcs_credentials_json){% endif % }
+    add_secret_key('DJANGO_GS_CREDENTIALS', [django_env_file_path], gcs_credentials_json){% endif %}
 
     # Create database
     sudo('echo "CREATE DATABASE {{cookiecutter.repo_name}}; '
