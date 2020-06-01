@@ -64,6 +64,8 @@ def defaults():
 
     env.code_dir = '/srv/{{cookiecutter.repo_name}}'
 
+    env.postgres_version = '{{cookiecutter.postgres_version}}'
+
     # Mapping of configuration files and their rules
     #
     #  "Directory name inside deploy/": [
@@ -333,24 +335,24 @@ def setup_server(id=None):
     print('Enter Django EMAIL_HOST_PASSWORD:')
     add_secret_key('DJANGO_EMAIL_HOST_PASSWORD', [django_env_file_path])
 
-    {% if cookiecutter.django_media_engine == 'S3' -%}
+    {% if cookiecutter.django_media_engine == 'S3' - %}
     print('Enter Django DJANGO_AWS_ACCESS_KEY_ID:')
     add_secret_key('DJANGO_AWS_ACCESS_KEY_ID', [django_env_file_path])
 
     print('Enter Django DJANGO_AWS_SECRET_ACCESS_KEY:')
     add_secret_key('DJANGO_AWS_SECRET_ACCESS_KEY', [django_env_file_path])
-    {%- endif %}{% if cookiecutter.django_media_engine == 'GCS' -%}
+    {%- endif % }{ % if cookiecutter.django_media_engine == 'GCS' - %}
     print('Enter Django DJANGO_GS_PROJECT_ID:')
     add_secret_key('DJANGO_GS_PROJECT_ID', [django_env_file_path])
     with open('./google-credentials-{}.json'.format(env.target)) as f:
         gcs_credentials_json = f.read().replace('\r', '').replace('\n', '')
-    add_secret_key('DJANGO_GS_CREDENTIALS', [django_env_file_path], gcs_credentials_json){% endif %}
+    add_secret_key('DJANGO_GS_CREDENTIALS', [django_env_file_path], gcs_credentials_json){% endif % }
 
     # Create database
     sudo('echo "CREATE DATABASE {{cookiecutter.repo_name}}; '
          '      CREATE USER {{cookiecutter.repo_name}} WITH password \'{db_password}\'; '
          '      GRANT ALL PRIVILEGES ON DATABASE {{cookiecutter.repo_name}} to {{cookiecutter.repo_name}};" '
-         '| docker exec -i postgres-10 psql -U postgres'.format(db_password=db_password))
+         '| docker exec -i postgres-{postgres_version} psql -U postgres'.format(db_password=db_password, postgres_version=env.postgres_version))
 
     # Create log dir
     sudo('mkdir -p /var/log/{{cookiecutter.repo_name}}/')
@@ -686,9 +688,13 @@ def get_nginx_app_target_path():
 
 def ensure_docker_networks():
     # Ensure we have dedicated networks for communicating with Nginx and Postgres
-    ensure_docker_network_exists('{{ cookiecutter.repo_name }}_default', [], internal=False)
-    ensure_docker_network_exists('{{ cookiecutter.repo_name }}_nginx', ['nginx'])
-    ensure_docker_network_exists('{{ cookiecutter.repo_name }}_postgres', ['postgres-10'])
+    ensure_docker_network_exists(
+        '{{ cookiecutter.repo_name }}_default', [], internal=False)
+    ensure_docker_network_exists(
+        '{{ cookiecutter.repo_name }}_nginx', ['nginx'])
+    ensure_docker_network_exists(
+        '{{ cookiecutter.repo_name }}_postgres', ['postgres-{postgres_version}'.format(
+        postgres_version=env.postgres_version)])
 
 
 def ensure_docker_network_exists(network_name, connected_containers, internal=True):

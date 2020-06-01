@@ -23,7 +23,7 @@ services:
         depends_on:
             - redis
         external_links:
-            - postgres-10:postgres
+            - postgres-{{cookiecutter.postgres_version}}:postgres
 
     {%- if cookiecutter.include_celery == 'yes' %}
 
@@ -40,7 +40,7 @@ services:
         depends_on:
             - redis
         external_links:
-            - postgres-10:postgres
+            - postgres-{{cookiecutter.postgres_version}}:postgres
         entrypoint: /usr/bin/wait-for-it.sh postgres:5432 -t 60 --
         command: celery worker --app {{cookiecutter.repo_name}} --autoscale 6,2 --loglevel INFO
 
