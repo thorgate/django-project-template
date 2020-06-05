@@ -19,6 +19,8 @@ venv/
 {{cookiecutter.repo_name}}/app/webpack-stats.json
 {{cookiecutter.repo_name}}/app/build/
 {{cookiecutter.repo_name}}/assets/
+{{cookiecutter.repo_name}}/webapp/build/
+{{cookiecutter.repo_name}}/webapp/webpack-stats.json
 
 {{cookiecutter.repo_name}}/.cache
 {{cookiecutter.repo_name}}/.pytest_cache
