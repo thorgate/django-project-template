@@ -6,7 +6,7 @@ const makeConfig = require('./config.base');
 
 
 // In production, append hash to filenames
-const filenameTemplate = 'app/[name]-[hash]';
+const filenameTemplate = 'webapp/[name]-[hash]';
 
 const config = makeConfig({
     filenameTemplate: filenameTemplate,

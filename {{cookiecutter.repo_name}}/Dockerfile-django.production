@@ -87,7 +87,7 @@ COPY ./{{ cookiecutter.repo_name }}/yarn.lock ./
 RUN yarn install --frozen-lockfile
 
 # Copy app assets
-COPY ./{{ cookiecutter.repo_name }}/app /app/app
+COPY ./{{ cookiecutter.repo_name }}/webapp /app/app
 COPY ./{{ cookiecutter.repo_name }}/static /app/static
 
 # Build node stuff
@@ -97,7 +97,7 @@ RUN yarn build
 FROM base
 
 # Copy all from node image
-COPY --from=node_builder /app/app/build /app/app/build
+COPY --from=node_builder /app/app/build /app/app/build  #TODO webapp check
 COPY --from=node_builder /app/app/webpack-stats.json /app/app/webpack-stats.json
 
 # Run Gunicorn by default

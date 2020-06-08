@@ -80,8 +80,8 @@
   },
   "jest": {
     "collectCoverageFrom": [
-        "app/src/**/*.{js,jsx}",
-        "!app/src/test-setup.js",
+        "webapp/src/**/*.{js,jsx}",
+        "!webapp/src/test-setup.js",
         "!**/node_modules/**"
     ],
     "globals": {
@@ -94,15 +94,15 @@
     ],
 {%- if cookiecutter.include_storybook == 'yes' %}
     "moduleNameMapper": {
-      "styles-src": "<rootDir>app/src/stylesStub.js",
-      "\\.(css|less|scss)$": "<rootDir>app/src/stylesStub.js"
+      "styles-src": "<rootDir>webapp/src/stylesStub.js",
+      "\\.(css|less|scss)$": "<rootDir>webapp/src/stylesStub.js"
     },
 {%- endif %}
     "modulePaths": [
-      "<rootDir>/app/src",
+      "<rootDir>/webapp/src",
       "<rootDir>/node_modules"
     ],
-    "setupTestFrameworkScriptFile": "<rootDir>/app/src/test-setup.js",
+    "setupTestFrameworkScriptFile": "<rootDir>/webapp/src/test-setup.js",
     "transform": {
       "^.+\\.js?$": "babel-jest"
     },
@@ -112,14 +112,14 @@
     "verbose": true
   },
   "scripts": {
-    "dev": "cd app && NODE_ENV=development webpack --config webpack/config.dev.js --watch --progress --profile --color",
-    "build": "cd app && NODE_ENV=production webpack -p --config webpack/config.production.js --progress --profile --color",
-    "build-quiet": "cd app && NODE_ENV=production webpack -p --config webpack/config.production.js",
+    "dev": "cd webapp && NODE_ENV=development webpack --config webpack/config.dev.js --watch --progress --profile --color",
+    "build": "cd webapp && NODE_ENV=production webpack -p --config webpack/config.production.js --progress --profile --color",
+    "build-quiet": "cd webapp && NODE_ENV=production webpack -p --config webpack/config.production.js",
     {%- if cookiecutter.include_storybook == 'yes' %}
-    "build-storybook": "build-storybook -c app/src/.storybook",
+    "build-storybook": "build-storybook -c webapp/src/.storybook",
     {%- endif %}
 
-    "clean": "cd app && rm -rf build/",
+    "clean": "cd webapp && rm -rf build/",
     "prebuild": "yarn clean",
     "prettier-check": "prettier --check",
     "prettier-check-all": "yarn prettier-check 'app/src/**/*.{js,jsx,ts,tsx}'",

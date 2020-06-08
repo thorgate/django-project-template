@@ -237,7 +237,7 @@ STATIC_ROOT = "/files/assets"
 STATIC_URL = env.str("DJANGO_STATIC_URL", default="/static/")
 STATICFILES_DIRS = (
     os.path.join(SITE_ROOT, "static"),
-    os.path.join(SITE_ROOT, "app", "build"),
+    os.path.join(SITE_ROOT, "webapp", "build"),
 )
 STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",
@@ -335,7 +335,7 @@ RAVEN_CONFIG = {"dsn": RAVEN_BACKEND_DSN}
 WEBPACK_LOADER = {
     "DEFAULT": {
         "BUNDLE_DIR_NAME": "",
-        "STATS_FILE": os.path.join(SITE_ROOT, "app", "webpack-stats.json"),
+        "STATS_FILE": os.path.join(SITE_ROOT, "webapp", "webpack-stats.json"),
     }
 }
 

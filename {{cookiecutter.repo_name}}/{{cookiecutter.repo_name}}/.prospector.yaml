@@ -3,7 +3,7 @@ uses:
 
 ignore-paths:
     - node_modules
-    - app
+    - webapp
     - settings
     - fabfile.py
 

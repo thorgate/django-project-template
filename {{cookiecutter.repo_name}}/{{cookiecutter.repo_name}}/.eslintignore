@@ -1,4 +1,4 @@
 coverage/
 node_modules/
-app/build/
-app/test/
+webapp/build/
+webapp/test/
