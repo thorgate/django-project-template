@@ -14,12 +14,12 @@ def handle_react():
     if '{{ cookiecutter.include_cms }}' == 'no':
         cleanup_paths += [
             '{{ cookiecutter.repo_name }}/templates/cms_main.html',
-            '{{cookiecutter.repo_name}}/webapp/src/components/NavigationBar/NavigationBar.cms.js',
-            '{{cookiecutter.repo_name}}/webapp/src/components/NavigationBar/NavigationBar.scss'
+            'webapp/webapp/src/components/NavigationBar/NavigationBar.cms.js',
+            'webapp/webapp/src/components/NavigationBar/NavigationBar.scss'
         ]
     else:
         cleanup_paths += [
-            '{{cookiecutter.repo_name}}/webapp/src/components/NavigationBar/NavigationBar.default.js'
+            'webapp/webapp/src/components/NavigationBar/NavigationBar.default.js'
         ]
 
     if '{{ cookiecutter.include_celery}}' == 'no':
@@ -33,12 +33,12 @@ def handle_react():
 
     if '{{ cookiecutter.include_storybook }}' == 'no':
         cleanup_paths += [
-            '{{cookiecutter.repo_name}}/webapp/src/.storybook',
-            '{{cookiecutter.repo_name}}/webapp/src/storyshots.test.js',
-            '{{cookiecutter.repo_name}}/webapp/src/stylesStub.js',
-            '{{cookiecutter.repo_name}}/webapp/src/components/Counter/Counter.stories.js',
-            '{{cookiecutter.repo_name}}/webapp/src/components/HelloWorld/HelloWorld.stories.js',
-            '{{cookiecutter.repo_name}}/webapp/src/components/NavigationBar/NavigationBar.stories.js',
+            'webapp/webapp/src/.storybook',
+            'webapp/webapp/src/storyshots.test.js',
+            'webapp/src/stylesStub.js',
+            'webapp/src/components/Counter/Counter.stories.js',
+            'webapp/src/components/HelloWorld/HelloWorld.stories.js',
+            'webapp/src/components/NavigationBar/NavigationBar.stories.js',
         ]
 
     if '{{ cookiecutter.thorgate }}' == 'no':
@@ -90,9 +90,9 @@ def handle_react():
 
     subprocess.check_output([
         "mv",
-        "{{cookiecutter.repo_name}}/webapp/src/components/NavigationBar/NavigationBar.{}.js".format(
+        "webapp/webapp/src/components/NavigationBar/NavigationBar.{}.js".format(
             'cms' if '{{ cookiecutter.include_cms }}' == 'yes' else 'default'),
-        "{{cookiecutter.repo_name}}/webapp/src/components/NavigationBar/NavigationBar.js"
+        "webapp/webapp/src/components/NavigationBar/NavigationBar.js"
     ], cwd=cwd)
 
 

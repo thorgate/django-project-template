@@ -11,6 +11,7 @@ services:
             - "8000:80"
         volumes:
             - "./{{cookiecutter.repo_name}}:/app"
+            - "./webapp:/app/app"
             - ".data/media:/files/media"
         environment:
             - PYTHONUNBUFFERED=0
@@ -34,7 +35,7 @@ services:
     {%- endif %}
         volumes:
             - ".data/node_modules:/app/node_modules"
-            - "./{{cookiecutter.repo_name}}:/app"
+            - "./webapp:/app"
 
     postgres:
         image: postgres:10
