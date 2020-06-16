@@ -12,4 +12,4 @@ RUN yarn global add "prettier@1.18.2"
 WORKDIR /app
 VOLUME /app
 
-CMD yarn check-formatting
+CMD yarn prettier-check-all
