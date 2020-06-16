@@ -122,12 +122,12 @@
     "clean": "cd webapp && rm -rf build/",
     "prebuild": "yarn clean",
     "prettier-check": "prettier --check",
-    "prettier-check-all": "yarn prettier-check 'app/src/**/*.{js,jsx,ts,tsx}'",
+    "prettier-check-all": "yarn prettier-check 'webapp/src/**/*.{js,jsx,ts,tsx}'",
     "prettier-format": "prettier --write",
-    "prettier-format-all": "yarn prettier-format 'app/src/**/*.{js,jsx,ts,tsx}'",
-    "lint": "cd app/src && eslint .",
+    "prettier-format-all": "yarn prettier-format 'webapp/src/**/*.{js,jsx,ts,tsx}'",
+    "lint": "cd webapp/src && eslint .",
     {%- if cookiecutter.include_storybook == 'yes' %}
-    "storybook": "start-storybook -c app/src/.storybook -p 80",
+    "storybook": "start-storybook -c webapp/src/.storybook -p 80",
     {%- endif %}
     "stylelint": "cd static/styles-src && stylelint '**/*.scss'",
     "test": "NODE_ENV=test jest",
