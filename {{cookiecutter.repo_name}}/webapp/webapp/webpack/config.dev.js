@@ -7,7 +7,7 @@ const makeConfig = require('./config.base');
 
 // The app/ dir
 const app_root = path.resolve(__dirname, '..');
-const filenameTemplate = 'app/[name]';
+const filenameTemplate = 'webapp/[name]';
 
 
 const config = makeConfig({

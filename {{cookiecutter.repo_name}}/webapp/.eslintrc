@@ -21,7 +21,7 @@
     "settings": {
         "import/resolver": {
             "webpack": {
-                "config": "app/webpack/config.dev.js",
+                "config": "webapp/webpack/config.dev.js",
             },
         },
     },

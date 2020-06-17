@@ -113,7 +113,7 @@ def test_storybook_generate(cookies, default_project):
     })
     result = generate_project(cookies, default_project)
 
-    assert result.project.join('%(repo_name)s/app/src/.storybook/' % default_project).exists()
+    assert result.project.join('webapp/webapp/src/.storybook/').exists()
 
     validate_project_works(result, default_project)
 
@@ -124,7 +124,7 @@ def test_storybook_not_generate(cookies, default_project):
     })
     result = generate_project(cookies, default_project)
 
-    assert not result.project.join('%(repo_name)s/app/src/.storybook/' % default_project).exists()
+    assert not result.project.join('webapp/webapp/src/.storybook/').exists()
 
 
 def test_doc_not_generate(cookies, default_project):

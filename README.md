@@ -20,7 +20,7 @@ _(note that the primary repo is in [Gitlab](https://gitlab.com/thorgate-public/d
     - Separate settings for different environments (local/staging/production)
     - Python 3.6 or later
 
-- Frontend app with JavaScript (ES2015), React and Sass
+- Frontend app(webapp) with JavaScript (ES2015), React and Sass
 
     - Latest JavaScript features from [ES2015](https://babeljs.io/docs/learn-es2015/) and beyond, transpiled with
       [Babel](https://babeljs.io/)

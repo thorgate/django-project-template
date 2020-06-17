@@ -98,7 +98,7 @@ build-prettier-helper:
 
 
 run-prettier: build-prettier-helper
-	@docker run --rm --name $(PROJECT_NAME)_prettier_wrapper -v $(SITE_ROOT):/app $(PROJECT_NAME)_prettier_wrapper $(cmd)
+	@docker run --rm --name $(PROJECT_NAME)_prettier_wrapper -v $(PROJECT_ROOT)/webapp/:/app $(PROJECT_NAME)_prettier_wrapper $(cmd)
 
 
 prettier-check:
