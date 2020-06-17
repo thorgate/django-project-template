@@ -143,7 +143,7 @@ function makeConfig(options) {
         },
 
         resolve: {
-			modules: [ 'webapp/src', 'node_modules' ],
+            modules: ['webapp/src', 'node_modules'],
             extensions: ['.js'],
         },
 
