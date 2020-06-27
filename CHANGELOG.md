@@ -10,9 +10,10 @@ CHANGES
 Note: Try to add categories to changes and link to MRs/Issues
 -->
 
-## 2020-05-12
+## 2020-06-27
 
-- [ENH] Django CMS is removed
+- [DEPRECATION] Django CMS is removed
+
 
 ## 2020-05-12
 
