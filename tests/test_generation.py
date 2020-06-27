@@ -62,19 +62,6 @@ def test_base_generate(cookies, default_project):
 
     assert result.project.join('.hgignore').exists()
     assert result.project.join('.gitignore').exists()
-    assert not result.project.join('%s/templates/cms_main.html' % (default_project['repo_name'],)).exists()
-
-    validate_project_works(result, default_project)
-
-
-@pytest.mark.env("CMS")
-def test_cms_generate(cookies, default_project):
-    default_project.update({
-        'include_cms': 'yes',
-    })
-    result = generate_project(cookies, default_project)
-
-    assert result.project.join('%s/templates/cms_main.html' % (default_project['repo_name'],)).exists()
 
     validate_project_works(result, default_project)
 
@@ -114,24 +101,6 @@ def test_doc_not_generate(cookies, default_project):
     result = generate_project(cookies, default_project)
 
     assert not result.project.join('%s/docs' % (default_project['repo_name'],)).exists()
-
-
-@pytest.mark.env("CELERY_CMS")
-def test_celery_and_cms_generate(cookies, default_project):
-    default_project.update({
-        'include_cms': 'yes',
-        'include_celery': 'yes',
-    })
-    result = generate_project(cookies, default_project)
-
-    assert result.project.join('%s/templates/cms_main.html' % (default_project['repo_name'],)).exists()
-
-    assert result.project.join('docker-compose.yml').exists()
-    with open(result.project.join('docker-compose.yml')) as f:
-        contents = f.read()
-    assert 'celery:' in contents
-
-    validate_project_works(result, default_project)
 
 
 def test_git_generate(cookies, default_project):

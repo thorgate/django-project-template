@@ -28,11 +28,6 @@ test_main:
   script:
     - pytest -E main --maxfail=1 -v
 
-test_CMS:
-  stage: test
-  script:
-    - pytest -E CMS --maxfail=1 -v
-
 test_CELERY:
   stage: test
   script:
@@ -42,11 +37,6 @@ test_DOC:
   stage: test
   script:
     - pytest -E DOC --maxfail=1 -v
-
-test_CELERY_CMS:
-  stage: test
-  script:
-    - pytest -E CELERY_CMS --maxfail=1 -v
 
 test_merge_master_to_spa:
   stage: test

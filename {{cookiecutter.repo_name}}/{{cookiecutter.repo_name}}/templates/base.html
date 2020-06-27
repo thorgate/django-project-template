@@ -1,8 +1,6 @@
 {% raw %}{% load staticfiles %}
 {% load i18n %}
-{% load render_bundle from webpack_loader %}{% endraw %}{%- if cookiecutter.include_cms == 'yes' %}
-{% raw %}{% load cms_tags sekizai_tags menu_tags %}{% endraw %}
-{%- endif %}{% raw %}
+{% load render_bundle from webpack_loader %}{% endraw %}{% raw %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -35,9 +33,7 @@
     {% else %}
         {% render_bundle 'styles' 'css' %}
     {% endif %}
-    {% block css %}{% endblock css %}{% endraw %}{%- if cookiecutter.include_cms == 'yes' %}
-    {% raw %}{% render_block 'css' %}{% endraw %}
-    {%- endif %}{% raw %}
+    {% block css %}{% endblock css %}{% endraw %}{% raw %}
 
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -45,9 +41,7 @@
     <![endif]-->
 </head>
 
-<body class="{% block body_classes %}{% endblock %}">{% endraw %}{%- if cookiecutter.include_cms == 'yes' %}
-    {% raw %}{% cms_toolbar %}{% endraw %}
-    {%- endif %}{% raw %}
+<body class="{% block body_classes %}{% endblock %}">{% endraw %}{% raw %}
     <!--[if lte IE 9]>
         <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
@@ -65,9 +59,7 @@
                     <li class="nav-item active">
                         <a class="nav-link" href="{% url 'home' %}">{% trans "Home" %}</a>
                     </li>
-                    {% endraw %}{%- if cookiecutter.include_cms == 'yes' %}
-                    {% raw %}{% show_menu 0 0 0 0 %}{% endraw %}
-                    {%- endif %}{% raw %}
+                    {% endraw %}{% raw %}
                 </ul>
                 <ul class="navbar-nav ml-auto">
                     {% if request.user.is_authenticated %}
@@ -92,9 +84,7 @@
     </div>
 
     {% render_bundle 'app' %}
-    {% block scripts %}{% endblock scripts %}{% endraw %}{%- if cookiecutter.include_cms == 'yes' %}
-    {% raw %}{% render_block 'js' %}{% endraw %}
-    {%- endif %}{% raw %}
+    {% block scripts %}{% endblock scripts %}{% endraw %}{% raw %}
   </body>
 </html>
 {% endraw %}

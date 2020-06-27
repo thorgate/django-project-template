@@ -19,16 +19,6 @@ django-environ = "*"
 django-redis = "==4.11.*"
 django-cors-headers = "==3.0.*"
 "django-storages{% if cookiecutter.django_media_engine == 'GCS' %}[google]{% endif %}" = "==1.7.*"
-{% if cookiecutter.include_cms == 'yes' -%}
-django-cms = "==3.7.*"
-djangocms-file = "==2.4.*"
-djangocms-link = "==2.5.*"
-djangocms-picture = "==2.4.*"
-djangocms-text-ckeditor = "==3.8.*"
-django-filer = "==1.6.*"
-django-mptt = "==0.11.*"
-easy-thumbnails = "==2.4.*"
-{% endif -%}
 gunicorn = "==20.*"
 # If you change the docker base image to be non-alpine
 # This can be changed to psycopg2-binary to get advantage from

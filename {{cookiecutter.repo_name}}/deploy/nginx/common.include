@@ -6,7 +6,7 @@ error_log /var/log/nginx/{{cookiecutter.repo_name}}.error.log;
 server_tokens off;
 
 # Don't allow the browser to render the page inside an frame or iframe
-add_header X-Frame-Options {% if cookiecutter.include_cms == 'yes' %}SAMEORIGIN{% else %}DENY{% endif %};
+add_header X-Frame-Options DENY
 
 # Disable content-type sniffing on some browsers.
 #

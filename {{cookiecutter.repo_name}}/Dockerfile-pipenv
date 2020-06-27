@@ -8,8 +8,8 @@ FROM {{ cookiecutter.python_version|python_image }}
 VOLUME /src
 WORKDIR /src
 
-# Install bash, libpq{% if cookiecutter.include_cms == 'yes' %}, libjpeg-turbo{% endif %} and gettext
-RUN apk add --no-cache bash gettext libpq{% if cookiecutter.include_cms == 'yes' %} libjpeg-turbo{% endif %}
+# Install bash, libpq and gettext
+RUN apk add --no-cache bash gettext libpq
 
 # Install build dependencies and mark them as virtual packages so they could be removed together
 RUN apk add --no-cache --virtual .build-deps \

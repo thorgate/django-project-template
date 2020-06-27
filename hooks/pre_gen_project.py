@@ -74,12 +74,6 @@ def validate_config():
         identifier_re = re.compile(r"[a-zA-Z_][a-zA-Z0-9_]*$")
         assert bool(identifier_re.match(repo_name)), assert_msg
 
-    valid_cms_key = ['yes', 'no']
-    if "{{ cookiecutter.include_cms }}" not in valid_cms_key:
-        print("Include CMS '{{ cookiecutter.include_cms }}' is not valid!")
-        print("Valid include CMS keys are: %s" % ', '.join(valid_cms_key))
-        sys.exit(1)
-
     valid_celery_key = ['yes', 'no']
     if "{{ cookiecutter.include_celery }}" not in valid_celery_key:
         print("Include Celery '{{ cookiecutter.include_celery }}' is not valid!")
