@@ -48,7 +48,6 @@ def default_project():
     return {
         "project_title": "Test project",
         "repo_name": "test_project",
-        "include_cms": "no",
         "include_celery": "no",
         "include_docs": "yes",
         "include_storybook": "no",

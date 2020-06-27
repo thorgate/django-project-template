@@ -44,21 +44,6 @@ INSTALLED_APPS = [
     # Local apps
     "accounts",
     "{{cookiecutter.repo_name}}",
-{%- if cookiecutter.include_cms == "yes" %}
-    # CMS apps
-    "cms",
-    "treebeard",
-    "menus",
-    "sekizai",
-    "djangocms_admin_style",
-    "easy_thumbnails",
-    "filer",
-    "mptt",
-    "djangocms_file",
-    "djangocms_link",
-    "djangocms_picture",
-    "djangocms_text_ckeditor",
-{%- endif %}
     # Third-party apps
     "django_js_reverse",
     "crispy_forms",
@@ -67,31 +52,18 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
-{%- if cookiecutter.include_cms == "yes" %}
-    "django.contrib.sites",
-{%- endif %}
     "django.contrib.messages",
     "django.contrib.staticfiles",
 ]
 
 
 MIDDLEWARE = [
-    {%- if cookiecutter.include_cms == "yes" %}
-    "cms.middleware.utils.ApphookReloadMiddleware",
-    {%- endif %}
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    {%- if cookiecutter.include_cms == "yes" %}
-    "django.middleware.locale.LocaleMiddleware",
-    "cms.middleware.user.CurrentUserMiddleware",
-    "cms.middleware.page.CurrentPageMiddleware",
-    "cms.middleware.toolbar.ToolbarMiddleware",
-    "cms.middleware.language.LanguageCookieMiddleware",
-    {%- endif %}
 ]
 
 
@@ -110,29 +82,11 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
-                {%- if cookiecutter.include_cms == "yes" %}
-                "django.template.context_processors.csrf",
-                "sekizai.context_processors.sekizai",
-                "cms.context_processors.cms_settings",
-                {%- endif %}
                 "django_settings_export.settings_export",
             ],
         },
     },
 ]
-{%- if cookiecutter.include_cms == "yes" %}
-
-THUMBNAIL_PROCESSORS = (
-    "filer.thumbnail_processors.scale_and_crop_with_subject_location",
-)
-
-CMS_PAGE_CACHE = env.str("DJANGO_CMS_PAGE_CACHE", default=True)
-CMS_PLACEHOLDER_CACHE = env.str("DJANGO_CMS_PLACEHOLDER_CACHE", default=True)
-CMS_PLUGIN_CACHE = env.str("DJANGO_CMS_PLUGIN_CACHE", default=True)
-
-CMS_TEMPLATES = (("cms_main.html", "Main template"),)
-{%- endif %}
-
 
 # Database
 DATABASES = {
@@ -257,14 +211,9 @@ AUTH_USER_MODEL = "accounts.User"
 SITE_URL = env.str("DJANGO_SITE_URL", default="http://127.0.0.1:8000")
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=[])
 
-{%- if cookiecutter.include_cms == "yes" %}
-
-SITE_ID = 1
-{%- else %}
 
 # Don't allow site's content to be included in frames/iframes.
 X_FRAME_OPTIONS = "DENY"
-{%- endif %}
 
 
 ROOT_URLCONF = "{{cookiecutter.repo_name}}.urls"
