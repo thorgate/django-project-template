@@ -11,9 +11,6 @@ def handle_react():
     cleanup_paths = []
     symlinks = []
 
-    if '{{ cookiecutter.include_cms }}' == 'no':
-        cleanup_paths += ['{{ cookiecutter.repo_name }}/templates/cms_main.html']
-
     if '{{ cookiecutter.include_celery}}' == 'no':
         cleanup_paths += ['{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}/celery.py',
                           '{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}/celery_settings.py',

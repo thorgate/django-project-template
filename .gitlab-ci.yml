@@ -13,6 +13,7 @@ before_script:
 # As CI docker image is based on alpine and we generate lock file outside of docker
 # We need system libraries required for pip dependencies
   - apk add python3 python3-dev build-base libffi-dev openssl-dev git postgresql-dev
+  - python3 -m ensurepip
   - pip3 install docker-compose
   - pip3 install -U pip pipenv==2020.4.1b1 setuptools wheel
   - pipenv install --system --ignore-pipfile --dev
@@ -28,11 +29,6 @@ test_main:
   script:
     - pytest -E main --maxfail=1 -v
 
-test_CMS:
-  stage: test
-  script:
-    - pytest -E CMS --maxfail=1 -v
-
 test_CELERY:
   stage: test
   script:
@@ -42,11 +38,6 @@ test_DOC:
   stage: test
   script:
     - pytest -E DOC --maxfail=1 -v
-
-test_CELERY_CMS:
-  stage: test
-  script:
-    - pytest -E CELERY_CMS --maxfail=1 -v
 
 test_merge_master_to_spa:
   stage: test

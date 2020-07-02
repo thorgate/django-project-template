@@ -9,9 +9,9 @@ RUN mkdir -p /var/log/{{cookiecutter.repo_name}}
 
 COPY ./wait-for-it.sh /usr/bin/
 
-# Install bash, libpq{% if cookiecutter.include_cms == 'yes' %}, libjpeg-turbo{% endif %} and gettext
+# Install bash, libpq and gettext
 # Bash is required to support `wait-for-it.sh` script, should not add too much to docker image
-RUN apk add --no-cache bash gettext libpq{% if cookiecutter.include_cms == 'yes' %} libjpeg-turbo{% endif %}
+RUN apk add --no-cache bash gettext libpq
 
 # Install build dependencies and mark them as virtual packages so they could be removed together
 RUN apk add --no-cache --virtual .build-deps \
