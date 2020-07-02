@@ -11,17 +11,6 @@ def handle_react():
     cleanup_paths = []
     symlinks = []
 
-    if '{{ cookiecutter.include_cms }}' == 'no':
-        cleanup_paths += [
-            '{{ cookiecutter.repo_name }}/templates/cms_main.html',
-            'webapp/webapp/src/components/NavigationBar/NavigationBar.cms.js',
-            'webapp/webapp/src/components/NavigationBar/NavigationBar.scss'
-        ]
-    else:
-        cleanup_paths += [
-            'webapp/webapp/src/components/NavigationBar/NavigationBar.default.js'
-        ]
-
     if '{{ cookiecutter.include_celery}}' == 'no':
         cleanup_paths += ['{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}/celery.py',
                           '{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}/celery_settings.py',
@@ -90,8 +79,7 @@ def handle_react():
 
     subprocess.check_output([
         "mv",
-        "webapp/webapp/src/components/NavigationBar/NavigationBar.{}.js".format(
-            'cms' if '{{ cookiecutter.include_cms }}' == 'yes' else 'default'),
+        "webapp/webapp/src/components/NavigationBar/NavigationBar.default.js",
         "webapp/webapp/src/components/NavigationBar/NavigationBar.js"
     ], cwd=cwd)
 

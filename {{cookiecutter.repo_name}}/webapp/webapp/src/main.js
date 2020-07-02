@@ -30,7 +30,7 @@ if (process.env.NODE_ENV === 'production') {
 const store = configureStore(rootReducer);
 
 function initNavigationBar() {
-    renderNavigationBar({% if cookiecutter.include_cms == 'yes' %}'navigation-bar', 'cms-show-menu'{% else %}'navigation-bar'{% endif %});
+    renderNavigationBar('navigation-bar');
 }
 
 function init() {
