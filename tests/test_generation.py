@@ -27,7 +27,7 @@ def validate_project_works(result, config):
     project_inner_dir = str(result.project.join(config['repo_name']))
 
     with open(os.path.join(project_dir, '.gitlab-ci.yml')) as f:
-        gitlab_ci = yaml.load(f)
+        gitlab_ci = yaml.safe_load(f)
 
     # Grab commands and environment from gitlab-ci
     commands = gitlab_ci['test']['script']
