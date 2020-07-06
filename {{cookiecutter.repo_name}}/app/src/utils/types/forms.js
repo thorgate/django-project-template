@@ -45,9 +45,9 @@ export const FormikFieldShape = PropTypes.shape({
 });
 
 export const FormikShape = PropTypes.shape({
-    errors: PropTypes.object.isRequired,
-    touched: PropTypes.object.isRequired,
-    values: PropTypes.object.isRequired,
+    errors: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+    touched: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
+    values: PropTypes.object.isRequired, // eslint-disable-line react/forbid-prop-types
     handleChange: PropTypes.func.isRequired,
     handleBlur: PropTypes.func.isRequired,
     setFieldValue: PropTypes.func.isRequired,

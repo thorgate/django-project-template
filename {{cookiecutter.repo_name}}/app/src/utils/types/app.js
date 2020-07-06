@@ -49,5 +49,5 @@ export const RouterHistoryShape = PropTypes.shape({
 export const ErrorShape = PropTypes.shape({
     statusCode: PropTypes.number,
     message: PropTypes.string,
-    stack: PropTypes.any,
+    stack: PropTypes.any, // eslint-disable-line react/forbid-prop-types
 });
