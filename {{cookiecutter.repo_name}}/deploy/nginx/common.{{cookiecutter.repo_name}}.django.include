@@ -12,13 +12,7 @@ location = /assets/502.html {
 
 location ^~ /assets/ {
     expires 12h;
-
-    # Deny access to .map files
-    location ~* \.map$ {
-        # TODO: add your Sentry server's IP here
-        # allow 127.0.0.1;
-        deny all;
-    }
+    include conf.d/app.{{cookiecutter.repo_name}}.map_files.include;
 }
 location ^~ /media/ {
     expires 12h;

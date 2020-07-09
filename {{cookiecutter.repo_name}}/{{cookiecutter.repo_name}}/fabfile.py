@@ -94,6 +94,11 @@ def defaults():
                 "remote_path": "/etc/nginx/conf.d/%(filename)s"
             },
             {
+                "pattern": "map_files.include",
+                "filename": "app.{{cookiecutter.repo_name}}.map_files.include",
+                "remote_path": "/etc/nginx/conf.d/%(filename)s"
+            },
+            {
                 "pattern": "common.{{cookiecutter.repo_name}}.node.include",
                 "filename": "common.{{cookiecutter.repo_name}}.node.include",
                 "remote_path": "/etc/nginx/conf.d/%(filename)s"
