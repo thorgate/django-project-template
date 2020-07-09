@@ -27,7 +27,17 @@ Note: Try to add categories to changes and link to MRs/Issues
 - [ENH] Add support for `sslmode` option via environment variables (default=`disable`)
 
 
-## 2020-02-03
+## [SPA] 2020-02-09
+
+- [ENH] Node 12
+- [ENH] Python 3.8
+- [ENH] Django 2.2
+- [ENH] various other python dependency bumps
+- [BUG] Work around wait-for-it.sh bug where busybox has changed `timeout` call signature
+- [ENH] Disable formatting related linting rules as we are using black
+- [BUG] Fix gitlab-ci builds failing from docker:latest image update
+
+## [DEFAULT] 2020-02-03
 
 - [ENH] Node 12  !114
 - [ENH] Python 3.8  !114
@@ -48,7 +58,7 @@ Note: Try to add categories to changes and link to MRs/Issues
 Note, if you have django cms <=3.4 and are using django-reversions, keep in mind that django-cms no longer supports django reversions.
 See: https://www.django-cms.org/en/blog/2017/02/03/back-in-time-with-django-cms/
 
-## 2020-01-29
+## [DEFAULT] 2020-01-29
 
 - [ENH] Added Prettier formatter for JavaScript (see !112 and originally !97)
 - [ENH] Added Black formatter for Python (see !112 and originally !97)
@@ -60,7 +70,7 @@ See: https://www.django-cms.org/en/blog/2017/02/03/back-in-time-with-django-cms/
 - Upgrade template to this version
 - Commit changes
 
-## 2020-01-19
+## [DEFAULT] 2020-01-19
 
 - [NEW] Run `manage.py compilemessages` during production django image build !108
   - Note: For cms variant one needs to make sure their django cms is updated to at-least 3.6.0
@@ -77,12 +87,16 @@ See: https://www.django-cms.org/en/blog/2017/02/03/back-in-time-with-django-cms/
 - [ENH] CI: Test generation of different project configurations in parallel
 - [ENH] Update all root dependencies !111
 
-## 2020-01-02
+## [DEFAULT] 2020-01-02
 
 - [ENH] Update merge request templates with section about refactoring !103
 - [NEW] Add simple django tests !102
 
-## 2019-11-14
+## [SPA] 2019-11-14
+
+- [ENH] Add Mailhog for testing emails in local development
+
+## [DEFAULT] 2019-11-14
 
 - [NEW] Add Mailhog for testing emails in local development !99 and !101
 - [ENH] Ensure INTERNAL_IPS variable is set correctly during local development in local.py !99
@@ -94,16 +108,44 @@ See: https://www.django-cms.org/en/blog/2017/02/03/back-in-time-with-django-cms/
 
 - [ENH] Added terraform for automatic infrastructure setup !93
 
-## 2019-07-11
+## [SPA] 2019-10-18
+
+- [ENH] Apply code formatting
+
+**Migration guide:**
+- Upgrade template to !97
+- Run code formatting
+- Upgrade template to !98
+- Commit changes
+
+
+## [SPA] 2019-10-18
+
+- [ENH] Added Prettier formatter for JavaScript (see !97)
+- [ENH] Added Black formatter for Python (see !97)
+- [BUG] Fixed issue with SSR using refresh token saga
+- [BUG] Fixed missing `tg-react` forgot password url configuration
+
+
+## [SPA] 2019-07-24
+
+- [ENH] Add [react-i18next](https://react.i18next.com/) integration to frontend app (see !89)
+  - Translations are stored in `.json` files
+  - Supports runtime discovery
+  - Add all new translations with make command
+- [DEPRECATION] Placeholders for `gettext` has been removed (see !89)
+- [ENH] Bump razzle to v3 final (see !89)
+
+## [DEFAULT] 2019-07-11
 
 - [NEW] Add fabric command to mirror media files and database from
   the remote server to local !85
-
-## 2019-06-28
+  
+ ## [DEFAULT] 2019-06-28
 
 - [BUG] Add an AWS setting to fix a boto3 bug !87
 
-## 2019-06-20
+## [DEFAULT] 2019-06-20
 
 - [BUG] Add another way of fixing a boto3 bug into readme !86
 
@@ -121,6 +163,19 @@ See: https://www.django-cms.org/en/blog/2017/02/03/back-in-time-with-django-cms/
 - [ENH] Specify indent style of Makefile to be tabs in `.editorconfig`
 - [BUG] Run `pipenv-check` through docker. Otherwise it will fail in CI.
 
+
+## [SPA] 2019-04-28
+
+- [ENH] More strict eslint rules for more consistent code
+- [ENH] Split `routes.js` for better maintainability
+- [DEPRECATION] Import `urlResolve` from `configuration/routes` is now deprecated.
+  Use `import { resolvePath as urlResolve } from 'tg-named-routes';` instead.
+
+**Migration guide:**
+- Split the routes into viable groups based on `configuration/routes/authentication.js`
+- Commit changes
+
+
 ## 2019-03-16
 
 - Switch `npm` to `yarn` for de-dupe during install and `resolution` overrides
@@ -129,6 +184,19 @@ See: https://www.django-cms.org/en/blog/2017/02/03/back-in-time-with-django-cms/
  - Remove existing `package-lock.json`
  - Start development docker environment to generate `yarn.lock`
  - Commit `yarn.lock` changes.
+
+## [SPA] 2019-02-07
+
+- [BUG] Fix issue with nginx and `app.<project>.proxy_<component>.include`, might occur only on newer server (see !46)
+- [ENH] Re-structure SPA (see !46)
+    - Move `<project>/app` to `app`
+    - Move related files as well
+    - Move `<project>/static/styles-src` to `app/src/styles`
+    - Move `SPA.md` to `app/SPA.md`
+    - Move to [Razzle](https://github.com/jaredpalmer/razzle) based setup
+- [ENH] SPA template core code have been turned into packages (see [tg-spa-utils](https://github.com/thorgate/tg-spa-utils))
+- [ENH] Add `django-cors-headers` to prepare for separate hosts for frontend and backend (see !46)
+- [ENH] Improve server logging, logger formatting should be correct now (see !46)
 
 
 ## 2019-02-01
@@ -238,6 +306,20 @@ Some guides for existing projects:
 - Fix test database, which also needs the correct host and user/password.
 
 
+## [SPA] 2018-06-22
+
+- Upgrade Webpack to version 4
+  - Remove `WebpackSHAHash` and use built-in solution
+  - Rename `manifest` to `runtime` for clarification
+  - Server-side now uses packages in `node_modules` as externals to reduce bundle size
+- Fix server-side asset loading (use same generated asset ID as client-side)
+- Fix template asset loading order
+- Fix missing `django_admin_path` replacement's
+- Use `redux-saga.getContext` for server-side `requestConfig`
+- Remove `serverClient` reducer
+- Add better support to run production-mode in development
+
+
 ## 2018-06-15
 
 - Fix broken CSS minification when running `npm run build`.
@@ -312,4 +394,4 @@ Some guides for existing projects:
 ## 2018-02-12
 
 - Update public repo with everything that has happened
-  Docker variant is the default now, development moved to Gitlab, tons of other changes. 
+  Docker variant is the default now, development moved to Gitlab, tons of other changes.
