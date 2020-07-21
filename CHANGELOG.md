@@ -10,7 +10,6 @@ CHANGES
 Note: Try to add categories to changes and link to MRs/Issues
 -->
 
-
 ## 2020-06-27
 
 - [DEPRECATION] Django CMS is removed
@@ -28,7 +27,7 @@ Note: Try to add categories to changes and link to MRs/Issues
 - [ENH] Add support for `sslmode` option via environment variables (default=`disable`)
 
 
-## 2020-02-09
+## [SPA] 2020-02-09
 
 - [ENH] Node 12
 - [ENH] Python 3.8
@@ -38,16 +37,78 @@ Note: Try to add categories to changes and link to MRs/Issues
 - [ENH] Disable formatting related linting rules as we are using black
 - [BUG] Fix gitlab-ci builds failing from docker:latest image update
 
+## [DEFAULT] 2020-02-03
+
+- [ENH] Node 12  !114
+- [ENH] Python 3.8  !114
+- [ENH] Django 2.2  !114
+- [ENH] Django CMS 3.7  !114
+- [ENH] django-reversions removed as it is no longer supported by django-cms  !114
+- [ENH] various other python dependency bumps  !114
+- [BUG] Work around wait-for-it.sh bug where busybox has changed `timeout` call signature  !114
+- [ENH] Disable formatting related linting rules as we are using black  !114
+- [BUG] Fix gitlab-ci builds failing from docker:latest image update  !114
+
 **Migration guide:**
 
 - https://docs.djangoproject.com/en/2.2/howto/upgrade-version/
 
-## 2019-11-14
+- http://docs.django-cms.org/en/latest/upgrade/3.7.html
+
+Note, if you have django cms <=3.4 and are using django-reversions, keep in mind that django-cms no longer supports django reversions.
+See: https://www.django-cms.org/en/blog/2017/02/03/back-in-time-with-django-cms/
+
+## [DEFAULT] 2020-01-29
+
+- [ENH] Added Prettier formatter for JavaScript (see !112 and originally !97)
+- [ENH] Added Black formatter for Python (see !112 and originally !97)
+
+**Migration guide:**
+
+- Upgrade template to commit `808e88736838c3d5cefca4d22963b54bc3d9fbf9`
+- Run code formatting
+- Upgrade template to this version
+- Commit changes
+
+## [DEFAULT] 2020-01-19
+
+- [NEW] Run `manage.py compilemessages` during production django image build !108
+  - Note: For cms variant one needs to make sure their django cms is updated to at-least 3.6.0
+- [ENH] CMS: Upgrade to django-cms 3.6.x !108
+- [ENH] CMS: Allow configuring cms cache settings via environment !108
+- [ENH] Ensure default AppConfig classname uses PascalCase !108
+- [NEW] Enable JS translations with [Django Javascript catalog](https://docs.djangoproject.com/en/1.11/topics/i18n/translation/#internationalization-in-javascript-code) !106
+- [ENH] Render main menu with react-bootstrap instead of as HTML. This also includes CMS variant where
+   we will just parse the existing CMS menu and then re-render it with react - see !106 for details
+- [ENH] Provide `reverseUrl` utility function via [django-js-reverse](https://pypi.org/project/django-js-reverse) !106
+
+**Internal changes:**
+
+- [ENH] CI: Test generation of different project configurations in parallel
+- [ENH] Update all root dependencies !111
+
+## [DEFAULT] 2020-01-02
+
+- [ENH] Update merge request templates with section about refactoring !103
+- [NEW] Add simple django tests !102
+
+## [SPA] 2019-11-14
 
 - [ENH] Add Mailhog for testing emails in local development
 
+## [DEFAULT] 2019-11-14
 
-## 2019-10-18
+- [NEW] Add Mailhog for testing emails in local development !99 and !101
+- [ENH] Ensure INTERNAL_IPS variable is set correctly during local development in local.py !99
+- [BUG] Add missing STDOUT logger handler for production
+- [ENH] Optimize kernel settings for Redis !95
+- [ENH] Gather repo name from .cookiecutter instead of project dir basename !84
+
+**Thorgate specific:**
+
+- [ENH] Added terraform for automatic infrastructure setup !93
+
+## [SPA] 2019-10-18
 
 - [ENH] Apply code formatting
 
@@ -58,7 +119,7 @@ Note: Try to add categories to changes and link to MRs/Issues
 - Commit changes
 
 
-## 2019-10-18
+## [SPA] 2019-10-18
 
 - [ENH] Added Prettier formatter for JavaScript (see !97)
 - [ENH] Added Black formatter for Python (see !97)
@@ -66,7 +127,7 @@ Note: Try to add categories to changes and link to MRs/Issues
 - [BUG] Fixed missing `tg-react` forgot password url configuration
 
 
-## 2019-07-24
+## [SPA] 2019-07-24
 
 - [ENH] Add [react-i18next](https://react.i18next.com/) integration to frontend app (see !89)
   - Translations are stored in `.json` files
@@ -75,6 +136,18 @@ Note: Try to add categories to changes and link to MRs/Issues
 - [DEPRECATION] Placeholders for `gettext` has been removed (see !89)
 - [ENH] Bump razzle to v3 final (see !89)
 
+## [DEFAULT] 2019-07-11
+
+- [NEW] Add fabric command to mirror media files and database from
+  the remote server to local !85
+  
+ ## [DEFAULT] 2019-06-28
+
+- [BUG] Add an AWS setting to fix a boto3 bug !87
+
+## [DEFAULT] 2019-06-20
+
+- [BUG] Add another way of fixing a boto3 bug into readme !86
 
 ## 2019-05-28
 
@@ -91,7 +164,7 @@ Note: Try to add categories to changes and link to MRs/Issues
 - [BUG] Run `pipenv-check` through docker. Otherwise it will fail in CI.
 
 
-## 2019-04-28
+## [SPA] 2019-04-28
 
 - [ENH] More strict eslint rules for more consistent code
 - [ENH] Split `routes.js` for better maintainability
@@ -112,7 +185,7 @@ Note: Try to add categories to changes and link to MRs/Issues
  - Start development docker environment to generate `yarn.lock`
  - Commit `yarn.lock` changes.
 
-## 2019-02-07
+## [SPA] 2019-02-07
 
 - [BUG] Fix issue with nginx and `app.<project>.proxy_<component>.include`, might occur only on newer server (see !46)
 - [ENH] Re-structure SPA (see !46)
@@ -233,7 +306,7 @@ Some guides for existing projects:
 - Fix test database, which also needs the correct host and user/password.
 
 
-## 2018-06-22
+## [SPA] 2018-06-22
 
 - Upgrade Webpack to version 4
   - Remove `WebpackSHAHash` and use built-in solution
