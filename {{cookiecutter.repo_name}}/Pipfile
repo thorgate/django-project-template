@@ -24,7 +24,7 @@ gunicorn = "==20.*"
 # using wheels
 "psycopg2" = "==2.8.*"
 pyyaml = "==5.*"
-raven = "==6.*"
+"sentry-sdk" = "==0.16.*"
 redis = "==3.*"
 {% if cookiecutter.include_docs == 'yes' -%}
 Sphinx = "*"

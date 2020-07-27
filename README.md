@@ -44,7 +44,7 @@ _(note that the primary repo is in [Gitlab](https://gitlab.com/thorgate-public/d
 ## Usage
 
 To use this template, first ensure that you have
-[Pipenv](https://pipenv.readthedocs.io/en/latest/) `2020.4.1b1` available.
+[Pipenv](https://pipenv.readthedocs.io/en/latest/) `2020.6.2` available.
 
 After that, you should:
 

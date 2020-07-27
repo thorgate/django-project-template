@@ -19,7 +19,7 @@ RUN apk add --no-cache --virtual .build-deps \
     libffi-dev libxml2-dev libxslt-dev jpeg-dev zlib-dev
 
 # Copy Python requirements dir and Install requirements
-RUN pip install -U pipenv==2020.4.1b1 pip setuptools wheel
+RUN pip install -U pipenv==2020.6.2 pip setuptools wheel
 
 # Set the default directory where CMD will execute
 WORKDIR /app
@@ -58,7 +58,7 @@ COPY ./{{cookiecutter.repo_name}} /app
 WORKDIR /app
 
 # Compile translations to .mo files
-RUN cd /app && python manage.py compilemessages
+RUN cd /app && DJANGO_DOCKER_BUILD=True python manage.py compilemessages
 
 # Based on Node 10.x LTS image
 FROM node:{% if cookiecutter.node_version == '10' %}10.15.1{% else %}{{ cookiecutter.node_version }}{% endif %}-alpine as node_builder

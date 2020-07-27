@@ -331,11 +331,11 @@ def setup_server(id=None):
     put(local_path=StringIO(django_local_env), remote_path=django_env_file_path, use_sudo=True)
 
     # Request additional secrets
-    print('Enter Django RAVEN_PUBLIC_DSN:')
-    add_secret_key('DJANGO_RAVEN_PUBLIC_DSN', [django_env_file_path])
+    print('Enter Django SENTRY_ENVIRONMENT (staging/production):')
+    add_secret_key('DJANGO_SENTRY_ENVIRONMENT', [django_env_file_path])
 
-    print('Enter Django RAVEN_BACKEND_DSN:')
-    add_secret_key('DJANGO_RAVEN_BACKEND_DSN', [django_env_file_path])
+    print('Enter Django SENTRY_DSN:')
+    add_secret_key('DJANGO_SENTRY_DSN', [django_env_file_path])
 
     print('Enter Django EMAIL_HOST_PASSWORD:')
     add_secret_key('DJANGO_EMAIL_HOST_PASSWORD', [django_env_file_path])
