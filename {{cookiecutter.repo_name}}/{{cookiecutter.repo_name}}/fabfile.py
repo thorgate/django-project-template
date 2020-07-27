@@ -369,17 +369,17 @@ def setup_server(id=None):
     put(local_path=StringIO(node_site_settings), remote_path=node_settings_file, use_sudo=True)
     put(local_path=StringIO(django_local_settings), remote_path=django_settings_file, use_sudo=True)
 
-    print('Enter Django RAVEN_PUBLIC_DSN:')
-    add_secret_key('DJANGO_RAVEN_PUBLIC_DSN', [django_settings_file])
+    print('Enter Django SENTRY_ENVIRONMENT (staging/production):')
+    add_secret_key('DJANGO_SENTRY_ENVIRONMENT', [django_settings_file])
 
-    print('Enter Django RAVEN_BACKEND_DSN:')
-    add_secret_key('DJANGO_RAVEN_BACKEND_DSN', [django_settings_file])
+    print('Enter Django SENTRY_DSN:')
+    add_secret_key('DJANGO_SENTRY_DSN', [django_settings_file])
 
-    print('Enter Node RAVEN_PUBLIC_DSN:')
-    add_secret_key('RAZZLE_RAVEN_PUBLIC_DSN', [node_settings_file])
+    print('Enter Node SENTRY_ENVIRONMENT (staging/production):')
+    add_secret_key('RAZZLE_SENTRY_ENVIRONMENT', [node_settings_file])
 
-    print('Enter Node RAVEN_BACKEND_DSN:')
-    add_secret_key('RAZZLE_RAVEN_BACKEND_DSN', [node_settings_file])
+    print('Enter Node SENTRY_DSN:')
+    add_secret_key('RAZZLE_SENTRY_DSN', [node_settings_file])
 
     print('Enter Django EMAIL_HOST_PASSWORD:')
     add_secret_key('DJANGO_EMAIL_HOST_PASSWORD', [django_settings_file])

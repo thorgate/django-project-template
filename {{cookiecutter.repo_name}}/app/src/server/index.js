@@ -212,7 +212,7 @@ if (process.env.NODE_ENV !== 'production') {
 proxyFactory(server, SETTINGS.APP_PROXY || {});
 
 server
-    .use(errorHandler(process.env.RAZZLE_RAVEN_BACKEND_DSN))
+    .use(errorHandler(SETTINGS.SENTRY_DSN, SETTINGS.SENTRY_ENVIRONMENT))
     // Add response time to headers
     .use(koaResponseTime())
     // Add user agent parsing
