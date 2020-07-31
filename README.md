@@ -27,8 +27,8 @@ _(note that the primary repo is in [Gitlab](https://gitlab.com/thorgate-public/d
     - Create `<root>/app/env/.env.production.local`
         - `RAZZLE_SITE_URL`
         - `RAZZLE_BACKEND_SITE_URL`
-        - `RAZZLE_RAVEN_PUBLIC_DSN`
-        - `RAZZLE_RAVEN_BACKEND_DSN`
+        - `SENTRY_ENVIRONMENT`
+        - `RAZZLE_SENTRY_DSN`
 
 ## Features
 
@@ -62,7 +62,7 @@ _(note that the primary repo is in [Gitlab](https://gitlab.com/thorgate-public/d
 ## Usage
 
 To use this template, first ensure that you have
-[Pipenv](https://pipenv.readthedocs.io/en/latest/) `2020.4.1b1` available.
+[Pipenv](https://pipenv.readthedocs.io/en/latest/) `2020.6.2` available.
 
 After that, you should:
 

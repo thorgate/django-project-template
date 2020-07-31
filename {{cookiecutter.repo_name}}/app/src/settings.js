@@ -27,7 +27,8 @@ const settings = {
 
     SITE_URL: process.env.RAZZLE_SITE_URL,
     BACKEND_SITE_URL: backendSiteUrl,
-    RAVEN_PUBLIC_DSN: process.env.RAZZLE_RAVEN_PUBLIC_DSN,
+    SENTRY_ENVIRONMENT: process.env.RAZZLE_SENTRY_ENVIRONMENT,
+    SENTRY_DSN: process.env.RAZZLE_SENTRY_DSN,
 
     APP_PROXY: {},
     MAX_WORKERS: process.env.RAZZLE_MAX_WORKERS || 0,
@@ -74,12 +75,13 @@ if (process.env.BUILD_TARGET === 'server') {
 }
 
 export const getRuntimeConfig = () => {
-    const { __VERSION__, SITE_URL, RAVEN_PUBLIC_DSN } = settings;
+    const { __VERSION__, SITE_URL, SENTRY_ENVIRONMENT, SENTRY_DSN } = settings;
     return {
         __VERSION__,
         BACKEND_SITE_URL: backendSiteUrl,
         SITE_URL,
-        RAVEN_PUBLIC_DSN,
+        SENTRY_ENVIRONMENT,
+        SENTRY_DSN,
     };
 };
 

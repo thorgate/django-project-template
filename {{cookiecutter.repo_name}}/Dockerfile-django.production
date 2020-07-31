@@ -19,7 +19,7 @@ RUN apk add --no-cache --virtual .build-deps \
     libffi-dev libxml2-dev libxslt-dev jpeg-dev zlib-dev
 
 # Copy Python requirements dir and Install requirements
-RUN pip install -U pipenv==2020.4.1b1 pip setuptools wheel
+RUN pip install -U pipenv==2020.6.2 pip setuptools wheel
 
 # Set the default directory where CMD will execute
 WORKDIR /app
@@ -59,7 +59,7 @@ WORKDIR /app
 
 # Compile translations to .mo files
 # Un-comment this when locale directory has been created
-#RUN python manage.py compilemessages
+#RUN DJANGO_DOCKER_BUILD=True python manage.py compilemessages
 
 # Run Gunicorn by default
 CMD gunicorn {{ cookiecutter.repo_name }}.wsgi:application --workers 2 --bind :80

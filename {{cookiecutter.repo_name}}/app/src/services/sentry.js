@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '@sentry/react';
 
 export const onComponentError = (error, errorInfo) => {
     if (process.env.NODE_ENV === 'production') {

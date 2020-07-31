@@ -18,7 +18,8 @@ import Sentry from 'services/sentry';
 // Configure Sentry only in production
 if (process.env.NODE_ENV === 'production') {
     Sentry.init({
-        dsn: SETTINGS.RAVEN_PUBLIC_DSN,
+        dsn: SETTINGS.SENTRY_DSN,
+        environment: SETTINGS.SENTRY_ENVIRONMENT,
     });
 }
 
