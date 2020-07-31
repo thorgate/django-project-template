@@ -31,6 +31,9 @@ if READ_DOT_ENV_FILE:
     env.read_env(str(ROOT_DIR.path("django.env")))
 
 
+# Set to true during docker image building (e.g. when running collectstatic)
+IS_DOCKER_BUILD = env.bool("DJANGO_DOCKER_BUILD", default=False)
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DJANGO_DEBUG", default=True)
 
@@ -275,13 +278,21 @@ SILENCED_SYSTEM_CHECKS = [
 
 
 # Default values for sentry
-RAVEN_BACKEND_DSN = env.str(
-    "DJANGO_RAVEN_BACKEND_DSN", default="https://TODO:TODO@sentry.thorgate.eu/TODO"
-)
-RAVEN_PUBLIC_DSN = env.str(
-    "DJANGO_RAVEN_PUBLIC_DSN", default="https://TODO@sentry.thorgate.eu/TODO"
-)
-RAVEN_CONFIG = {"dsn": RAVEN_BACKEND_DSN}
+# Example: https://TODO@sentry.thorgate.eu/TODO
+SENTRY_DSN = env.str("DJANGO_SENTRY_DSN", default="")
+SENTRY_ENVIRONMENT = env.str("DJANGO_SENTRY_ENVIRONMENT", default="local")
+
+if SENTRY_DSN and not IS_DOCKER_BUILD:
+    import sentry_sdk  # NOQA
+    from sentry_sdk.integrations.django import DjangoIntegration  # NOQA
+
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[DjangoIntegration()],
+        environment=SENTRY_ENVIRONMENT,
+        # Send authenticated user information with sentry events (needs django.contrib.auth)
+        send_default_pii=True,
+    )
 
 WEBPACK_LOADER = {
     "DEFAULT": {
@@ -297,7 +308,8 @@ SETTINGS_EXPORT = [
     "DEBUG",
     "SITE_URL",
     "STATIC_URL",
-    "RAVEN_PUBLIC_DSN",
+    "SENTRY_DSN",
+    "SENTRY_ENVIRONMENT",
     "PROJECT_TITLE",
 ]
 

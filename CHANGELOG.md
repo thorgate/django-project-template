@@ -10,9 +10,28 @@ CHANGES
 Note: Try to add categories to changes and link to MRs/Issues
 -->
 
+## development
+
+- [ENH] Pipenv 2020.6.2
+- [ENH] Replace raven with sentry-sdk and make use of sentry environments (both for python and JS)
+- [ENH] Move all sentry configuration to base settings file
+- [ENH] Add new setting `IS_DOCKER_BUILD` (controlled by DJANGO_IS_DOCKER_BUILD) which is set to
+         True during docker image build (for example during compilemessages)
+
+
 ## 2020-06-27
 
 - [DEPRECATION] Django CMS is removed
+
+
+## [DEFAULT] 2020-06-17
+
+- [ENH] Add postgres version option
+
+
+## [DEFAULT] 2020-06-03
+
+- [ENH] Move frontend app folder one level up and rename it to `webapp`
 
 
 ## 2020-05-12
@@ -27,6 +46,10 @@ Note: Try to add categories to changes and link to MRs/Issues
 - [ENH] Add support for `sslmode` option via environment variables (default=`disable`)
 
 
+## [DEFAULT] 2020-02-19
+
+- [NEW] Add storybook
+
 ## [SPA] 2020-02-09
 
 - [ENH] Node 12
@@ -36,6 +59,7 @@ Note: Try to add categories to changes and link to MRs/Issues
 - [BUG] Work around wait-for-it.sh bug where busybox has changed `timeout` call signature
 - [ENH] Disable formatting related linting rules as we are using black
 - [BUG] Fix gitlab-ci builds failing from docker:latest image update
+
 
 ## [DEFAULT] 2020-02-03
 
@@ -58,6 +82,7 @@ Note: Try to add categories to changes and link to MRs/Issues
 Note, if you have django cms <=3.4 and are using django-reversions, keep in mind that django-cms no longer supports django reversions.
 See: https://www.django-cms.org/en/blog/2017/02/03/back-in-time-with-django-cms/
 
+
 ## [DEFAULT] 2020-01-29
 
 - [ENH] Added Prettier formatter for JavaScript (see !112 and originally !97)
@@ -69,6 +94,7 @@ See: https://www.django-cms.org/en/blog/2017/02/03/back-in-time-with-django-cms/
 - Run code formatting
 - Upgrade template to this version
 - Commit changes
+
 
 ## [DEFAULT] 2020-01-19
 
@@ -87,10 +113,12 @@ See: https://www.django-cms.org/en/blog/2017/02/03/back-in-time-with-django-cms/
 - [ENH] CI: Test generation of different project configurations in parallel
 - [ENH] Update all root dependencies !111
 
+
 ## [DEFAULT] 2020-01-02
 
 - [ENH] Update merge request templates with section about refactoring !103
 - [NEW] Add simple django tests !102
+
 
 ## [SPA] 2019-11-14
 
@@ -107,6 +135,7 @@ See: https://www.django-cms.org/en/blog/2017/02/03/back-in-time-with-django-cms/
 **Thorgate specific:**
 
 - [ENH] Added terraform for automatic infrastructure setup !93
+
 
 ## [SPA] 2019-10-18
 
@@ -140,14 +169,17 @@ See: https://www.django-cms.org/en/blog/2017/02/03/back-in-time-with-django-cms/
 
 - [NEW] Add fabric command to mirror media files and database from
   the remote server to local !85
-  
+
+
  ## [DEFAULT] 2019-06-28
 
 - [BUG] Add an AWS setting to fix a boto3 bug !87
 
+
 ## [DEFAULT] 2019-06-20
 
 - [BUG] Add another way of fixing a boto3 bug into readme !86
+
 
 ## 2019-05-28
 
@@ -157,6 +189,7 @@ See: https://www.django-cms.org/en/blog/2017/02/03/back-in-time-with-django-cms/
 - [NEW] Disable google indexing on test servers !76
 - [ENH] Bump pyyaml version !73
 - [BUG] Fix Docker Compose install in pipeline, ensures build dependencies in CI !68
+
 
 ## 2019-04-05
 
@@ -184,6 +217,7 @@ See: https://www.django-cms.org/en/blog/2017/02/03/back-in-time-with-django-cms/
  - Remove existing `package-lock.json`
  - Start development docker environment to generate `yarn.lock`
  - Commit `yarn.lock` changes.
+
 
 ## [SPA] 2019-02-07
 
@@ -221,6 +255,7 @@ See: https://www.django-cms.org/en/blog/2017/02/03/back-in-time-with-django-cms/
 - [FABRIC] Disable certbot self-upgrade (see !54)
 - [FABRIC] Add `--force-recreate` flag to `docker_up` command during a forced deployment (see !53)
 
+
 ## 2019-01-02
 
 **Warning:** This version has a bug regards `DJANGO_SETTINGS_MODULE`, please use the latest version or apply changes from merge request !58 locally.
@@ -239,6 +274,7 @@ See: https://www.django-cms.org/en/blog/2017/02/03/back-in-time-with-django-cms/
     - Update Django to new settings
         - Convert `<root>/<project>/settings/local.py` to `<root>/<project>/django.env`
         - Or remove `DJANGO_PRODUCTION_MODE` env reference from `Dockerfile-django.production`
+
 
 ## 2018-12-06
 

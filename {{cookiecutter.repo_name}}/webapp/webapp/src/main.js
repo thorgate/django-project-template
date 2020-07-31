@@ -1,6 +1,6 @@
+import * as Sentry from '@sentry/react';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Raven from 'raven-js';
 import { Provider } from 'react-redux';
 
 import HelloWorld from 'components/HelloWorld';
@@ -9,19 +9,25 @@ import renderNavigationBar from 'components/NavigationBar';
 import rootReducer from './reducers';
 import configureStore from './store';
 
-// Install Raven in production envs
+// Configure Sentry in deployed envs
 if (process.env.NODE_ENV === 'production') {
-    Raven.config(DJ_CONST.RAVEN_PUBLIC_DSN).install(); // eslint-disable-line
+    Sentry.init({
+        dsn: DJ_CONST.SENTRY_DSN,
+        environment: DJ_CONST.SENTRY_ENVIRONMENT,
+    });
+
     // handle rejected promises
     window.addEventListener('unhandledrejection', evt => {
-        Raven.captureException(evt.reason);
+        Sentry.captureException(evt.reason);
     });
-    // If we have authenticated user, pass its data on to Raven
+    // If we have authenticated user, pass its data on to Sentry
     if (DJ_CONST.user) {
-        Raven.setUserContext({
-            id: DJ_CONST.user.id,
-            email: DJ_CONST.user.email,
-            name: DJ_CONST.user.name,
+        Sentry.configureScope(scope => {
+            scope.setUser({
+                id: DJ_CONST.user.id,
+                email: DJ_CONST.user.email,
+            });
+            Sentry.setContext('name', DJ_CONST.user.name);
         });
     }
 }
