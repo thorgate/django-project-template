@@ -47,4 +47,8 @@ else
 
     echo "Authenticating against docker.io"
     docker login -u "$DOCKER_HUB_USER" -p "$DOCKER_HUB_TOKEN" docker.io
+
+    echo "Publishing CI image to docker.io"
+    docker push "${HUB_IMAGE}:${IMAGE_TAG}"
+    docker push "${HUB_IMAGE}:latest"
 fi
