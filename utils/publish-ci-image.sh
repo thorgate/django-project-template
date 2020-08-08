@@ -36,8 +36,8 @@ docker push "${IMAGE}:latest"
 
 # DOCKER_HUB_TOKEN should be set via build secrets
 if [[ -z $DOCKER_HUB_USER ]] || [[ -z $DOCKER_HUB_TOKEN ]]; then
-    echo "DOCKER_HUB_TOKEN or DOCKER_HUB_USER env variable is not defined."
-    echo " Skipping docker hub publish"
+    echo "Skipping docker hub publish:"
+    echo " DOCKER_HUB_TOKEN or DOCKER_HUB_USER env variable is not defined."
 else
     HUB_IMAGE="thorgate/django-template/${IMAGE_SUFFIX}"
 
