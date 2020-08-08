@@ -2,47 +2,38 @@
 image: docker:latest
 
 services:
-  - docker:dind
+    - docker:dind
 
 variables:
-  DOCKER_DRIVER: overlay
+    DOCKER_DRIVER: overlay
+    DOCKER_BUILDKIT: "1"
 
 before_script:
-  - apk update
-  - apk upgrade
-# As CI docker image is based on alpine and we generate lock file outside of docker
-# We need system libraries required for pip dependencies
-  - apk add python3 python3-dev build-base libffi-dev openssl-dev git postgresql-dev
-  - python3 -m ensurepip
-  - pip3 install -U pip pipenv==2020.6.2 setuptools wheel
-  - pipenv install --system --ignore-pipfile --dev
-  - git config --global user.email "foo@bar.baz"
-  - git config --global user.name "Foo Bar"
-# See the following issue for reasoning: https://gitlab.com/gitlab-org/gitlab-ce/issues/41227
-  - export SHARED_PATH="$(dirname ${CI_PROJECT_DIR})/shared"
-  - export TPL_PLAYGROUND="${SHARED_PATH}/tpl-playground"
-  - mkdir -p $TPL_PLAYGROUND
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - apk update
+    - apk upgrade
+    # As CI docker image is based on alpine and we generate lock file outside of docker
+    # We need system libraries required for pip dependencies
+    - apk add python3 python3-dev build-base libffi-dev openssl-dev git postgresql-dev bash
+    - python3 -m ensurepip
+    - pip3 install -U pip pipenv==2020.6.2 setuptools wheel
+    - pipenv install --system --ignore-pipfile --dev
+    - git config --global user.email "foo@bar.baz"
+    - git config --global user.name "Foo Bar"
+    # See the following issue for reasoning: https://gitlab.com/gitlab-org/gitlab-ce/issues/41227
+    - export SHARED_PATH="$(dirname ${CI_PROJECT_DIR})/shared"
+    - export TPL_PLAYGROUND="${SHARED_PATH}/tpl-playground"
+    - mkdir -p $TPL_PLAYGROUND
 
-test_main:
-  stage: test
-  script:
-    - pytest -E main --maxfail=1 -v
+stages:
+    # - test  TODO: temporary
+    - build
 
-test_CELERY:
-  stage: test
-  script:
-    - pytest -E CELERY --maxfail=1 -v
-
-test_DOC:
-  stage: test
-  script:
-    - pytest -E DOC --maxfail=1 -v
-
-
-test_merge_spa_to_master:
-  stage: test
-  only:
-    - master
-  script:
-    - git merge origin/spa || echo "Automatic merge failed $?"
-    - git status
+publish_ci_image:
+    stage: build
+    only:
+        - master
+        - spa
+        - publish_ci_image # TODO: Temporary
+    script:
+        - ./utils/publish-ci-image.sh

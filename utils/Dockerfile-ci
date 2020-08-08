@@ -1,0 +1,6 @@
+FROM docker:latest
+
+RUN apk update && apk upgrade
+RUN apk add python3 python3-dev build-base libffi-dev openssl-dev git bash
+RUN python3 -m ensurepip
+RUN pip3 install docker-compose
