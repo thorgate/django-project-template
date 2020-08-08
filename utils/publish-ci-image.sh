@@ -5,12 +5,20 @@ if [[ -z $CI_REGISTRY_IMAGE ]]; then
     exit 1
 fi
 
+IMAGE_SUFFIX=$1
+DOCKER_FILE_NAME=$2
+
+if [[ -z $IMAGE_SUFFIX ]] || [[ -z DOCKER_FILE_NAME ]]; then
+    echo "usage: publish-ci-image.sh <image_suffix> <dockerfile name>"
+    echo " note: dockerfile name is relative to the utils directory"
+    exit 1
+fi
+
 set -e
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-IMAGE_SUFFIX='/ci'
-IMAGE="${CI_REGISTRY_IMAGE}${IMAGE_SUFFIX}"
+IMAGE="${CI_REGISTRY_IMAGE}/${IMAGE_SUFFIX}"
 IMAGE_TAG=${CI_COMMIT_REF_SLUG:=${CI_COMMIT_TAG:='master'}}
 
 echo "CI image: ${IMAGE}"
@@ -19,8 +27,8 @@ echo "Building and tagging CI image with version ${IMAGE_TAG}"
 CACHE_ARG="--build-arg BUILDKIT_INLINE_CACHE=1"
 CACHE_ARG="${CACHE_ARG} --cache-from ${IMAGE}:latest --cache-from ${IMAGE}:${IMAGE_TAG}"
 
-docker build $CACHE_ARG -f ${DIR}/Dockerfile-ci -t "${IMAGE}:${IMAGE_TAG}" ${DIR}
-docker build $CACHE_ARG -f ${DIR}/Dockerfile-ci -t "${IMAGE}:latest" ${DIR}
+docker build $CACHE_ARG -f ${DIR}/${DOCKER_FILE_NAME} -t "${IMAGE}:${IMAGE_TAG}" ${DIR}
+docker build $CACHE_ARG -f ${DIR}/${DOCKER_FILE_NAME} -t "${IMAGE}:latest" ${DIR}
 
 echo "Publishing CI image"
 docker push "${IMAGE}:${IMAGE_TAG}"
@@ -30,9 +38,8 @@ docker push "${IMAGE}:latest"
 if [[ -z $DOCKER_HUB_USER ]] || [[ -z $DOCKER_HUB_TOKEN ]]; then
     echo "DOCKER_HUB_TOKEN or DOCKER_HUB_USER env variable is not defined."
     echo " Skipping docker hub publish"
-    env
 else
-    HUB_IMAGE="thorgate/django-template${IMAGE_SUFFIX}"
+    HUB_IMAGE="thorgate/django-template/${IMAGE_SUFFIX}"
 
     echo "Publishing ${HUB_IMAGE} to docker hub too"
     docker tag "${IMAGE}:${IMAGE_TAG}" "${HUB_IMAGE}:${IMAGE_TAG}"

@@ -26,14 +26,28 @@ before_script:
     - mkdir -p $TPL_PLAYGROUND
 
 stages:
-    # - test  TODO: temporary
-    - build
+    #- test
+    # Since CI image publish job only runs from protected branches then new changes to CI
+    #  docker image must be introduced separately from other features. We could move it
+    #  to be the first stage but that would only work for changes merged into master/spa.
+    #
+    # Note: When you do it consider that:
+    # - publish-ci-image.sh always tags the image as latest
+    # - might need to run publish_ci_image for all branchess
+    - publish_ci_image
 
 publish_ci_image:
-    stage: build
+    stage: publish_ci_image
     only:
         - master
         - spa
         - publish_ci_image # TODO: Temporary
     script:
-        - ./utils/publish-ci-image.sh
+        - ./utils/publish-ci-image.sh ci Dockerfile-ci
+
+publish_base_ci_image:
+    stage: publish_ci_image
+    only:
+        - publish_ci_image # TODO: Temporary (will be changed to schedules)
+    script:
+        - ./utils/publish-ci-image.sh base-ci Dockerfile-base-ci

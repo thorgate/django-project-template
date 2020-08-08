@@ -1,0 +1,10 @@
+FROM docker:latest
+
+RUN apk update && apk upgrade
+RUN apk add python3 python3-dev build-base libffi-dev openssl-dev git bash
+RUN python3 -m ensurepip
+
+# As CI docker image is based on alpine and we generate lock file outside of docker then
+#  we need system libraries required for pip dependencies.
+RUN apk add postgresql-dev
+RUN pip3 install -U pip 'pipenv>=2020.6.2' setuptools wheel
