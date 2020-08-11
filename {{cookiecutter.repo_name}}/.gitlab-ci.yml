@@ -2,30 +2,30 @@
 image: registry.gitlab.com/thorgate-public/django-project-template/ci:latest
 
 services:
-    - docker:dind
+  - docker:dind
 
 variables:
-    POSTGRES_USER: "{{ cookiecutter.repo_name }}"
-    POSTGRES_PASSWORD: "{{ cookiecutter.repo_name }}"
-    DOCKER_DRIVER: overlay
-    DOCKER_BUILDKIT: "1"
+  POSTGRES_USER: "{{ cookiecutter.repo_name }}"
+  POSTGRES_PASSWORD: "{{ cookiecutter.repo_name }}"
+  DOCKER_DRIVER: overlay
+  DOCKER_BUILDKIT: "1"
 
 before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
 
 stages:
-    - test
+  - test
 
 test:
-    stage: test
-    coverage: '/^TOTAL.*\s+(\d+\%)$/'
-    except:
-        - template # Don't run CI on template branch, should not be required
-    variables:
-        EDIT_SETTINGS: "no"
-    script:
-        - make settings
-        - docker-compose build
-        - make node-install
-        - make quality
-        - make coverage
+  stage: test
+  coverage: '/^TOTAL.*\s+(\d+\%)$/'
+  except:
+    - template # Don't run CI on template branch, should not be required
+  variables:
+    EDIT_SETTINGS: "no"
+  script:
+    - make settings
+    - docker-compose build
+    - make node-install
+    - make quality
+    - make coverage

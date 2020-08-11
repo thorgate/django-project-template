@@ -8,7 +8,7 @@ fi
 IMAGE_SUFFIX=$1
 DOCKER_FILE_NAME=$2
 
-if [[ -z $IMAGE_SUFFIX ]] || [[ -z DOCKER_FILE_NAME ]]; then
+if [[ -z $IMAGE_SUFFIX ]] || [[ -z $DOCKER_FILE_NAME ]]; then
     echo "usage: publish-ci-image.sh <image_suffix> <dockerfile name>"
     echo " note: dockerfile name is relative to the utils directory"
     exit 1
