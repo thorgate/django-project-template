@@ -96,7 +96,7 @@ def test_doc_generate(cookies, default_project):
 
 def test_storybook_generate(cookies, default_project):
     default_project.update({
-        'include_storybook': 'yes',
+        'webapp_include_storybook': 'yes',
     })
     result = generate_project(cookies, default_project)
 
@@ -107,7 +107,7 @@ def test_storybook_generate(cookies, default_project):
 
 def test_storybook_not_generate(cookies, default_project):
     default_project.update({
-        'include_storybook': 'no',
+        'webapp_include_storybook': 'no',
     })
     result = generate_project(cookies, default_project)
 

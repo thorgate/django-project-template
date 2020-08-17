@@ -20,7 +20,7 @@ def handle_react():
     if '{{ cookiecutter.include_docs }}' == 'no':
         cleanup_paths += ['{{ cookiecutter.repo_name }}/docs']
 
-    if '{{ cookiecutter.include_storybook }}' == 'no':
+    if '{{ cookiecutter.webapp_include_storybook }}' == 'no':
         cleanup_paths += [
             'webapp/webapp/src/.storybook',
             'webapp/webapp/src/storyshots.test.js',

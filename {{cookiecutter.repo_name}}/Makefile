@@ -357,7 +357,7 @@ docs:
 	docker-compose run --rm django sphinx-build ./docs ./docs/_build
 {% endif %}
 
-{%- if cookiecutter.include_storybook == 'yes' %}
+{%- if cookiecutter.webapp_include_storybook == 'yes' %}
 .PHONY:
 storybook:
 	@echo "Open http://127.0.0.1:6006 to view after storybook starts"

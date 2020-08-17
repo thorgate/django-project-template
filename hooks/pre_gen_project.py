@@ -87,8 +87,8 @@ def validate_config():
         sys.exit(1)
 
     valid_storybook_replies = ['yes', 'no']
-    if "{{ cookiecutter.include_storybook }}" not in valid_storybook_replies:
-        print("Your answer to Include Storybook: '{{ cookiecutter.include_storybook }}' is invalid!")
+    if "{{ cookiecutter.webapp_include_storybook }}" not in valid_storybook_replies:
+        print("Your answer to Include Storybook: '{{ cookiecutter.webapp_include_storybook }}' is invalid!")
         print("Valid choices are: %s" % ', '.join(valid_docs_key))
         sys.exit(1)
 
