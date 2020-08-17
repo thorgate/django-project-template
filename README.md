@@ -102,3 +102,25 @@ To upgrade an existing project, change the current working directory to the root
 Then run `python ~/path/to/django-project-template/upgrade-template.py`
 
 This will make a commit to the branch `template` in your project with the updates to the project template. Then merge the `template` branch.
+
+## Docker images
+
+The template uses our own images for CI runs. One for the template itself and a second one
+for generated projects. Both images are alpine based and contain python3, pip and some support
+packages. The images are published to [repository container registry](https://gitlab.com/thorgate-public/django-project-template/container_registry) and also to [docker hub](https://hub.docker.com/u/thorgate).
+
+The images are built in CI (from default branches only) and also updated every day via schedules.
+
+**Project CI Image**
+
+- [Dockerfile-ci](./utils/Dockerfile-ci)
+- Image in repository registry: `registry.gitlab.com/thorgate-public/django-project-template/ci`
+- Image in docker hub: `thorgate/django-template/ci`
+  - [see online](https://hub.docker.com/r/thorgate/django-template/ci)
+
+**Template CI Image:**
+
+- [Dockerfile-base-ci](./utils/Dockerfile-base-ci)
+- Image in repository registry: `registry.gitlab.com/thorgate-public/django-project-template/base-ci`
+- Image in docker hub: `thorgate/django-template/base-ci`
+  - [see online](https://hub.docker.com/r/thorgate/django-template/base-ci)
