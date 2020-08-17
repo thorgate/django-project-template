@@ -18,6 +18,9 @@ PROJECT_NAME ?= {{cookiecutter.repo_name}}
 PROJECT_ROOT ?= $(CURDIR)
 SITE_ROOT ?= $(PROJECT_ROOT)/$(PROJECT_NAME)
 
+CUR_DIR_NAME ?= $(shell basename `pwd`)
+DJANGO_IMAGE_NAME ?= $(CUR_DIR_NAME)_django
+
 BLACK ?= \033[0;30m
 RED ?= \033[0;31m
 GREEN ?= \033[0;32m
@@ -28,18 +31,11 @@ CYAN ?= \033[0;36m
 GRAY ?= \033[0;37m
 COFF ?= \033[0m
 
-# Mark non-file targets as PHONY
-.PHONY: all help docker settings setup pycharm coverage node-install test clean quality eslint prospector stylelint docker-django
-.PHONY: bash docker-manage shell makemigrations migrate docker-logs makemessages compilemessages add-locale psql isort isort-fix
-.PHONY: build-pipenv-helper run-pipenv-helper pipenv-check pipenv-lock pipenv-install
-.PHONY: setup-terraform
-.PHONY: build-prettier-helper run-prettier prettier-check prettier-check-all prettier-format prettier-format-all
-.PHONY: build-black-helper run-black black-check black-check-all black-format black-format-all
-.PHONY: build-formatting-helpers
-
+.PHONY:
 all: help
 
 
+.PHONY:
 help:
 	@echo -e "+------<<<<                                 Configuration                                >>>>------+"
 	@echo -e ""
@@ -68,15 +64,18 @@ help:
 	@echo -e "$(CYAN)make prettier-format-all$(COFF) - Format all JavaScript code"
 	@echo -e ""
 
+.PHONY:
 build-pipenv-helper:
 	@docker build $(PROJECT_ROOT) -f Dockerfile-pipenv --tag $(PROJECT_NAME)_pipenv_wrapper
 
 
+.PHONY:
 run-pipenv-helper: build-pipenv-helper
 	@docker run --rm --name $(PROJECT_NAME)_pipenv_wrapper -v $(PROJECT_ROOT):/src $(PROJECT_NAME)_pipenv_wrapper \
 	 sh -c "$(cmd) && chown `id -u`:`id -g` Pipfile.lock"
 
 
+.PHONY:
 pipenv-lock:
 	@make run-pipenv-helper cmd="pipenv lock"
 
@@ -85,88 +84,100 @@ Pipfile.lock:
 	@make pipenv-lock
 
 
+.PHONY:
 pipenv-check:
 	@make run-pipenv-helper cmd="pipenv check"
 
 
+.PHONY:
 pipenv-install:
 	@make run-pipenv-helper cmd="pipenv install $(cmd)"
 
 
-build-prettier-helper:
-	@docker build $(PROJECT_ROOT) -f $(PROJECT_ROOT)/.helpers/Dockerfile-prettier --tag $(PROJECT_NAME)_prettier_wrapper
+# NOTE:
+# As node doesn't depend on any service, we can run prettier
+#  directly from the node container with docker-compose
+.PHONY:
+run-prettier:
+	@docker-compose run --rm node $(cmd)
 
 
-run-prettier: build-prettier-helper
-	@docker run --rm --name $(PROJECT_NAME)_prettier_wrapper -v $(PROJECT_ROOT)/webapp/:/app $(PROJECT_NAME)_prettier_wrapper $(cmd)
-
-
+.PHONY:
 prettier-check:
 	@make run-prettier cmd="yarn prettier-check $(cmd)"
 
 
+.PHONY:
 prettier-check-all:
 	@make run-prettier cmd="yarn prettier-check-all $(cmd)"
 
 
+.PHONY:
 prettier-format:
 	@make run-prettier cmd="yarn prettier-format $(cmd)"
 
 
+.PHONY:
 prettier-format-all:
 	@make run-prettier cmd="yarn prettier-format-all $(cmd)"
 
 
-build-black-helper:
-	@docker build $(PROJECT_ROOT) -f $(PROJECT_ROOT)/.helpers/Dockerfile-black --tag $(PROJECT_NAME)_black_wrapper
+# NOTE:
+# Do not use `docker-compose run` to avoid spawning services by the django container
+.PHONY:
+run-black:
+	@set -e ;\
+	if [ "`docker images|grep $(DJANGO_IMAGE_NAME)`" = '' ]; then \
+	    docker-compose build django || exit $$?; \
+	fi; \
+	docker run --rm -v $(SITE_ROOT):/app $(DJANGO_IMAGE_NAME) $(cmd)
 
 
-run-black: build-black-helper
-	@docker run --rm --name $(PROJECT_NAME)_black_wrapper -v $(PROJECT_ROOT):/app $(PROJECT_NAME)_black_wrapper $(cmd)
-
-
+.PHONY:
 black-check:
-	@make run-black cmd="black --exclude fabfile.py\|docs\|local.py\|local_test.py --check $(cmd)"
+	@make run-black cmd="black --check $(cmd)"
 
 
+.PHONY:
 black-check-all:
-	@make run-black cmd="black --exclude fabfile.py\|docs\|local.py\|local_test.py --check $(PROJECT_NAME)"
+	@make run-black cmd="black --check ."
 
 
+.PHONY:
 black-format:
-	@make run-black cmd="black --exclude fabfile.py\|docs\|local.py\|local_test.py $(cmd)"
+	@make run-black cmd="black $(cmd)"
 
 
+.PHONY:
 black-format-all:
-	@make run-black cmd="black --exclude fabfile.py\|docs\|local.py\|local_test.py $(PROJECT_NAME)"
+	@make run-black cmd="black ."
 
 
-build-formatting-helpers: build-black-helper build-prettier-helper
-
-
-docker: build-formatting-helpers settings
+.PHONY:
+docker: settings
 	@docker-compose down
 	@docker-compose build
 	@docker-compose up -d
 	@docker-compose logs -f
 
 
+.PHONY:
 setup: pycharm settings
 	@echo -e "$(CYAN)Creating Docker images$(COFF)"
 	@docker-compose build
 	@echo -e "$(CYAN)Running django migrations$(COFF)"
 	@make migrate
-	@echo -e "$(CYAN)Building formatting helpers$(COFF)"
-	@make build-formatting-helpers
 
 	@echo -e "$(CYAN)===================================================================="
 	@echo "SETUP SUCCEEDED"
 	@echo "Run 'make docker' to start Django development server and Webpack.$(COFF)"
 
+.PHONY:
 setup-terraform:
 	@echo -e "$(CYAN)Setting up terraform$(COFF)"
 	@./deploy/terraform/setup.sh $(workspace)
 
+.PHONY:
 pycharm: $(PROJECT_ROOT)/.idea
 
 
@@ -175,6 +186,7 @@ $(PROJECT_ROOT)/.idea:
 	@mkdir -p $(PROJECT_ROOT)/.idea && cp -R $(PROJECT_ROOT)/.idea_template/* $(PROJECT_ROOT)/.idea/
 
 
+.PHONY:
 settings: Pipfile.lock $(SITE_ROOT)/settings/local.py $(SITE_ROOT)/settings/local_test.py
 
 
@@ -190,6 +202,7 @@ $(SITE_ROOT)/settings/local_test.py:
 	cp $(SITE_ROOT)/settings/local_test.py.example $(SITE_ROOT)/settings/local_test.py
 
 
+.PHONY:
 coverage:
 	@echo -e "$(CYAN)Running automatic code coverage check$(COFF)"
 	@docker-compose run --rm django coverage run -m py.test
@@ -198,93 +211,121 @@ coverage:
 	@docker-compose run --rm node yarn test -- --coverage
 
 
+.PHONY:
 node-install:
 	@docker-compose run --rm node yarn
 
 
+.PHONY:
 test-node-watch: clean
 	@docker-compose run --rm node yarn test -- --watchAll
 
 
+.PHONY:
 test-node: clean
 	@echo -e "$(CYAN)Running automatic node.js tests$(COFF)"
 	@docker-compose run --rm node yarn test
 
 
+.PHONY:
 test-django: clean
 	@echo -e "$(CYAN)Running automatic django tests$(COFF)"
 	@docker-compose run --rm django py.test
 
 
+.PHONY:
 test: test-node test-django
 
 
+.PHONY:
 clean:
 	@echo -e "$(CYAN)Cleaning pyc files$(COFF)"
 	@cd $(SITE_ROOT) && find . -name "*.pyc" -exec rm -rf {} \;
 
 
-quality: prettier-check-all eslint prospector isort pipenv-check black-check-all
+.PHONY:
+lint-py: black-check-all prospector isort
+.PHONY:
+lint-js: prettier-check-all eslint
+
+.PHONY:
+lint: lint-py lint-js
+.PHONY:
+quality: lint pipenv-check
 
 
+.PHONY:
 eslint:
 	@echo -e "$(CYAN)Running ESLint$(COFF)"
 	@docker-compose run --rm node yarn lint
 
 
+.PHONY:
 prospector:
 	@echo -e "$(CYAN)Running Prospector$(COFF)"
 	@docker-compose run --rm django prospector
 
 
+.PHONY:
 stylelint:
 	@echo -e "$(CYAN)Running StyleLint$(COFF)"
 	@docker-compose run --rm node yarn stylelint
 
 
+.PHONY:
 isort:
 	@echo -e "$(CYAN)Checking imports with isort$(COFF)"
 	docker-compose run --rm django isort --recursive --check-only -p . --diff
 
 
+.PHONY:
 isort-fix:
 	@echo -e "$(CYAN)Fixing imports with isort$(COFF)"
 	docker-compose run --rm django isort --recursive -p .
 
 
+.PHONY:
 docker-django:
 	docker-compose run --rm django $(cmd)
 
 
+.PHONY:
 bash:
 	docker-compose run --rm django bash
 
 
+.PHONY:
 docker-manage:
 	docker-compose run --rm django ./manage.py $(cmd)
 
 
+.PHONY:
 shell:
 	docker-compose run --rm django ./manage.py shell
 
 
+.PHONY:
 makemigrations:
 	docker-compose run --rm django ./manage.py makemigrations $(cmd)
 
 
+.PHONY:
 migrate:
 	docker-compose run --rm django ./manage.py migrate $(cmd)
 
 
+.PHONY:
 docker-logs:
 	docker-compose logs -f
 
 
+.PHONY:
 makemessages:
 	docker-compose run --rm django ./manage.py makemessages -a
 	docker-compose run --rm django ./manage.py makemessages -a -d djangojs {% if cookiecutter.include_docs == 'yes' %}--ignore="docs/*"{% endif %}
 
 
+.PHONY:
 compilemessages:
 	docker-compose run --rm django ./manage.py compilemessages
 
@@ -293,6 +334,7 @@ $(SITE_ROOT)/locale:
 	mkdir -p $(SITE_ROOT)/locale
 
 
+.PHONY:
 add-locale: $(SITE_ROOT)/locale
 ifdef LOCALE
 	@echo -e "Adding new locale $(LOCALE)"
@@ -305,15 +347,18 @@ else
 endif
 
 
+.PHONY:
 psql:
 	docker-compose exec postgres psql --user $(PROJECT_NAME) --dbname $(PROJECT_NAME)
 
 {% if cookiecutter.include_docs == 'yes' %}
+.PHONY:
 docs:
 	docker-compose run --rm django sphinx-build ./docs ./docs/_build
 {% endif %}
 
 {%- if cookiecutter.include_storybook == 'yes' %}
+.PHONY:
 storybook:
 	@echo "Open http://127.0.0.1:6006 to view after storybook starts"
 	docker-compose run --rm -p 6006:80 node yarn storybook
