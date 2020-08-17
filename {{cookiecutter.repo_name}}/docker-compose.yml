@@ -3,94 +3,94 @@
 version: '2.1'
 
 services:
-    django:
-        build:
-            context: .
-            dockerfile: Dockerfile-django
-        ports:
-            - "8000:80"
-        volumes:
-            - "./{{cookiecutter.repo_name}}:/app"
-            - "./webapp:/app/app"
-            - ".data/media:/files/media"
-        environment:
-            - PYTHONUNBUFFERED=0
-        # Add -Wall option to see the (deprecation) warnings
-        # command: python -Wall manage.py runserver 0.0.0.0:80
-        command: python manage.py runserver 0.0.0.0:80
-        entrypoint: /usr/bin/wait-for-it.sh postgres:5432 -t 60 --
-        depends_on:
-            - node
-            - postgres
-            - redis
-            - mailhog
+  django:
+    build:
+      context: .
+      dockerfile: Dockerfile-django
+    ports:
+      - "8000:80"
+    volumes:
+      - "./{{cookiecutter.repo_name}}:/app"
+      - "./webapp:/app/app"
+      - ".data/media:/files/media"
+    environment:
+      - PYTHONUNBUFFERED=0
+    # Add -Wall option to see the (deprecation) warnings
+    # command: python -Wall manage.py runserver 0.0.0.0:80
+    command: python manage.py runserver 0.0.0.0:80
+    entrypoint: /usr/bin/wait-for-it.sh postgres:5432 -t 60 --
+    depends_on:
+      - node
+      - postgres
+      - redis
+      - mailhog
 
-    node:
-        build:
-            context: .
-            dockerfile: Dockerfile-node
+  node:
+    build:
+      context: .
+      dockerfile: Dockerfile-node
     {%- if cookiecutter.include_storybook == 'yes' %}
-        ports:
-            - "6006:80"
+    ports:
+      - "6006:80"
     {%- endif %}
-        volumes:
-            - ".data/node_modules:/app/node_modules"
-            - "./webapp:/app"
+    volumes:
+      - ".data/node_modules:/app/node_modules"
+      - "./webapp:/app"
 
-    postgres:
-        image: postgres:10
-        # Comment in the following lines to connect to your Dockerized instance of Postgres from your host machine.
-        # Change the host port (before colon) if you have a local instance of Postgres running on that port.
-        # ports:
-        #     - "5432:5432"
-        volumes:
-            - ".data/postgres:/var/lib/postgresql/data"
-        environment:
-            POSTGRES_USER: {{cookiecutter.repo_name}}
-            POSTGRES_PASSWORD: {{cookiecutter.repo_name}}
-    {%- if cookiecutter.include_celery == 'yes' %}
+  postgres:
+    image: postgres:10
+    # Comment in the following lines to connect to your Dockerized instance of Postgres from your host machine.
+    # Change the host port (before colon) if you have a local instance of Postgres running on that port.
+    # ports:
+    #     - "5432:5432"
+    volumes:
+      - ".data/postgres:/var/lib/postgresql/data"
+    environment:
+      POSTGRES_USER: {{cookiecutter.repo_name}}
+      POSTGRES_PASSWORD: {{cookiecutter.repo_name}}
+  {%- if cookiecutter.include_celery == 'yes' %}
 
-    celery:
-        build:
-            context: .
-            dockerfile: Dockerfile-django
-        volumes:
-            - "./{{cookiecutter.repo_name}}:/app"
-        depends_on:
-            - postgres
-            - redis
-        environment:
-            - PYTHONUNBUFFERED=0
-        entrypoint: /usr/bin/wait-for-it.sh postgres:5432 -t 60 --
-        command: celery worker --app {{cookiecutter.repo_name}} --autoscale 6,2 --loglevel INFO
+  celery:
+    build:
+      context: .
+      dockerfile: Dockerfile-django
+    volumes:
+      - "./{{cookiecutter.repo_name}}:/app"
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - PYTHONUNBUFFERED=0
+    entrypoint: /usr/bin/wait-for-it.sh postgres:5432 -t 60 --
+    command: celery worker --app {{cookiecutter.repo_name}} --autoscale 6,2 --loglevel INFO
 
-    celery_beat:
-        build:
-            context: .
-            dockerfile: Dockerfile-django
-        container_name: {{cookiecutter.repo_name}}_celery_beat
-        volumes:
-            - "./{{cookiecutter.repo_name}}:/app"
-            - ".data/celery:/celery"
-        depends_on:
-            - redis
-        # Disable pidfile by specifying an empty one. We used fixed container_name which provides single-running-process
-        #  guarantee and the lack of pidfile ensures that Celery Beat starts even if the Docker container was killed and
-        #  then restarted (in which case the pidfile would still be present).
-        command: celery beat --app {{cookiecutter.repo_name}} --loglevel INFO --pidfile= --schedule /celery/celerybeat-schedule
-    {%- endif %}
+  celery_beat:
+    build:
+      context: .
+      dockerfile: Dockerfile-django
+    container_name: {{cookiecutter.repo_name}}_celery_beat
+    volumes:
+      - "./{{cookiecutter.repo_name}}:/app"
+      - ".data/celery:/celery"
+    depends_on:
+      - redis
+    # Disable pidfile by specifying an empty one. We used fixed container_name which provides single-running-process
+    #  guarantee and the lack of pidfile ensures that Celery Beat starts even if the Docker container was killed and
+    #  then restarted (in which case the pidfile would still be present).
+    command: celery beat --app {{cookiecutter.repo_name}} --loglevel INFO --pidfile= --schedule /celery/celerybeat-schedule
+  {%- endif %}
 
-    redis:
-        image: redis:4.0.10-alpine
-        sysctls:
-            # To allow maintaining TCP backlog setting that defaults to 511
-            net.core.somaxconn: 512
-        volumes:
-            - ".data/redis:/data"
+  redis:
+    image: redis:4.0.10-alpine
+    sysctls:
+      # To allow maintaining TCP backlog setting that defaults to 511
+      net.core.somaxconn: 512
+    volumes:
+      - ".data/redis:/data"
 
-    mailhog:
-        image: mailhog/mailhog:v1.0.0
-        ports:
-            - "8025:8025"
-        logging:
-            driver: "none"
+  mailhog:
+    image: mailhog/mailhog:v1.0.0
+    ports:
+      - "8025:8025"
+    logging:
+      driver: "none"

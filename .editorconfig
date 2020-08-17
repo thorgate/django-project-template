@@ -12,11 +12,5 @@ insert_final_newline = true
 [*.md]
 trim_trailing_whitespace = false
 
-[*.tf]
-indent_size = 2
-
 [*.yml]
 indent_size = 2
-
-[Makefile]
-indent_style = tab
