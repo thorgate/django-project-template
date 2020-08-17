@@ -42,7 +42,7 @@
     "django_media_engine": "S3",
     "thorgate": "no",
     "gitlab_repo_url": "",
-    "frontend_style": "",
+    "frontend_style": "webapp",
     "webapp_include_storybook": "no",
     "spa_django_host_prefix": "office"
 }

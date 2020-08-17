@@ -24,6 +24,22 @@ services:
       - redis
     external_links:
       - postgres-{{cookiecutter.postgres_version}}:postgres
+  {%- if cookiecutter.frontend_style == 'spa' %}
+
+  node:
+    build:
+      context: .
+      dockerfile: Dockerfile-node.production
+    container_name: {{cookiecutter.repo_name}}_node
+    restart: unless-stopped
+    command: yarn start
+    volumes:
+      - "/var/lib/docker-nginx/files/{{cookiecutter.repo_name}}/app/assets:/files/assets"
+      - "/var/log/{{cookiecutter.repo_name}}:/var/log/{{cookiecutter.repo_name}}"
+    networks:
+      - default
+      - {{cookiecutter.repo_name}}_nginx
+  {%- endif %}
 
   {%- if cookiecutter.include_celery == 'yes' %}
 
@@ -33,6 +49,7 @@ services:
       dockerfile: Dockerfile-django.production
     restart: unless-stopped
     volumes:
+      - "/var/lib/docker-nginx/files/{{cookiecutter.repo_name}}/media:/files/media"
       - "/var/log/{{cookiecutter.repo_name}}:/var/log/{{cookiecutter.repo_name}}"
     networks:
       - default

@@ -21,7 +21,10 @@ def handle_react():
         cleanup_paths += ['{{ cookiecutter.repo_name }}/docs']
 
     if '{{ cookiecutter.frontend_style }}' == 'webapp':
-        cleanup_paths += ['{{ cookiecutter.repo_name }}/app']
+        cleanup_paths += [
+            '{{ cookiecutter.repo_name }}/app',
+            '{{ cookiecutter.repo_name }}/Dockerfile-node.production',
+        ]
     elif '{{ cookiecutter.frontend_style }}' == 'spa':
         cleanup_paths += ['{{ cookiecutter.repo_name }}/webapp']
 
