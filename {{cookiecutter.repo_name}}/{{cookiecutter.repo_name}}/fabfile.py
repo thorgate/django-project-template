@@ -145,7 +145,7 @@ def test():
 
     defaults()
     env.node_site = '{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}'
-    env.django_site = '{{ cookiecutter.django_host_prefix|as_hostname }}.{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}'
+    env.django_site = '{{ cookiecutter.spa_django_host_prefix|as_hostname }}.{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}'
     env.hosts = ['{{cookiecutter.test_host}}']
 
 
@@ -162,7 +162,7 @@ def live():
     defaults()
     env.target = 'production'
     env.node_site = '{{ cookiecutter.live_hostname }}'
-    env.django_site = '{{ cookiecutter.django_host_prefix|as_hostname }}.{{ cookiecutter.live_hostname }}'
+    env.django_site = '{{ cookiecutter.spa_django_host_prefix|as_hostname }}.{{ cookiecutter.live_hostname }}'
     env.hosts = ['{{cookiecutter.live_host}}']
 
 

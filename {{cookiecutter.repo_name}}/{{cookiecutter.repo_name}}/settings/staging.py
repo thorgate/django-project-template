@@ -7,13 +7,13 @@ DEBUG = False
 
 ALLOWED_HOSTS = env.list(
     "DJANGO_ALLOWED_HOSTS",
-    default=["{{ cookiecutter.django_host_prefix|as_hostname }}.{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}", "{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}"],
+    default=["{{ cookiecutter.spa_django_host_prefix|as_hostname }}.{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}", "{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}"],
 )
 
 # Static site url, used when we need absolute url but lack request object, e.g. in email sending.
 SITE_URL = env.str("RAZZLE_SITE_URL", default="https://{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}")
 DJANGO_SITE_URL = env.str(
-    "RAZZLE_BACKEND_SITE_URL", default="https://{{ cookiecutter.django_host_prefix|as_hostname }}.{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}"
+    "RAZZLE_BACKEND_SITE_URL", default="https://{{ cookiecutter.spa_django_host_prefix|as_hostname }}.{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}"
 )
 
 CSRF_COOKIE_DOMAIN = env.str(
