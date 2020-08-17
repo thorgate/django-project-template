@@ -1,7 +1,7 @@
 # reference https://gitlab.com/thorgate/tg-project/-/blob/master/tg_project/schema/schema-1.0.0.json
 _version: 1.0.0
-name: {{ cookiecutter.project_title }}
-description: {{ cookiecutter.project_title }}
+name: "{{ cookiecutter.project_title }}"
+description: "{{ cookiecutter.project_title }}"
 type: internal
 status: active
 slack: "#TODO"
@@ -19,4 +19,4 @@ jiraProject: TODO
 tags:
   - django2
   - postgres10
-  - python{{ cookiecutter.python_version }}
+  - "python{{ cookiecutter.python_version }}"
