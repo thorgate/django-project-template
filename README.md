@@ -97,12 +97,12 @@ The images are built in CI (from default branches only) and also updated every d
 
 - [Dockerfile-ci](./utils/Dockerfile-ci)
 - Image in repository registry: `registry.gitlab.com/thorgate-public/django-project-template/ci`
-- Image in docker hub: `thorgate/django-template/ci`
-  - [see online](https://hub.docker.com/r/thorgate/django-template/ci)
+- Image in docker hub: `thorgate/django-template-ci`
+  - [see online](https://hub.docker.com/r/thorgate/django-template-ci)
 
 **Template CI Image:**
 
 - [Dockerfile-base-ci](./utils/Dockerfile-base-ci)
 - Image in repository registry: `registry.gitlab.com/thorgate-public/django-project-template/base-ci`
-- Image in docker hub: `thorgate/django-template/base-ci`
-  - [see online](https://hub.docker.com/r/thorgate/django-template/base-ci)
+- Image in docker hub: `thorgate/django-template-base-ci`
+  - [see online](https://hub.docker.com/r/thorgate/django-template-base-ci)

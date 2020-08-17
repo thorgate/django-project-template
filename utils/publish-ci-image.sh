@@ -39,7 +39,7 @@ if [[ -z $DOCKER_HUB_USER ]] || [[ -z $DOCKER_HUB_TOKEN ]]; then
     echo "Skipping docker hub publish:"
     echo " DOCKER_HUB_TOKEN or DOCKER_HUB_USER env variable is not defined."
 else
-    HUB_IMAGE="thorgate/django-template/${IMAGE_SUFFIX}"
+    HUB_IMAGE="thorgate/django-template-${IMAGE_SUFFIX}"
 
     echo "Publishing ${HUB_IMAGE} to docker hub too"
     docker tag "${IMAGE}:${IMAGE_TAG}" "${HUB_IMAGE}:${IMAGE_TAG}"

@@ -1,4 +1,4 @@
-# You can also use the fallback image from docker hub: thorgate/django-template/base-ci:latest
+# You can also use the fallback image from docker hub: thorgate/django-template-base-ci:latest
 image: registry.gitlab.com/thorgate-public/django-project-template/base-ci:latest
 
 services:
