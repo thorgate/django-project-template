@@ -34,6 +34,10 @@ sphinx_rtd_theme = "*"
 tg-utils = {version = "*", extras = ["model-hash"]}
 tg-react = "*"
 
+[dev-packages]
+black = "==19.10b0"
+django-debug-toolbar = "*"
+ipdb = "*"
 # Testing & quality tools
 coverage = "*"
 isort = "==4.*"
@@ -45,10 +49,6 @@ pylint-django = "*"
 # avoid specifying versions for pylint/pylint-django/astroid
 # and let prospector determine which versions work together
 prospector = "==1.2.*"
-
-[dev-packages]
-django-debug-toolbar = "*"
-ipdb = "*"
 
 [requires]
 python_version = "{{cookiecutter.python_version}}"

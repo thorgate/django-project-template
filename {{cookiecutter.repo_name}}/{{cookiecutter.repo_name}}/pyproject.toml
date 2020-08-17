@@ -1,0 +1,23 @@
+[tool.black]
+# Enable specific Python version if necessary:
+# target-version = ['py38']
+include = '\.pyi?$'
+exclude = '''
+
+(
+  /(
+      \.eggs         # exclude a few common directories in the
+    | \.git          # root of the project
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | build
+    | dist
+    | docs
+  )/
+  | fabfile.py
+  | local.py
+  | local_test.py
+)
+'''
