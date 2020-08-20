@@ -1,41 +1,54 @@
-# Official docker image.
-image: docker:latest
+# You can also use the fallback image from docker hub: thorgate/django-template-base-ci:latest
+image: registry.gitlab.com/thorgate-public/django-project-template/base-ci:latest
 
 services:
   - docker:dind
 
 variables:
   DOCKER_DRIVER: overlay
+  DOCKER_BUILDKIT: "1"
+  COMPOSE_DOCKER_CLI_BUILD: "1"
 
 before_script:
-  - apk update
-  - apk upgrade
-# As CI docker image is based on alpine and we generate lock file outside of docker
-# We need system libraries required for pip dependencies
-  - apk add python3 python3-dev build-base libffi-dev openssl-dev git postgresql-dev
-  - python3 -m ensurepip
-  - pip3 install docker-compose
-  - pip3 install -U pip pipenv==2020.6.2 setuptools wheel
+  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   - pipenv install --system --ignore-pipfile --dev
   - git config --global user.email "foo@bar.baz"
   - git config --global user.name "Foo Bar"
-# See the following issue for reasoning: https://gitlab.com/gitlab-org/gitlab-ce/issues/41227
+  # See the following issue for reasoning: https://gitlab.com/gitlab-org/gitlab-ce/issues/41227
   - export SHARED_PATH="$(dirname ${CI_PROJECT_DIR})/shared"
   - export TPL_PLAYGROUND="${SHARED_PATH}/tpl-playground"
   - mkdir -p $TPL_PLAYGROUND
 
+stages:
+  - test
+  # Since CI image publish job only runs from protected branches then new changes to CI
+  #  docker image must be introduced separately from other features. We could move it
+  #  to be the first stage but that would only work for changes merged into the main
+  #  branches.
+  #
+  # Note: When you do change the order here consider that:
+  # - publish-ci-image.sh always tags the image as latest
+  # - you might need to run publish_ci_image for all branchess
+  - publish_ci_image
+
 test_main:
   stage: test
+  except:
+    - schedules
   script:
     - pytest -E main --maxfail=1 -v
 
 test_CELERY:
   stage: test
+  except:
+    - schedules
   script:
     - pytest -E CELERY --maxfail=1 -v
 
 test_DOC:
   stage: test
+  except:
+    - schedules
   script:
     - pytest -E DOC --maxfail=1 -v
 
@@ -44,6 +57,26 @@ test_merge_master_to_spa:
   allow_failure: true
   only:
     - spa
+  except:
+    - schedules
   script:
     - git merge origin/master || echo "Automatic merge failed $?"
     - git status
+
+publish_ci_image:
+  stage: publish_ci_image
+  only:
+    - master
+    - spa
+    - schedules
+  script:
+    - ./utils/publish-ci-image.sh ci Dockerfile-ci
+
+publish_base_ci_image:
+  stage: publish_ci_image
+  only:
+    - master
+    - spa
+    - schedules
+  script:
+    - ./utils/publish-ci-image.sh base-ci Dockerfile-base-ci

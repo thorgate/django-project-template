@@ -1,20 +1,18 @@
-# Official docker image.
-image: docker:latest
+# You can also use the fallback image from docker hub: thorgate/django-template-ci:latest
+image: registry.gitlab.com/thorgate-public/django-project-template/ci:latest
 
 services:
   - docker:dind
 
 variables:
-  POSTGRES_USER: {{ cookiecutter.repo_name }}
-  POSTGRES_PASSWORD: {{ cookiecutter.repo_name }}
+  POSTGRES_USER: "{{ cookiecutter.repo_name }}"
+  POSTGRES_PASSWORD: "{{ cookiecutter.repo_name }}"
   DOCKER_DRIVER: overlay
+  DOCKER_BUILDKIT: "1"
+  COMPOSE_DOCKER_CLI_BUILD: "1"
 
 before_script:
   - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-  - apk update
-  - apk upgrade
-  - apk add python3 python3-dev build-base libffi-dev openssl-dev
-  - pip3 install docker-compose
 
 stages:
   - test
@@ -24,9 +22,9 @@ test:
   stage: test
   coverage: '/^TOTAL.*\s+(\d+\%)$/'
   except:
-    - template  # Don't run CI on template branch, should not be required
+    - template # Don't run CI on template branch, should not be required
   variables:
-    EDIT_SETTINGS: 'no'
+    EDIT_SETTINGS: "no"
   script:
     - make settings
     - docker-compose build
@@ -34,11 +32,10 @@ test:
     - make quality
     - make coverage
 
-
 build:
   stage: build
   except:
-    - template  # Don't run CI on template branch, should not be required
+    - template # Don't run CI on template branch, should not be required
   script:
     - EDIT_SETTINGS=no make settings
     # Ensure production images build also
