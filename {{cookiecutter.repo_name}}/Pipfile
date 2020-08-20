@@ -32,20 +32,20 @@ sphinx_rtd_theme = "*"
 {% endif -%}
 tg-utils = {version = "*", extras = ["model-hash"]}
 
+[dev-packages]
+black = "==19.10b0"
+django-debug-toolbar = "*"
+ipdb = "*"
 # Testing & quality tools
 coverage = "*"
 isort = "==4.*"
 pytest = "==5.*"
 pytest-django = "*"
 pylint-django = "*"
-# Note prospector is very picky about its depenedncies,
+# Note prospector is very picky about its dependencies,
 # avoid specifying versions for pylint/pylint-django/astroid
 # and let prospector determine which versions work together
 prospector = "==1.2.*"
-
-[dev-packages]
-django-debug-toolbar = "*"
-ipdb = "*"
 
 [requires]
 python_version = "{{cookiecutter.python_version}}"
