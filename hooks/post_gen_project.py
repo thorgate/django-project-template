@@ -20,6 +20,24 @@ def handle_react():
     if '{{ cookiecutter.include_docs }}' == 'no':
         cleanup_paths += ['{{ cookiecutter.repo_name }}/docs']
 
+    if '{{ cookiecutter.frontend_style }}' == 'webapp':
+        cleanup_paths += ['{{ cookiecutter.repo_name }}/app']
+    elif '{{ cookiecutter.frontend_style }}' == 'spa':
+        cleanup_paths += ['{{ cookiecutter.repo_name }}/webapp']
+
+    if '{{ cookiecutter.webapp_include_storybook }}' == 'no':
+        cleanup_paths += [
+            'webapp/webapp/src/.storybook',
+            'webapp/webapp/src/storyshots.test.js',
+            'webapp/src/stylesStub.js',
+            'webapp/src/components/Counter/Counter.stories.js',
+            'webapp/src/components/HelloWorld/HelloWorld.stories.js',
+            'webapp/src/components/NavigationBar/NavigationBar.stories.js',
+        ]
+
+    if '{{ cookiecutter.thorgate }}' == 'no':
+        cleanup_paths += ['deploy/terraform', 'tg-repository.yml']
+
     # If using specific vcs, add some extra cleanup paths
     repo_type = '{{ cookiecutter.vcs }}'.lower()
     if repo_type not in {'git', 'hg', 'none'}:

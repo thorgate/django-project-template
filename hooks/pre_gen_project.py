@@ -86,6 +86,24 @@ def validate_config():
         print("Valid include Docs keys are: %s" % ', '.join(valid_docs_key))
         sys.exit(1)
 
+    valid_storybook_replies = ['yes', 'no']
+    if "{{ cookiecutter.webapp_include_storybook }}" not in valid_storybook_replies:
+        print("Your answer to Include Storybook: '{{ cookiecutter.webapp_include_storybook }}' is invalid!")
+        print("Valid choices are: %s" % ', '.join(valid_docs_key))
+        sys.exit(1)
+
+    valid_frontend_styles = ['webapp', 'spa']
+    if "{{ cookiecutter.frontend_style }}" not in valid_frontend_styles:
+        print("Your answer to Frontend style: '{{ cookiecutter.webapp_include_storybook }}' is invalid!")
+        print("Valid choices are: %s" % ', '.join(valid_frontend_styles))
+        sys.exit(1)
+
+    valid_thorgate_key = ['yes', 'no']
+    if "{{ cookiecutter.thorgate }}" not in valid_thorgate_key:
+        print("Thorgate '{{ cookiecutter.thorgate }}' is not valid!")
+        print("Valid thorgate keys are: %s" % ', '.join(valid_thorgate_key))
+        sys.exit(1)
+
     if not re.match(r'(3\.[6-8](\.\d+)?)', "{{ cookiecutter.python_version }}"):
         print("Only allowed python version options are 3.6 or later.")
         sys.exit(1)

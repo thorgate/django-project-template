@@ -55,4 +55,5 @@ def default_project():
         "vcs": None,
         "python_version": "3.8",
         "node_version": "12",
+        "frontend_style": "spa",
     }
