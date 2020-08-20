@@ -50,10 +50,11 @@ def default_project():
         "repo_name": "test_project",
         "include_celery": "no",
         "include_docs": "yes",
-        "include_storybook": "no",
+        "webapp_include_storybook": "no",
         "test_host": "test1.thorgate.eu",
         "live_host": "test2.thorgate.eu",
         "vcs": None,
         "python_version": "3.8",
         "node_version": "12",
+        "frontend_style": "webapp",
     }

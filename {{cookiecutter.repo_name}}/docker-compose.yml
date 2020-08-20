@@ -29,7 +29,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-node
-    {%- if cookiecutter.include_storybook == 'yes' %}
+    {%- if cookiecutter.webapp_include_storybook == 'yes' %}
     ports:
       - "6006:80"
     {%- endif %}

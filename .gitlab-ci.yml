@@ -52,6 +52,13 @@ test_DOC:
   script:
     - pytest -E DOC --maxfail=1 -v
 
+test_STORYBOOK:
+  stage: test
+  except:
+    - schedules
+  script:
+    - pytest -E STORYBOOK --maxfail=1 -v
+
 test_merge_spa_to_master:
   stage: test
   only:

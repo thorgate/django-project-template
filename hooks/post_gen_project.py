@@ -20,7 +20,12 @@ def handle_react():
     if '{{ cookiecutter.include_docs }}' == 'no':
         cleanup_paths += ['{{ cookiecutter.repo_name }}/docs']
 
-    if '{{ cookiecutter.include_storybook }}' == 'no':
+    if '{{ cookiecutter.frontend_style }}' == 'webapp':
+        cleanup_paths += ['{{ cookiecutter.repo_name }}/app']
+    elif '{{ cookiecutter.frontend_style }}' == 'spa':
+        cleanup_paths += ['{{ cookiecutter.repo_name }}/webapp']
+
+    if '{{ cookiecutter.webapp_include_storybook }}' == 'no':
         cleanup_paths += [
             'webapp/webapp/src/.storybook',
             'webapp/webapp/src/storyshots.test.js',
@@ -76,12 +81,6 @@ def handle_react():
 
     for src, dst in symlinks:
         os.symlink(src, dst)
-
-    subprocess.check_output([
-        "mv",
-        "webapp/webapp/src/components/NavigationBar/NavigationBar.default.js",
-        "webapp/webapp/src/components/NavigationBar/NavigationBar.js"
-    ], cwd=cwd)
 
 
 def is_git_repository(path):
