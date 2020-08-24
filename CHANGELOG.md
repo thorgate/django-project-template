@@ -12,11 +12,21 @@ Note: Try to add categories to changes and link to MRs/Issues
 
 ## development
 
-- [ENH] Pipenv 2020.6.2
-- [ENH] Replace raven with sentry-sdk and make use of sentry environments (both for python and JS)
-- [ENH] Move all sentry configuration to base settings file
+- [ENH] Pipenv >= 2020.8.13 - !136 !137
+- [ENH] Replace raven with sentry-sdk and make use of sentry environments (both for python and JS) - !136 !137
+- [ENH] Move all sentry configuration to base settings file - !136 !137
 - [ENH] Add new setting `IS_DOCKER_BUILD` (controlled by DJANGO_IS_DOCKER_BUILD) which is set to
-         True during docker image build (for example during compilemessages)
+         True during docker image build (for example during compilemessages) - !136 !137
+- [ENH] Use and publish base images for CI - !138
+- [ENH] Unify cookiecutter file between spa and master - !140
+  - Add frontend style option to cookiecutter
+
+## [DEFAULT] development
+
+- [BUG] Fix missing semicolon in nginx config - !139
+- [ENH] Make code formatting tools run from project containers and remove linting helper images - !143
+  - [ENH] Makefile: add PHONY to the targets instead of keeping a list of them
+- [ENH] Move black config to pyproject.toml - !143
 
 
 ## 2020-06-27
