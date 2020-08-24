@@ -1,0 +1,16 @@
+{
+  "DEFAULT_NAMESPACE": "translations",
+  "TRANSLATION_NAMESPACES": [
+    "translations"
+  ],
+  "FALLBACK_LANGUAGE": "en",
+  "DEFAULT_LANGUAGE": "en",
+  "LANGUAGE_ORDER": [
+    "en",
+    "et"
+  ],
+  "LANGUAGES": {
+    "en": "English",
+    "et": "Eesti keel"
+  }
+}

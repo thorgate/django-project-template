@@ -1,0 +1,7 @@
+coverage/
+node_modules/
+build/
+dist/
+lib/
+
+razzle.config.js
