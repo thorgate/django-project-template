@@ -106,6 +106,19 @@ def test_storybook_generate(cookies, default_project):
     validate_project_works(result, default_project)
 
 
+@pytest.mark.env("SPA")
+def test_storybook_generate(cookies, default_project):
+    default_project.update({
+        'frontend_style': 'spa',
+    })
+    result = generate_project(cookies, default_project)
+
+    assert result.project.join('app/package.json').exists()
+    assert not result.project.join('webapp').exists()
+
+    validate_project_works(result, default_project)
+
+
 def test_storybook_not_generate(cookies, default_project):
     default_project.update({
         'webapp_include_storybook': 'no',

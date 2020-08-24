@@ -59,6 +59,13 @@ test_STORYBOOK:
   script:
     - pytest -E STORYBOOK --maxfail=1 -v
 
+test_SPA:
+  stage: test
+  except:
+    - schedules
+  script:
+    - pytest -E SPA --maxfail=1 -v
+
 test_merge_spa_to_master:
   stage: test
   only:
