@@ -1,7 +1,9 @@
 {% raw %}{% load staticfiles %}
 {% load i18n %}
 {% load render_bundle from webpack_loader %}{% endraw %}
-{% raw %}{% load js_reverse %}{% endraw %}{% raw %}
+{% if cookiecutter.frontend_style == 'webapp' %}
+{% raw %}{% load js_reverse %}{% endraw %}
+{% endif %}{% raw %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -27,14 +29,17 @@
                 user: null,
             {% endif %}
         };
+        {% endraw %}{% if cookiecutter.frontend_style == 'webapp' %}{% raw %}
         {% js_reverse_inline %}
-
+        {% endraw %}{% endif %}{% raw %}
     </script>
 
+    {% endraw %}{% if cookiecutter.frontend_style == 'webapp' %}{% raw %}
     <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
 
     {% render_bundle 'runtime' %}
     {% render_bundle 'vendors' %}
+    {% endraw %}{% endif %}{% raw %}
 
     {# In production, don't include the styles js file (which is unused anyway) #}
     {% if settings.DEBUG %}
@@ -51,28 +56,65 @@
     <![endif]-->
 </head>
 
-<body class="{% block body_classes %}{% endblock %}">{% endraw %}
+<body class="{% block body_classes %}{% endblock %}">{% endraw %}{% raw %}
     <!--[if lte IE 9]>
         <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
 
+    {% endraw %}{% if cookiecutter.frontend_style == 'webapp' %}{% raw %}
     <div id="navigation-bar">
-        {% raw %}<header class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <header class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
             <div class="container">
                 <a class="navbar-brand" href="{% url 'home' %}">{% endraw %}{{cookiecutter.project_title}}{% raw %}</a>
             </div>
         </header>{% endraw %}
         {% raw %}
     </div>
+    {% endraw %}{% else %}{% raw %}
+    <header class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">{% endraw %}{{cookiecutter.project_title}}{% raw %}</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#headerNavigation"
+                    aria-controls="headerNavigation" aria-expanded="false">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="headerNavigation">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{% url 'home' %}">{% trans "Home" %}</a>
+                    </li>
+                    {% endraw %}{% raw %}
+                </ul>
+                <ul class="navbar-nav ml-auto">
+                    {% if request.user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">{{ request.user.name|default:request.user.email }}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">{% trans "Log out" %}</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">{% trans "Log in" %}</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </header>
+    {% endraw %}{% endif %}{% raw %}
 
     <div class="container">
         {% block content %}{% endblock content %}
     </div>
 
     {% render_bundle 'app' %}
+    {% endraw %}{% if cookiecutter.frontend_style == 'webapp' %}{% raw %}
     <script>
         {% endraw %}{{cookiecutter.repo_name}}{% raw %}.initNavigationBar();
     </script>
+    {% endraw %}{% endif %}{% raw %}
     {% block scripts %}{% endblock scripts %}{% endraw %}{% raw %}
   </body>
 </html>

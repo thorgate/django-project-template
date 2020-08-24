@@ -1,6 +1,6 @@
 <TaskOptions>
   <TaskOptions>
-    <option name="arguments" value="prettier-format cmd=&quot;$FilePathRelativeToSourcepath$&quot;" />
+    <option name="arguments" value="prettier-format cmd=&quot;$FilePathRelativeToProjectRoot$&quot;" />
     <option name="checkSyntaxErrors" value="true" />
     <option name="description" />
     <option name="exitCodeBehavior" value="ERROR" />

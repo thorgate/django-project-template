@@ -18,7 +18,7 @@ COPY ./app/package.json ./
 COPY ./app/yarn.lock ./
 
 # Install node build dependencies
-RUN apk add --no-cache --virtual .build-deps alpine-sdk python
+RUN apk add --no-cache --virtual .build-deps alpine-sdk python bash
 
 # Install node dependencies
 RUN yarn install --frozen-lockfile

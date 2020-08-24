@@ -16,6 +16,8 @@ before_script:
 
 stages:
   - test
+{%- if cookiecutter.frontend_style == 'spa' %}
+  - build{% endif %}
 
 test:
   stage: test
@@ -30,3 +32,14 @@ test:
     - make node-install
     - make quality
     - make coverage
+
+{%- if cookiecutter.frontend_style == 'spa' %}
+
+build:
+  stage: build
+  except:
+    - template # Don't run CI on template branch, should not be required
+  script:
+    - EDIT_SETTINGS=no make settings
+    # Ensure production images build also
+    - docker-compose -f docker-compose.production.yml build{% endif %}

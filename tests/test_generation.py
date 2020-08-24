@@ -63,6 +63,9 @@ def test_base_generate(cookies, default_project):
     assert result.project.join('.hgignore').exists()
     assert result.project.join('.gitignore').exists()
 
+    assert result.project.join('webapp/').exists()
+    assert not result.project.join('app/').exists()
+
     validate_project_works(result, default_project)
 
 
@@ -113,8 +116,8 @@ def test_storybook_generate(cookies, default_project):
     })
     result = generate_project(cookies, default_project)
 
-    assert result.project.join('app/package.json').exists()
-    assert not result.project.join('webapp').exists()
+    assert result.project.join('app/').exists()
+    assert not result.project.join('webapp/').exists()
 
     validate_project_works(result, default_project)
 
