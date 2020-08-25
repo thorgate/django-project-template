@@ -19,6 +19,7 @@ venv/
 {{cookiecutter.repo_name}}/assets/
 {%- if cookiecutter.frontend_style == 'webapp' %}
 webapp/webapp/build/
+webapp/coverage/
 webapp/webapp/webpack-stats.json
 {% endif %}
 

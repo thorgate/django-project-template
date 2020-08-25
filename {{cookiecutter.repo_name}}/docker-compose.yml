@@ -12,7 +12,8 @@ services:
     volumes:
       - "./{{cookiecutter.repo_name}}:/app"
       {%- if cookiecutter.frontend_style == "webapp" %}
-      - "./webapp:/app/app"{% endif %}
+      - "./webapp/static:/app/static"
+      - "./webapp/webapp:/app/webapp"{% endif %}
       - ".data/media:/files/media"
     environment:
       - PYTHONUNBUFFERED=0

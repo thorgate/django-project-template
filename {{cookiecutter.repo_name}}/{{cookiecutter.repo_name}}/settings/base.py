@@ -216,14 +216,12 @@ GS_CACHE_CONTROL = "max-age=1209600"  # 2 weeks in seconds{% endif %}
 
 # Static files (CSS, JavaScript, images)
 STATIC_ROOT = "/files/assets"
-{%- if cookiecutter.frontend_style == 'webapp' %}
-STATIC_FILES_ROOT = "app"{% endif %}
 
 STATIC_URL = env.str("DJANGO_STATIC_URL", default="/static/")
 {%- if cookiecutter.frontend_style == 'webapp' %}
 STATICFILES_DIRS = (
     os.path.join(SITE_ROOT, "static"),
-    os.path.join(STATIC_FILES_ROOT, "webapp", "build"),
+    os.path.join(SITE_ROOT, "webapp", "build"),
 )
 {%- else %}
 STATICFILES_DIRS = (os.path.join(SITE_ROOT, "static"),){% endif %}
@@ -355,7 +353,7 @@ if SENTRY_DSN and not IS_DOCKER_BUILD:
 WEBPACK_LOADER = {
     "DEFAULT": {
         "BUNDLE_DIR_NAME": "",
-        "STATS_FILE": os.path.join(STATIC_FILES_ROOT, "webapp", "webpack-stats.json"),
+        "STATS_FILE": os.path.join(SITE_ROOT, "webapp", "webpack-stats.json"),
     },
 }
 

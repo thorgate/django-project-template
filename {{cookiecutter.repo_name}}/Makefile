@@ -118,6 +118,14 @@ prettier-format:
 
 
 .PHONY:
+prettier-format-cut-prefix:
+{%- if cookiecutter.frontend_style == 'spa' %}
+	@make run-prettier cmd="yarn prettier-format $(subst app/src, src, $(cmd))"
+{%- else %}
+	@make run-prettier cmd="yarn prettier-format $(subst webapp/webapp, webapp, $(cmd))"{% endif %}
+
+
+.PHONY:
 prettier-format-all:
 	@make run-prettier cmd="yarn prettier-format-all $(cmd)"
 

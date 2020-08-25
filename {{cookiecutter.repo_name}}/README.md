@@ -159,8 +159,8 @@ Read more about contributing to docs from `/docs/contributing.rst`.
 
 You can also calculate tests coverage via `make coverage`. The results will be in the following directories:
 
-- python: `{{cookiecutter.repo_name}}/cover`
-- javascript: {% if cookiecutter.frontend_style == 'webapp' %}`webapp/coverage`{% else %}`app/coverage`{% endif %}
+- python: [`{{cookiecutter.repo_name}}/cover`](./{{cookiecutter.repo_name}}/cover)
+- javascript: [{% if cookiecutter.frontend_style == 'webapp' %}`webapp/coverage`{% else %}`app/coverage`{% endif %}](./{% if cookiecutter.frontend_style == 'webapp' %}webapp/coverage{% else %}app/coverage{% endif %})
 
 ## Running code formatting tools
 
@@ -198,9 +198,8 @@ make black-format cmd="app/src/index.js" # File path should be relative to proje
 
 There is also option to use file watchers.
 To use pre-built docker helpers for this, import `.idea_template/watchers.xml`.
-To make this process faster the first time then run `make build-formatting-helpers` to pre-build formatting helpers.
 
-Or use `prettier` and `black` directly if NodeJS and/or Python is available for you.
+You can also use `prettier` and `black` directly if NodeJS and/or Python is available for you.
 
 
 ## Running linters
