@@ -17,7 +17,8 @@ before_script:
 stages:
   - test
 {%- if cookiecutter.frontend_style == 'spa' %}
-  - build{% endif %}
+  - build
+{%- endif %}
 
 test:
   stage: test

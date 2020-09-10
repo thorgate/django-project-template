@@ -100,7 +100,8 @@ COPY ./webapp/static /app/static
 
 # Copy all from node image
 COPY --from=node_builder /app/webapp/build /app/webapp/build
-COPY --from=node_builder /app/webapp/webpack-stats.json /app/webapp/webpack-stats.json{% endif %}
+COPY --from=node_builder /app/webapp/webpack-stats.json /app/webapp/webpack-stats.json
+{%- endif %}
 
 # Run Gunicorn by default
 CMD gunicorn {{ cookiecutter.repo_name }}.wsgi:application --workers 2 --bind :80
