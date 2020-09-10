@@ -18,8 +18,10 @@ Note: Try to add categories to changes and link to MRs/Issues
 - [ENH] Add new setting `IS_DOCKER_BUILD` (controlled by DJANGO_IS_DOCKER_BUILD) which is set to
          True during docker image build (for example during compilemessages) - !136 !137
 - [ENH] Use and publish base images for CI - !138
-- [ENH] Unify cookiecutter file between spa and master - !140
-  - Add frontend style option to cookiecutter
+- [ENH] Unify files between spa and master - !140
+  - Resulting code is rendered based on new `frontend_style` option
+- [NEW] Add spa frontend style to master branch
+  - Note: Migration guide for projects generated from spa branch will be provided by #15
 
 ## [DEFAULT] development
 
