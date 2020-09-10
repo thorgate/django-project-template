@@ -1,18 +1,17 @@
 # {{cookiecutter.project_title}}
 
 {% if cookiecutter.gitlab_repo_url -%}
-[![Build status](https://gitlab.com/thorgate/{{ cookiecutter.repo_name }}/badges/master/pipeline.svg)]({{ cookiecutter.gitlab_repo_url }}/commits/master)
-[![Coverage report](https://gitlab.com/thorgate/{{ cookiecutter.repo_name }}/badges/master/coverage.svg)]({{ cookiecutter.gitlab_repo_url }}/commits/master)
+[![Build status]({{ cookiecutter.gitlab_repo_url }}/badges/master/pipeline.svg)]({{ cookiecutter.gitlab_repo_url }}/commits/master)
+[![Coverage report]({{ cookiecutter.gitlab_repo_url }}/badges/master/coverage.svg)]({{ cookiecutter.gitlab_repo_url }}/commits/master)
 
 {% endif -%}
 
 TODO: verify that the following info is correct:
 
  - Python:  {{cookiecutter.python_version}}
- - DB:      PostgreSQL 10
- - Node:    {{cookiecutter.node_version}} LTS
- - NPM:     5.x
- - React:   16.x
+ - DB:      PostgreSQL {{cookiecutter.postgres_version}}
+ - Node:    {{cookiecutter.node_version}}
+ - React:   16.8+
 
 Browser support is defined in the `{{ cookiecutter.repo_name }}/browserslist` file that is used for autoprefixing CSS.
 
@@ -53,7 +52,8 @@ Both docker and docker-compose are used to run this project, so the run command 
     docker-compose up
 
 This builds, (re)creates and starts containers for Django, Node, PostgreSQL and Redis. Refer to `docker-compose.yml` for
-more insight.
+more insight.{% if cookiecutter.frontend_style == 'spa' %} Django app is running on `3000` port. Front-end server is running on `8000` port.
+For more information see [SPA docs](app/README.md).{% endif %}
 
 Logs from all running containers are shown in the terminal. To run in "detached mode", pass the `-d` flag to
 docker-compose. To see running containers, use `docker-compose ps`. To see logs from these containers, run
@@ -159,8 +159,8 @@ Read more about contributing to docs from `/docs/contributing.rst`.
 
 You can also calculate tests coverage via `make coverage`. The results will be in the following directories:
 
-- python: `{{cookiecutter.repo_name}}/cover`
-- javascript: `{{cookiecutter.repo_name}}/coverage`
+- python: [`{{cookiecutter.repo_name}}/cover`](./{{cookiecutter.repo_name}}/cover)
+- javascript: [{% if cookiecutter.frontend_style == 'webapp' %}`webapp/coverage`{% else %}`app/coverage`{% endif %}](./{% if cookiecutter.frontend_style == 'webapp' %}webapp/coverage{% else %}app/coverage{% endif %})
 
 ## Running code formatting tools
 
@@ -198,9 +198,9 @@ make black-format cmd="app/src/index.js" # File path should be relative to proje
 
 There is also option to use file watchers.
 To use pre-built docker helpers for this, import `.idea_template/watchers.xml`.
-To make this process faster the first time then run `make build-formatting-helpers` to pre-build formatting helpers.
 
-Or use `prettier` and `black` directly if NodeJS and/or Python is available for you.
+You can also use `prettier` and `black` directly if NodeJS and/or Python is available for you.
+
 
 ## Running linters
 
@@ -226,6 +226,12 @@ To use them, run those commands in the Django app dir:
     make quality
 
 
+## Running tests
+
+Tests are ran by `pytest` and `jest` test runners for python and javascript respectively. They can be run with the
+makefile via `make test`.
+
+
 ## Django translations
 
 Project contains two commands for updating and compiling translations. Those two are `make makemessages` and `make compilemessages`.
@@ -233,6 +239,18 @@ Howewer if you are adding a new language or are creating translations for the fi
 different command to create the initial locale files. The command is `add-locale`. After you have used this command once per each
 new language you can safely use `makemessages` and `compilemessages`
 
+{%- if cookiecutter.frontend_style == 'spa' %}
+
+
+## SPA translations
+
+Frontend app uses [i18next](https://github.com/i18next/i18next) for translations and locale data is stored in `public/locale/**/translations.json`.
+Translation discovery is handled in runtime and with command `extract-i18n`. During runtime discovered translations
+will be put in `translations.missing.json`, This file can be referred to for new translations added.
+**Notice: Only used translations will be automatically discovered. Other usages require manual extraction.**
+To add extra language, add it to `i18n.json` and run `make extract-i18n`. This will generate required files.
+In development Node server needs to be restarted to see updated translations.
+{% endif %}
 
 ## Deploys
 
@@ -387,4 +405,4 @@ There are basically two types of deploys:
 
 ### Gotchas
 
-* Keep `react`, `react-dom` and `react-testing-library` node package versions in sync. Otherwise it causes `jest` error
+* Keep `react`, `react-dom` and `react-testing-library` node package versions in sync. Otherwise it causes an error when running `jest`.

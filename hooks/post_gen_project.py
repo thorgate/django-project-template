@@ -21,9 +21,22 @@ def handle_react():
         cleanup_paths += ['{{ cookiecutter.repo_name }}/docs']
 
     if '{{ cookiecutter.frontend_style }}' == 'webapp':
-        cleanup_paths += ['{{ cookiecutter.repo_name }}/app']
+        cleanup_paths += [
+            'app',
+            'Dockerfile-node.production',
+            '{{cookiecutter.repo_name}}/accounts/api_urls.py',
+            '{{cookiecutter.repo_name}}/accounts/jwt',
+            '{{cookiecutter.repo_name}}/accounts/rest',
+            '{{cookiecutter.repo_name}}/templates/emails/base.txt',
+            '{{cookiecutter.repo_name}}/templates/emails/password_reset.txt',
+            '{{cookiecutter.repo_name}}/{{cookiecutter.repo_name}}/rest/',
+            '{{cookiecutter.repo_name}}/static/502.html',
+            '{{cookiecutter.repo_name}}/static/robots.txt',
+            'deploy/nginx/app.{{cookiecutter.repo_name}}.proxy_node.include',
+            'deploy/nginx/common.{{cookiecutter.repo_name}}.node.include',
+        ]
     elif '{{ cookiecutter.frontend_style }}' == 'spa':
-        cleanup_paths += ['{{ cookiecutter.repo_name }}/webapp']
+        cleanup_paths += ['webapp']
 
     if '{{ cookiecutter.webapp_include_storybook }}' == 'no':
         cleanup_paths += [

@@ -1,1 +1,19 @@
 from settings.test import *
+
+
+DATABASES['default']['HOST'] = 'postgres'
+DATABASES['default']['USER'] = '{{cookiecutter.repo_name}}'
+DATABASES['default']['PASSWORD'] = '{{cookiecutter.repo_name}}'
+
+CACHES['default']['LOCATION'] = "redis://redis:6379/1"
+
+# Do run locally without docker uncomment following lines
+# This overrides settings to use services from local machine instead
+# If project adds any other services then specify overrides for those as well
+# import socket  # noqa
+# if socket.gethostname() == 'YOUR_MACHINE_NAME':
+#     DATABASES['default']['HOST'] = 'localhost'
+#     DATABASES['default']['USER'] = '{{cookiecutter.repo_name}}'
+#     DATABASES['default']['PASSWORD'] = '{{cookiecutter.repo_name}}'
+#
+#     CACHES['default']['LOCATION'] = "redis://localhost:6379/1"
