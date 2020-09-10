@@ -1,13 +1,10 @@
-# Thorgate's Django template (Bootstrap 4 variant)
+# Thorgate's Django template
 
 [![Build status](https://gitlab.com/thorgate-public/django-project-template/badges/master/pipeline.svg)](https://gitlab.com/thorgate-public/django-project-template/commits/master)
 
 [Django](https://www.djangoproject.com/) project template that we use at [Thorgate](https://thorgate.eu).
 
-Best suited for medium-sized and bigger apps that use JavaScript and React for frontend.
-
-See also the [Single-Page Application](https://gitlab.com/thorgate-public/django-project-template/tree/spa)
-and [Bootstrap 3](https://gitlab.com/thorgate-public/django-project-template/tree/legacy-docker-bootstrap3) variants.
+Best suited for medium-sized and bigger apps that use JavaScript and React for frontend or single page web applications.
 
 _(note that the primary repo is in [Gitlab](https://gitlab.com/thorgate-public/django-project-template), with mirror in [Github](https://github.com/thorgate/django-project-template))_
 
@@ -19,21 +16,24 @@ _(note that the primary repo is in [Gitlab](https://gitlab.com/thorgate-public/d
     - [Django](https://www.djangoproject.com/)
     - Separate settings for different environments (local/staging/production)
     - Python 3.6 or later
+    - [SPA] Accessible from port `3000` for local development
 
-- Frontend app(webapp) with JavaScript (ES2015), React and Sass
+- Frontend app with JavaScript (ES2015), React and Sass
 
     - Latest JavaScript features from [ES2015](https://babeljs.io/docs/learn-es2015/) and beyond, transpiled with
       [Babel](https://babeljs.io/)
-    - [React](https://facebook.github.io/react/) 16 for fast modular user interfaces
+    - [React](https://facebook.github.io/react/) for fast modular user interfaces
     - [Sass](http://sass-lang.com/), [PostCSS](http://postcss.org/) and
       [Autoprefixer](https://github.com/postcss/autoprefixer) for more convenient styling
-    - [Webpack](https://webpack.github.io/) 2.3 is used to bundle and minify JavaScript and styles
+    - [Webpack](https://webpack.github.io/) is used to bundle and minify JavaScript and styles
+    - [SPA] Accessible from port `8000` for local development
 
 - Batteries
 
     - Docker / Docker Compose integration
     - Linting of Python, JavaScript and Sass code with [Prospector](http://prospector.landscape.io/),
       [ESLint](http://eslint.org/) and [stylelint](https://stylelint.io/)
+    - Automated code-formatting using [black](https://black.readthedocs.io) and [prettier](https://prettier.io)
     - [py.test](http://pytest.org/) and [coverage](https://coverage.readthedocs.io/) integration
     - Deploy helpers, using [Fabric](http://www.fabfile.org/)
     - Media files are stored in a CDN like S3 or Google Cloud Storage

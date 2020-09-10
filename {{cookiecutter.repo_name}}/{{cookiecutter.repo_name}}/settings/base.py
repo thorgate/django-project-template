@@ -9,6 +9,8 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 """
 
 import os
+{%- if cookiecutter.frontend_style == 'spa' %}
+from datetime import timedelta{% endif %}
 from urllib.parse import quote
 
 import environ
@@ -34,6 +36,9 @@ if READ_DOT_ENV_FILE:
 # Set to true during docker image building (e.g. when running collectstatic)
 IS_DOCKER_BUILD = env.bool("DJANGO_DOCKER_BUILD", default=False)
 
+# Shown in error pages and some other places
+PROJECT_TITLE = "{{ cookiecutter.project_title }}"
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DJANGO_DEBUG", default=True)
 
@@ -42,15 +47,29 @@ MANAGERS = ADMINS
 EMAIL_SUBJECT_PREFIX = "[{{cookiecutter.project_title}}] "  # subject prefix for managers & admins
 
 SESSION_COOKIE_NAME = "{{ cookiecutter.repo_name }}_ssid"
+SESSION_COOKIE_DOMAIN = env.str("DJANGO_SESSION_COOKIE_DOMAIN", default=None)
+{%- if cookiecutter.frontend_style == 'spa' %}
+
+CSRF_COOKIE_DOMAIN = env.str("DJANGO_CSRF_COOKIE_DOMAIN", default=None)
+CSRF_COOKIE_HTTPONLY = False
+
+# Tg React Url configurations should be same as frontend forgot password URL
+TGR_PASSWORD_RECOVERY_URL = "/auth/reset-password/%s"{% endif %}
 
 INSTALLED_APPS = [
     # Local apps
     "accounts",
     "{{cookiecutter.repo_name}}",
     # Third-party apps
+{%- if cookiecutter.frontend_style == 'webapp' %}
     "django_js_reverse",
+    "webpack_loader",{% else %}
+    "rest_framework",
+    "django_filters",
+    "tg_react",
+    "corsheaders",{% endif %}
     "crispy_forms",
-    "webpack_loader",
+    # Django apps
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -61,7 +80,11 @@ INSTALLED_APPS = [
 
 
 MIDDLEWARE = [
+{%- if cookiecutter.frontend_style == 'spa' %}
+    "corsheaders.middleware.CorsMiddleware",{% endif %}
     "django.contrib.sessions.middleware.SessionMiddleware",
+{%- if cookiecutter.frontend_style == 'spa' %}
+    "django.middleware.locale.LocaleMiddleware",{% endif %}
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -85,7 +108,8 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
-                "django_settings_export.settings_export",
+                {%- if cookiecutter.frontend_style == 'webapp' %}
+                "django_settings_export.settings_export",{% endif %}
             ],
         },
     },
@@ -111,6 +135,7 @@ DATABASES = {
 
 # Redis config (used for caching{% if cookiecutter.include_celery == "yes" %} and celery{% endif %})
 REDIS_URL = env.str("DJANGO_REDIS_URL", default="redis://redis:6379/1")
+REDIS_CACHE_URL = env.str("DJANGO_REDIS_CACHE_URL", default=REDIS_URL)
 REDIS_CELERY_URL = env.str("DJANGO_REDIS_CELERY_URL", default=REDIS_URL)
 
 {%- if cookiecutter.include_celery == "yes" %}
@@ -130,7 +155,7 @@ CELERYBEAT_SCHEDULE = {
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": REDIS_URL,
+        "LOCATION": REDIS_CACHE_URL,
         "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
     }
 }
@@ -191,13 +216,15 @@ GS_CACHE_CONTROL = "max-age=1209600"  # 2 weeks in seconds{% endif %}
 
 # Static files (CSS, JavaScript, images)
 STATIC_ROOT = "/files/assets"
-STATIC_FILES_ROOT = "app"
 
 STATIC_URL = env.str("DJANGO_STATIC_URL", default="/static/")
+{%- if cookiecutter.frontend_style == 'webapp' %}
 STATICFILES_DIRS = (
-    os.path.join(STATIC_FILES_ROOT, "static"),
-    os.path.join(STATIC_FILES_ROOT, "webapp", "build"),
+    os.path.join(SITE_ROOT, "static"),
+    os.path.join(SITE_ROOT, "webapp", "build"),
 )
+{%- else %}
+STATICFILES_DIRS = (os.path.join(SITE_ROOT, "static"),){% endif %}
 STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
@@ -211,9 +238,20 @@ AUTH_USER_MODEL = "accounts.User"
 
 
 # Static site url, used when we need absolute url but lack request object, e.g. in email sending.
+{%- if cookiecutter.frontend_style == 'webapp' %}
 SITE_URL = env.str("DJANGO_SITE_URL", default="http://127.0.0.1:8000")
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=[])
-
+{% else %}
+SITE_URL = env.str("RAZZLE_SITE_URL", default="http://127.0.0.1:8000")
+DJANGO_SITE_URL = env.str("RAZZLE_BACKEND_SITE_URL", default="http://127.0.0.1:3000")
+ALLOWED_HOSTS = env.list(
+    "DJANGO_ALLOWED_HOSTS", default=["django", "localhost", "127.0.0.1"]
+)
+CSRF_TRUSTED_ORIGINS = env.list("DJANGO_CSRF_TRUSTED_ORIGINS", default=ALLOWED_HOSTS)
+CORS_ORIGIN_WHITELIST = [
+    "http://{host}".format(host=host)
+    for host in env.list("DJANGO_CORS_ORIGIN_WHITELIST", default=ALLOWED_HOSTS)
+]{% endif %}
 
 # Don't allow site's content to be included in frames/iframes.
 X_FRAME_OPTIONS = "DENY"
@@ -276,6 +314,22 @@ SILENCED_SYSTEM_CHECKS = [
     "security.W001",  # we don't use SecurityMiddleware since security is better applied in nginx config
 ]
 
+{%- if cookiecutter.frontend_style == 'spa' %}
+
+# Rest framework configuration
+REST_FRAMEWORK = {
+    # Disable Basic auth
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        # By default api session authentication is not used
+        # "rest_framework.authentication.SessionAuthentication",
+    ),
+    "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
+    # Change default full-url media files to be only stored path, needs /media prepended in frontend
+    "UPLOADED_FILES_USE_URL": False,
+    # Default request format in tests is json
+    "TEST_REQUEST_DEFAULT_FORMAT": "json",
+}{% endif %}
 
 # Default values for sentry
 # Example: https://TODO@sentry.thorgate.eu/TODO
@@ -294,14 +348,14 @@ if SENTRY_DSN and not IS_DOCKER_BUILD:
         send_default_pii=True,
     )
 
+{%- if cookiecutter.frontend_style == 'webapp' %}
+
 WEBPACK_LOADER = {
     "DEFAULT": {
         "BUNDLE_DIR_NAME": "",
-        "STATS_FILE": os.path.join(STATIC_FILES_ROOT, "webapp", "webpack-stats.json"),
-    }
+        "STATS_FILE": os.path.join(SITE_ROOT, "webapp", "webpack-stats.json"),
+    },
 }
-
-PROJECT_TITLE = "{{ cookiecutter.project_title }}"
 
 # All these settings will be made available to javascript app
 SETTINGS_EXPORT = [
@@ -316,4 +370,21 @@ SETTINGS_EXPORT = [
 # django-js-reverse
 JS_REVERSE_JS_VAR_NAME = "reverse"
 JS_REVERSE_JS_GLOBAL_OBJECT_NAME = "DJ_CONST"
-JS_REVERSE_EXCLUDE_NAMESPACES = ["admin", "djdt"]
+JS_REVERSE_EXCLUDE_NAMESPACES = ["admin", "djdt"]{% else %}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": True,
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": SECRET_KEY,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "USER_ID_FIELD": "pk",
+    "USER_ID_CLAIM": "user_id",
+}
+
+
+# CORS settings
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+{%- endif %}

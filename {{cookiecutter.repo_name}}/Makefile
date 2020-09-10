@@ -118,6 +118,14 @@ prettier-format:
 
 
 .PHONY:
+prettier-format-cut-prefix:
+{%- if cookiecutter.frontend_style == 'spa' %}
+	@make run-prettier cmd="yarn prettier-format $(subst app/src, src, $(cmd))"
+{%- else %}
+	@make run-prettier cmd="yarn prettier-format $(subst webapp/webapp, webapp, $(cmd))"{% endif %}
+
+
+.PHONY:
 prettier-format-all:
 	@make run-prettier cmd="yarn prettier-format-all $(cmd)"
 
@@ -187,7 +195,7 @@ $(PROJECT_ROOT)/.idea:
 
 
 .PHONY:
-settings: Pipfile.lock $(SITE_ROOT)/settings/local.py $(SITE_ROOT)/settings/local_test.py
+settings: Pipfile.lock $(SITE_ROOT)/settings/local.py $(SITE_ROOT)/settings/local_test.py{% if cookiecutter.frontend_style == 'spa' %} $(SITE_ROOT)/django.env{% endif %}
 
 
 $(SITE_ROOT)/settings/local.py:
@@ -198,9 +206,14 @@ $(SITE_ROOT)/settings/local.py:
 	fi
 
 $(SITE_ROOT)/settings/local_test.py:
-	echo "$(CYAN)Creating Django settings local_test.py file$(COFF)"
-	cp $(SITE_ROOT)/settings/local_test.py.example $(SITE_ROOT)/settings/local_test.py
+	@echo -e "$(CYAN)Creating Django settings local_test.py file$(COFF)"
+	@cp $(SITE_ROOT)/settings/local_test.py.example $(SITE_ROOT)/settings/local_test.py
 
+{%- if cookiecutter.frontend_style == 'spa' %}
+
+$(SITE_ROOT)/django.env:
+	@echo "$(CYAN)Creating Django .env file$(COFF)"
+	@touch $(SITE_ROOT)/django.env{% endif %}
 
 .PHONY:
 coverage:
@@ -245,11 +258,13 @@ clean:
 
 .PHONY:
 lint-py: black-check-all prospector isort
+
 .PHONY:
 lint-js: prettier-check-all eslint
 
 .PHONY:
 lint: lint-py lint-js
+
 .PHONY:
 quality: lint pipenv-check
 
@@ -290,8 +305,13 @@ docker-django:
 
 
 .PHONY:
-bash:
+django-shell:
 	docker-compose run --rm django bash
+
+
+.PHONY:
+node-shell:
+	docker-compose run --rm node bash
 
 
 .PHONY:
@@ -322,8 +342,14 @@ docker-logs:
 .PHONY:
 makemessages:
 	docker-compose run --rm django ./manage.py makemessages -a
-	docker-compose run --rm django ./manage.py makemessages -a -d djangojs {% if cookiecutter.include_docs == 'yes' %}--ignore="docs/*"{% endif %}
+{%- if cookiecutter.frontend_style == 'webapp' %}
+	docker-compose run --rm django ./manage.py makemessages -a -d djangojs {% if cookiecutter.include_docs == 'yes' %}--ignore="docs/*"{% endif %}{% endif %}
 
+{%- if cookiecutter.frontend_style == 'spa' %}
+
+.PHONY:
+extract-i18n:
+	docker-compose run --rm node yarn extract-i18n{% endif %}
 
 .PHONY:
 compilemessages:

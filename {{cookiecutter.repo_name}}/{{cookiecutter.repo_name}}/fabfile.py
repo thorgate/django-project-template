@@ -37,6 +37,8 @@ from hammer.docker_network import create_docker_network
 
 vcs = Vcs.init(project_root=os.path.dirname(os.path.dirname(__file__)), use_sudo=True)
 
+{%- if cookiecutter.frontend_style == 'webapp' %}
+
 LOCAL_ENV_TEMPLATE = """DJANGO_SECRET_KEY=${secret_key}
 DJANGO_SITE_URL=https://${django_site}
 DJANGO_ALLOWED_HOSTS=${allowed_hosts}
@@ -46,6 +48,22 @@ DJANGO_DATABASE_NAME={{cookiecutter.repo_name}}
 DJANGO_DATABASE_USER={{cookiecutter.repo_name}}
 DJANGO_DATABASE_PASSWORD=${db_password}
 """
+{%- else %}
+
+BASE_LOCAL_SETTINGS = """RAZZLE_SITE_URL=https://${node_site}
+RAZZLE_BACKEND_SITE_URL=https://${django_site}
+"""
+
+DJANGO_LOCAL_SETTINGS = """${prefix}_SECRET_KEY=${secret_key}
+${site_settings}
+${prefix}_ALLOWED_HOSTS=${allowed_hosts}
+${prefix}_DATABASE_HOST=postgres
+${prefix}_DATABASE_PORT=5432
+${prefix}_DATABASE_NAME={{cookiecutter.repo_name}}
+${prefix}_DATABASE_USER={{cookiecutter.repo_name}}
+${prefix}_DATABASE_PASSWORD=${db_password}
+"""
+{%- endif %}
 
 
 """ TARGETS """
@@ -97,8 +115,29 @@ def defaults():
                 "remote_path": "/etc/nginx/conf.d/%(filename)s"
             },
             {
+                "pattern": "common.{{cookiecutter.repo_name}}.django.include",
+                "filename": "common.{{cookiecutter.repo_name}}.django.include",
+                "remote_path": "/etc/nginx/conf.d/%(filename)s"
+            },
+            {
                 "pattern": "app.{{cookiecutter.repo_name}}.proxy_django.include",
                 "filename": "app.{{cookiecutter.repo_name}}.proxy_django.include",
+                "remote_path": "/etc/nginx/conf.d/%(filename)s"
+            },
+            {%- if cookiecutter.frontend_style == 'spa' %}
+            {
+                "pattern": "common.{{cookiecutter.repo_name}}.node.include",
+                "filename": "common.{{cookiecutter.repo_name}}.node.include",
+                "remote_path": "/etc/nginx/conf.d/%(filename)s"
+            },
+            {
+                "pattern": "app.{{cookiecutter.repo_name}}.proxy_node.include",
+                "filename": "app.{{cookiecutter.repo_name}}.proxy_node.include",
+                "remote_path": "/etc/nginx/conf.d/%(filename)s"
+            },{% endif %}
+            {
+                "pattern": "app.{{cookiecutter.repo_name}}.proxy.include",
+                "filename": "app.{{cookiecutter.repo_name}}.proxy.include",
                 "remote_path": "/etc/nginx/conf.d/%(filename)s"
             },
             {
@@ -122,7 +161,12 @@ def test():
     """
 
     defaults()
+    {%- if cookiecutter.frontend_style == 'webapp' %}
     env.django_site = '{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}'
+    {%- else %}
+    env.node_site = '{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}'
+    env.django_site = '{{ cookiecutter.spa_django_host_prefix|as_hostname }}.{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}'
+    {%- endif %}
     env.hosts = ['{{cookiecutter.test_host}}']
 
 
@@ -138,7 +182,12 @@ def live():
 
     defaults()
     env.target = 'production'
+    {%- if cookiecutter.frontend_style == 'webapp' %}
     env.django_site = '{{ cookiecutter.live_hostname }}'
+    {%- else %}
+    env.node_site = '{{ cookiecutter.live_hostname }}'
+    env.django_site = '{{ cookiecutter.spa_django_host_prefix|as_hostname }}.{{ cookiecutter.live_hostname }}'
+    {%- endif %}
     env.hosts = ['{{cookiecutter.live_host}}']
 
 
@@ -318,6 +367,7 @@ def setup_server(id=None):
     db_password = generate_password()
     secret_key = generate_password()
 
+    {%- if cookiecutter.frontend_style == 'webapp' %}
     # Create site settings for this env
     django_local_env = string.Template(LOCAL_ENV_TEMPLATE).substitute(
         db_password=db_password,
@@ -325,40 +375,78 @@ def setup_server(id=None):
         django_site=env.django_site,
         allowed_hosts=','.join([env.django_site]),
     )
-    django_env_file_path = env.code_dir + '/{{cookiecutter.repo_name}}/django.env'
+    django_settings_file = env.code_dir + '/{{cookiecutter.repo_name}}/django.env'
 
     # Upload base env file
-    put(local_path=StringIO(django_local_env), remote_path=django_env_file_path, use_sudo=True)
+    put(local_path=StringIO(django_local_env), remote_path=django_settings_file, use_sudo=True)
+    {%- else %}
+    allowed_hosts = [env.node_site]
+
+    if env.django_site not in allowed_hosts:
+        allowed_hosts.append(env.django_site)
+
+    allowed_hosts = ','.join(allowed_hosts)
+
+    node_site_settings = string.Template(BASE_LOCAL_SETTINGS).substitute(
+        node_site=env.node_site, django_site=env.django_site,
+    )
+
+    django_site_settings = string.Template(BASE_LOCAL_SETTINGS).substitute(
+        node_site=env.node_site, django_site=env.django_site,
+    )
+
+    django_local_settings = string.Template(DJANGO_LOCAL_SETTINGS).substitute(
+        db_password=db_password, secret_key=secret_key,
+        site_settings=django_site_settings,
+        allowed_hosts=allowed_hosts,
+        prefix='DJANGO',
+    )
+
+    # Upload local settings / env files
+    node_settings_file = env.code_dir + '/app/.env.production.local'
+    django_settings_file = env.code_dir + '/{{cookiecutter.repo_name}}/django.env'
+
+    put(local_path=StringIO(node_site_settings), remote_path=node_settings_file, use_sudo=True)
+    put(local_path=StringIO(django_local_settings), remote_path=django_settings_file, use_sudo=True)
+    {%- endif %}
 
     # Request additional secrets
     print('Enter Django SENTRY_ENVIRONMENT (staging/production):')
-    add_secret_key('DJANGO_SENTRY_ENVIRONMENT', [django_env_file_path])
+    add_secret_key('DJANGO_SENTRY_ENVIRONMENT', [django_settings_file])
 
     print('Enter Django SENTRY_DSN:')
-    add_secret_key('DJANGO_SENTRY_DSN', [django_env_file_path])
+    add_secret_key('DJANGO_SENTRY_DSN', [django_settings_file])
+
+    {%- if cookiecutter.frontend_style == 'spa' %}
+
+    print('Enter Node SENTRY_ENVIRONMENT (staging/production):')
+    add_secret_key('RAZZLE_SENTRY_ENVIRONMENT', [node_settings_file])
+
+    print('Enter Node SENTRY_DSN:')
+    add_secret_key('RAZZLE_SENTRY_DSN', [node_settings_file]){% endif %}
 
     print('Enter Django EMAIL_HOST_PASSWORD:')
-    add_secret_key('DJANGO_EMAIL_HOST_PASSWORD', [django_env_file_path])
+    add_secret_key('DJANGO_EMAIL_HOST_PASSWORD', [django_settings_file])
 
-    {%if cookiecutter.django_media_engine == 'S3' -%}
+    {% if cookiecutter.django_media_engine == 'S3' -%}
     print('Enter Django DJANGO_AWS_ACCESS_KEY_ID:')
-    add_secret_key('DJANGO_AWS_ACCESS_KEY_ID', [django_env_file_path])
+    add_secret_key('DJANGO_AWS_ACCESS_KEY_ID', [django_settings_file])
 
     print('Enter Django DJANGO_AWS_SECRET_ACCESS_KEY:')
-    add_secret_key('DJANGO_AWS_SECRET_ACCESS_KEY', [django_env_file_path])
+    add_secret_key('DJANGO_AWS_SECRET_ACCESS_KEY', [django_settings_file])
     {%- endif %}{% if cookiecutter.django_media_engine == 'GCS' -%}
     print('Enter Django DJANGO_GS_PROJECT_ID:')
-    add_secret_key('DJANGO_GS_PROJECT_ID', [django_env_file_path])
+    add_secret_key('DJANGO_GS_PROJECT_ID', [django_settings_file])
     with open('./google-credentials-{}.json'.format(env.target)) as f:
         gcs_credentials_json = f.read().replace('\r', '').replace('\n', '')
-    add_secret_key('DJANGO_GS_CREDENTIALS', [django_env_file_path], gcs_credentials_json){% endif %}
+    add_secret_key('DJANGO_GS_CREDENTIALS', [django_settings_file], gcs_credentials_json){% endif %}
 
     # Create database
     sudo('echo "CREATE DATABASE {{cookiecutter.repo_name}}; '
          '      CREATE USER {{cookiecutter.repo_name}} WITH password \'{db_password}\'; '
          '      GRANT ALL PRIVILEGES ON DATABASE {{cookiecutter.repo_name}} to {{cookiecutter.repo_name}};" '
-         '| docker exec -i postgres-{postgres_version} psql -U postgres'.format(db_password=db_password, postgres_version=env.postgres_version))
-
+         '| docker exec -i postgres-{postgres_version} psql -U postgres'.format(db_password=db_password,
+                                                                                postgres_version=env.postgres_version))
     # Create log dir
     sudo('mkdir -p /var/log/{{cookiecutter.repo_name}}/')
 
@@ -366,7 +454,7 @@ def setup_server(id=None):
 
     docker_compose('build')
 
-    # migrations, collectstatic
+    # migrations, collectstatic{% if cookiecutter.frontend_style == 'spa' %} (both django & node){% endif %}
     migrate(silent=True)
     collectstatic()
 
@@ -543,8 +631,12 @@ def createsuperuser():
 
 
 @task
-def add_secret_keys():
-    """ Add variables to remote env file """
+def add_secret_keys({% if cookiecutter.frontend_style == 'spa' %}component=None{% endif %}):
+    {%- if cookiecutter.frontend_style == 'spa' %}
+    if not component:
+        print('Missing target component...')
+        return{% endif %}
+
     require('hosts')
     require('code_dir')
 
@@ -552,7 +644,14 @@ def add_secret_keys():
         abort('Failed to elevate to root')
         return
 
+    {%- if cookiecutter.frontend_style == 'spa' %}
+    if component == 'node':
+        remote_path = env.code_dir + '/app/.env.production.local'
+    else:
+        remote_path = env.code_dir + '/{{cookiecutter.repo_name}}/django.env'
+    {%- else %}
     remote_path = env.code_dir + '/{{cookiecutter.repo_name}}/django.env'
+    {%- endif %}
 
     while True:
         # Get key name
@@ -595,6 +694,8 @@ def repo_type():
 
 
 def collectstatic():
+    {%- if cookiecutter.frontend_style == 'spa' %}
+    docker_compose_run('node', 'yarn export-assets', name='{{cookiecutter.repo_name}}_yarn_export'){% endif %}
     management_cmd('collectstatic --noinput --ignore styles-src')
 
 
@@ -617,13 +718,15 @@ def get_current_version_summary():
     return "%s [%s]: %s - %s" % (commit_id, branch, message, author)
 
 
-def docker_compose(cmd):
+def docker_compose(cmd, fail_on_error=True):
     with cd(env.code_dir):
         res = sudo('docker-compose -f docker-compose.production.yml ' + cmd)
+
         try:
             return res.stdout
         except:
-            pass
+            if fail_on_error:
+                raise
 
 
 def docker_compose_run(service, cmd='', name='{{cookiecutter.repo_name}}_tmp'):
@@ -729,7 +832,7 @@ def get_docker_compose_config(local=False):
     if local:
         result = operations.local('docker-compose config', capture=True)
     else:
-        result = docker_compose('config')
+        result = docker_compose('config', fail_on_error=False)
     try:
         return yaml.load(result)
     except:

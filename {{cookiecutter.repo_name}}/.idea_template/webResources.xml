@@ -5,8 +5,12 @@
       <entry url="file://$PROJECT_DIR$">
         <entryData>
           <resourceRoots>
-            <path value="file://$PROJECT_DIR$/{{cookiecutter.repo_name}}/webapp/src" />
-            <path value="file://$PROJECT_DIR$/{{cookiecutter.repo_name}}/static/style-src" />
+{% if cookiecutter.frontend_style == 'spa' %}
+            <path value="file://$PROJECT_DIR$/app/src" />
+{% else %}
+            <path value="file://$PROJECT_DIR$/webapp/src" />
+            <path value="file://$PROJECT_DIR$/webapp/static/styles-src" />
+{% endif %}
           </resourceRoots>
         </entryData>
       </entry>

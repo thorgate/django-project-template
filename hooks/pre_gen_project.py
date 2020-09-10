@@ -146,8 +146,9 @@ def copy_cookiecutter_config(local_filename='.cookiecutterrc'):
 
     This creates the initial .cookiecutterrc file when the project is first generated.
     """
-
-    replay_filename = os.path.expanduser('~/.cookiecutter_replay/django-project-template.json')
+    template_dir = os.path.abspath('{{ cookiecutter._template }}')
+    template_name = os.path.basename(template_dir) or "django-project-template"
+    replay_filename = os.path.expanduser(f'~/.cookiecutter_replay/{template_name}.json')
     if not os.path.exists(replay_filename) or os.path.exists(local_filename):
         # This happens when we're upgrading an existing project
         return

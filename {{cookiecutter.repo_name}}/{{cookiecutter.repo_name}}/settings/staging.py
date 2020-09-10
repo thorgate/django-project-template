@@ -1,4 +1,7 @@
-from settings.base import *
+{%- if cookiecutter.frontend_style == 'spa' -%}
+from corsheaders.defaults import default_headers
+
+{% endif %}from settings.base import *
 
 
 DEBUG = False
@@ -6,12 +9,30 @@ DEBUG = False
 # fmt: off
 ALLOWED_HOSTS = env.list(
     "DJANGO_ALLOWED_HOSTS",
-    default=["{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}"]
+{%- if cookiecutter.frontend_style == 'webapp' %}
+    default=["{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}"],
+{% else %}
+    default=["{{ cookiecutter.spa_django_host_prefix|as_hostname }}.{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}", "{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}"],
+{% endif %}
 )
 # fmt: on
 
 # Static site url, used when we need absolute url but lack request object, e.g. in email sending.
+{%- if cookiecutter.frontend_style == 'webapp' %}
 SITE_URL = env.str("DJANGO_SITE_URL", default="https://{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}")
+{% else %}
+SITE_URL = env.str("RAZZLE_SITE_URL", default="https://{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}")
+DJANGO_SITE_URL = env.str(
+    "RAZZLE_BACKEND_SITE_URL", default="https://{{ cookiecutter.spa_django_host_prefix|as_hostname }}.{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}"
+)
+
+# fmt: off
+CSRF_COOKIE_DOMAIN = env.str(
+    "DJANGO_CSRF_COOKIE_DOMAIN",
+    default=".{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}"
+)
+# fmt: on{% endif %}
+
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 EMAIL_HOST = env.str("DJANGO_EMAIL_HOST", default="smtp.sparkpostmail.com")
@@ -53,6 +74,20 @@ else:
     LOGGING["handlers"].update(
         {"console": {"class": "logging.StreamHandler", "formatter": "default"}}
     )
+
+{%- if cookiecutter.frontend_style == 'spa' %}
+
+# CORS overrides
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_EXPOSE_HEADERS = default_headers
+CORS_ORIGIN_WHITELIST = [
+    "https://{host}".format(host=host)
+    for host in env.list("DJANGO_CORS_ORIGIN_WHITELIST", default=ALLOWED_HOSTS)
+]
+
+# CSRF Trusted hosts
+CSRF_TRUSTED_ORIGINS = env.list("DJANGO_CSRF_TRUSTED_ORIGINS", default=ALLOWED_HOSTS)
+{% endif %}
 
 # Enable {{ cookiecutter.django_media_engine }} storage
 DEFAULT_FILE_STORAGE = "{{ cookiecutter.repo_name }}.storages.MediaStorage"

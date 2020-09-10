@@ -1,6 +1,6 @@
 <TaskOptions>
   <TaskOptions>
-    <option name="arguments" value="prettier-format cmd=&quot;$FilePathRelativeToSourcepath$&quot;" />
+    <option name="arguments" value="prettier-format-cut-prefix cmd=&quot;$FilePathRelativeToProjectRoot$&quot;" />
     <option name="checkSyntaxErrors" value="true" />
     <option name="description" />
     <option name="exitCodeBehavior" value="ERROR" />
@@ -20,7 +20,7 @@
     <envs />
   </TaskOptions>
   <TaskOptions>
-    <option name="arguments" value="black-format cmd=&quot;$FilePathRelativeToProjectRoot$&quot;" />
+    <option name="arguments" value="black-format cmd=&quot;$FilePathRelativeToSourcepath$&quot;" />
     <option name="checkSyntaxErrors" value="true" />
     <option name="description" />
     <option name="exitCodeBehavior" value="ERROR" />

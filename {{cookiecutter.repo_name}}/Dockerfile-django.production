@@ -9,9 +9,9 @@ RUN mkdir -p /var/log/{{cookiecutter.repo_name}}
 
 COPY ./wait-for-it.sh /usr/bin/
 
-# Install bash, libpq and gettext
+# Install bash, libpq, libjpeg-turbo and gettext
 # Bash is required to support `wait-for-it.sh` script, should not add too much to docker image
-RUN apk add --no-cache bash gettext libpq
+RUN apk add --no-cache bash gettext libpq libjpeg-turbo
 
 # Install build dependencies and mark them as virtual packages so they could be removed together
 RUN apk add --no-cache --virtual .build-deps \
@@ -58,10 +58,12 @@ COPY ./{{cookiecutter.repo_name}} /app
 WORKDIR /app
 
 # Compile translations to .mo files
-RUN cd /app && DJANGO_DOCKER_BUILD=True python manage.py compilemessages
+RUN DJANGO_DOCKER_BUILD=True python manage.py compilemessages
 
-# Based on Node 10.x LTS image
-FROM node:{% if cookiecutter.node_version == '10' %}10.15.1{% else %}{{ cookiecutter.node_version }}{% endif %}-alpine as node_builder
+{%- if cookiecutter.frontend_style == 'webapp' %}
+
+# Based on Node {{ cookiecutter.node_version }} Alpine image
+FROM node:{{ cookiecutter.node_version }}-alpine as node_builder
 
 # Set the default directory where CMD will execute
 WORKDIR /app
@@ -93,9 +95,12 @@ RUN yarn build
 # Resume Django build
 FROM base
 
+# Copy static files
+COPY ./webapp/static /app/static
+
 # Copy all from node image
 COPY --from=node_builder /app/webapp/build /app/webapp/build
-COPY --from=node_builder /app/webapp/webpack-stats.json /app/webapp/webpack-stats.json
+COPY --from=node_builder /app/webapp/webpack-stats.json /app/webapp/webpack-stats.json{% endif %}
 
 # Run Gunicorn by default
 CMD gunicorn {{ cookiecutter.repo_name }}.wsgi:application --workers 2 --bind :80
