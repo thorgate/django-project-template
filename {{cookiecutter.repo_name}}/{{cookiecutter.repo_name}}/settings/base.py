@@ -217,7 +217,7 @@ GS_CACHE_CONTROL = "max-age=1209600"  # 2 weeks in seconds{% endif %}
 # Static files (CSS, JavaScript, images)
 STATIC_ROOT = "/files/assets"
 
-STATIC_URL = env.str("DJANGO_STATIC_URL", default="/static/")
+STATIC_URL = env.str("DJANGO_STATIC_URL", default="/{% if cookiecutter.frontend_style == 'spa' %}assets{% else %}static{% endif %}/")
 {%- if cookiecutter.frontend_style == 'webapp' %}
 STATICFILES_DIRS = (
     os.path.join(SITE_ROOT, "static"),
