@@ -53,21 +53,13 @@ export const loadSettings = () => {
             process.env.RAZZLE_LOGGING_FILE_PREFIX || 'node';
         cfg.MAX_WORKERS = process.env.RAZZLE_MAX_WORKERS || 4;
 
-        const docker = require('is-docker');
-        // If in development and inside docker, change django url to http://django
-        if (process.env.NODE_ENV !== 'production' && docker()) {
-            cfg.BACKEND_SITE_URL =
-                process.env.RAZZLE_INTERNAL_BACKEND_SITE_URL || '';
-        } else if (
-            process.env.NODE_ENV === 'production' &&
-            process.env.RAZZLE_INTERNAL_BACKEND_SITE_URL
-        ) {
-            // Allow backend to be pointed to internal URL
-            cfg.BACKEND_SITE_URL =
-                process.env.RAZZLE_INTERNAL_BACKEND_SITE_URL || '';
-        }
-
         if (process.env.NODE_ENV === 'production') {
+            if (process.env.RAZZLE_INTERNAL_BACKEND_SITE_URL) {
+                // Allow backend to be pointed to internal URL
+                cfg.BACKEND_SITE_URL =
+                    process.env.RAZZLE_INTERNAL_BACKEND_SITE_URL || '';
+            }
+
             const cluster = require('cluster');
             if (cluster.isWorker) {
                 cfg.CLUSTERED = true;
@@ -79,6 +71,14 @@ export const loadSettings = () => {
                 [cfg.DJANGO_STATIC_URL]: cfg.BACKEND_SITE_URL,
             };
         } else {
+            const docker = require('is-docker');
+
+            // If in development and inside docker, change django url to http://django
+            if (docker()) {
+                cfg.BACKEND_SITE_URL =
+                    process.env.RAZZLE_INTERNAL_BACKEND_SITE_URL || '';
+            }
+
             cfg.APP_PROXY = {
                 [cfg.API_BASE]: cfg.BACKEND_SITE_URL,
                 [cfg.DJANGO_URL_PREFIX]: cfg.BACKEND_SITE_URL,
