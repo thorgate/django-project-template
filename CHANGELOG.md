@@ -22,6 +22,7 @@ Note: Try to add categories to changes and link to MRs/Issues
   - Resulting code is rendered based on new `frontend_style` option
 - [NEW] Add spa frontend style to master branch
   - Note: Migration guide for projects generated from spa branch will be provided by #15
+- [BUG] Disable koa adding a second HSTS header - !149
 
 ## [DEFAULT] development
 

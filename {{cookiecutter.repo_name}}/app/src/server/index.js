@@ -219,7 +219,11 @@ server
     .use(koaUserAgent)
     // `koa-helmet` provides security headers to help prevent common, well known attacks
     // @see https://helmetjs.github.io/
-    .use(koaHelmet())
+    .use(
+        koaHelmet({
+            hsts: false, // hsts is managed by nginx
+        }),
+    )
     // Parse body of the request, required for adding missing translations
     .use(koaBody())
     // Process language to context state
