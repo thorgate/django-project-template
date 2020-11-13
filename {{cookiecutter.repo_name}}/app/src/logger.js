@@ -1,7 +1,8 @@
-import { addColors, createLogger, transports, format } from 'winston';
+// Note: @winston is aliased to node_modules winston on the server and to `client/winston.js` on the client.
 import { join, normalize } from 'path';
 
 import SETTINGS from 'settings';
+import { addColors, createLogger, transports, format } from '@winston';
 
 const { combine, colorize, label, splat, printf, timestamp } = format;
 
@@ -107,7 +108,7 @@ const logger = createLogger({
     exitOnError: false,
 });
 
-// We also hijack console.log, console.warn and console.error
+// On the server we also hijack console.log, console.warn and console.error
 if (process.env.BUILD_TARGET === 'server') {
     // eslint-disable-next-line no-console
     console.log = function log() {

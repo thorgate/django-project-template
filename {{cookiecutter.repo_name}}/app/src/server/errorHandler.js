@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/node';
 
-import logger from './logger';
+import logger from 'logger';
 
 const SURROGATE_PAIR_REGEXP = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g;
 const NON_ALPHANUMERIC_REGEXP = /([^\\#-~| !])/g;

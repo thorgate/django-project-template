@@ -26,6 +26,7 @@ import { RenderChildren, stringifyLocation } from 'tg-named-routes';
 
 import configureStore from 'configuration/configureStore';
 import routes from 'configuration/routes';
+import logger from 'logger';
 import { setActiveLanguage } from 'sagas/user/activateLanguage';
 import SETTINGS, { getRuntimeConfig } from 'settings';
 
@@ -36,7 +37,6 @@ import {
     missingKeyHandler,
     koaI18NextMiddleware,
 } from './i18n';
-import logger from './logger';
 import { statsFile, publicDir } from './paths';
 
 i18next
@@ -191,6 +191,9 @@ router.get(
                 window.__initial_state__ = ${ctx.state.serializedState};
                 window.__initial_i18n_store__ = ${ctx.state.initialI18nStore};
                 window.__initial_language__ = '${ctx.state.language}';
+                window.__initial_ready__ = true;
+
+                window.maybeInitReactApp && window.maybeInitReactApp();
             </script>
         </body>
     </html>`;

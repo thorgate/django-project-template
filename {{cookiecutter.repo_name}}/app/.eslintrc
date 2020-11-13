@@ -12,6 +12,9 @@
         "expect": false
     },
     "settings": {
+        "import/ignore": [
+            "^@winston$"
+        ],
         "import/resolver": {
             "node": {
                 "paths": [
@@ -51,12 +54,15 @@
         "no-underscore-dangle": [
             "error", {
                 "allow": [
+                    "__app_initialized__",
                     "__settings__",
                     "__initial_state__",
                     "__initial_i18n_store__",
                     "__initial_language__",
+                    "__initial_ready__",
                     "__REDUX_DEVTOOLS_EXTENSION_COMPOSE__",
-                    "__SAGA_MONITOR_EXTENSION__"
+                    "__SAGA_MONITOR_EXTENSION__",
+                    "__VERSION__"
                 ]
             }
         ],
@@ -73,6 +79,16 @@
         "jsx-a11y/label-has-for": "warn",
 
         // Show TODOs and FIXMEs as warnings
-        "no-warning-comments": ["warn", {"location": "anywhere"}]
+        "no-warning-comments": ["warn", {"location": "anywhere"}],
+
+        // Allow @winston magic import
+        "import/no-unresolved": [
+            2,
+            {
+                "ignore": [
+                    "^@winston$"
+                ]
+            }
+        ]
     }
 }
