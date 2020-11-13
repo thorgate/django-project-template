@@ -60,6 +60,11 @@ module.exports = {
         // adding ./src to module resolver so I can import modules with absolute paths
         config.resolve.modules.push('./src');
 
+        // Use browser shim of winston on the client
+        config.resolve.alias['@winston'] = target === 'node'
+            ? 'winston'
+            : path.join(paths.appSrc, 'client', 'winston');
+
         return config;
     },
 };
