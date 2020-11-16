@@ -22,7 +22,11 @@ Note: Try to add categories to changes and link to MRs/Issues
   - Resulting code is rendered based on new `frontend_style` option
 - [NEW] Add spa frontend style to master branch
   - Note: Migration guide for projects generated from spa branch will be provided by #15
+- [ENH] Add .git to .dockerignore - !147
 - [BUG] Disable koa adding a second HSTS header - !149
+- [NEW] Add clientside shim for winston. This allows us to use `logger` on the client too. Please note that we aim to replace winston with
+         something modern (that works on both client and server) in the future and this is just an intermediate step before that - !150
+- [BUG] Ensure settings and other SSR data is parsed before initializing the application. See more information in !150
 
 ## [DEFAULT] development
 
