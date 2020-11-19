@@ -7,7 +7,7 @@ services:
 variables:
   POSTGRES_USER: "{{ cookiecutter.repo_name }}"
   POSTGRES_PASSWORD: "{{ cookiecutter.repo_name }}"
-  DOCKER_DRIVER: overlay
+  DOCKER_DRIVER: overlay2
   DOCKER_BUILDKIT: "1"
   COMPOSE_DOCKER_CLI_BUILD: "1"
 
