@@ -1,0 +1,41 @@
+{%- raw -%}
+DJANGO_SITE_URL=https://{{ django_site_host }}
+DJANGO_ALLOWED_HOSTS={{ django_site_host }}{% endraw %}{% if cookiecutter.frontend_style == 'spa' %},{% raw %}{{ node_site_host }}{% endraw %}{% endif %}
+
+{%- if cookiecutter.frontend_style == 'spa' %}
+{% raw %}
+DJANGO_CSRF_COOKIE_DOMAIN=.{{ node_site_host }}
+RAZZLE_SITE_URL=https://{{ node_site_host }}
+RAZZLE_BACKEND_SITE_URL=https://{{ django_site_host }}
+{%- endraw %}
+{%- endif %}
+
+{%- raw %}
+
+DJANGO_DATABASE_HOST=postgres
+DJANGO_DATABASE_PORT=5432
+DJANGO_DATABASE_NAME={{ project }}
+DJANGO_DATABASE_USER={{ project }}
+DJANGO_DATABASE_PASSWORD={{ django_database_password }}
+
+DJANGO_SECRET_KEY={{ django_secret_key }}
+
+DJANGO_SENTRY_ENVIRONMENT={{ django_sentry_environment }}
+DJANGO_SENTRY_DSN={{ django_sentry_dsn }}
+
+DJANGO_EMAIL_HOST_PASSWORD={{ django_email_host_password }}
+{%- endraw %}
+
+{% if cookiecutter.django_media_engine == "GCS" -%}
+{%- raw %}
+DJANGO_GS_BUCKET_NAME={{ django_gs_bucket_name }}
+DJANGO_GS_PROJECT_ID={{ django_gs_project_id }}
+DJANGO_GS_CREDENTIALS={{ django_gs_credentials }}
+{%- endraw %}
+{%- endif %}{% if cookiecutter.django_media_engine == "S3" -%}
+{%- raw %}
+DJANGO_AWS_STORAGE_BUCKET_NAME={{ django_aws_storage_bucket_name }}
+DJANGO_AWS_ACCESS_KEY_ID={{ django_aws_access_key_id }}
+DJANGO_AWS_SECRET_ACCESS_KEY={{ django_aws_secret_access_key }}
+{%- endraw %}
+{%- endif %}

@@ -1,0 +1,43 @@
+{%- set BASE_HOSTNAME = cookiecutter.repo_name | as_hostname + "." + cookiecutter.test_host -%}
+
+# Hostnames for the site
+{%- if cookiecutter.frontend_style == 'spa' %}
+django_site_host: "{{ cookiecutter.spa_django_host_prefix | as_hostname }}.{{ BASE_HOSTNAME }}"
+node_site_host: "{{ BASE_HOSTNAME }}"
+{%- else %}
+django_site_host: "{{ BASE_HOSTNAME }}"
+{%- endif %}
+
+# Base settings file to import from local settings file
+django_base_settings: "staging"
+
+# Sentry config
+django_sentry_environment: "test"
+django_sentry_dsn: ""  # TODO: Set to correct value or remove the TODO
+{%- if cookiecutter.frontend_style == 'spa' %}
+razzle_sentry_environment: "test"
+razzle_sentry_dsn: ""  # TODO: Set to correct value or remove the TODO
+{%- endif %}
+
+{% if cookiecutter.django_media_engine == "GCS" -%}
+django_gs_bucket_name: "{{ cookiecutter.repo_name }}-staging"
+django_gs_project_id: "TODO"
+{%- endif %}{% if cookiecutter.django_media_engine == "S3" -%}
+# S3 bucket name to use
+django_aws_storage_bucket_name: "{{ cookiecutter.repo_name }}-staging"
+{%- endif %}
+
+# Which compose file to use in the server
+compose_file: "docker-compose.production.yml"
+
+# What git branch to deploy to the server
+#  For temporary deployments see `Deploying a different version` section in the README in ansible directory.
+deployment_version: "master"
+
+# Reminder email for letsencrypt certificates
+letsencrypt_reminder_email: "{{ cookiecutter.admin_email }}"
+
+# Allow/Block indexing via `X-Robots-Tag` header
+#
+# Set to true in test servers
+disable_indexing: true

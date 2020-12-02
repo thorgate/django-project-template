@@ -1,0 +1,32 @@
+{% raw %}
+- name: "Create certbot config"
+  template:
+      src: letsencrypt.conf
+      dest: /etc/letsencrypt/configs/letsencrypt.{{ project }}.conf
+      mode: 0600
+
+
+- name: "Check if certificate has already been acquired"
+  stat:
+      path: /etc/letsencrypt/live/{{ django_site_host }}/fullchain.pem
+  register: fullchain_file
+
+
+- name: "Create nginx config to retrieve initial certificate"
+  template:
+      src: initial-nginx.conf
+      dest: /etc/nginx/sites-enabled/{{ project }}
+      mode: 0600
+  when: not fullchain_file.stat.exists
+
+
+- name: "Reload nginx"
+  command: docker exec nginx nginx -s reload
+  when: not fullchain_file.stat.exists
+
+
+- name: "Retrieve certificate with certbot"
+  command: "/usr/bin/certbot-auto --no-self-upgrade certonly --noninteractive --agree-tos -c /etc/letsencrypt/configs/letsencrypt.{{ project }}.conf"
+  args:
+      creates: /etc/letsencrypt/live/{{ django_site_host }}/fullchain.pem
+{%- endraw %}

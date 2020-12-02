@@ -183,7 +183,7 @@ setup: pycharm settings
 .PHONY:
 setup-terraform:
 	@echo -e "$(CYAN)Setting up terraform$(COFF)"
-	@./deploy/terraform/setup.sh $(workspace)
+	@./utils/terraform/setup.sh $(workspace)
 
 .PHONY:
 pycharm: $(PROJECT_ROOT)/.idea

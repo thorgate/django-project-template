@@ -1,0 +1,159 @@
+{% raw %}
+- name: "Create needed directories {{ code_dir }}"
+  file:
+      path: "{{ item }}"
+      state: directory
+  loop:
+      - "/var/log/{{ project }}"
+
+
+- name: "Checkout the code"
+  git:
+    repo: "{{ repository }}"
+    dest: "{{ code_dir }}"
+    version: "{% if force_deploy is defined %}{{ force_deploy }}{% else %}{{ deployment_version }}{% endif %}"
+    update: yes
+    # force=yes will discard any changes in working directory
+    # force: yes
+
+
+- name: "Check if database has been created previously"
+  stat:
+      path: "{{ code_dir }}/database.lock"
+  register: db_created
+
+
+- name: "Create database"
+  shell: >
+      echo "
+        CREATE DATABASE {{ project }};
+        CREATE USER {{ project }} WITH password '{{ django_database_password | mandatory }}';
+        GRANT ALL PRIVILEGES ON DATABASE {{ project }} to {{ project }};
+      " | docker exec -i postgres-{{ postgres_version | mandatory }} psql -U postgres
+  when: not db_created.stat.exists
+
+
+- name: "Create db creation lockfile"
+  file:
+      path: "{{ code_dir }}/database.lock"
+      state: touch
+  when: not db_created.stat.exists
+
+
+- name: "Create django env file"
+  template:
+      src: environment
+      dest: "{{ code_dir }}/{{ project }}/django.env"
+      mode: 0700
+      backup: yes
+
+{%- endraw %}
+{%- if cookiecutter.frontend_style == 'spa' %}
+
+
+- name: "Create razzle env file"
+  template:
+    src: razzle.env
+    dest: "{% raw %}{{ code_dir }}{% endraw %}/app/.env.production.local"
+    mode: 0700
+    backup: yes
+{%- endif %}
+{%- raw %}
+
+
+- name: "Create local settings file"
+  template:
+      src: local.py
+      dest: "{{ code_dir }}/{{ project }}/settings/local.py"
+      backup: yes
+
+
+- name: "Create logrotate.conf file"
+  template:
+      src: "logrotate.conf"
+      dest: "/etc/logrotate.d/{{ project }}"
+
+
+- name: "Ensure docker networks exist"
+  docker_network:
+      name: "{{ item }}"
+  loop:
+      - "{{ project }}_default"
+      - "{{ project }}_nginx"
+      - "{{ project }}_postgres"
+
+
+- name: "Add nginx to {{ project }}_nginx network"
+  docker_container:
+      name: nginx
+      networks:
+          - name: "{{ project }}_nginx"
+      purge_networks: no
+      networks_cli_compatible: yes
+
+
+- name: "Add postgres-{{ postgres_version }} to {{ project }}_postgres network"
+  docker_container:
+      name: "postgres-{{ postgres_version }}"
+      networks:
+          - name: "{{ project }}_postgres"
+      purge_networks: no
+      networks_cli_compatible: yes
+
+
+- name: "Build the project"
+  docker_compose:
+      project_src: "{{ code_dir }}"
+      build: yes
+      state: present
+      # Force re-start even if source files have not changed. This ensures that when env is updated the container
+      #  always gets the latest values.
+      restarted: yes
+      files:
+          - "{{ compose_file }}"
+  register: result
+
+
+# Print the build output
+- debug:
+    var: result
+
+
+- name: "Run migrations"
+  import_tasks: helpers/run-management-command.yml
+  vars:
+    command_params: "migrate --noinput"
+
+{%- endraw %}
+{%- if cookiecutter.frontend_style == 'spa' %}
+
+
+- name: "Run export assets"
+  command: "docker-compose -f {% raw %}{{ compose_file }}{% endraw %} run --rm node yarn export-assets"
+  args:
+      chdir: "{% raw %}{{ code_dir }}{% endraw %}"
+{%- endif %}
+{%- raw %}
+
+
+- name: "Run collectstatic"
+  import_tasks: helpers/run-management-command.yml
+  vars:
+    command_params: "collectstatic --noinput --ignore styles-src"
+
+
+- name: "Run system checks"
+  import_tasks: helpers/run-management-command.yml
+  vars:
+    command_params: "check --deploy"
+
+
+- name: "Set up certificates"
+  import_tasks: letsencrypt.yml
+
+
+- name: "Update nginx config"
+  import_tasks: nginx.yml
+
+# TODO: Add `local_mirror` role
+{%- endraw %}

@@ -1,0 +1,19 @@
+# Name of the project.
+project: "{{ cookiecutter.repo_name }}"
+
+# Repository path for git
+repository: {{ cookiecutter.gitlab_repo_url | as_git_path }}
+
+# Where the code should be cloned into
+code_dir: "/srv/{{ cookiecutter.repo_name }}"
+
+# Postgres container version. This container should already exist in the server
+postgres_version: "{{ cookiecutter.postgres_version }}"
+
+# Allow/Block indexing via `X-Robots-Tag` header
+#
+# Set to true in test servers to disable indexing.
+disable_indexing: false
+
+# Ensure ansible uses python3 interpreter
+ansible_python_interpreter: /usr/bin/python3

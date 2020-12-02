@@ -1,0 +1,11 @@
+{% raw %}
+- name: "Run manage.py {{ command_params | mandatory }}"
+  command: "docker-compose -f {{ compose_file }} run --rm django python manage.py {{ command_params | mandatory }}"
+  args:
+      chdir: "{{ code_dir }}"
+  register: result
+
+
+- debug:
+      var: result
+{%- endraw %}
