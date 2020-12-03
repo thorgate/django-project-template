@@ -40,7 +40,7 @@ IS_DOCKER_BUILD = env.bool("DJANGO_DOCKER_BUILD", default=False)
 PROJECT_TITLE = "{{ cookiecutter.project_title }}"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool("DJANGO_DEBUG", default=False)
+DEBUG = env.bool("DJANGO_DEBUG", default=True)
 
 ADMINS = (("Admins", "{{ cookiecutter.admin_email }}"),)
 MANAGERS = ADMINS
