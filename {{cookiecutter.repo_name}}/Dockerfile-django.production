@@ -3,6 +3,7 @@
 FROM {{ cookiecutter.python_version|python_image }} as base
 
 ENV DJANGO_PRODUCTION_MODE 1
+ENV DJANGO_DEBUG 0
 
 # Create a directory for the logs
 RUN mkdir -p /var/log/{{cookiecutter.repo_name}}
