@@ -1,7 +1,6 @@
-{%- raw -%}
 # configure logging
-access_log /var/log/nginx/{{ project }}.access.log extended;
-error_log /var/log/nginx/{{ project }}.error.log;
+access_log /var/log/nginx/{% raw %}{{ project }}{% endraw %}.access.log extended;
+error_log /var/log/nginx/{% raw %}{{ project }}{% endraw %}.error.log;
 
 # Don't send the nginx version number in error pages and server header
 server_tokens off;
@@ -28,11 +27,10 @@ location /.well-known/acme-challenge/ {
     break;
 }
 
-{% if disable_indexing -%}
+{% raw %}{% if disable_indexing -%}{% endraw %}
     # Disable indexing test servers by bots.
     # NOTE: any add_header in descendant sections voids this directive's effect
     # and it has to be added to those sections again -
     # http://nginx.org/en/docs/http/ngx_http_headers_module.html
     add_header X-Robots-Tag "noindex nofollow" always;
-{%- endif %}
-{%- endraw %}
+{% raw %}{%- endif %}{% endraw %}

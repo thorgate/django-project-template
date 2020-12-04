@@ -1,0 +1,12 @@
+- name: "Mirror the media files"
+  import_tasks: mirror_media.yml
+  tags:
+    - media
+    - files
+
+
+- name: "Mirror the DB"
+  import_tasks: mirror_db.yml
+  tags:
+    - db
+    - database

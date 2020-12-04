@@ -1,0 +1,64 @@
+{%- raw -%}
+- name: "Extract settings from container"
+  import_tasks: ../../helpers/run-management-command.yml
+  vars:
+    command_params: "settings --keys AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_STORAGE_BUCKET_NAME GS_BUCKET_NAME GS_PROJECT_ID GS_CREDENTIALS"
+
+
+- name: "Store settings as json {{ result.stdout }}"
+  set_fact:
+    settings: "{{ result.stdout | from_json }}"
+
+
+- set_fact:
+    media_backend: "FS"
+
+
+- set_fact:
+    media_backend: "S3"
+  when: "settings.AWS_ACCESS_KEY_ID and settings.AWS_ACCESS_KEY_ID != '<unset>'"
+  ignore_errors: yes
+
+
+- set_fact:
+    media_backend: "GCS"
+  when: "settings.GS_PROJECT_ID and settings.GS_PROJECT_ID != '<unset>'"
+  ignore_errors: yes
+
+
+- name: "Media backend is {{ media_backend }}"
+  shell: echo "Detected media backend is {{ media_backend }}"
+
+
+- name: "Fail if media mirroring is not supported for backend"
+  fail:
+    msg: "Media backend {{ media_backend }} does not have logic for mirroring"
+  when: "media_backend == 'GCS'"
+
+
+- name: "Install yq on the server"
+  pip:
+    name: "yq"
+
+
+- name: "Figure out the local media directory"
+  shell: "docker-compose config | yq -r '.services.django.volumes[]' | grep '/files/media' | cut -d: -f1"
+  delegate_to: localhost
+  vars:
+    ansible_become: no
+  register: "media_directory"
+
+
+- set_fact:
+    local_media_path: "{{ media_directory.stdout }}"
+
+
+- name: "Mirror S3 media files"
+  import_tasks: mirror_media_S3.yml
+  when: "media_backend == 'S3'"
+
+
+- name: "Mirror FS media files"
+  import_tasks: mirror_media_FS.yml
+  when: "media_backend == 'FS'"
+{%- endraw %}

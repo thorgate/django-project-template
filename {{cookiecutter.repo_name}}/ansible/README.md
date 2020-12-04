@@ -12,6 +12,7 @@ Contents:
       - [Deploying a different version](#deploying-a-different-version)
     - [The first deployment](#the-first-deployment)
     - [Configuring the environment](#configuring-the-environment)
+  - [Download server state](#download-server-state)
 
 ## TL;DR
 
@@ -131,7 +132,7 @@ ansible-playbook --limit test -e "force_deploy=stable" deploy.yml
     * ` export AWS_ACCESS_KEY_ID=...`
     * ` export AWS_SECRET_ACCESS_KEY=...`
 * run `make setup-terraform workspace=WORKSPACE`  where WORKSPACE is 'staging', 'production'
-* Keep the terminal window open, fab will ask you for some of the values
+* Keep the terminal window open as some of these values should be copied into the ansible variables (secrets belong in the vault).
 
 <!-- Collapsed block -->
 <details>
@@ -226,3 +227,32 @@ env file template:
 - Django: [environment](./roles/deploy/templates/environment)
 
 If the environment variable should be server specific then set its value trough an Ansible variable.
+
+## Download server state
+
+> **Warning:** Using this playbook deletes the local database so back up `.data/postgresql` directory before if you
+>               need to preserve your current database.
+
+We have a playbook to download the media and database state from a remote server hosting the project. If the media
+files in the remote server are using S3 then you must first install [aws-cli](https://pypi.org/project/awscli/) locally.
+The easiest way to do it is via pip: `sudo pip install awscli`.
+
+Every time before you can use the mirror role you also need to run [mirror-prepare.sh](./mirror-prepare.sh) script:
+
+```bash
+./mirror-prepare.sh
+```
+
+This ensures the permissions of local paths are correct to allow the mirror role to work. Once this is done you
+can run the restore role with:
+
+```bash
+ansible-playbook -v --limit test mirror.yml
+```
+
+To restore only database or media files ansible tags can be used:
+
+```bash
+ansible-playbook -v --limit test --tags db mirror.yml  # restores only the database
+ansible-playbook -v --limit test --tags media mirror.yml  # restores only the media files
+```
