@@ -8,12 +8,12 @@ const NON_ALPHANUMERIC_REGEXP = /([^\\#-~| !])/g;
 export function encodeEntities(value) {
     return value
         .replace(/&/g, '&amp;')
-        .replace(SURROGATE_PAIR_REGEXP, val => {
+        .replace(SURROGATE_PAIR_REGEXP, (val) => {
             const hi = val.charCodeAt(0);
             const low = val.charCodeAt(1);
             return `&#${(hi - 0xd800) * 0x400 + (low - 0xdc00) + 0x10000};`;
         })
-        .replace(NON_ALPHANUMERIC_REGEXP, val => `&#${val.charCodeAt(0)};`)
+        .replace(NON_ALPHANUMERIC_REGEXP, (val) => `&#${val.charCodeAt(0)};`)
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
 }

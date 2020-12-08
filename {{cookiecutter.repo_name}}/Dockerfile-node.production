@@ -28,7 +28,7 @@ RUN apk del .build-deps
 
 # Copy some utility files
 COPY ./app/.babelrc ./
-COPY ./app/.eslintrc ./
+COPY ./app/.eslintrc.js ./
 COPY ./app/.eslintignore ./
 COPY ./app/.stylelintrc ./
 

@@ -13,7 +13,7 @@ import i18n, { setupI18Next } from 'configuration/i18n';
 import logger from 'logger';
 import routes from 'configuration/routes';
 import { setActiveLanguage } from 'sagas/user/activateLanguage';
-import SETTINGS, { loadSettings } from 'settings';
+import { SETTINGS, loadSettings } from 'settings';
 import Sentry from 'services/sentry';
 
 let store;
@@ -34,7 +34,7 @@ const App = ({ appRoutes }) => {
     );
 };
 
-const renderApp = appRoutes => {
+const renderApp = (appRoutes) => {
     hydrate(<App appRoutes={appRoutes} />, document.getElementById('root'));
 };
 

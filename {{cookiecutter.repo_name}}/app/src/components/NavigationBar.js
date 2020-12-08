@@ -7,7 +7,7 @@ import { Link, withRouter } from 'react-router-dom';
 import { Nav, Navbar, NavbarBrand, NavItem, NavLink } from 'reactstrap';
 import { resolvePath as urlResolve } from 'tg-named-routes';
 
-import SETTINGS from 'settings';
+import { SETTINGS } from 'settings';
 import { UserShape } from 'utils/types';
 
 const NavigationBar = ({ user, isLoggedIn }) => {
@@ -84,7 +84,7 @@ NavigationBar.defaultProps = {
     user: null,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
     user: getUser(state),
     isLoggedIn: isAuthenticated(state),
 });

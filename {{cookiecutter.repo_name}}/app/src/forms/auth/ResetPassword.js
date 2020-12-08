@@ -96,7 +96,7 @@ const ResetPassword = ({ status, isSubmitting }) => {
 ResetPassword.propTypes = { ...getFormPropTypes(['email', 'password']) };
 
 const ResetPasswordForm = withFormik({
-    mapPropsToValues: props => ({
+    mapPropsToValues: (props) => ({
         password: '',
         password_confirm: '',
         uid_and_token_b64: props.token,

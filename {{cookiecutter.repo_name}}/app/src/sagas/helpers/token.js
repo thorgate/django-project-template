@@ -3,7 +3,7 @@ import addMinutes from 'date-fns/addMinutes';
 import { getContext } from 'redux-saga/effects';
 import Cookies from 'js-cookie';
 
-import SETTINGS from 'settings';
+import { SETTINGS } from 'settings';
 import { isValidIpAddress } from 'utils/validators/ipAddress';
 
 export function* getToken() {

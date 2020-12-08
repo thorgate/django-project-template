@@ -8,6 +8,7 @@ import routes from './routes';
 import configureStore from './configureStore';
 
 describe('route config', () => {
+    // eslint-disable-next-line jest/expect-expect
     test('Render does not break', () => {
         const { store } = configureStore(
             {},

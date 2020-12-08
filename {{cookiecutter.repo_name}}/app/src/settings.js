@@ -115,7 +115,7 @@ export const getRuntimeConfig = () => {
 currentSettings = loadSettings();
 
 // We export the settings trough a Proxy to allow runtime modification of the exported value (on the client).
-const SETTINGS = new Proxy(
+export const SETTINGS = new Proxy(
     {
         ...currentSettings,
     },
@@ -126,4 +126,10 @@ const SETTINGS = new Proxy(
     },
 );
 
+/**
+ * Settings proxy
+ * @deprecated
+ *
+ * Use `import { SETTINGS } 'settings';` instead.
+ */
 export default SETTINGS;

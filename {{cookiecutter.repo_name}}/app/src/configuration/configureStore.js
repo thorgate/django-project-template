@@ -64,9 +64,9 @@ export default function configureStore(initialState = {}, options = {}) {
         const extraOptions = {};
 
         if (process.env.BUILD_TARGET === 'server') {
-            extraOptions.actionTransformer = action =>
+            extraOptions.actionTransformer = (action) =>
                 serializeJS(action, { unsafe: true });
-            extraOptions.stateTransformer = state =>
+            extraOptions.stateTransformer = (state) =>
                 serializeJS(state, { unsafe: true });
             extraOptions.titleFormatter = (action, time, took) =>
                 `action "${action}" @ ${time} (in ${took.toFixed(2)} ms)`;

@@ -5,12 +5,12 @@ import { useTranslation } from 'react-i18next';
 import { Button } from 'reactstrap';
 
 import { setActiveLanguage } from 'sagas/user/activateLanguage';
-import SETTINGS from 'settings';
+import { SETTINGS } from 'settings';
 
 const LanguageSwitch = ({ onSwitch }) => {
     const { t, i18n } = useTranslation();
     const changeLanguage = useCallback(
-        language => {
+        (language) => {
             i18n.changeLanguage(language, () => {
                 onSwitch(language);
             });
@@ -23,7 +23,7 @@ const LanguageSwitch = ({ onSwitch }) => {
             <p>
                 {t('Active language')}: {SETTINGS.LANGUAGES[i18n.language]}
             </p>
-            {SETTINGS.LANGUAGE_ORDER.map(languageCode => (
+            {SETTINGS.LANGUAGE_ORDER.map((languageCode) => (
                 <Button
                     key={languageCode}
                     onClick={() => changeLanguage(languageCode)}
@@ -40,11 +40,8 @@ LanguageSwitch.propTypes = {
     onSwitch: PropTypes.func.isRequired,
 };
 
-const mapDispatchToProps = dispatch => ({
-    onSwitch: languageCode => dispatch(setActiveLanguage(languageCode)),
-});
+const mapDispatchToProps = {
+    onSwitch: setActiveLanguage,
+};
 
-export default connect(
-    null,
-    mapDispatchToProps,
-)(LanguageSwitch);
+export default connect(null, mapDispatchToProps)(LanguageSwitch);

@@ -28,7 +28,7 @@ import configureStore from 'configuration/configureStore';
 import routes from 'configuration/routes';
 import logger from 'logger';
 import { setActiveLanguage } from 'sagas/user/activateLanguage';
-import SETTINGS, { getRuntimeConfig } from 'settings';
+import { SETTINGS, getRuntimeConfig } from 'settings';
 
 import proxyFactory from './appProxy';
 import errorHandler from './errorHandler';

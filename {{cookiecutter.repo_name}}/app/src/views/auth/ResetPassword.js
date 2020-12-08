@@ -32,10 +32,7 @@ const mapDispatchToProps = {
     onResetPassword: resetPassword,
 };
 
-const ResetPasswordConnector = connect(
-    null,
-    mapDispatchToProps,
-)(ResetPassword);
+const ResetPasswordConnector = connect(null, mapDispatchToProps)(ResetPassword);
 
 const ResetPasswordView = withView()(ResetPasswordConnector);
 

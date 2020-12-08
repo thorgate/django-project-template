@@ -4,7 +4,7 @@ import { getLocation, replace } from 'connected-react-router';
 import { call, select, put, retry, take } from 'redux-saga/effects';
 import qs from 'qs';
 
-import SETTINGS from 'settings';
+import { SETTINGS } from 'settings';
 import api from 'services/api';
 import { resolveToken, REQUEST_TOKEN } from 'sagas/auth/authMiddleware';
 import { getToken, saveToken } from 'sagas/helpers/token';

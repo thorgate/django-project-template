@@ -4,7 +4,7 @@ import { createSagaRouter } from '@tg-resources/redux-saga-router';
 import Cookies from 'js-cookie';
 import { call } from 'redux-saga/effects';
 
-import SETTINGS from 'settings';
+import { SETTINGS } from 'settings';
 import { refreshToken } from 'sagas/auth/authMiddleware';
 import { getToken } from 'sagas/helpers/token';
 

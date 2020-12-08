@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Helmet } from 'react-helmet';
 import { useTranslation } from 'react-i18next';
 
-import SETTINGS from 'settings';
+import { SETTINGS } from 'settings';
 
 const DefaultHeader = ({ canonical }) => {
     const { i18n } = useTranslation();

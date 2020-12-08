@@ -14,6 +14,8 @@ const appDir = path.resolve(__dirname);
 module.exports = {
     input: [
         'src/**/*.{js,jsx}',
+        '!src/**/*.test.{js,jsx}',
+        '!src/client/winston.js',
     ],
     output: './public/locales',
     options: {

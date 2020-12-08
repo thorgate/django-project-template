@@ -1,7 +1,7 @@
 import koaProxies from 'koa-proxies';
 
 export default (app, proxyMap) => {
-    Object.keys(proxyMap).forEach(context => {
+    Object.keys(proxyMap).forEach((context) => {
         const mappingUrl = proxyMap[context];
 
         if (!mappingUrl) {
