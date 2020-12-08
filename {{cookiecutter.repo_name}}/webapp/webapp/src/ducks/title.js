@@ -20,13 +20,13 @@ export default function titleReducer(state = initialState, action) {
 }
 
 // Action creators
-const setTitle = title => ({ type: SET_TITLE, title });
+const setTitle = (title) => ({ type: SET_TITLE, title });
 
 /*
     This specific example doesn't necessarily require redux-thunk
     but this is a basic example of how you can return a function in your action.
     Mostly useful for complex logic that is required before dispatching the action (e.g API calls).
 */
-export const createTitle = title => dispatch => {
+export const createTitle = (title) => (dispatch) => {
     dispatch(setTitle(title));
 };

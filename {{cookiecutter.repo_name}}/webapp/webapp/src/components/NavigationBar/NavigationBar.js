@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, from 'react';
 import ReactDOM from 'react-dom';
 
 import { Container, Nav, Navbar } from 'react-bootstrap';
@@ -9,15 +9,15 @@ import reverseUrl from '../../utils/urls';
 class NavigationBar extends React.Component {
     static renderItemsLeft() {
         return (
-            <Fragment>
+            <>
                 <Nav.Link href={DJ_CONST.SITE_URL}>{gettext('Home')}</Nav.Link>
-            </Fragment>
+            </>
         );
     }
 
     static renderItemsRight() {
         return (
-            <Fragment>
+            <>
                 {DJ_CONST.user ? (
                     <Nav.Link disabled>
                         {DJ_CONST.user.name || DJ_CONST.user.email}
@@ -33,7 +33,7 @@ class NavigationBar extends React.Component {
                         {gettext('Log in')}
                     </Nav.Link>
                 ) : null}
-            </Fragment>
+            </>
         );
     }
 
@@ -59,7 +59,7 @@ class NavigationBar extends React.Component {
     }
 }
 
-const renderNavigationBar = containerID => {
+const renderNavigationBar = (containerID) => {
     const container = document.getElementById(containerID);
 
     if (container) {

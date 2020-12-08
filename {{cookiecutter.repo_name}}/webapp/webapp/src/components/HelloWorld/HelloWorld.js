@@ -7,11 +7,6 @@ import Counter from '../Counter';
 import styles from './HelloWorld.scss';
 
 export class HelloWorld extends React.Component {
-    static propTypes = {
-        title: PropTypes.string.isRequired,
-        setTitle: PropTypes.func.isRequired,
-    };
-
     componentDidMount() {
         const { setTitle } = this.props;
 
@@ -30,15 +25,17 @@ export class HelloWorld extends React.Component {
     }
 }
 
-const mapStateToProps = state => ({
+HelloWorld.propTypes = {
+    title: PropTypes.string.isRequired,
+    setTitle: PropTypes.func.isRequired,
+};
+
+const mapStateToProps = (state) => ({
     title: state.title.title,
 });
 
-const mapDispatchToProps = dispatch => ({
-    setTitle: title => dispatch(createTitle(title)),
+const mapDispatchToProps = (dispatch) => ({
+    setTitle: (title) => dispatch(createTitle(title)),
 });
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(HelloWorld);
+export default connect(mapStateToProps, mapDispatchToProps)(HelloWorld);

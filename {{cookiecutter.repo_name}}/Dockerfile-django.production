@@ -76,7 +76,7 @@ RUN apk add --no-cache --virtual .build-deps build-base python
 
 # Copy some utility files
 COPY ./webapp/.babelrc .
-COPY ./webapp/.eslintrc .
+COPY ./webapp/.eslintrc.js .
 COPY ./webapp/.eslintignore .
 
 # Install node requirements

@@ -17,12 +17,12 @@ if (process.env.NODE_ENV === 'production') {
     });
 
     // handle rejected promises
-    window.addEventListener('unhandledrejection', evt => {
+    window.addEventListener('unhandledrejection', (evt) => {
         Sentry.captureException(evt.reason);
     });
     // If we have authenticated user, pass its data on to Sentry
     if (DJ_CONST.user) {
-        Sentry.configureScope(scope => {
+        Sentry.configureScope((scope) => {
             scope.setUser({
                 id: DJ_CONST.user.id,
                 email: DJ_CONST.user.email,

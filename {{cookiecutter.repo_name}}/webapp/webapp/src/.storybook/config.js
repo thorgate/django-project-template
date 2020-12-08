@@ -3,12 +3,12 @@ import '../../../static/styles-src/main.scss';
 global.django = {
     // Translation functions are provided by djangos jsi18n and are global
     // some very simple implementations here based on the ones from jsi18n
-    gettext: text => text,
+    gettext: (text) => text,
     ngettext: (a, b, count) => (count === 1 ? a : b),
     interpolate: (fmt, obj, named) => {
         if (named) {
-            return fmt.replace(/%\(\w+\)s/g, match =>
-                String(obj[match.slice(2, -2)]),
+            return fmt.replace(/%\(\w+\)s/g, (match) =>
+                String(obj[match.slice(2, -2)])
             );
         } else {
             return fmt.replace(/%s/g, () => String(obj.shift()));
@@ -21,7 +21,7 @@ global.django = {
         }
         return value;
     },
-    reverseUrl: name => name,
+    reverseUrl: (name) => name,
 };
 
 global.DJ_CONST = {
@@ -34,4 +34,4 @@ global.DJ_CONST = {
     SITE_URL: '127.0.0.1:8000',
     STATIC_URL: '/static/',
 };
-global.DJ_CONST['reverse'] = text => text;
+global.DJ_CONST['reverse'] = (text) => text;
