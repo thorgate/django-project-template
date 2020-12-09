@@ -27,6 +27,17 @@ Note: Try to add categories to changes and link to MRs/Issues
 - [NEW] Add clientside shim for winston. This allows us to use `logger` on the client too. Please note that we aim to replace winston with
          something modern (that works on both client and server) in the future and this is just an intermediate step before that - !150
 - [BUG] Ensure settings and other SSR data is parsed before initializing the application. See more information in !150
+- [ENH] Update following frontend packages: !157
+  - `react`
+  - `react-dom`
+  - `@testing-library/*`
+- [ENH] Include shared configs for Babel, ESLint and prettier via: !157
+  - `@thorgate/babel-preset`
+  - `@thorgate/eslint-config`
+  - `@thorgate/prettier-config`
+- [ENH] Use `screen` in example component test as recommended. @rrebase
+- [DEPRECATION] Deprecating default export for `SETTINGS` !157
+  - This is for having better support for usage with TypeScript in the future.
 
 ## [DEFAULT] development
 

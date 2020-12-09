@@ -98,8 +98,8 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^5.11.6",
     "@testing-library/react": "^11.2.2",
-    "@thorgate/eslint-config": "^1.0.0",
-    "@thorgate/prettier-config": "^1.0.0",
+    "@thorgate/eslint-config": "1.0.0",
+    "@thorgate/prettier-config": "1.0.0",
     "eslint-config-airbnb": "18.2.1",
     "eslint-config-prettier": "7.0.0",
     "eslint-config-react-app": "5.2.1",
