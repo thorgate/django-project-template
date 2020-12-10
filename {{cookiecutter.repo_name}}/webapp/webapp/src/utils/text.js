@@ -1,4 +1,3 @@
-/* global django */
 import React from 'react';
 
 export default function nl2br(text) {
@@ -33,7 +32,7 @@ if (
  *
  * @returns {String}
  */
-export const gettext = value => django.gettext(value);
+export const gettext = (value) => django.gettext(value);
 
 /**
  * @param {String} context

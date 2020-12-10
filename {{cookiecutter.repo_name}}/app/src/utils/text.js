@@ -1,9 +1,9 @@
 import React from 'react';
 
-export const upperCaseFirst = str =>
+export const upperCaseFirst = (str) =>
     `${str.charAt(0).toUpperCase()}${str.substr(1).toLowerCase()}`;
 
-export const nl2br = text => {
+export const nl2br = (text) => {
     const res = [];
     text.split('\n').forEach((x, i) => {
         if (i !== 0) {
@@ -16,4 +16,4 @@ export const nl2br = text => {
     return res;
 };
 
-export const tNoop = key => key;
+export const tNoop = (key) => key;

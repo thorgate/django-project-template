@@ -5,10 +5,10 @@ export const appDir = path.resolve(path.join(__dirname, '..'));
 
 /**
  * Resolve file or directory in <root>/app
- * @param relativePath
+ * @param relativePath {string}
  * @returns {string}
  */
-export const resolveApp = relativePath => path.resolve(appDir, relativePath);
+export const resolveApp = (relativePath) => path.resolve(appDir, relativePath);
 
 // Resolves to <projectRoot>/app/public
 export const publicDir = resolveApp('public');

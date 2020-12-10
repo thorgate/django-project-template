@@ -29,10 +29,7 @@ const mapDispatchToProps = {
     onLogin: obtainToken,
 };
 
-const LoginConnector = connect(
-    null,
-    mapDispatchToProps,
-)(Login);
+const LoginConnector = connect(null, mapDispatchToProps)(Login);
 
 const LoginAsView = withView()(LoginConnector);
 

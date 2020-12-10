@@ -12,7 +12,7 @@ const getFieldMapping = (fields, type) =>
         return result;
     }, {});
 
-export const getFormPropTypes = fields => ({
+export const getFormPropTypes = (fields) => ({
     values: PropTypes.shape(
         getFieldMapping(
             fields,

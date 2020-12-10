@@ -47,8 +47,9 @@ class BrowserWinston {
                 bold ? 'font-weight: bold' : '',
                 color ? `color: ${availableColors[color] || color};` : '',
                 background
-                    ? `background: ${availableColors[background] ||
-                          background};`
+                    ? `background: ${
+                          availableColors[background] || background
+                      };`
                     : '',
             ].join('; ');
 
@@ -136,19 +137,19 @@ class BrowserWinston {
                 `%c[${finalTag.toUpperCase()}]`,
                 styles[finalTag] ?? styles.def,
             ].concat(args);
-        } else {
-            return [`[${finalTag.toUpperCase()}]`].concat(args);
         }
+
+        return [`[${finalTag.toUpperCase()}]`].concat(args);
     }
 
     addFilter() {}
 }
 
-const noop = a => a;
+const noop = (a) => a;
 
 export const addColors = () => {};
 
-export const format = fn => param => fn(param, param);
+export const format = (fn) => (param) => fn(param, param);
 format.combine = noop;
 format.colorize = noop;
 format.label = noop;

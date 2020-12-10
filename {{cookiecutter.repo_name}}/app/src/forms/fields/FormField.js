@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
 import { connect, getIn } from 'formik';
 import { useTranslation } from 'react-i18next';

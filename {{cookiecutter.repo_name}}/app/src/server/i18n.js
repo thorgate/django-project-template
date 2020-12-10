@@ -1,7 +1,7 @@
 import addYears from 'date-fns/addYears';
 import * as Sentry from '@sentry/node';
 
-import SETTINGS from 'settings';
+import { SETTINGS } from 'settings';
 
 function setPath(object, path, newValue) {
     /* eslint-disable no-param-reassign */
@@ -71,15 +71,15 @@ export const loadTranslationsHandler = (i18next, options) => {
             : [];
 
         // extend ns
-        namespaces.forEach(ns => {
+        namespaces.forEach((ns) => {
             if (i18next.options.ns && i18next.options.ns.indexOf(ns) < 0) {
                 i18next.options.ns.push(ns);
             }
         });
 
         i18next.services.backendConnector.load(languages, namespaces, () => {
-            languages.forEach(lng => {
-                namespaces.forEach(ns => {
+            languages.forEach((lng) => {
+                namespaces.forEach((ns) => {
                     setPath(
                         resources,
                         [lng, ns],
@@ -96,7 +96,7 @@ export const loadTranslationsHandler = (i18next, options) => {
 export const missingKeyHandler = (i18next, options) => {
     const { lngParam = 'lng', nsParam = 'ns' } = options || {};
 
-    return ctx => {
+    return (ctx) => {
         const lng = ctx.params[lngParam];
         const ns = ctx.params[nsParam];
         const { body } = ctx.request;
@@ -107,7 +107,7 @@ export const missingKeyHandler = (i18next, options) => {
             return;
         }
 
-        Object.keys(body).forEach(field => {
+        Object.keys(body).forEach((field) => {
             if (field === '_t') {
                 // XHR backend sends a timestamp which we don't want to save
                 return;
@@ -133,7 +133,7 @@ export const missingKeyHandler = (i18next, options) => {
     };
 };
 
-export const koaI18NextMiddleware = i18next =>
+export const koaI18NextMiddleware = (i18next) =>
     async function i18NextMiddleware(ctx, next) {
         const language =
             ctx.cookies.get(SETTINGS.LANGUAGE_COOKIE_NAME) ||

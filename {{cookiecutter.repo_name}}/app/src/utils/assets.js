@@ -1,4 +1,4 @@
-import SETTINGS from 'settings';
+import { SETTINGS } from 'settings';
 
 const resolveAsset = (
     url,
@@ -26,4 +26,5 @@ const resolveAsset = (
  * @param {string} url Path to media file without `/media` prefix.
  * @returns {string} Path for media file with correct prefix
  */
-export const resolveMedia = url => resolveAsset(url, SETTINGS.DJANGO_MEDIA_URL);
+export const resolveMedia = (url) =>
+    resolveAsset(url, SETTINGS.DJANGO_MEDIA_URL);

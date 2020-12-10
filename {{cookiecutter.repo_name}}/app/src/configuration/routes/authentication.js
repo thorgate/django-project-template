@@ -12,7 +12,7 @@ const SignupView = loadable(() => import('views/auth/Signup'));
 const ForgotPasswordView = loadable(() => import('views/auth/ForgotPassword'));
 const ResetPasswordView = loadable(() => import('views/auth/ResetPassword'));
 
-export const createAuthenticationRoutes = PageNotFoundRoute => ({
+export const createAuthenticationRoutes = (PageNotFoundRoute) => ({
     path: '/auth',
     name: 'auth',
     component: RenderChildren,

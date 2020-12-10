@@ -1,7 +1,7 @@
 {% raw %}import { takeLatest } from 'redux-saga/effects';
 import Cookies from 'js-cookie';
 
-import SETTINGS from 'settings';
+import { SETTINGS } from 'settings';
 
 const SET_ACTIVE_LANGUAGE = 'sagas/app/SET_ACTIVE_LANGUAGE';
 
@@ -10,7 +10,7 @@ const SET_ACTIVE_LANGUAGE = 'sagas/app/SET_ACTIVE_LANGUAGE';
  * @param {string} language Language code to activate
  * @returns {{type: string, language: string}} Created action
  */
-export const setActiveLanguage = language => ({
+export const setActiveLanguage = (language) => ({
     type: SET_ACTIVE_LANGUAGE,
     language,
 });

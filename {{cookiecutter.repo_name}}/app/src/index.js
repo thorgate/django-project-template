@@ -1,7 +1,7 @@
 /* eslint-disable */
 import http from 'http';
 
-import SETTINGS from 'settings';
+import { SETTINGS } from 'settings';
 
 const createServer = () => {
     const PORT = process.env.PORT;
@@ -11,7 +11,7 @@ const createServer = () => {
 
     const server = http.createServer(currentHandler);
 
-    server.listen(PORT, error => {
+    server.listen(PORT, (error) => {
         if (error) {
             console.log(error);
         }
@@ -32,7 +32,7 @@ if (process.env.NODE_ENV === 'production' && SETTINGS.MAX_WORKERS > 1) {
 
     throng({
         workers: SETTINGS.MAX_WORKERS,
-        start: id => {
+        start: (id) => {
             console.log(`Booting worker: ${id}`);
             createServer();
         },

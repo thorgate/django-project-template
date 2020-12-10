@@ -52,9 +52,4 @@ const mapDispatchToProps = {
     onSignup: signup,
 };
 
-export default withView()(
-    connect(
-        null,
-        mapDispatchToProps,
-    )(Signup),
-);
+export default withView()(connect(null, mapDispatchToProps)(Signup));
