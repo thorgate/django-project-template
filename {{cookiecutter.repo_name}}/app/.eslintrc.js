@@ -1,26 +1,26 @@
 module.exports = {
     extends: ['@thorgate'],
-    "settings": {
-        "import/ignore": [
-            "^@winston$"
+    settings: {
+        'import/ignore': [
+            '^@winston$'
         ],
-        "import/resolver": {
-            "node": {
-                "paths": [
-                    "src"
-                ]
-            }
-        }
+        'import/resolver': {
+            node: {
+                paths: [
+                    'src'
+                ],
+            },
+        },
     },
-    "rules": {
+    rules: {
         // Allow @winston magic import
-        "import/no-unresolved": [
+        'import/no-unresolved': [
             2,
             {
-                "ignore": [
-                    "^@winston$"
-                ]
-            }
-        ]
-    }
+                ignore: [
+                    '^@winston$'
+                ],
+            },
+        ],
+    },
 };
