@@ -30,6 +30,10 @@ def check_remote_repository_updates():
         print("Template dir is not absolute dir or not Git repo; skipping freshness check")
         return
 
+    if os.environ.get("GITLAB_CI", "") != "":
+        print("No latest version check necessary in CI")
+        return
+
     print('Template dir:', template_dir)
     print('Checking for latest template version via git')
     subprocess.call(["git", "fetch"], cwd=template_dir)

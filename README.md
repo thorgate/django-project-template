@@ -44,17 +44,17 @@ _(note that the primary repo is in [Gitlab](https://gitlab.com/thorgate-public/d
 ## Usage
 
 To use this template, first ensure that you have
-[Pipenv](https://pipenv.readthedocs.io/en/latest/) `2020.6.2` available.
+[Poetry](https://python-poetry.org/docs/) available.
 
 After that, you should:
 
 1. Install the requirements of the project template by running
     ```
-    pipenv install
+    poetry install
     ```
-2. Activate the virtualenv created by pipenv:
+2. Activate the virtualenv created by _poetry_:
     ```
-    pipenv shell
+    poetry shell
     ```
 3. Navigate to the directory where you'd like to create your project:
     ```
