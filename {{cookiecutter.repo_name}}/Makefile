@@ -215,14 +215,21 @@ $(SITE_ROOT)/django.env:
 	@echo "$(CYAN)Creating Django .env file$(COFF)"
 	@touch $(SITE_ROOT)/django.env{% endif %}
 
+
 .PHONY:
-coverage:
-	@echo -e "$(CYAN)Running automatic code coverage check$(COFF)"
+coverage-py:
 	@docker-compose run --rm django coverage run -m py.test
 	@docker-compose run --rm django coverage html
 	@docker-compose run --rm django coverage report
+
+.PHONY:
+coverage-js:
 	@docker-compose run --rm node yarn test -- --coverage
 
+.PHONY:
+coverage:
+	@echo -e "$(CYAN)Running automatic code coverage check$(COFF)"
+	@make coverage-py coverage-js
 
 .PHONY:
 node-install:

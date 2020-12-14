@@ -15,32 +15,95 @@ before_script:
   - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
 
 stages:
-  - test
+  - qa
 {%- if cookiecutter.frontend_style == 'spa' %}
   - build
 {%- endif %}
 
-test:
-  stage: test
+lint-py:
+  stage: qa
+  except:
+    refs:
+      - template  # Don't run CI on template branch, should not be required
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /tests skip/
+      - $CI_COMMIT_MESSAGE =~ /test skip/
+      - $CI_COMMIT_MESSAGE =~ /\[no tests?\]/
+  variables:
+    EDIT_SETTINGS: "no"
+  script:
+    - make settings
+    - docker-compose build django
+    - make lint-py
+
+lint-js:
+  stage: qa
+  except:
+    refs:
+      - template  # Don't run CI on template branch, should not be required
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /tests skip/
+      - $CI_COMMIT_MESSAGE =~ /test skip/
+      - $CI_COMMIT_MESSAGE =~ /\[no tests?\]/
+
+  variables:
+    EDIT_SETTINGS: "no"
+  script:
+    - make settings
+    - make node-install
+    - make lint-js
+
+coverage-py:
+  stage: qa
   coverage: '/^TOTAL.*\s+(\d+\%)$/'
   except:
-    - template # Don't run CI on template branch, should not be required
+    refs:
+      - template  # Don't run CI on template branch, should not be required
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /tests skip/
+      - $CI_COMMIT_MESSAGE =~ /test skip/
+      - $CI_COMMIT_MESSAGE =~ /\[no tests?\]/
+  variables:
+    EDIT_SETTINGS: "no"
+  script:
+    - make settings
+    - docker-compose build
+    - make coverage-py
+
+coverage-js:
+  stage: qa
+  coverage: '/^TOTAL.*\s+(\d+\%)$/'
+  except:
+    refs:
+      - template  # Don't run CI on template branch, should not be required
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /tests skip/
+      - $CI_COMMIT_MESSAGE =~ /test skip/
+      - $CI_COMMIT_MESSAGE =~ /\[no tests?\]/
   variables:
     EDIT_SETTINGS: "no"
   script:
     - make settings
     - docker-compose build
     - make node-install
-    - make quality
-    - make coverage
+    - make coverage-js
 
-{%- if cookiecutter.frontend_style == 'spa' %}
+
+  {%- if cookiecutter.frontend_style == 'spa' %}
 
 build:
   stage: build
   except:
-    - template # Don't run CI on template branch, should not be required
+    refs:
+      - template  # Don't run CI on template branch, should not be required
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /tests skip/
+      - $CI_COMMIT_MESSAGE =~ /test skip/
+      - $CI_COMMIT_MESSAGE =~ /\[no tests?\]/
   script:
     - EDIT_SETTINGS=no make settings
     # Ensure production images build also
     - docker-compose -f docker-compose.production.yml build{% endif %}
+    # Run the django container without docker-compose because it would require external postgres & nginx
+    - docker run django ./manage.py check
+
