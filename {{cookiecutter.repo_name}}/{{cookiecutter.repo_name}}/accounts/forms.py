@@ -89,8 +89,8 @@ class ChangePasswordForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super(ChangePasswordForm, self).clean()
-        password_old = cleaned_data.get("password_old")
-        self.password_new = cleaned_data.get("password_new")
+        password_old = cleaned_data.get("password_old", "")
+        self.password_new = cleaned_data.get("password_new", "")
 
         # If either old or new password is None, then we get an inline error and don't want to raise ValidationError
         if (
