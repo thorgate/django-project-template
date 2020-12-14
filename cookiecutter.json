@@ -29,7 +29,7 @@
     "project_title": "User-visible title of the project.",
     "repo_name": "{{cookiecutter.project_title|lower|replace(' ', '_')}}",
     "include_celery": "no",
-    "include_docs": "yes",
+    "include_docs": "no",
     "live_hostname": "TODO.com",
     "test_host": "test.{{cookiecutter.live_hostname}}",
     "live_host": "production.{{cookiecutter.live_hostname}}",
