@@ -19,6 +19,7 @@ stages:
 {%- if cookiecutter.frontend_style == 'spa' %}
   - build
 {%- endif %}
+  - bump-version
 
 test:
   stage: test
@@ -44,3 +45,34 @@ build:
     - EDIT_SETTINGS=no make settings
     # Ensure production images build also
     - docker-compose -f docker-compose.production.yml build{% endif %}
+
+# IMPORTANT! You need to setup repository and git keys to use it!
+# 1. Generate new key: ssh-keygen -t ecdsa -b 521 -C '{{ cookiecutter.project_title }}' -f id_ecdsa
+# 2. Copy public key: cat id_ecdsa.pub
+# 3. Go to your_project_name → Settings → Repository → Deploy Keys, paste public key,
+#   select "Write access allowed", click add
+# 4. Add new protected CI/CD variable with name 'GIT_KEY' and content from: base64 -i id_ecdsa
+Bump version & tag:
+  image: python:3.8-buster
+  stage: bump-version
+  variables:
+    GIT_SSH_COMMAND: 'ssh -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null'
+  before_script:
+    - mkdir -p ~/.ssh
+    - echo $GIT_KEY | base64 -d > ~/.ssh/id_ecdsa
+    - chmod 400 ~/.ssh/id_ecdsa
+    - git config --global user.email "thorgatebot@thorgate.eu"
+    - git config --global user.name "Thorgate Bot"
+    - pip install bump2version
+  script:
+    - git remote set-url origin git@gitlab.com:${CI_PROJECT_PATH}.git
+    - git checkout master
+    - git pull origin master
+    - bump2version patch
+    - git push --follow-tags
+  except:
+    variables:
+      - '$CI_COMMIT_MESSAGE =~ /Bump version: v/'
+      - '$CI_COMMIT_MESSAGE =~ /bump-ignore/'
+  only:
+    - master
