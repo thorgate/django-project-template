@@ -44,6 +44,13 @@ tg-react = "*"
 black = "==19.10b0"
 django-debug-toolbar = "*"
 ipdb = "*"
+{% if cookiecutter.use_mypy == 'yes' %}
+# MyPy dependencies
+boto3-stubs = "*"
+django-stubs = "*"
+djangorestframework-stubs = "*"
+mypy = "*"
+{% endif %}
 # Testing & quality tools
 coverage = "*"
 isort = "==4.*"

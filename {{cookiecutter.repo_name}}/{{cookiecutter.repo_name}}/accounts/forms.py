@@ -1,3 +1,5 @@
+from typing import List
+
 from django import forms
 from django.contrib.auth import forms as auth_forms
 from django.contrib.auth import get_user_model
@@ -67,7 +69,7 @@ class SetPasswordForm(auth_forms.SetPasswordForm):
 class ChangePasswordForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = []
+        fields: List[str] = []
 
     password_old = forms.CharField(
         widget=forms.PasswordInput(),
