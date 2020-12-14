@@ -57,13 +57,6 @@ directory = "cover"
 [tool.pytest.ini_options]
 minversion = "6.0"
 DJANGO_SETTINGS_MODULE = "settings.local_test"
-addopts = [
-    "--strict-markers",
-    "--reuse-db",
-    "--cov=.",
-    "--cov-report=term-missing:skip-covered",
-    "--cov-fail-under=100"
-]
 markers = ["django_db", "parametrize", "unit"]
 norecursedirs = [
     "migrations",
