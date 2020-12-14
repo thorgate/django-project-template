@@ -2,6 +2,9 @@
 
 FROM {{ cookiecutter.python_version|python_image }} as base
 
+# Use non-interactive frontend for debconf
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+
 ENV DJANGO_PRODUCTION_MODE 1
 ENV DJANGO_DEBUG 0
 ENV PYTHONPYCACHEPREFIX /.pycache
@@ -14,14 +17,10 @@ RUN mkdir -p /var/log/{{cookiecutter.repo_name}}
 
 COPY ./wait-for-it.sh /usr/bin/
 
-# Install bash, libpq, libjpeg-turbo and gettext
-# Bash is required to support `wait-for-it.sh` script, should not add too much to docker image
-RUN apk add --no-cache bash gettext libpq libjpeg-turbo
-
-# Install build dependencies and mark them as virtual packages so they could be removed together
-RUN apk add --no-cache --virtual .build-deps \
-    ca-certificates alpine-sdk postgresql-dev python3-dev linux-headers musl-dev \
-    libffi-dev libxml2-dev libxslt-dev jpeg-dev zlib-dev
+# Install system requirements
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends build-essential gettext libpq-dev zlib1g-dev libjpeg62-turbo-dev wget && \
+    rm -rf /var/lib/apt/lists/*
 
 ENV POETRY_HOME "$HOME/.poetry"
 ENV POETRY_NO_INTERACTION 1
@@ -39,27 +38,6 @@ COPY poetry.lock /
 # Install all non-dev dependencies from poetry.lock
 RUN poetry install --no-dev
 
-# Find all file objects containing name `test` or compiled python files and remove them
-# Find all runtime dependencies that are marked as needed by scanelf
-# scanelf is utility to show ELF data for binary objects
-# For more info: https://wiki.gentoo.org/wiki/Hardened/PaX_Utilities#The_scanelf_application
-# Finally re-install missing run-dependencies
-RUN find /usr/local \
-        \( -type d -a -name test -o -name tests \) \
-        -o \( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
-        -exec rm -rf '{}' + \
-  && runDeps="$( \
-        scanelf --needed --nobanner --recursive /usr/local \
-                | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
-                | sort -u \
-                | xargs -r apk info --installed \
-                | sort -u \
-    )" \
-  && apk add --virtual .rundeps $runDeps
-
-# Remove build dependencies
-RUN apk del .build-deps
-
 # Copy code
 COPY ./{{cookiecutter.repo_name}} /app
 
@@ -71,16 +49,20 @@ RUN DJANGO_DOCKER_BUILD=True python manage.py compilemessages
 
 {%- if cookiecutter.frontend_style == 'webapp' %}
 
-# Based on Node {{ cookiecutter.node_version }} Alpine image
-FROM node:{{ cookiecutter.node_version }}-alpine as node_builder
+# Based on Node {{ cookiecutter.node_version }} Debian
+FROM node:{{ cookiecutter.node_version }}-buster-slim as node_builder
 
 # Set the default directory where CMD will execute
 WORKDIR /app
 
-# Install node build dependencies
-# Not removing them as not to break fabfile logic for exporting assets
-# These can be removed with: "RUN apk del .build-deps"
-RUN apk add --no-cache --virtual .build-deps build-base python
+# Install system requirements
+# Use non-interactive frontend for debconf
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+
+# Install system requirements
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends git python && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy some utility files
 COPY ./webapp/.babelrc .
