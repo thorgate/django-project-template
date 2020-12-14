@@ -49,6 +49,7 @@ services:
     #     - "5432:5432"
     volumes:
       - ".data/postgres:/var/lib/postgresql/data"
+      - ".data/db-mirror:/db-mirror"  # Used by ansible mirror playbook
     environment:
       POSTGRES_USER: {{cookiecutter.repo_name}}
       POSTGRES_PASSWORD: {{cookiecutter.repo_name}}

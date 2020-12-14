@@ -1,6 +1,7 @@
-include conf.d/app.{{ cookiecutter.repo_name }}.include;
+{%- raw -%}
+include conf.d/app.{{ project }}.include;
 include conf.d/ssl-common.include;
-include conf.d/ssl.{{ cookiecutter.repo_name }}.include;
+include conf.d/ssl.{{ project }}.include;
 
 # 502 error page (portrayed as 503)
 error_page 502 =503 /502.html;
@@ -12,7 +13,7 @@ location = /502.html {
 
 location ^~ /static/ {
     expires max;
-    include conf.d/app.{{ cookiecutter.repo_name }}.map_files.include;
+    include conf.d/app.{{ project }}.map_files.include;
 }
 
 location = /favicon.ico {
@@ -24,5 +25,6 @@ location = /robots.txt {
 }
 
 location / {
-    include conf.d/app.{{ cookiecutter.repo_name }}.proxy_node.include;
+    include conf.d/app.{{ project }}.proxy_node.include;
 }
+{%- endraw %}

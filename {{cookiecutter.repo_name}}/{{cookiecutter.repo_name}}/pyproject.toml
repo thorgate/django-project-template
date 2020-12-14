@@ -17,14 +17,13 @@ exclude = '''
     | dist
     | docs
   )/
-  | fabfile.py
   | local.py
   | local_test.py
 )
 '''
 
 [tool.isort]
-skip = "settings/local.py,fabfile.py,{{cookiecutter.repo_name}}/wsgi.py"
+skip = "settings/local.py,{{cookiecutter.repo_name}}/wsgi.py"
 skip_glob = "node_modules"
 line_length = '88'
 atomic = 'true'

@@ -35,7 +35,7 @@ _(note that the primary repo is in [Gitlab](https://gitlab.com/thorgate-public/d
       [ESLint](http://eslint.org/) and [stylelint](https://stylelint.io/)
     - Automated code-formatting using [black](https://black.readthedocs.io) and [prettier](https://prettier.io)
     - [py.test](http://pytest.org/) and [coverage](https://coverage.readthedocs.io/) integration
-    - Deploy helpers, using [Fabric](http://www.fabfile.org/)
+    - Deploy helpers, using [Ansible](https://www.ansible.com/)
     - Media files are stored in a CDN like S3 or Google Cloud Storage
     - Out-of-the-box configuration for nginx, gunicorn and logrotate
     - Includes [PyCharm](https://www.jetbrains.com/pycharm/) project config

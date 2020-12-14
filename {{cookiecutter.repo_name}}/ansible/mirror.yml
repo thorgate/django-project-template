@@ -1,0 +1,7 @@
+# Note: One can use tags to only download DB (--tags db) or media files (--tags media). When tags are omitted then
+#        both are downloaded.
+- name: "Pull server DB and media files to local machine and replace current state"
+  hosts: all
+
+  roles:
+    - { role: local-mirror }

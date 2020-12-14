@@ -7,7 +7,6 @@ omit =
     */migrations/*
     {{cookiecutter.repo_name}}/wsgi.py
     manage.py
-    fabfile.py
     settings/*
     *test*
 
