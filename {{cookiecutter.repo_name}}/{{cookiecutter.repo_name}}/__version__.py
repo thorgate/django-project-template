@@ -2,4 +2,4 @@
 # See the bump-version stage in .gitlab-ci.yml
 # Do not change it manually!
 
-version = "0.1.1"
+version = "0.1.0"
