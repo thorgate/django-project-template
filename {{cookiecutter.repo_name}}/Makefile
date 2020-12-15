@@ -193,9 +193,12 @@ $(PROJECT_ROOT)/.idea:
 	@echo -e "$(CYAN)Creating pycharm settings from template$(COFF)"
 	@mkdir -p $(PROJECT_ROOT)/.idea && cp -R $(PROJECT_ROOT)/.idea_template/* $(PROJECT_ROOT)/.idea/
 
+.env:
+	@echo "$(CYAN)Copying .env file$(COFF)"
+	@cp .env.example .env
 
 .PHONY:
-settings: Pipfile.lock $(SITE_ROOT)/settings/local.py $(SITE_ROOT)/settings/local_test.py{% if cookiecutter.frontend_style == 'spa' %} $(SITE_ROOT)/django.env{% endif %}
+settings: .env Pipfile.lock $(SITE_ROOT)/settings/local.py $(SITE_ROOT)/settings/local_test.py{% if cookiecutter.frontend_style == 'spa' %} $(SITE_ROOT)/django.env{% endif %}
 
 
 $(SITE_ROOT)/settings/local.py:

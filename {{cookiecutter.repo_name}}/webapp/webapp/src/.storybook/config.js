@@ -31,7 +31,7 @@ global.DJ_CONST = {
         name: 'Example User',
     },
     PROJECT_TITLE: '{{ cookiecutter.project_title }}',
-    SITE_URL: '127.0.0.1:8000',
+    SITE_URL: process.env.DJANGO_SITE_URL || 'http://localhost:8000',
     STATIC_URL: '/static/',
 };
 global.DJ_CONST['reverse'] = (text) => text;

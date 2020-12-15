@@ -114,6 +114,11 @@ function makeConfig(options) {
                 indent: 2,
                 logTime: true,
             }),
+            new Dotenv({
+                path: "/.env",
+                silent: true, // hide any errors
+                defaults: false // load '.env.defaults' as the default values if empty.
+            }),
             new webpack.DefinePlugin({
                 'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV), // Inject environmental variables to client side
             }),

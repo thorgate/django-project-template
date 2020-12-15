@@ -1,5 +1,6 @@
 # Ignore everything in .idea
 .idea
+.env
 
 *.mo
 *.pyo

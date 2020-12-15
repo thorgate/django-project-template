@@ -35,6 +35,14 @@ module.exports = {
             );
         }
 
+        config.plugins.push(
+            new Dotenv({
+                path: "/.env",
+                silent: true, // hide any errors
+                defaults: false // load '.env.defaults' as the default values if empty.
+            }),
+        );
+
         // adding ./src to module resolver so I can import modules with absolute paths
         config.resolve.modules.push('./src');
 

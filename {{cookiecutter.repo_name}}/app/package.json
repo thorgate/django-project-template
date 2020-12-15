@@ -42,6 +42,8 @@
     "@thorgate/spa-view-manager": "1.0.0-alpha.39",
     "babel-core": "^7.0.0-bridge.0",
     "bootstrap": "4.3.1",
+    "dotenv": "^8.2.0",
+    "dotenv-webpack": "^2.0.0",
     "classnames": "2.2.6",
     "connected-react-router": "6.4.0",
     "date-fns": "2.5.0",

@@ -26,13 +26,6 @@ SITE_ROOT = os.path.dirname(os.path.dirname(__file__))
 ROOT_DIR = environ.Path(SITE_ROOT)
 env = environ.Env()
 
-READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=True)
-if READ_DOT_ENV_FILE:
-    # OS environment variables take precedence over variables from .env
-    # By default use django.env file from project root directory
-    env.read_env(str(ROOT_DIR.path("django.env")))
-
-
 # Set to true during docker image building (e.g. when running collectstatic)
 IS_DOCKER_BUILD = env.bool("DJANGO_DOCKER_BUILD", default=False)
 
