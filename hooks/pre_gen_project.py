@@ -130,14 +130,14 @@ def validate_config():
         print("Test hostname is not a valid domain name")
         sys.exit(1)
 
-    live_hostname = "{{ cookiecutter.live_hostname }}"
-    if 'todo' not in live_hostname.lower():
-        if live_hostname != live_hostname.lower():
-            print("Live hostname should be lowercase")
+    domain_name = "{{ cookiecutter.domain_name }}"
+    if 'todo' not in domain_name.lower():
+        if domain_name != domain_name.lower():
+            print("Domain name should be lowercase")
             sys.exit(1)
 
-        if not FQDN(live_hostname).is_valid:
-            print("Live hostname is not a valid domain name")
+        if not FQDN(domain_name).is_valid:
+            print("Domain name is not valid")
             sys.exit(1)
 
 
