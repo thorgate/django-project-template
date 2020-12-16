@@ -46,22 +46,7 @@ help:
 	@echo -e ""
 	@echo -e "+------<<<<                                     Tasks                                    >>>>------+"
 	@echo -e ""
-	@echo -e "$(CYAN)make setup$(COFF)    - Sets up the project in your local machine"
-	@echo -e "                This includes copying PyCharm files, creating local settings file, and setting up Docker."
-	@echo -e ""
-	@echo -e "$(CYAN)make pycharm$(COFF)  - Copies default PyCharm settings (unless they already exist)"
-	@echo -e ""
-	@echo -e "$(CYAN)make test$(COFF)     - Runs automatic tests on your python code"
-	@echo -e ""
-	@echo -e "$(CYAN)make coverage$(COFF) - Runs code test coverage calculation"
-	@echo -e ""
-	@echo -e "$(CYAN)make quality$(COFF)  - Runs automatic code quality tests on your code"
-	@echo -e ""
-	@echo -e "$(CYAN)make isort-fix$(COFF) - Fix imports automatically with isort"
-	@echo -e ""
-	@echo -e "$(CYAN)make black-format-all$(COFF) - Format all Python code"
-	@echo -e ""
-	@echo -e "$(CYAN)make prettier-format-all$(COFF) - Format all JavaScript code"
+	@grep --no-filename -E '^[a-zA-Z_%-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 	@echo -e ""
 
 .PHONY:
@@ -126,7 +111,7 @@ prettier-format-cut-prefix:
 
 
 .PHONY:
-prettier-format-all:
+prettier-format-all: ## Format all JavaScript code
 	@make run-prettier cmd="yarn prettier-format-all $(cmd)"
 
 
@@ -157,7 +142,7 @@ black-format:
 
 
 .PHONY:
-black-format-all:
+black-format-all: ## Format all Python code
 	@make run-black cmd="black ."
 
 
@@ -170,7 +155,7 @@ docker: settings
 
 
 .PHONY:
-setup: pycharm settings
+setup: pycharm settings ## Sets up the project in your local machine. This includes copying PyCharm files, creating local settings file, and setting up Docker
 	@echo -e "$(CYAN)Creating Docker images$(COFF)"
 	@docker-compose build
 	@echo -e "$(CYAN)Running django migrations$(COFF)"
@@ -186,7 +171,7 @@ setup-terraform:
 	@./utils/terraform/setup.sh $(workspace)
 
 .PHONY:
-pycharm: $(PROJECT_ROOT)/.idea
+pycharm: $(PROJECT_ROOT)/.idea ## Copies default PyCharm settings (unless they already exist)
 
 
 $(PROJECT_ROOT)/.idea:
@@ -216,7 +201,7 @@ $(SITE_ROOT)/django.env:
 	@touch $(SITE_ROOT)/django.env{% endif %}
 
 .PHONY:
-coverage:
+coverage: ## Runs code test coverage calculation
 	@echo -e "$(CYAN)Running automatic code coverage check$(COFF)"
 	@docker-compose run --rm django coverage run -m py.test
 	@docker-compose run --rm django coverage html
@@ -247,7 +232,7 @@ test-django: clean
 
 
 .PHONY:
-test: test-node test-django
+test: test-node test-django ## Runs automatic tests on your code
 
 
 .PHONY:
@@ -294,7 +279,7 @@ isort:
 
 
 .PHONY:
-isort-fix:
+isort-fix: ## Fix imports automatically with isort
 	@echo -e "$(CYAN)Fixing imports with isort$(COFF)"
 	docker-compose run --rm django isort --recursive -p .
 
