@@ -165,8 +165,8 @@ setup: pycharm settings ## Sets up the project in your local machine. This inclu
 	@make migrate
 
 	@echo -e "$(CYAN)===================================================================="
-	@echo "SETUP SUCCEEDED"
-	@echo "Run 'make docker' to start Django development server and Webpack.$(COFF)"
+	@echo -e "SETUP SUCCEEDED"
+	@echo -e "Run 'make docker' to start Django development server and Webpack.$(COFF)"
 
 .PHONY:
 setup-terraform:
