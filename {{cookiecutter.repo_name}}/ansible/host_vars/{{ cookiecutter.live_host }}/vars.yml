@@ -1,9 +1,9 @@
 # Hostnames for the site
 {%- if cookiecutter.frontend_style == 'spa' %}
-django_site_host: "{{ cookiecutter.spa_django_host_prefix | as_hostname }}.{{ cookiecutter.live_hostname }}"
-node_site_host: "{{ cookiecutter.live_hostname }}"
+django_site_host: "{{ cookiecutter.spa_django_host_prefix | as_hostname }}.{{ cookiecutter.domain_name }}"
+node_site_host: "{{ cookiecutter.domain_name }}"
 {% else %}
-django_site_host: "{{ cookiecutter.live_hostname }}"
+django_site_host: "{{ cookiecutter.domain_name }}"
 {%- endif %}
 
 # Base settings file to import from local settings file
