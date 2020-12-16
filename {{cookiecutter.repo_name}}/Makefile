@@ -52,7 +52,7 @@ help:
 
 .PHONY:
 build-poetry-helper:
-	@docker build $(PROJECT_ROOT) -f Dockerfile-poetry --tag $(POETRY_WRAPPER_IMAGE_NAME)
+	@docker build -q $(PROJECT_ROOT) -f Dockerfile-poetry --tag $(POETRY_WRAPPER_IMAGE_NAME) > /dev/null
 
 
 .PHONY:
@@ -73,7 +73,7 @@ poetry.lock:
 
 .PHONY:
 poetry-check:
-	@make run-poetry-helper cmd="poetry check"
+	@make run-poetry-helper cmd="sh /poetry-check-lock.sh"
 
 
 .PHONY:

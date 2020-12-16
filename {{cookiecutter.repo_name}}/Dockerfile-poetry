@@ -17,5 +17,10 @@ RUN apk add --no-cache --virtual .build-deps \
 # Copy Python requirements dir and Install requirements
 RUN pip install -U pip setuptools wheel poetry
 
+# -- begin image-specific commands
+
+# This script provides poetry.lock checking
+COPY scripts/poetry-check-lock.sh /
+
 VOLUME /src
 WORKDIR /src

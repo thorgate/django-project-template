@@ -1,4 +1,4 @@
-# Development Dockerfile for Django app
+# Development Dockerfile for Django app. Keep the first commands in sync with Dockerfile-poetry
 
 FROM {{ cookiecutter.python_version|python_image }}
 
@@ -15,6 +15,8 @@ RUN apk add --no-cache --virtual .build-deps \
 
 # Copy Python requirements dir and Install requirements
 RUN pip install -U pip setuptools wheel poetry
+
+# -- begin image-specific commands
 
 COPY ./wait-for-it.sh /usr/bin/
 
