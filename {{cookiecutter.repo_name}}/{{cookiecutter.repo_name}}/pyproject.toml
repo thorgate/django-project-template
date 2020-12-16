@@ -23,7 +23,7 @@ exclude = '''
 '''
 
 [tool.isort]
-skip = "settings/local.py,{{cookiecutter.repo_name}}/wsgi.py"
+skip = "settings/local.py,settings/local_test.py,{{cookiecutter.repo_name}}/wsgi.py"
 skip_glob = "node_modules"
 line_length = '88'
 atomic = 'true'
@@ -31,8 +31,37 @@ multi_line_output = '3'
 include_trailing_comma = 'true'
 known_django = "django"
 known_pytest = "pytest"
-known_first_party = "accounts,{{cookiecutter.repo_name}}"
+known_first_party = "accounts,{{cookiecutter.repo_name}},settings"
 lines_between_types = '0'
 sections = "FUTURE,STDLIB,DJANGO,PYTEST,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"
 lines_after_imports = '2'
 force_alphabetical_sort_within_sections = '1'
+
+[tool.coverage.run]
+branch = true
+omit = [
+    "*test*",
+    "*migrations*",
+    "manage.py",
+    "{{cookiecutter.repo_name}}/urls.py",
+    "{{cookiecutter.repo_name}}/celery.py",
+    "{{cookiecutter.repo_name}}/celery_settings.py",
+    "{{cookiecutter.repo_name}}/storages.py",
+    "{{cookiecutter.repo_name}}/wsgi.py",
+    "settings/*",
+]
+
+[tool.coverage.html]
+directory = "cover"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+DJANGO_SETTINGS_MODULE = "settings.local_test"
+markers = ["django_db", "parametrize", "unit"]
+norecursedirs = [
+    "migrations",
+    ".data",
+    "{% if cookiecutter.frontend_style == 'spa' %}app{% else %}webapp{% endif %}",
+    "node_modules",
+]
+python_files = ["test_*.py", "tests/*.py", "tests.py"]

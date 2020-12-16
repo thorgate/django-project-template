@@ -47,7 +47,7 @@ ipdb = "*"
 # Testing & quality tools
 coverage = "*"
 isort = "==4.*"
-pytest = "==5.*"
+pytest = "==6.*"
 pytest-django = "*"
 pylint-django = "*"
 # Note prospector is very picky about its dependencies,
