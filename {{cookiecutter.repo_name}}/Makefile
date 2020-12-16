@@ -20,6 +20,7 @@ SITE_ROOT ?= $(PROJECT_ROOT)/$(PROJECT_NAME)
 
 CUR_DIR_NAME ?= $(shell basename `pwd`)
 DJANGO_IMAGE_NAME ?= $(CUR_DIR_NAME)_django
+POETRY_WRAPPER_IMAGE_NAME ?= $(PROJECT_NAME)_poetry_wrapper
 
 BLACK ?= \033[0;30m
 RED ?= \033[0;31m
@@ -50,33 +51,34 @@ help:
 	@echo -e ""
 
 .PHONY:
-build-pipenv-helper:
-	@docker build $(PROJECT_ROOT) -f Dockerfile-pipenv --tag $(PROJECT_NAME)_pipenv_wrapper
+build-poetry-helper:
+	@docker build -q $(PROJECT_ROOT) -f Dockerfile-poetry --tag $(POETRY_WRAPPER_IMAGE_NAME) > /dev/null
 
 
 .PHONY:
-run-pipenv-helper: build-pipenv-helper
-	@docker run --rm --name $(PROJECT_NAME)_pipenv_wrapper -v $(PROJECT_ROOT):/src $(PROJECT_NAME)_pipenv_wrapper \
-	 sh -c "$(cmd) && chown `id -u`:`id -g` Pipfile.lock"
+run-poetry-helper: build-poetry-helper
+	@docker run --rm --name $(POETRY_WRAPPER_IMAGE_NAME) -v $(PROJECT_ROOT):/src $(POETRY_WRAPPER_IMAGE_NAME) \
+	 sh -c "$(cmd) && chown `id -u`:`id -g` poetry.lock"
 
 
 .PHONY:
-pipenv-lock:
-	@make run-pipenv-helper cmd="pipenv lock"
+poetry-lock:
+	@make run-poetry-helper cmd="poetry lock"
+	@cd $(SITE_ROOT) && ln -sf ../poetry.lock .
 
 
-Pipfile.lock:
-	@make pipenv-lock
-
-
-.PHONY:
-pipenv-check:
-	@make run-pipenv-helper cmd="pipenv check"
+poetry.lock:
+	@make poetry-lock
 
 
 .PHONY:
-pipenv-install:
-	@make run-pipenv-helper cmd="pipenv install $(cmd)"
+poetry-check:
+	@make run-poetry-helper cmd="sh /poetry-check-lock.sh"
+
+
+.PHONY:
+poetry-install:
+	@make run-poetry-helper cmd="poetry install $(cmd)"
 
 
 # NOTE:
@@ -107,7 +109,8 @@ prettier-format-cut-prefix:
 {%- if cookiecutter.frontend_style == 'spa' %}
 	@make run-prettier cmd="yarn prettier-format $(subst app/src, src, $(cmd))"
 {%- else %}
-	@make run-prettier cmd="yarn prettier-format $(subst webapp/webapp, webapp, $(cmd))"{% endif %}
+	@make run-prettier cmd="yarn prettier-format $(subst webapp/webapp, webapp, $(cmd))"
+{%- endif %}
 
 
 .PHONY:
@@ -162,8 +165,8 @@ setup: pycharm settings ## Sets up the project in your local machine. This inclu
 	@make migrate
 
 	@echo -e "$(CYAN)===================================================================="
-	@echo "SETUP SUCCEEDED"
-	@echo "Run 'make docker' to start Django development server and Webpack.$(COFF)"
+	@echo -e "SETUP SUCCEEDED"
+	@echo -e "Run 'make docker' to start Django development server and Webpack.$(COFF)"
 
 .PHONY:
 setup-terraform:
@@ -180,11 +183,11 @@ $(PROJECT_ROOT)/.idea:
 
 
 .PHONY:
-settings: Pipfile.lock $(SITE_ROOT)/settings/local.py $(SITE_ROOT)/settings/local_test.py{% if cookiecutter.frontend_style == 'spa' %} $(SITE_ROOT)/django.env{% endif %}
+settings: poetry.lock $(SITE_ROOT)/settings/local.py $(SITE_ROOT)/settings/local_test.py{% if cookiecutter.frontend_style == 'spa' %} $(SITE_ROOT)/django.env{% endif %}
 
 
 $(SITE_ROOT)/settings/local.py:
-	echo "$(CYAN)Creating Django local.py settings file$(COFF)"
+	@echo -e "$(CYAN)Creating Django local.py settings file$(COFF)"
 	cp $(SITE_ROOT)/settings/local.py.example $(SITE_ROOT)/settings/local.py
 	if [ $(EDIT_SETTINGS) = "yes" ]; then\
 		$(EDITOR) $(SITE_ROOT)/settings/local.py;\
@@ -197,8 +200,9 @@ $(SITE_ROOT)/settings/local_test.py:
 {%- if cookiecutter.frontend_style == 'spa' %}
 
 $(SITE_ROOT)/django.env:
-	@echo "$(CYAN)Creating Django .env file$(COFF)"
-	@touch $(SITE_ROOT)/django.env{% endif %}
+	@echo -e "$(CYAN)Creating Django .env file$(COFF)"
+	@touch $(SITE_ROOT)/django.env
+{%- endif %}
 
 .PHONY:
 coverage: ## Runs code test coverage calculation
@@ -251,7 +255,7 @@ lint-js: prettier-check-all eslint
 lint: lint-py lint-js
 
 .PHONY:
-quality: lint pipenv-check
+quality: lint poetry-check
 
 
 .PHONY:
@@ -328,13 +332,15 @@ docker-logs:
 makemessages:
 	docker-compose run --rm django ./manage.py makemessages -a
 {%- if cookiecutter.frontend_style == 'webapp' %}
-	docker-compose run --rm django ./manage.py makemessages -a -d djangojs {% if cookiecutter.include_docs == 'yes' %}--ignore="docs/*"{% endif %}{% endif %}
+	docker-compose run --rm django ./manage.py makemessages -a -d djangojs {% if cookiecutter.include_docs == 'yes' %}--ignore="docs/*"{% endif %}
+{%- endif %}
+
 
 {%- if cookiecutter.frontend_style == 'spa' %}
-
 .PHONY:
 extract-i18n:
-	docker-compose run --rm node yarn extract-i18n{% endif %}
+	docker-compose run --rm node yarn extract-i18n
+{%- endif %}
 
 .PHONY:
 compilemessages:

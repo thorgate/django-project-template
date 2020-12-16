@@ -1,4 +1,5 @@
-# Development Dockerfile for Django app. Keep the first commands in sync with Dockerfile-poetry
+# Dockerfile for Poetry wrapper
+# The first build steps of this file are identical to those in the Django Dockerfile to make the build a bit faster.
 
 FROM {{ cookiecutter.python_version|python_image }}
 
@@ -18,17 +19,8 @@ RUN pip install -U pip setuptools wheel poetry
 
 # -- begin image-specific commands
 
-COPY ./wait-for-it.sh /usr/bin/
+# This script provides poetry.lock checking
+COPY scripts/poetry-check-lock.sh /
 
-COPY pyproject.toml /
-COPY poetry.lock /
-
-
-# Install all dependencies from poetry.lock (dev included by default)
-RUN poetry install
-
-# Set the default directory where CMD will execute
-WORKDIR /app
-
-# Run Django's runserver by default
-CMD python manage.py runserver 0.0.0.0:80
+VOLUME /src
+WORKDIR /src
