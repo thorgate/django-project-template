@@ -1,0 +1,26 @@
+# Ignore everything in .idea
+.idea
+
+*.mo
+*.pyo
+*.pyc
+.sass-cache/
+yarn-error.log
+node_modules/
+venv/
+.cache/
+
+.data*/
+
+djangoapp/django.env
+djangoapp/settings/local.py
+djangoapp/settings/local_test.py
+djangoapp/db.sqlite3
+djangoapp/assets/
+
+djangoapp/.cache
+djangoapp/.pytest_cache
+djangoapp/.coverage
+djangoapp/coverage
+djangoapp/cover/
+

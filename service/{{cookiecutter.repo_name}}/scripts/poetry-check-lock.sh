@@ -1,0 +1,1 @@
+../../../{{cookiecutter.repo_name}}/scripts/poetry-check-lock.sh

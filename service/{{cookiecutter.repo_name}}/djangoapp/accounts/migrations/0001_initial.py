@@ -1,0 +1,1 @@
+../../../../../{{cookiecutter.repo_name}}/{{cookiecutter.repo_name}}/accounts/migrations/0001_initial.py

@@ -1,0 +1,1 @@
+../../../../{{cookiecutter.repo_name}}/{{cookiecutter.repo_name}}/settings/local_test.py.example

@@ -1,0 +1,16 @@
+.git
+.idea
+
+venv/
+
+.data*/
+
+**/__pycache__
+*.pyo
+*.pyc
+
+djangoapp/.cache
+djangoapp/.pytest_cache
+djangoapp/.coverage
+djangoapp/coverage
+djangoapp/cover/

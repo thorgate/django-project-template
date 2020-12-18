@@ -1,0 +1,20 @@
+{
+    "_extensions": [
+        "cookiecutter_repo_extensions:Extension",
+        "tg_filters:TGFiltersModule",
+        "tg_dockerimage_lookup:TGDockerImageModule"
+    ],
+    "project_title": "User-visible title of the project.",
+    "repo_name": "{{cookiecutter.project_title|lower|replace(' ', '_')}}",
+    "include_celery": ["no", "yes"],
+    "domain_name": "TODO.com",
+    "test_host": "test.{{cookiecutter.domain_name}}",
+    "live_host": "production.{{cookiecutter.domain_name}}",
+    "admin_email": "info@{{cookiecutter.domain_name}}",
+    "python_version": "3.8",
+    "postgres_version": "12",
+    "django_admin_path": "adminpanel",
+    "django_media_engine": ["S3", "GCS"],
+    "thorgate": ["no", "yes"],
+    "gitlab_repo_url": ""
+}
