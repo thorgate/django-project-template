@@ -25,8 +25,41 @@
   when: not fullchain_file.stat.exists
 
 
+- set_fact:
+    certbot_binary: ""
+
+
+- name: "Check for certbot binary"
+  shell: "command -v certbot"
+  register: certbot_bin
+  ignore_errors: yes
+
+
+- name: "Check for certbot-auto binary"
+  shell: "command -v certbot-auto"
+  register: certbot_auto_bin
+  ignore_errors: yes
+  when: result is failed
+
+
+- set_fact:
+    certbot_binary: "certbot"
+  when: certbot_bin is succeeded
+
+
+- set_fact:
+    certbot_binary: "certbot-auto"
+  when: not certbot_binary and certbot_auto_bin is succeeded
+
+
+- name: "Fail if certbot was not found"
+  fail:
+    msg: "Certbot was not found on the server. Please install it - https://certbot.eff.org/instructions"
+  when: "certbot_binary == ''"
+
+
 - name: "Retrieve certificate with certbot"
-  command: "/usr/bin/certbot-auto --no-self-upgrade certonly --noninteractive --agree-tos -c /etc/letsencrypt/configs/letsencrypt.{{ project }}.conf"
+  command: "{{ certbot_binary }} --no-self-upgrade certonly --noninteractive --agree-tos -c /etc/letsencrypt/configs/letsencrypt.{{ project }}.conf"
   args:
       creates: /etc/letsencrypt/live/{{ django_site_host }}/fullchain.pem
 {%- endraw %}
