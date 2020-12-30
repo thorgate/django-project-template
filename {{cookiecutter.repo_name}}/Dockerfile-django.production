@@ -57,6 +57,9 @@ RUN apk del .build-deps
 # Copy code
 COPY ./{{cookiecutter.repo_name}} /app
 
+# Copy the environment file for django-environ to pick it up
+COPY ./.env /
+
 # Set the default directory where CMD will execute
 WORKDIR /app
 
@@ -83,7 +86,7 @@ COPY ./webapp/.eslintignore .
 
 # Install node requirements
 COPY ./webapp/package.json .
-COPY ./webapp/yarn.lock ./
+COPY ./webapp/yarn.lock .
 
 # Install node dependencies
 RUN yarn install --frozen-lockfile
@@ -91,6 +94,8 @@ RUN yarn install --frozen-lockfile
 # Copy app assets
 COPY ./webapp/webapp /app/webapp
 COPY ./webapp/static /app/static
+
+COPY ./.env .
 
 # Build node stuff
 RUN yarn build

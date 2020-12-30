@@ -23,9 +23,11 @@ COPY ./wait-for-it.sh /usr/bin/
 COPY pyproject.toml /
 COPY poetry.lock /
 
-
 # Install all dependencies from poetry.lock (dev included by default)
 RUN poetry install
+
+# Copy the environment file for django-environ to pick it up
+COPY .env /
 
 # Set the default directory where CMD will execute
 WORKDIR /app

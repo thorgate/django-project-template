@@ -40,25 +40,12 @@
   when: not db_created.stat.exists
 
 
-- name: "Create django env file"
+- name: "Copy .env file"
   template:
       src: environment
-      dest: "{{ code_dir }}/{{ project }}/django.env"
+      dest: "{{ code_dir }}/.env"
       mode: 0700
       backup: yes
-
-{%- endraw %}
-{%- if cookiecutter.frontend_style == 'spa' %}
-
-
-- name: "Create razzle env file"
-  template:
-    src: razzle.env
-    dest: "{% raw %}{{ code_dir }}{% endraw %}/app/.env.production.local"
-    mode: 0700
-    backup: yes
-{%- endif %}
-{%- raw %}
 
 
 - name: "Create local settings file"

@@ -8,7 +8,7 @@ services:
       context: .
       dockerfile: Dockerfile-django
     ports:
-      - "{% if cookiecutter.frontend_style == "spa" %}3000{% else %}8000{% endif %}:80"
+      - "${DJANGO_PORT-8000}:80"
     volumes:
       - "./{{cookiecutter.repo_name}}:/app"
       {%- if cookiecutter.frontend_style == "webapp" %}
@@ -39,6 +39,7 @@ services:
       - "8001:8001"{% endif %}
     volumes:
       - "./{% if cookiecutter.frontend_style == "spa" %}app{% else %}webapp{% endif %}:/app"
+      - "./.env:/app/.env"
       - ".data/node_modules:/app/node_modules"
 
   postgres:
@@ -51,8 +52,9 @@ services:
       - ".data/postgres:/var/lib/postgresql/data"
       - ".data/db-mirror:/db-mirror"  # Used by ansible mirror playbook
     environment:
-      POSTGRES_USER: {{cookiecutter.repo_name}}
-      POSTGRES_PASSWORD: {{cookiecutter.repo_name}}
+      # credentials taken from .env file
+      POSTGRES_USER: "${DJANGO_DATABASE_USER-'{{ cookiecutter.repo_name }}'}"
+      POSTGRES_PASSWORD: "${DJANGO_DATABASE_PASSWORD-'{{ cookiecutter.repo_name }}'}"
   {%- if cookiecutter.include_celery == 'yes' %}
 
   celery:
@@ -97,6 +99,7 @@ services:
   mailhog:
     image: mailhog/mailhog:v1.0.0
     ports:
-      - "8025:8025"
+      - "${MAILHOG_PORT-8025}:8025"
     logging:
       driver: "none"
+

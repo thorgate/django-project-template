@@ -35,6 +35,9 @@ COPY ./app/.stylelintrc ./
 # Copy code
 COPY ./app /app
 
+# Copy the environment so that dotenv/razzle can pick it up
+COPY ./.env /app/.env
+
 # Build node app
 RUN yarn build
 

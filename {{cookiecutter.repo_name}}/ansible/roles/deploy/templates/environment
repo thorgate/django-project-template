@@ -10,8 +10,19 @@ DJANGO_ALLOWED_HOSTS={{ django_site_host }}{% endraw %}{% if cookiecutter.fronte
 {%- if cookiecutter.frontend_style == 'spa' %}
 {% raw %}
 DJANGO_CSRF_COOKIE_DOMAIN=.{{ node_site_host }}
+
+# Core Razzle settings
+PORT=80
+HOST=0.0.0.0
+
+# Site URL settings
+RAZZLE_MAX_WORKERS=4
 RAZZLE_SITE_URL=https://{{ node_site_host }}
 RAZZLE_BACKEND_SITE_URL=https://{{ django_site_host }}
+RAZZLE_SENTRY_ENVIRONMENT={{ razzle_sentry_environment }}
+RAZZLE_SENTRY_DSN={{ razzle_sentry_dsn }}
+
+RAZZLE_FILE_LOGGING=true
 {%- endraw %}
 {%- endif %}
 
@@ -37,7 +48,8 @@ DJANGO_GS_BUCKET_NAME={{ django_gs_bucket_name }}
 DJANGO_GS_PROJECT_ID={{ django_gs_project_id }}
 DJANGO_GS_CREDENTIALS={{ django_gs_credentials }}
 {%- endraw %}
-{%- endif %}{% if cookiecutter.django_media_engine == "S3" -%}
+{%- endif %}
+{% if cookiecutter.django_media_engine == "S3" -%}
 {%- raw %}
 DJANGO_AWS_STORAGE_BUCKET_NAME={{ django_aws_storage_bucket_name }}
 DJANGO_AWS_ACCESS_KEY_ID={{ django_aws_access_key_id }}

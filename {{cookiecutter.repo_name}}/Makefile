@@ -188,8 +188,13 @@ $(PROJECT_ROOT)/.idea:
 	@mkdir -p $(PROJECT_ROOT)/.idea && cp -R $(PROJECT_ROOT)/.idea_template/* $(PROJECT_ROOT)/.idea/
 
 
+.env:
+	@echo -e "$(CYAN)Copying .env file$(COFF)"
+	@cp .env.example .env
+
+
 .PHONY:
-settings: poetry.lock $(SITE_ROOT)/settings/local.py $(SITE_ROOT)/settings/local_test.py{% if cookiecutter.frontend_style == 'spa' %} $(SITE_ROOT)/django.env{% endif %}
+settings: .env poetry.lock $(SITE_ROOT)/settings/local.py $(SITE_ROOT)/settings/local_test.py
 
 
 $(SITE_ROOT)/settings/local.py:
@@ -203,12 +208,6 @@ $(SITE_ROOT)/settings/local_test.py:
 	@echo -e "$(CYAN)Creating Django settings local_test.py file$(COFF)"
 	@cp $(SITE_ROOT)/settings/local_test.py.example $(SITE_ROOT)/settings/local_test.py
 
-{%- if cookiecutter.frontend_style == 'spa' %}
-
-$(SITE_ROOT)/django.env:
-	@echo -e "$(CYAN)Creating Django .env file$(COFF)"
-	@touch $(SITE_ROOT)/django.env
-{%- endif %}
 
 .PHONY:
 coverage: ## Runs code test coverage calculation
