@@ -65,6 +65,13 @@ prospector = "==1.2.*"
 pytest = "==6.*"
 pytest-django = "*"
 pylint-django = "*"
+{% if cookiecutter.use_mypy == 'yes' %}
+# MyPy dependencies
+boto3-stubs = "*"
+django-stubs = "*"
+djangorestframework-stubs = "*"
+mypy = "*"
+{% endif %}
 
 [build-system]
 requires = ["poetry>=0.12"]
