@@ -62,13 +62,17 @@ run-poetry-helper: build-poetry-helper
 
 
 .PHONY:
-poetry-lock:
+poetry-lock: pyproject.toml
 	@make run-poetry-helper cmd="poetry lock"
 	@cd $(SITE_ROOT) && ln -sf ../poetry.lock .
 
 
 poetry.lock:
 	@make poetry-lock
+
+
+pyproject.toml:
+	@cd $(SITE_ROOT) && ln -sf ../pyproject.toml .
 
 
 .PHONY:
@@ -114,39 +118,39 @@ prettier-format-cut-prefix:
 
 
 .PHONY:
-prettier-format-all: ## Format all JavaScript code
+prettier-format-all: ## Format JavaScript code with Prettier
 	@make run-prettier cmd="yarn prettier-format-all $(cmd)"
 
 
 # NOTE:
 # Do not use `docker-compose run` to avoid spawning services by the django container
 .PHONY:
-run-black:
+run-python:
 	@set -e ;\
 	if [ "`docker images|grep $(DJANGO_IMAGE_NAME)`" = '' ]; then \
 	    docker-compose build django || exit $$?; \
 	fi; \
-	docker run --rm -v $(SITE_ROOT):/app $(DJANGO_IMAGE_NAME) $(cmd)
+	docker run -t --rm -v $(SITE_ROOT):/app $(DJANGO_IMAGE_NAME) $(cmd)
 
 
 .PHONY:
 black-check:
-	@make run-black cmd="black --check $(cmd)"
+	@make run-python cmd="black --check $(cmd)"
 
 
 .PHONY:
 black-check-all:
-	@make run-black cmd="black --check ."
+	@make run-python cmd="black --check ."
 
 
 .PHONY:
 black-format:
-	@make run-black cmd="black $(cmd)"
+	@make run-python cmd="black $(cmd)"
 
 
 .PHONY:
-black-format-all: ## Format all Python code
-	@make run-black cmd="black ."
+black-format-all: ## Format Python code with Black
+	@make run-python cmd="black ."
 
 
 .PHONY:
@@ -163,6 +167,8 @@ setup: pycharm settings ## Sets up the project in your local machine. This inclu
 	@docker-compose build
 	@echo -e "$(CYAN)Running django migrations$(COFF)"
 	@make migrate
+	@echo -e "$(CYAN)Installing node modules$(COFF)"
+	@make node-install
 
 	@echo -e "$(CYAN)===================================================================="
 	@echo -e "SETUP SUCCEEDED"
@@ -207,9 +213,7 @@ $(SITE_ROOT)/django.env:
 .PHONY:
 coverage: ## Runs code test coverage calculation
 	@echo -e "$(CYAN)Running automatic code coverage check$(COFF)"
-	@docker-compose run --rm django coverage run -m py.test
-	@docker-compose run --rm django coverage html
-	@docker-compose run --rm django coverage report
+	@docker-compose run --rm django sh -c 'coverage run -m py.test && coverage html && coverage report'
 	@docker-compose run --rm node yarn test -- --coverage
 
 
@@ -242,7 +246,7 @@ test: test-node test-django ## Runs automatic tests on your code
 .PHONY:
 clean:
 	@echo -e "$(CYAN)Cleaning pyc files$(COFF)"
-	@cd $(SITE_ROOT) && find . -name "*.pyc" -exec rm -rf {} \;
+	@make run-python cmd='find . -name "*.pyc" -exec rm -rf {} \;'
 
 
 .PHONY:
@@ -257,6 +261,15 @@ lint: lint-py lint-js
 .PHONY:
 quality: lint poetry-check
 
+.PHONY:
+fmt-py: black-format-all isort-fix
+
+.PHONY:
+fmt-js: eslint-fix prettier-format-all
+
+.PHONY:
+fmt: fmt-py fmt-js
+
 
 .PHONY:
 eslint:
@@ -265,16 +278,22 @@ eslint:
 
 
 .PHONY:
+eslint-fix:
+	@echo -e "$(CYAN)Running ESLint$(COFF)"
+	@docker-compose run --rm node yarn lint --fix
+
+
+.PHONY:
 prospector:
 	@echo -e "$(CYAN)Running Prospector$(COFF)"
-	@docker-compose run --rm django prospector
+	@make run-python cmd=prospector
 
 
 {% if cookiecutter.use_mypy == 'yes' %}
 .PHONY:
 mypy:
 	@echo -e "$(CYAN)Checking types$(COFF)"
-	@docker-compose run --rm django mypy --show-error-codes .
+	@make run-python cmd="mypy --show-error-codes ."
 {% endif %}
 
 
@@ -287,13 +306,13 @@ stylelint:
 .PHONY:
 isort:
 	@echo -e "$(CYAN)Checking imports with isort$(COFF)"
-	docker-compose run --rm django isort --recursive --check-only -p . --diff
+	@make run-python cmd='isort --check-only -p . --diff'
 
 
 .PHONY:
 isort-fix: ## Fix imports automatically with isort
 	@echo -e "$(CYAN)Fixing imports with isort$(COFF)"
-	docker-compose run --rm django isort --recursive -p .
+	@make run-python cmd='isort -p . -y'
 
 
 .PHONY:
