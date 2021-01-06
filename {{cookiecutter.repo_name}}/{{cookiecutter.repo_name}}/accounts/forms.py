@@ -1,3 +1,5 @@
+from typing import List
+
 from django import forms
 from django.contrib.auth import forms as auth_forms
 from django.contrib.auth import get_user_model
@@ -67,7 +69,7 @@ class SetPasswordForm(auth_forms.SetPasswordForm):
 class ChangePasswordForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = []
+        fields: List[str] = []
 
     password_old = forms.CharField(
         widget=forms.PasswordInput(),
@@ -87,8 +89,8 @@ class ChangePasswordForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super(ChangePasswordForm, self).clean()
-        password_old = cleaned_data.get("password_old")
-        self.password_new = cleaned_data.get("password_new")
+        password_old = cleaned_data.get("password_old", "")
+        self.password_new = cleaned_data.get("password_new", "")
 
         # If either old or new password is None, then we get an inline error and don't want to raise ValidationError
         if (

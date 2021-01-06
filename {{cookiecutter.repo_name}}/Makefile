@@ -246,7 +246,7 @@ clean:
 
 
 .PHONY:
-lint-py: black-check-all prospector isort
+lint-py: black-check-all isort prospector {% if cookiecutter.use_mypy == 'yes' %}mypy{% endif %}
 
 .PHONY:
 lint-js: prettier-check-all eslint
@@ -268,6 +268,14 @@ eslint:
 prospector:
 	@echo -e "$(CYAN)Running Prospector$(COFF)"
 	@docker-compose run --rm django prospector
+
+
+{% if cookiecutter.use_mypy == 'yes' %}
+.PHONY:
+mypy:
+	@echo -e "$(CYAN)Checking types$(COFF)"
+	@docker-compose run --rm django mypy --show-error-codes .
+{% endif %}
 
 
 .PHONY:
