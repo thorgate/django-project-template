@@ -1,3 +1,8 @@
+# This file is managed by ansible. Manual changes to this file in the server
+#  will be overwritten during deployments. To make changes update the file 
+#  in the repository and then run the ansible stack. Values specified by variables
+#  can be changed in the appropriate server or group specific ansible variable files.
+
 {%- raw -%}
 DJANGO_SITE_URL=https://{{ django_site_host }}
 DJANGO_ALLOWED_HOSTS={{ django_site_host }}{% endraw %}{% if cookiecutter.frontend_style == 'spa' %},{% raw %}{{ node_site_host }}{% endraw %}{% endif %}
