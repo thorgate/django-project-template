@@ -8,10 +8,11 @@ variables:
   DOCKER_DRIVER: overlay2
   DOCKER_BUILDKIT: "1"
   COMPOSE_DOCKER_CLI_BUILD: "1"
+  POETRY_VIRTUALENVS_CREATE: "0"
 
 before_script:
   - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-  - pipenv install --system --ignore-pipfile --dev
+  - poetry install
   - git config --global user.email "foo@bar.baz"
   - git config --global user.name "Foo Bar"
   # See the following issue for reasoning: https://gitlab.com/gitlab-org/gitlab-ce/issues/41227
@@ -28,7 +29,7 @@ stages:
   #
   # Note: When you do change the order here consider that:
   # - publish-ci-image.sh always tags the image as latest
-  # - you might need to run publish_ci_image for all branchess
+  # - you might need to run publish_ci_image for all branches
   - publish_ci_image
 
 test_main:

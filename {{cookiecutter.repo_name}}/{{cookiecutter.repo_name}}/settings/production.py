@@ -6,21 +6,21 @@ from settings.staging import *
 ALLOWED_HOSTS = env.list(
     "DJANGO_ALLOWED_HOSTS",
 {%- if cookiecutter.frontend_style == 'webapp' %}
-    default=["{{ cookiecutter.live_hostname }}"]
+    default=["{{ cookiecutter.domain_name }}"]
 {% else %}
-    default=["{{ cookiecutter.spa_django_host_prefix|as_hostname }}.{{ cookiecutter.live_hostname }}", "{{ cookiecutter.live_hostname }}"]
+    default=["{{ cookiecutter.spa_django_host_prefix|as_hostname }}.{{ cookiecutter.domain_name }}", "{{ cookiecutter.domain_name }}"]
 {% endif %}
 )
 # fmt: on
 
 # Static site url, used when we need absolute url but lack request object, e.g. in email sending.
 {%- if cookiecutter.frontend_style == 'webapp' %}
-SITE_URL = env.str("DJANGO_SITE_URL", default="https://{{ cookiecutter.live_hostname }}")
+SITE_URL = env.str("DJANGO_SITE_URL", default="https://{{ cookiecutter.domain_name }}")
 {% else %}
-SITE_URL = env.str("RAZZLE_SITE_URL", default="https://{{ cookiecutter.live_hostname }}")
-DJANGO_SITE_URL = env.str("RAZZLE_BACKEND_SITE_URL", default="https://{{ cookiecutter.spa_django_host_prefix|as_hostname }}.{{ cookiecutter.live_hostname }}")
+SITE_URL = env.str("RAZZLE_SITE_URL", default="https://{{ cookiecutter.domain_name }}")
+DJANGO_SITE_URL = env.str("RAZZLE_BACKEND_SITE_URL", default="https://{{ cookiecutter.spa_django_host_prefix|as_hostname }}.{{ cookiecutter.domain_name }}")
 
-CSRF_COOKIE_DOMAIN = env.str("DJANGO_CSRF_COOKIE_DOMAIN", default=".{{ cookiecutter.live_hostname }}"){% endif %}
+CSRF_COOKIE_DOMAIN = env.str("DJANGO_CSRF_COOKIE_DOMAIN", default=".{{ cookiecutter.domain_name }}"){% endif %}
 
 EMAIL_HOST = env.str("DJANGO_EMAIL_HOST", default="smtp.sparkpostmail.com")
 EMAIL_PORT = env.int("DJANGO_EMAIL_PORT", default=587)

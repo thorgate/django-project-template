@@ -90,9 +90,9 @@ Note that the production configuration lacks PostgreSQL, since it runs on a sepa
 
 |Action                                |Makefile shortcut                      |Actual command                                                              |
 |:-------------------------------------|:--------------------------------------|:---------------------------------------------------------------------------|
-|Installing Python packages            |`make pipenv-install cmd=<package>`    |Runs `pipenv install $(cmd)` in its own container                           |
-|(Re)Generate Pipfile.lock             |`make pipenv-lock`                     |Runs `pipenv lock -v` in its own container                                  |
-|Check Python package security warnings|`make pipenv-check`                    |`docker-compose run --rm --workdir / django pipenv check`                   |
+|Installing Python packages            |`make poetry-install cmd=<package>`    |Runs `poetry install $(cmd)` in its own container                           |
+|(Re)Generate poetry.lock              |`make poetry-lock`                     |Runs `poetry lock -v` in its own container                                  |
+|Check Python package security warnings|`make poetry-check`                    |`docker-compose run --rm --workdir / django poetry check`                   |
 |make migrations                       |`make makemigrations cmd=<command>`    |`docker-compose run --rm django ./manage.py makemigrations $(cmd)`          |
 |migrating                             |`make migrate cmd=<command>`           |`docker-compose run --rm django ./manage.py migrate $(cmd)`                 |
 |manage.py commands                    |`make docker-manage cmd=<command>`     |`docker-compose run --rm django ./manage.py $(cmd)`                         |
@@ -104,13 +104,15 @@ Note that the production configuration lacks PostgreSQL, since it runs on a sepa
 |run Prospector                        |`make prospector`                      |`docker-compose run --rm django prospector`                                 |
 |run isort                             |`make isort`                           |`docker-compose run --rm django isort --recursive --check-only -p . --diff` |
 |run psql                              |`make psql`                            |`docker-compose exec postgres psql --user {{cookiecutter.repo_name}} --dbname {{cookiecutter.repo_name}}` |
-{% if cookiecutter.include_docs == 'yes' %}|generate docs                         |`make docs`                            |`docker-compose run --rm django sphinx-build ./docs ./docs/_build`          |{% endif %}
+{% if cookiecutter.include_docs == 'yes' -%}
+|generate docs                         |`make docs`                            |`docker-compose run --rm django sphinx-build ./docs ./docs/_build`          |
+{%- endif %}
 
 ## Running commands on the server
 
     docker-compose -f docker-compose.production.yml run --rm --name {{ cookiecutter.repo_name }}_tmp django python manage.py <command>
 
-## Installing new pip or npm packages
+## Installing new python or npm packages
 
 ### Node
 Since `yarn` is inside the container, currently the easiest way to install new packages is to add them
@@ -122,21 +124,25 @@ to the `package.json` file and rebuild the container.
 
 ### Python
 
-Python package management is handled by `pipenv`, and employs a lock file (`Pipfile.lock`) to store the package version information.
+Python package management is handled by `poetry`, and employs a lock file (`poetry.lock`) to store the package version information.
 The lock file ensures that when we are building production images
 we don't install conflicting packages and everything is resolved to matching version while developing.
 
 To install a new Python package, there are two options.
-* Edit the `Pipfile` and add the required package there, then run `make pipenv-lock` to regenerate the lock file.
-* Or run `make pipenv-install cmd=<package>` -- this will add the package to Pipenv and regenerate Pipfile.lock in one take.
+* Edit the `pyproject.toml` file and add the required package there, then run `make poetry-lock` to regenerate the lock file.
+* Or run `make poetry-install cmd=<package>` -- this will add the package to `pyproject.toml` and regenerate `poetry.lock` in one take.
 
-#### Using pipenv locally for pycharm
+#### Using poetry locally for pycharm
 
-* run `pipenv install` locally. Given, that you have pipenv installed.
-* When you ran previous command, it told you where it created the virtual environment something like /home/you/.virtualenvs/projectname-somehash
-* if you missed it you can see it by running `pipenv run which python`
-* Open your project in pycharm and under settings search for _project interpreter_ or just _interpreter_. Pycharm is smart enough and should already have picked up your venv location but just in case you can make sure it matches the path you saw when you ran the install command
+PyCharm, as of 2020.3, does not yet support locating Poetry virtualenvs out of the box. So you need to do it manually.
 
+* run `poetry install` locally. Given, that you have poetry installed.
+* When you ran previous command, it told you where it created the virtual environment something like 
+  `/home/you/.cache/pypoetry/virtualenvs/projectname-somehash`;
+* if you missed it you can see it by running `poetry run which python`. It should be something like 
+  `/home/you/.cache/pypoetry/virtualenvs/bin/python`;
+* Open your project in pycharm and under settings search for _project interpreter_ or just _interpreter_.
+  Select the python interpreter located as shown above.
 
 ## Rebuilding Docker images
 
@@ -232,7 +238,7 @@ To use them, run those commands in the Django app dir:
     # Check Python imports with isort:
     make isort
     # Check Python package security vulnerabilities:
-    make pipenv-check
+    make poetry-check
     # Run all of above:
     make quality
 
@@ -250,9 +256,7 @@ Howewer if you are adding a new language or are creating translations for the fi
 different command to create the initial locale files. The command is `add-locale`. After you have used this command once per each
 new language you can safely use `makemessages` and `compilemessages`
 
-{%- if cookiecutter.frontend_style == 'spa' %}
-
-
+{% if cookiecutter.frontend_style == 'spa' %}
 ## SPA translations
 
 Frontend app uses [i18next](https://github.com/i18next/i18next) for translations and locale data is stored in `public/locale/**/translations.json`.

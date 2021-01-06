@@ -10,6 +10,10 @@ CHANGES
 Note: Try to add categories to changes and link to MRs/Issues
 -->
 
+## 2020-12-14
+
+- [ENH] Pipenv replaced by Poetry (!160)
+
 ## development
 
 - [ENH] Pipenv >= 2020.8.13 - !136 !137

@@ -1,0 +1,139 @@
+[tool.poetry]
+name = "{{ cookiecutter.repo_name }}"
+version = "1.0"
+description = "{{ cookiecutter.project_title }}"
+authors = ["{{ cookiecutter.admin_email }}"]
+repository = "{{ cookiecutter.gitlab_repo_url }}"
+
+# NOTE:
+# without this explicit reference to PyPI, poetry may raise exception "PackageNotFound".
+[[tool.poetry.source]]
+name = "the_pypi"
+url = "https://pypi.org/simple"
+default = true
+
+[tool.poetry.dependencies]
+python = "^{{ cookiecutter.python_version }}"
+
+{% if cookiecutter.django_media_engine == 'S3' -%}
+boto3 = "==1.*"
+{% endif -%}
+{% if cookiecutter.include_celery == 'yes' -%}
+celery = {version = "==4.4.*", extras = ["redis"]}
+{% endif -%}
+Django = "==2.2.*"
+django-crispy-forms = "==1.8.*"
+django-environ = "*"
+django-redis = "==4.11.*"
+"django-storages{% if cookiecutter.django_media_engine == 'GCS' %}[google]{% endif %}" = "==1.7.*"
+gunicorn = "==20.*"
+# If you change the docker base image to be non-alpine
+# This can be changed to psycopg2-binary to get advantage from
+# using wheels
+"psycopg2" = "==2.8.*"
+pyyaml = "==5.*"
+"sentry-sdk" = "==0.16.*"
+redis = "==3.*"
+{% if cookiecutter.include_docs == 'yes' -%}
+Sphinx = "*"
+sphinx_rtd_theme = "*"
+{% endif -%}
+{% if cookiecutter.frontend_style == 'webapp' %}
+django-js-reverse = "==0.9.1"
+django-settings-export = "==1.2.*"
+django-webpack-loader = "==0.6.*"
+{% else %}
+djangorestframework = "==3.9.*"
+djangorestframework_simplejwt = "==4.3.*"
+django-cors-headers = "==3.0.*"
+django-filter = "==2.1.*"
+tg-react = "*"
+{% endif %}
+tg-utils = {version = "*", extras = ["model-hash"]}
+
+[tool.poetry.dev-dependencies]
+black = "==20.8b1"
+django-debug-toolbar = "*"
+# Testing & quality tools
+coverage = "*"
+ipdb = "*"
+isort = "==4.*"
+# Note prospector is very picky about its dependencies,
+# avoid specifying versions for pylint/pylint-django/astroid
+# and let prospector determine which versions work together
+prospector = "==1.2.*"
+pytest = "==6.*"
+pytest-django = "*"
+pylint-django = "*"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
+
+[tool.black]
+# Enable specific Python version if necessary:
+# target-version = ['py38']
+line-length = 88
+include = '\.pyi?$'
+exclude = '''
+
+(
+  /(
+      \.eggs         # exclude a few common directories in the
+    | \.git          # root of the project
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | build
+    | dist
+    | docs
+  )/
+  | local.py
+  | local_test.py
+)
+'''
+
+[tool.isort]
+skip = "settings/local.py,settings/local_test.py,{{cookiecutter.repo_name}}/wsgi.py"
+skip_glob = "node_modules"
+line_length = '88'
+atomic = 'true'
+multi_line_output = '3'
+include_trailing_comma = 'true'
+known_django = "django"
+known_pytest = "pytest"
+known_first_party = "accounts,{{cookiecutter.repo_name}},settings"
+lines_between_types = '0'
+sections = "FUTURE,STDLIB,DJANGO,PYTEST,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"
+lines_after_imports = '2'
+force_alphabetical_sort_within_sections = '1'
+
+[tool.coverage.run]
+branch = true
+omit = [
+    "*test*",
+    "*migrations*",
+    "manage.py",
+    "{{cookiecutter.repo_name}}/urls.py",
+    "{{cookiecutter.repo_name}}/celery.py",
+    "{{cookiecutter.repo_name}}/celery_settings.py",
+    "{{cookiecutter.repo_name}}/storages.py",
+    "{{cookiecutter.repo_name}}/wsgi.py",
+    "settings/*",
+]
+
+[tool.coverage.html]
+directory = "cover"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+DJANGO_SETTINGS_MODULE = "settings.local_test"
+markers = ["django_db", "parametrize", "unit"]
+norecursedirs = [
+    "migrations",
+    ".data",
+    "{% if cookiecutter.frontend_style == 'spa' %}app{% else %}webapp{% endif %}",
+    "node_modules",
+]
+python_files = ["test_*.py", "tests/*.py", "tests.py"]
