@@ -270,6 +270,13 @@ fmt-js: eslint-fix prettier-format-all
 .PHONY:
 fmt: fmt-py fmt-js
 
+# Aliases to format commands
+.PHONY:
+fix: fmt
+
+.PHONY:
+format: fmt
+
 
 .PHONY:
 eslint:
