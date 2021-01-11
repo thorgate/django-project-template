@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "allowUnreachableCode": false,
+    "noFallthroughCasesInSwitch": true,
+    "allowSyntheticDefaultImports": true,
+    "downlevelIteration": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "jsx": "react",
+    "lib": ["es2017", "dom", "esnext"],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": false,
+    "sourceMap": true,
+    "strictNullChecks": true,
+    "strict": true,
+    "pretty": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "skipLibCheck": true,
+    "target": "es6",
+    "baseUrl": "./transforms"
+  },
+  "exclude": [
+    "node_modules",
+    "__tests__",
+    "__testfixtures__"
+  ],
+  "types": ["typings", "node", "webpack-env"]
+}

@@ -8,3 +8,5 @@ yarn-error.log
 .pytest_cache
 venv/
 .venv/
+.nvmrc
+codemods/frontend/node_modules/
