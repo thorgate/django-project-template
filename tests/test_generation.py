@@ -30,8 +30,8 @@ def validate_project_works(result, config):
         gitlab_ci = yaml.load(f, Loader=yaml.FullLoader)
 
     # Grab commands and environment from gitlab-ci
-    commands = gitlab_ci['test']['script']
-    gitlab_ci_env = gitlab_ci['test'].get('variables', {})
+    commands = gitlab_ci['coverage-js']['script'] + gitlab_ci['coverage-py']['script'] 
+    gitlab_ci_env = gitlab_ci['coverage-py'].get('variables', {})
 
     if not commands:
         raise ValueError(
