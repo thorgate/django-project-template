@@ -12,9 +12,23 @@ def snake_to_pascal_case(value):
     return stringcase.pascalcase(value)
 
 
+def as_git_path(value):
+    if not value or not value.strip():
+        return value
+
+    res = value.strip()
+    res = res.replace('http://', '')
+    res = res.replace('https://', '')
+
+    domain, rest = res.split('/', maxsplit=1)
+
+    return f"git@{domain}:{rest}.git"
+
+
 class TGFiltersModule(Extension):
     def __init__(self, environment):
         super().__init__(environment)
 
         environment.filters['as_hostname'] = as_hostname
         environment.filters['snake_to_pascal_case'] = snake_to_pascal_case
+        environment.filters['as_git_path'] = as_git_path

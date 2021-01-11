@@ -1,0 +1,17 @@
+---
+
+- name: "Bootstrap"
+  gather_facts: no
+  hosts: all
+  tags:
+    - always
+  tasks:
+    - apt:
+      name: aptitude
+
+
+- name: "Deploy {% raw %}{{ project }}{% endraw %}"
+  hosts: all
+
+  roles:
+    - { role: deploy }

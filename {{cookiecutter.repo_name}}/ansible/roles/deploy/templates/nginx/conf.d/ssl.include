@@ -1,0 +1,8 @@
+{%- raw -%}
+# Force this site to only be served over HTTPS
+add_header Strict-Transport-Security "max-age=63072000; includeSubDomains";
+
+# SSL Certs are obtained via letsencrypt
+ssl_certificate             /etc/letsencrypt/live/{% endraw %}{% if cookiecutter.frontend_style == 'spa' %}{% raw %}{{ node_site_host }}{% endraw %}{% else %}{% raw %}{{ django_site_host }}{% endraw %}{% endif %}{% raw %}/fullchain.pem;
+ssl_certificate_key         /etc/letsencrypt/live/{% endraw %}{% if cookiecutter.frontend_style == 'spa' %}{% raw %}{{ node_site_host }}{% endraw %}{% else %}{% raw %}{{ django_site_host }}{% endraw %}{% endif %}{% raw %}/privkey.pem;
+{%- endraw %}

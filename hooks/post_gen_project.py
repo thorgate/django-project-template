@@ -32,6 +32,9 @@ def handle_react():
             '{{cookiecutter.repo_name}}/{{cookiecutter.repo_name}}/rest/',
             '{{cookiecutter.repo_name}}/static/502.html',
             '{{cookiecutter.repo_name}}/static/robots.txt',
+            'ansible/roles/deploy/templates/razzle.env',
+            'ansible/roles/deploy/templates/nginx/conf.d/common.node.include',
+            'ansible/roles/deploy/templates/nginx/conf.d/app.proxy_node.include',
             'deploy/nginx/app.{{cookiecutter.repo_name}}.proxy_node.include',
             'deploy/nginx/common.{{cookiecutter.repo_name}}.node.include',
         ]
@@ -49,7 +52,7 @@ def handle_react():
         ]
 
     if '{{ cookiecutter.thorgate }}' == 'no':
-        cleanup_paths += ['deploy/terraform', 'tg-repository.yml']
+        cleanup_paths += ['utils/terraform', 'tg-repository.yml']
 
     # If using specific vcs, add some extra cleanup paths
     repo_type = '{{ cookiecutter.vcs }}'.lower()

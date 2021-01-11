@@ -1,8 +1,8 @@
-# Development Dockerfile for Django app
+# Development Dockerfile for Django app. Keep the first commands in sync with Dockerfile-poetry
 
 FROM {{ cookiecutter.python_version|python_image }}
 
-COPY ./wait-for-it.sh /usr/bin/
+ENV POETRY_VIRTUALENVS_CREATE 0
 
 # Install bash, libpq, libjpeg-turbo and gettext
 # Bash is required to support `wait-for-it.sh` script, should not add too much to docker image
@@ -14,40 +14,21 @@ RUN apk add --no-cache --virtual .build-deps \
     libffi-dev libxml2-dev libxslt-dev jpeg-dev zlib-dev bash gettext
 
 # Copy Python requirements dir and Install requirements
-RUN pip install -U 'pipenv>=2020.6.2' pip setuptools wheel
+RUN pip install -U pip setuptools wheel poetry
+
+# -- begin image-specific commands
+
+COPY ./wait-for-it.sh /usr/bin/
+
+COPY pyproject.toml /
+COPY poetry.lock /
+
+
+# Install all dependencies from poetry.lock (dev included by default)
+RUN poetry install
 
 # Set the default directory where CMD will execute
 WORKDIR /app
-
-COPY Pipfile /app
-COPY Pipfile.lock /app
-
-# Install all dependencies from Pipfile.lock file
-RUN pipenv install --system --ignore-pipfile --dev
-
-# Check for security warnings, will be enabled later when failing dependencies have been updated
-# RUN pipenv check --system
-
-# Find all file objects containing name `test` or compiled python files and remove them
-# Find all runtime dependencies that are marked as needed by scanelf
-# scanelf is utility to show ELF data for binary objects
-# For more info: https://wiki.gentoo.org/wiki/Hardened/PaX_Utilities#The_scanelf_application
-# Finally re-install missing run-dependencies
-RUN find /usr/local \
-        \( -type d -a -name test -o -name tests \) \
-        -o \( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
-        -exec rm -rf '{}' + \
-  && runDeps="$( \
-        scanelf --needed --nobanner --recursive /usr/local \
-                | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
-                | sort -u \
-                | xargs -r apk info --installed \
-                | sort -u \
-    )" \
-  && apk add --virtual .rundeps $runDeps
-
-# Remove build dependencies
-RUN apk del .build-deps
 
 # Run Django's runserver by default
 CMD python manage.py runserver 0.0.0.0:80

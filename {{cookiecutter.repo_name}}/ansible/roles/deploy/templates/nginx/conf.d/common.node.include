@@ -1,0 +1,30 @@
+{%- raw -%}
+include conf.d/app.{{ project }}.include;
+include conf.d/ssl-common.include;
+include conf.d/ssl.{{ project }}.include;
+
+# 502 error page (portrayed as 503)
+error_page 502 =503 /502.html;
+error_page 503 /502.html;
+location = /502.html {
+    # Retry after 5 mins
+    add_header Retry-After 180 always;
+}
+
+location ^~ /static/ {
+    expires max;
+    include conf.d/app.{{ project }}.map_files.include;
+}
+
+location = /favicon.ico {
+    expires 24h;
+}
+
+location = /robots.txt {
+    expires 24h;
+}
+
+location / {
+    include conf.d/app.{{ project }}.proxy_node.include;
+}
+{%- endraw %}

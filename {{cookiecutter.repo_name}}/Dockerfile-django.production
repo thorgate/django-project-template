@@ -19,17 +19,19 @@ RUN apk add --no-cache --virtual .build-deps \
     ca-certificates alpine-sdk postgresql-dev python3-dev linux-headers musl-dev \
     libffi-dev libxml2-dev libxslt-dev jpeg-dev zlib-dev
 
-# Copy Python requirements dir and Install requirements
-RUN pip install -U 'pipenv>=2020.6.2' pip setuptools wheel
+ENV POETRY_HOME "$HOME/.poetry"
+ENV POETRY_NO_INTERACTION 1
+ENV POETRY_VIRTUALENVS_CREATE 0
+ENV PATH="$POETRY_HOME/bin:$PATH"
 
-# Set the default directory where CMD will execute
-WORKDIR /app
+RUN wget https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py && \
+    python3 get-poetry.py
 
-COPY Pipfile /app
-COPY Pipfile.lock /app
+COPY pyproject.toml /
+COPY poetry.lock /
 
-# Install all dependencies from Pipfile.lock file
-RUN pipenv install --system --ignore-pipfile
+# Install all non-dev dependencies from poetry.lock
+RUN poetry install --no-dev
 
 # Find all file objects containing name `test` or compiled python files and remove them
 # Find all runtime dependencies that are marked as needed by scanelf
