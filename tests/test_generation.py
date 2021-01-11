@@ -40,7 +40,7 @@ def validate_project_works(result, config):
     env = os.environ.copy()
     env.update({
         **gitlab_ci.get('variables', {}),
-
+        "EDIT_SETTINGS": "no make settings",
         # PWD call in Makefile reports wrong path during testing
         'PROJECT_ROOT': project_dir,
         'SITE_ROOT': project_inner_dir,
