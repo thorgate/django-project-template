@@ -125,11 +125,3 @@ export const SETTINGS = new Proxy(
         },
     },
 );
-
-/**
- * Settings proxy
- * @deprecated
- *
- * Use `import { SETTINGS } 'settings';` instead.
- */
-export default SETTINGS;

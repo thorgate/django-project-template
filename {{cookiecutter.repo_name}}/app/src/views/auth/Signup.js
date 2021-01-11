@@ -2,10 +2,10 @@ import { ConnectedRedirect } from '@thorgate/spa-pending-data';
 import React from 'react';
 import PropTypes from 'prop-types';
 import qs from 'qs';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import { resolvePath as urlResolve } from 'tg-named-routes';
+import { resolvePath } from 'tg-named-routes';
 
 import AuthLayout from 'components/layouts/AuthLayout';
 import SignupForm from 'forms/auth/Signup';
@@ -20,8 +20,8 @@ const Signup = ({ location, isAuthenticated, onSignup }) => {
     const { permissionDenied } = location.state || {};
 
     if (isAuthenticated && !permissionDenied) {
-        let nextUrl = urlResolve('landing');
-        if (query.next && query.next !== urlResolve('auth:login')) {
+        let nextUrl = resolvePath('landing');
+        if (query.next && query.next !== resolvePath('auth:login')) {
             nextUrl = query.next;
         }
 

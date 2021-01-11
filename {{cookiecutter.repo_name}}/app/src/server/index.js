@@ -19,7 +19,7 @@ import koaUserAgent from 'koa-useragent';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
 import { StaticRouter } from 'react-router';
-import { Helmet } from 'react-helmet';
+import { HelmetProvider } from 'react-helmet-async';
 import { Provider } from 'react-redux';
 import serializeJS from 'serialize-javascript';
 import { RenderChildren, stringifyLocation } from 'tg-named-routes';
@@ -128,13 +128,16 @@ router.get(
             entrypoints: ['client'],
         });
 
+        const helmetContext = {};
         ctx.state.markup = renderToString(
             <ChunkExtractorManager extractor={extractor}>
                 <I18nextProvider i18n={i18n}>
                     <Provider store={store}>
-                        <StaticRouter context={context} location={ctx.url}>
-                            <RenderChildren routes={routes} />
-                        </StaticRouter>
+                        <HelmetProvider context={helmetContext}>
+                            <StaticRouter context={context} location={ctx.url}>
+                                <RenderChildren routes={routes} />
+                            </StaticRouter>
+                        </HelmetProvider>
                     </Provider>
                 </I18nextProvider>
             </ChunkExtractorManager>,
@@ -145,7 +148,7 @@ router.get(
         }
 
         // Parse Helmet context
-        ctx.state.helmet = Helmet.renderStatic();
+        ctx.state.helmet = helmetContext.helmet;
 
         // Provide script tags forward
         ctx.state.statusCode = context.statusCode;

@@ -74,7 +74,7 @@
     "razzle-plugin-scss": "3.3.7",
     "react": "16.14.0",
     "react-dom": "16.14.0",
-    "react-helmet": "6.1.0",
+    "react-helmet-async": "1.0.7",
     "react-i18next": "10.11.4",
     "react-redux": "7.2.2",
     "react-router": "5.1.2",

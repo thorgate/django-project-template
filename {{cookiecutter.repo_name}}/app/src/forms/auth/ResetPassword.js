@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import { withFormik, Form } from 'formik';
 import * as Yup from 'yup';
 import is from 'is_js';
-import { resolvePath as urlResolve } from 'tg-named-routes';
+import { resolvePath } from 'tg-named-routes';
 
 import FormField from 'forms/fields/FormField';
 import { tNoop } from 'utils/text';
@@ -31,7 +31,7 @@ const ResetPassword = ({ status, isSubmitting }) => {
                 </Row>
                 <Row>
                     <Col sm={4} className="my-4">
-                        <Link to={urlResolve('auth:login')} className="pt-2">
+                        <Link to={resolvePath('auth:login')} className="pt-2">
                             {t('Back to login')}
                         </Link>
                     </Col>

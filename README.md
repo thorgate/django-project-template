@@ -85,6 +85,16 @@ Then run `python ~/path/to/django-project-template/upgrade-template.py`
 
 This will make a commit to the branch `template` in your project with the updates to the project template. Then merge the `template` branch.
 
+## Applying codemods
+
+First activate Python 3 interpreter with required dependencies and ensure `docker` is installed and working.
+
+Change the current working directory to the root of the project you want to apply codemods for. i.e. `cd project-to-upgrade`.
+
+Then run `python ~/path/to/django-project-template/upgrade-template.py --apply-frontend-codemods`
+
+This will build custom docker image to apply deprecated changes to frontends.
+
 ## Docker images
 
 The template uses our own images for CI runs. One for the template itself and a second one

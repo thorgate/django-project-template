@@ -2,6 +2,7 @@ import '@tg-resources/fetch-runtime';
 import { loadableReady } from '@loadable/component';
 import React from 'react';
 import { hydrate } from 'react-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'connected-react-router';
 import Cookies from 'js-cookie';
@@ -27,9 +28,11 @@ const App = ({ appRoutes }) => {
     useSSR(window.__initial_i18n_store__, initialLanguage);
     return (
         <Provider store={store}>
-            <ConnectedRouter history={history}>
-                <RenderChildren routes={appRoutes} />
-            </ConnectedRouter>
+            <HelmetProvider>
+                <ConnectedRouter history={history}>
+                    <RenderChildren routes={appRoutes} />
+                </ConnectedRouter>
+            </HelmetProvider>
         </Provider>
     );
 };
