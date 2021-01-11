@@ -1,5 +1,6 @@
 from settings.staging import *
 
+
 ENVIRONMENT = "LIVE"
 
 # fmt: off
