@@ -92,7 +92,6 @@ build:
       - $CI_COMMIT_MESSAGE =~ /test skip/
       - $CI_COMMIT_MESSAGE =~ /\[no tests?\]/
   script:
-    - EDIT_SETTINGS=no make settings
     # Ensure production images build also
     - docker-compose -f docker-compose.production.yml build
 {% endif %}
