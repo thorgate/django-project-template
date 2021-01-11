@@ -16,7 +16,7 @@ Contents:
 
 ## TL;DR
 
-Deploy the code with (change the limit arg to `live` if you want to deploy to live servers):
+The command to deploy the project (change the `limit` arg to `live` if you want to deploy to live servers):
 
 ```bash
 ansible-playbook --limit test deploy.yml

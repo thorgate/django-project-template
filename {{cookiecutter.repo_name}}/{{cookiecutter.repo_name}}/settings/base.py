@@ -30,7 +30,7 @@ READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=True)
 if READ_DOT_ENV_FILE:
     # Read the .env file from docker image root directory
     # NOTE: OS environment variables take precedence over variables from .env
-    env.read_env('/.env')
+    env.read_env("/.env")
 
 # Set to true during docker image building (e.g. when running collectstatic)
 IS_DOCKER_BUILD = env.bool("DJANGO_DOCKER_BUILD", default=False)
