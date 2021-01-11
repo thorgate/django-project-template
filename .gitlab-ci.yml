@@ -72,7 +72,15 @@ test_frontend_codemods:
   image: node:12
   except:
     - schedules
+  before_script: []
+  cache:
+    key:
+      files:
+        - codemods/frontend/package.json
+    paths:
+      - codemods/frontend/node_modules
   script:
+    - cd codemods/frontend
     - yarn install
     - yarn test
 
