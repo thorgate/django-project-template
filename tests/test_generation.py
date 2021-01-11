@@ -29,7 +29,7 @@ def validate_project_works(result, config):
     with open(os.path.join(project_dir, '.gitlab-ci.yml')) as f:
         gitlab_ci = yaml.load(f, Loader=yaml.FullLoader)
 
-    # Grab commands and environment from gitlab-ci
+    # Run quality and test checks using global env from .gitlab_ci.yml
     commands = [
         "make settings",
         "docker-compose build",
@@ -37,18 +37,9 @@ def validate_project_works(result, config):
         "make quality",
         "make coverage",
     ]
-    gitlab_ci_env = gitlab_ci['coverage-py'].get('variables', {})
-
-    if not commands:
-        raise ValueError(
-            "No test commands extracted from project gitlab-ci. "
-            "You probably need to update this part of the test to reflect changes "
-            "made to the .gitlab-ci.yml structure."
-        )
-
     env = os.environ.copy()
     env.update({
-        **gitlab_ci_env,
+        **gitlab_ci.get('variables', {}),
 
         # PWD call in Makefile reports wrong path during testing
         'PROJECT_ROOT': project_dir,
