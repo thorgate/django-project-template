@@ -10,6 +10,8 @@ variables:
   DOCKER_DRIVER: overlay2
   DOCKER_BUILDKIT: "1"
   COMPOSE_DOCKER_CLI_BUILD: "1"
+  EDIT_SETTINGS: "no"
+
 
 before_script:
   - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
@@ -29,8 +31,6 @@ lint-py:
       - $CI_COMMIT_MESSAGE =~ /tests skip/
       - $CI_COMMIT_MESSAGE =~ /test skip/
       - $CI_COMMIT_MESSAGE =~ /\[no tests?\]/
-  variables:
-    EDIT_SETTINGS: "no"
   script:
     - make settings
     - docker-compose build django
@@ -45,9 +45,6 @@ lint-js:
       - $CI_COMMIT_MESSAGE =~ /tests skip/
       - $CI_COMMIT_MESSAGE =~ /test skip/
       - $CI_COMMIT_MESSAGE =~ /\[no tests?\]/
-
-  variables:
-    EDIT_SETTINGS: "no"
   script:
     - make settings
     - make node-install
@@ -63,8 +60,6 @@ coverage-py:
       - $CI_COMMIT_MESSAGE =~ /tests skip/
       - $CI_COMMIT_MESSAGE =~ /test skip/
       - $CI_COMMIT_MESSAGE =~ /\[no tests?\]/
-  variables:
-    EDIT_SETTINGS: "no"
   script:
     - make settings
     - docker-compose build
@@ -80,14 +75,11 @@ coverage-js:
       - $CI_COMMIT_MESSAGE =~ /tests skip/
       - $CI_COMMIT_MESSAGE =~ /test skip/
       - $CI_COMMIT_MESSAGE =~ /\[no tests?\]/
-  variables:
-    EDIT_SETTINGS: "no"
   script:
     - make settings
     - docker-compose build
     - make node-install
     - make coverage-js
-
 
   {%- if cookiecutter.frontend_style == 'spa' %}
 
