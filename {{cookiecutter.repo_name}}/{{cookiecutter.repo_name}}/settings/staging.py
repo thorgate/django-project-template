@@ -6,6 +6,8 @@ from corsheaders.defaults import default_headers
 
 DEBUG = False
 
+ENVIRONMENT = "TEST"
+
 # fmt: off
 ALLOWED_HOSTS = env.list(
     "DJANGO_ALLOWED_HOSTS",

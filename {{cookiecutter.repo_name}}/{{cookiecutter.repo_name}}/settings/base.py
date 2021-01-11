@@ -42,6 +42,9 @@ PROJECT_TITLE = "{{ cookiecutter.project_title }}"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DJANGO_DEBUG", default=True)
 
+# Applies different cosmetic CSS rule to the banner in DJ admin, either LIVE TEST or DEV
+ENVIRONMENT = "DEV"
+
 ADMINS = (("Admins", "{{ cookiecutter.admin_email }}"),)
 MANAGERS = ADMINS
 EMAIL_SUBJECT_PREFIX = "[{{cookiecutter.project_title}}] "  # subject prefix for managers & admins
@@ -108,6 +111,7 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
+                "{{cookiecutter.repo_name}}.context_processors.env",
                 {%- if cookiecutter.frontend_style == 'webapp' %}
                 "django_settings_export.settings_export",{% endif %}
             ],

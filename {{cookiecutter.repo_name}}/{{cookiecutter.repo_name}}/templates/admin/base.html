@@ -1,0 +1,10 @@
+{% raw %}{% extends 'admin/base.html' %}
+
+{% load static %}
+
+{% block bodyclass %}{{ block.super }}env-{{ ENVIRONMENT }}{% endblock %}
+
+{% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static "css/admin/admin-env.css" %}" />
+{% endblock %}
+{% endraw %}

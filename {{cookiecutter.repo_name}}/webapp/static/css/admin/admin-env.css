@@ -1,0 +1,20 @@
+.env-dev #header {
+    --c1: #417690;
+    --c2: #7d92aa;
+}
+.env-test #header {
+    --c1: #606dbc;
+    --c2: #465298;
+}
+.env-test #header,
+.env-dev #header{
+    background: repeating-linear-gradient(-45deg, var(--c1), var(--c1) 15px, var(--c2) 15px, var(--c2) 30px);
+}
+.env-dev #user-tools,
+.env-test #user-tools,
+.env-dev #site-name,
+.env-test #site-name{
+    background: var(--c1);
+    border-radius: 5px;
+    padding: 2px 5px;
+}
