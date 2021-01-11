@@ -30,7 +30,13 @@ def validate_project_works(result, config):
         gitlab_ci = yaml.load(f, Loader=yaml.FullLoader)
 
     # Grab commands and environment from gitlab-ci
-    commands = gitlab_ci['coverage-js']['script'] + gitlab_ci['coverage-py']['script'] 
+    commands = [
+        "make settings",
+        "docker-compose build",
+        "make node-install",
+        "make quality",
+        "make coverage",
+    ]
     gitlab_ci_env = gitlab_ci['coverage-py'].get('variables', {})
 
     if not commands:
