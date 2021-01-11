@@ -17,6 +17,10 @@ def as_git_path(value):
         return value
 
     res = value.strip()
+
+    if not res.startswith(('http://', 'https://')):
+        return res
+
     res = res.replace('http://', '')
     res = res.replace('https://', '')
 
