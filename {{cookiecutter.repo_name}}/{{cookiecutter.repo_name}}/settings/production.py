@@ -6,21 +6,21 @@ from settings.staging import *
 ALLOWED_HOSTS = env.list(
     "DJANGO_ALLOWED_HOSTS",
 {%- if cookiecutter.frontend_style == 'webapp' %}
-    default=["{{ cookiecutter.live_hostname }}"]
+    default=["{{ cookiecutter.domain_name }}"]
 {% else %}
-    default=["{{ cookiecutter.spa_django_host_prefix|as_hostname }}.{{ cookiecutter.live_hostname }}", "{{ cookiecutter.live_hostname }}"]
+    default=["{{ cookiecutter.spa_django_host_prefix|as_hostname }}.{{ cookiecutter.domain_name }}", "{{ cookiecutter.domain_name }}"]
 {% endif %}
 )
 # fmt: on
 
 # Static site url, used when we need absolute url but lack request object, e.g. in email sending.
 {%- if cookiecutter.frontend_style == 'webapp' %}
-SITE_URL = env.str("DJANGO_SITE_URL", default="https://{{ cookiecutter.live_hostname }}")
+SITE_URL = env.str("DJANGO_SITE_URL", default="https://{{ cookiecutter.domain_name }}")
 {% else %}
-SITE_URL = env.str("RAZZLE_SITE_URL", default="https://{{ cookiecutter.live_hostname }}")
-DJANGO_SITE_URL = env.str("RAZZLE_BACKEND_SITE_URL", default="https://{{ cookiecutter.spa_django_host_prefix|as_hostname }}.{{ cookiecutter.live_hostname }}")
+SITE_URL = env.str("RAZZLE_SITE_URL", default="https://{{ cookiecutter.domain_name }}")
+DJANGO_SITE_URL = env.str("RAZZLE_BACKEND_SITE_URL", default="https://{{ cookiecutter.spa_django_host_prefix|as_hostname }}.{{ cookiecutter.domain_name }}")
 
-CSRF_COOKIE_DOMAIN = env.str("DJANGO_CSRF_COOKIE_DOMAIN", default=".{{ cookiecutter.live_hostname }}"){% endif %}
+CSRF_COOKIE_DOMAIN = env.str("DJANGO_CSRF_COOKIE_DOMAIN", default=".{{ cookiecutter.domain_name }}"){% endif %}
 
 EMAIL_HOST = env.str("DJANGO_EMAIL_HOST", default="smtp.sparkpostmail.com")
 EMAIL_PORT = env.int("DJANGO_EMAIL_PORT", default=587)
@@ -51,4 +51,9 @@ AWS_SECRET_ACCESS_KEY = env.str("DJANGO_AWS_SECRET_ACCESS_KEY")
 {%- endif %}{% if cookiecutter.django_media_engine == "GCS" -%}
 GS_BUCKET_NAME = env.str("DJANGO_GS_BUCKET_NAME", default="{{ cookiecutter.repo_name }}-production")
 GS_PROJECT_ID = env.str("DJANGO_GS_PROJECT_ID")
-GS_CREDENTIALS = env.str("DJANGO_GS_CREDENTIALS"){% endif %}
+
+from google.oauth2 import service_account  # NOQA
+
+GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
+    json.load(env.str("DJANGO_GS_CREDENTIALS") or "{}"),
+){% endif %}

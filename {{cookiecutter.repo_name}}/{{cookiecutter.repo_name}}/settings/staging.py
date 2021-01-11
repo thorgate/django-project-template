@@ -101,4 +101,9 @@ AWS_SECRET_ACCESS_KEY = env.str("DJANGO_AWS_SECRET_ACCESS_KEY")
 {%- endif %}{% if cookiecutter.django_media_engine == "GCS" -%}
 GS_BUCKET_NAME = env.str("DJANGO_GS_BUCKET_NAME", default="{{ cookiecutter.repo_name }}-staging")
 GS_PROJECT_ID = env.str("DJANGO_GS_PROJECT_ID")
-GS_CREDENTIALS = env.str("DJANGO_GS_CREDENTIALS"){% endif %}
+
+from google.oauth2 import service_account  # NOQA
+
+GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
+    json.load(env.str("DJANGO_GS_CREDENTIALS") or "{}"),
+){% endif %}

@@ -1,0 +1,99 @@
+{%- raw -%}
+- name: "Figure out the local postgres data directory"
+  shell: "docker-compose config | yq -r '.services.postgres.volumes[]' | grep '/var/lib/postgresql/data' | cut -d: -f1"
+  delegate_to: localhost
+  vars:
+    ansible_become: no
+  register: "db_directory"
+
+
+- name: "Figure out the local postgres mirror directory"
+  shell: "docker-compose config | yq -r '.services.postgres.volumes[]' | grep 'db-mirror' | cut -d: -f1"
+  delegate_to: localhost
+  vars:
+    ansible_become: no
+  register: "mirror_directory"
+
+
+- set_fact:
+    local_db_path: "{{ db_directory.stdout }}"
+    local_mirror_path: "{{ mirror_directory.stdout }}"
+
+
+- name: "Ensure local site is turned off"
+  shell: "docker-compose down"
+  delegate_to: localhost
+  vars:
+    ansible_become: no
+
+
+- name: "Delete files in the local postgres data directory"
+  file:
+    path: "{{ local_db_path }}"
+    state: absent
+  delegate_to: localhost
+  vars:
+    ansible_become: no
+
+
+- name: "Generate an unique filename for dump"
+  set_fact:
+    dump_filename: "/tmp/mirror-{{ project | mandatory }}-{{ ansible_date_time.epoch }}.pg_dump"
+
+
+- name: "Create a fresh DB dump on the server"
+  shell: >
+    docker exec -i postgres-{{ postgres_version | mandatory }} pg_dump -U {{ project }} \
+      --format=custom --compress=0 {{ project }} > {{ dump_filename }}
+  no_log: true
+
+
+- name: "Download the dump file"
+  fetch:
+    src: "{{ dump_filename }}"
+    dest: "{{ local_mirror_path }}/mirror-db-dump.pg_dump"
+    flat: yes
+
+
+- name: "Turn postgres on again"
+  shell: "docker-compose up -d --build postgres"
+  delegate_to: localhost
+  vars:
+    ansible_become: no
+
+
+- name: "Give postgres some time to start up"
+  pause:
+    seconds: 10
+
+
+- name: "Delete the remote dump file"
+  file:
+    path: "{{ dump_filename }}"
+    state: absent
+
+
+- name: "Load the dump file locally"
+  shell: >
+    docker-compose exec -T postgres pg_restore --user {{ project }} -d {{ project }} \
+      /db-mirror/mirror-db-dump.pg_dump
+  delegate_to: localhost
+  vars:
+    ansible_become: no
+
+
+- name: "Delete the local dump file"
+  file:
+    path: "{{ local_mirror_path }}/mirror-db-dump.pg_dump"
+    state: absent
+  delegate_to: localhost
+  vars:
+    ansible_become: no
+
+
+- name: "Turn everything off again"
+  shell: "docker-compose down"
+  delegate_to: localhost
+  vars:
+    ansible_become: no
+{%- endraw %}

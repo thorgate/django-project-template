@@ -1,0 +1,7 @@
+# Deny access to .map files
+location ~* \.map$ {
+    # TODO: add your Sentry server's IP(s) here
+    # allow 127.0.0.1;
+
+    deny all;
+}

@@ -1,4 +1,5 @@
 .idea/
+.python-version
 yarn-error.log
 *.mo
 *.pyo

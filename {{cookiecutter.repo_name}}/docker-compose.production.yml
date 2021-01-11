@@ -91,8 +91,8 @@ services:
     networks:
       - default
 
-# NB: These networks must be created by fabfile and contain the global nginx/postgres containers.
-# Keep it in sync with fabfile!
+# NB: These networks must be created by ansible and contain the global nginx/postgres containers.
+# Keep it in sync with ansible/roles/deploy/tasks/main.yml!
 networks:
   default:
     external:

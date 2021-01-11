@@ -5,7 +5,6 @@ ignore-paths:
     - node_modules
     - {% if cookiecutter.frontend_style == 'webapp' %}webapp{% else %}app{% endif %}
     - settings
-    - fabfile.py
 
 ignore-patterns:
     - migrations/

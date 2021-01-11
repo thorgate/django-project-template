@@ -1,0 +1,5 @@
+[test]
+{{ cookiecutter.test_host }}
+
+[live]
+{{ cookiecutter.live_host }}

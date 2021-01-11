@@ -35,7 +35,7 @@ _(note that the primary repo is in [Gitlab](https://gitlab.com/thorgate-public/d
       [ESLint](http://eslint.org/) and [stylelint](https://stylelint.io/)
     - Automated code-formatting using [black](https://black.readthedocs.io) and [prettier](https://prettier.io)
     - [py.test](http://pytest.org/) and [coverage](https://coverage.readthedocs.io/) integration
-    - Deploy helpers, using [Fabric](http://www.fabfile.org/)
+    - Deploy helpers, using [Ansible](https://www.ansible.com/)
     - Media files are stored in a CDN like S3 or Google Cloud Storage
     - Out-of-the-box configuration for nginx, gunicorn and logrotate
     - Includes [PyCharm](https://www.jetbrains.com/pycharm/) project config
@@ -44,17 +44,17 @@ _(note that the primary repo is in [Gitlab](https://gitlab.com/thorgate-public/d
 ## Usage
 
 To use this template, first ensure that you have
-[Pipenv](https://pipenv.readthedocs.io/en/latest/) `2020.6.2` available.
+[Poetry](https://python-poetry.org/docs/) available.
 
 After that, you should:
 
 1. Install the requirements of the project template by running
     ```
-    pipenv install
+    poetry install
     ```
-2. Activate the virtualenv created by pipenv:
+2. Activate the virtualenv created by _poetry_:
     ```
-    pipenv shell
+    poetry shell
     ```
 3. Navigate to the directory where you'd like to create your project:
     ```

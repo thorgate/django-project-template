@@ -11,7 +11,7 @@ def sentry_id_from_request(request):
     return None
 
 
-def page_not_found(request, template_name="404.html"):
+def page_not_found(request, exception, template_name="404.html"):
     context = {
         "request_path": request.path,
         "error": {

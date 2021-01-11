@@ -20,6 +20,7 @@ SITE_ROOT ?= $(PROJECT_ROOT)/$(PROJECT_NAME)
 
 CUR_DIR_NAME ?= $(shell basename `pwd`)
 DJANGO_IMAGE_NAME ?= $(CUR_DIR_NAME)_django
+POETRY_WRAPPER_IMAGE_NAME ?= $(PROJECT_NAME)_poetry_wrapper
 
 BLACK ?= \033[0;30m
 RED ?= \033[0;31m
@@ -46,52 +47,42 @@ help:
 	@echo -e ""
 	@echo -e "+------<<<<                                     Tasks                                    >>>>------+"
 	@echo -e ""
-	@echo -e "$(CYAN)make setup$(COFF)    - Sets up the project in your local machine"
-	@echo -e "                This includes copying PyCharm files, creating local settings file, and setting up Docker."
-	@echo -e ""
-	@echo -e "$(CYAN)make pycharm$(COFF)  - Copies default PyCharm settings (unless they already exist)"
-	@echo -e ""
-	@echo -e "$(CYAN)make test$(COFF)     - Runs automatic tests on your python code"
-	@echo -e ""
-	@echo -e "$(CYAN)make coverage$(COFF) - Runs code test coverage calculation"
-	@echo -e ""
-	@echo -e "$(CYAN)make quality$(COFF)  - Runs automatic code quality tests on your code"
-	@echo -e ""
-	@echo -e "$(CYAN)make isort-fix$(COFF) - Fix imports automatically with isort"
-	@echo -e ""
-	@echo -e "$(CYAN)make black-format-all$(COFF) - Format all Python code"
-	@echo -e ""
-	@echo -e "$(CYAN)make prettier-format-all$(COFF) - Format all JavaScript code"
+	@grep --no-filename -E '^[a-zA-Z_%-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 	@echo -e ""
 
 .PHONY:
-build-pipenv-helper:
-	@docker build $(PROJECT_ROOT) -f Dockerfile-pipenv --tag $(PROJECT_NAME)_pipenv_wrapper
+build-poetry-helper:
+	@docker build -q $(PROJECT_ROOT) -f Dockerfile-poetry --tag $(POETRY_WRAPPER_IMAGE_NAME) > /dev/null
 
 
 .PHONY:
-run-pipenv-helper: build-pipenv-helper
-	@docker run --rm --name $(PROJECT_NAME)_pipenv_wrapper -v $(PROJECT_ROOT):/src $(PROJECT_NAME)_pipenv_wrapper \
-	 sh -c "$(cmd) && chown `id -u`:`id -g` Pipfile.lock"
+run-poetry-helper: build-poetry-helper
+	@docker run --rm --name $(POETRY_WRAPPER_IMAGE_NAME) -v $(PROJECT_ROOT):/src $(POETRY_WRAPPER_IMAGE_NAME) \
+	 sh -c "$(cmd) && chown `id -u`:`id -g` poetry.lock"
 
 
 .PHONY:
-pipenv-lock:
-	@make run-pipenv-helper cmd="pipenv lock"
+poetry-lock: pyproject.toml
+	@make run-poetry-helper cmd="poetry lock"
+	@cd $(SITE_ROOT) && ln -sf ../poetry.lock .
 
 
-Pipfile.lock:
-	@make pipenv-lock
+poetry.lock:
+	@make poetry-lock
+
+
+pyproject.toml:
+	@cd $(SITE_ROOT) && ln -sf ../pyproject.toml .
 
 
 .PHONY:
-pipenv-check:
-	@make run-pipenv-helper cmd="pipenv check"
+poetry-check:
+	@make run-poetry-helper cmd="sh /poetry-check-lock.sh"
 
 
 .PHONY:
-pipenv-install:
-	@make run-pipenv-helper cmd="pipenv install $(cmd)"
+poetry-install:
+	@make run-poetry-helper cmd="poetry install $(cmd)"
 
 
 # NOTE:
@@ -122,43 +113,44 @@ prettier-format-cut-prefix:
 {%- if cookiecutter.frontend_style == 'spa' %}
 	@make run-prettier cmd="yarn prettier-format $(subst app/src, src, $(cmd))"
 {%- else %}
-	@make run-prettier cmd="yarn prettier-format $(subst webapp/webapp, webapp, $(cmd))"{% endif %}
+	@make run-prettier cmd="yarn prettier-format $(subst webapp/webapp, webapp, $(cmd))"
+{%- endif %}
 
 
 .PHONY:
-prettier-format-all:
+prettier-format-all: ## Format JavaScript code with Prettier
 	@make run-prettier cmd="yarn prettier-format-all $(cmd)"
 
 
 # NOTE:
 # Do not use `docker-compose run` to avoid spawning services by the django container
 .PHONY:
-run-black:
+run-python:
 	@set -e ;\
 	if [ "`docker images|grep $(DJANGO_IMAGE_NAME)`" = '' ]; then \
 	    docker-compose build django || exit $$?; \
 	fi; \
-	docker run --rm -v $(SITE_ROOT):/app $(DJANGO_IMAGE_NAME) $(cmd)
+	docker run -t --rm -v $(SITE_ROOT):/app $(DJANGO_IMAGE_NAME) $(cmd)
 
 
 .PHONY:
 black-check:
-	@make run-black cmd="black --check $(cmd)"
+	@make run-python cmd="black --check $(cmd)"
 
 
 .PHONY:
 black-check-all:
-	@make run-black cmd="black --check ."
+	@make run-python cmd="black --check ."
 
 
 .PHONY:
 black-format:
-	@make run-black cmd="black $(cmd)"
+	@make run-python cmd="black $(cmd)"
 
 
 .PHONY:
-black-format-all:
-	@make run-black cmd="black ."
+black-format-all: ## Format Python code with Black
+	@make run-python cmd="black ."
 
 
 .PHONY:
@@ -170,23 +162,25 @@ docker: settings
 
 
 .PHONY:
-setup: pycharm settings
+setup: pycharm settings ## Sets up the project in your local machine. This includes copying PyCharm files, creating local settings file, and setting up Docker
 	@echo -e "$(CYAN)Creating Docker images$(COFF)"
 	@docker-compose build
 	@echo -e "$(CYAN)Running django migrations$(COFF)"
 	@make migrate
+	@echo -e "$(CYAN)Installing node modules$(COFF)"
+	@make node-install
 
 	@echo -e "$(CYAN)===================================================================="
-	@echo "SETUP SUCCEEDED"
-	@echo "Run 'make docker' to start Django development server and Webpack.$(COFF)"
+	@echo -e "SETUP SUCCEEDED"
+	@echo -e "Run 'make docker' to start Django development server and Webpack.$(COFF)"
 
 .PHONY:
 setup-terraform:
 	@echo -e "$(CYAN)Setting up terraform$(COFF)"
-	@./deploy/terraform/setup.sh $(workspace)
+	@./utils/terraform/setup.sh $(workspace)
 
 .PHONY:
-pycharm: $(PROJECT_ROOT)/.idea
+pycharm: $(PROJECT_ROOT)/.idea ## Copies default PyCharm settings (unless they already exist)
 
 
 $(PROJECT_ROOT)/.idea:
@@ -195,11 +189,11 @@ $(PROJECT_ROOT)/.idea:
 
 
 .PHONY:
-settings: Pipfile.lock $(SITE_ROOT)/settings/local.py $(SITE_ROOT)/settings/local_test.py{% if cookiecutter.frontend_style == 'spa' %} $(SITE_ROOT)/django.env{% endif %}
+settings: poetry.lock $(SITE_ROOT)/settings/local.py $(SITE_ROOT)/settings/local_test.py{% if cookiecutter.frontend_style == 'spa' %} $(SITE_ROOT)/django.env{% endif %}
 
 
 $(SITE_ROOT)/settings/local.py:
-	echo "$(CYAN)Creating Django local.py settings file$(COFF)"
+	@echo -e "$(CYAN)Creating Django local.py settings file$(COFF)"
 	cp $(SITE_ROOT)/settings/local.py.example $(SITE_ROOT)/settings/local.py
 	if [ $(EDIT_SETTINGS) = "yes" ]; then\
 		$(EDITOR) $(SITE_ROOT)/settings/local.py;\
@@ -212,22 +206,23 @@ $(SITE_ROOT)/settings/local_test.py:
 {%- if cookiecutter.frontend_style == 'spa' %}
 
 $(SITE_ROOT)/django.env:
-	@echo "$(CYAN)Creating Django .env file$(COFF)"
-	@touch $(SITE_ROOT)/django.env{% endif %}
+	@echo -e "$(CYAN)Creating Django .env file$(COFF)"
+	@touch $(SITE_ROOT)/django.env
+{%- endif %}
 
 
 .PHONY:
 coverage-py:
-	@docker-compose run --rm django coverage run -m py.test
-	@docker-compose run --rm django coverage html
-	@docker-compose run --rm django coverage report
+	@echo -e "$(CYAN)Running Django automatic code coverage check$(COFF)"
+	@docker-compose run --rm django sh -c 'coverage run -m py.test && coverage html && coverage report'
 
 .PHONY:
 coverage-js:
+	@echo -e "$(CYAN)Running Node automatic code coverage check$(COFF)"
 	@docker-compose run --rm node yarn test -- --coverage
 
 .PHONY:
-coverage:
+coverage: ## Runs code test coverage calculation
 	@echo -e "$(CYAN)Running automatic code coverage check$(COFF)"
 	@make coverage-py coverage-js
 
@@ -254,17 +249,17 @@ test-django: clean
 
 
 .PHONY:
-test: test-node test-django
+test: test-node test-django ## Runs automatic tests on your code
 
 
 .PHONY:
 clean:
 	@echo -e "$(CYAN)Cleaning pyc files$(COFF)"
-	@cd $(SITE_ROOT) && find . -name "*.pyc" -exec rm -rf {} \;
+	@make run-python cmd='find . -name "*.pyc" -exec rm -rf {} \;'
 
 
 .PHONY:
-lint-py: black-check-all prospector isort
+lint-py: black-check-all isort prospector {% if cookiecutter.use_mypy == 'yes' %}mypy{% endif %}
 
 .PHONY:
 lint-js: prettier-check-all eslint
@@ -273,7 +268,23 @@ lint-js: prettier-check-all eslint
 lint: lint-py lint-js
 
 .PHONY:
-quality: lint pipenv-check
+quality: lint poetry-check
+
+.PHONY:
+fmt-py: black-format-all isort-fix
+
+.PHONY:
+fmt-js: eslint-fix prettier-format-all
+
+.PHONY:
+fmt: fmt-py fmt-js
+
+# Aliases to format commands
+.PHONY:
+fix: fmt
+
+.PHONY:
+format: fmt
 
 
 .PHONY:
@@ -283,9 +294,23 @@ eslint:
 
 
 .PHONY:
+eslint-fix:
+	@echo -e "$(CYAN)Running ESLint$(COFF)"
+	@docker-compose run --rm node yarn lint --fix
+
+
+.PHONY:
 prospector:
 	@echo -e "$(CYAN)Running Prospector$(COFF)"
-	@docker-compose run --rm django prospector
+	@make run-python cmd=prospector
+
+
+{% if cookiecutter.use_mypy == 'yes' %}
+.PHONY:
+mypy:
+	@echo -e "$(CYAN)Checking types$(COFF)"
+	@make run-python cmd="mypy --show-error-codes ."
+{% endif %}
 
 
 .PHONY:
@@ -297,13 +322,13 @@ stylelint:
 .PHONY:
 isort:
 	@echo -e "$(CYAN)Checking imports with isort$(COFF)"
-	docker-compose run --rm django isort --recursive --check-only -p . --diff
+	@make run-python cmd='isort --check-only -p . --diff'
 
 
 .PHONY:
-isort-fix:
+isort-fix: ## Fix imports automatically with isort
 	@echo -e "$(CYAN)Fixing imports with isort$(COFF)"
-	docker-compose run --rm django isort --recursive -p .
+	@make run-python cmd='isort -p . -y'
 
 
 .PHONY:
@@ -350,13 +375,15 @@ docker-logs:
 makemessages:
 	docker-compose run --rm django ./manage.py makemessages -a
 {%- if cookiecutter.frontend_style == 'webapp' %}
-	docker-compose run --rm django ./manage.py makemessages -a -d djangojs {% if cookiecutter.include_docs == 'yes' %}--ignore="docs/*"{% endif %}{% endif %}
+	docker-compose run --rm django ./manage.py makemessages -a -d djangojs {% if cookiecutter.include_docs == 'yes' %}--ignore="docs/*"{% endif %}
+{%- endif %}
+
 
 {%- if cookiecutter.frontend_style == 'spa' %}
-
 .PHONY:
 extract-i18n:
-	docker-compose run --rm node yarn extract-i18n{% endif %}
+	docker-compose run --rm node yarn extract-i18n
+{%- endif %}
 
 .PHONY:
 compilemessages:
