@@ -1,15 +1,19 @@
 # This file is managed by ansible. Manual changes to this file in the server
-#  will be overwritten during deployments. To make changes update the file 
+#  will be overwritten during deployments. To make changes update the file
 #  in the repository and then run the ansible stack. Values specified by variables
 #  can be changed in the appropriate server or group specific ansible variable files.
 
-{%- raw -%}
-DJANGO_SITE_URL=https://{{ django_site_host }}
-DJANGO_ALLOWED_HOSTS={{ django_site_host }}{% endraw %}{% if cookiecutter.frontend_style == 'spa' %},{% raw %}{{ node_site_host }}{% endraw %}{% endif %}
+{#- ************************************* -#}
+{#- **** NOTE for Django Project Template developers *** -#}
+{#- Please use {{ "{{ var }}" }} where an Ansible-interpolated {{ var }} should be. -#}
+{#- otherwise the "raw/endraw" tags would make it very difficult to process the logic. #}
+{#- ************************************* #}
+
+DJANGO_SITE_URL=https://{{ "{{ django_site_host }}" }}
+DJANGO_ALLOWED_HOSTS={{ "{{ django_site_host }}" }}{% if cookiecutter.frontend_style == 'spa' %},{{ "{{ node_site_host }}" }}{% endif %}
 
 {%- if cookiecutter.frontend_style == 'spa' %}
-{% raw %}
-DJANGO_CSRF_COOKIE_DOMAIN=.{{ node_site_host }}
+DJANGO_CSRF_COOKIE_DOMAIN=.{{ "{{ node_site_host }}" }}
 
 # Core Razzle settings
 PORT=80
@@ -17,42 +21,34 @@ HOST=0.0.0.0
 
 # Site URL settings
 RAZZLE_MAX_WORKERS=4
-RAZZLE_SITE_URL=https://{{ node_site_host }}
-RAZZLE_BACKEND_SITE_URL=https://{{ django_site_host }}
-RAZZLE_SENTRY_ENVIRONMENT={{ razzle_sentry_environment }}
-RAZZLE_SENTRY_DSN={{ razzle_sentry_dsn }}
+RAZZLE_SITE_URL=https://{{ "{{ node_site_host }}" }}
+RAZZLE_BACKEND_SITE_URL=https://{{ "{{ django_site_host }}" }}
+RAZZLE_SENTRY_ENVIRONMENT={{ "{{ razzle_sentry_environment }}" }}
+RAZZLE_SENTRY_DSN={{ "{{ razzle_sentry_dsn }}" }}
 
 RAZZLE_FILE_LOGGING=true
-{%- endraw %}
 {%- endif %}
-
-{%- raw %}
 
 DJANGO_DATABASE_HOST=postgres
 DJANGO_DATABASE_PORT=5432
-DJANGO_DATABASE_NAME={{ project }}
-DJANGO_DATABASE_USER={{ project }}
-DJANGO_DATABASE_PASSWORD={{ django_database_password }}
+DJANGO_DATABASE_NAME={{ "{{ project }}" }}
+DJANGO_DATABASE_USER={{ "{{ project }}" }}
+DJANGO_DATABASE_PASSWORD={{ "{{ django_database_password }}" }}
 
-DJANGO_SECRET_KEY={{ django_secret_key }}
+DJANGO_SECRET_KEY={{ "{{ django_secret_key }}" }}
 
-DJANGO_SENTRY_ENVIRONMENT={{ django_sentry_environment }}
-DJANGO_SENTRY_DSN={{ django_sentry_dsn }}
+DJANGO_SENTRY_ENVIRONMENT={{ "{{ django_sentry_environment }}" }}
+DJANGO_SENTRY_DSN={{ "{{ django_sentry_dsn }}" }}
 
-DJANGO_EMAIL_HOST_PASSWORD={{ django_email_host_password }}
-{%- endraw %}
+DJANGO_EMAIL_HOST_PASSWORD={{ "{{ django_email_host_password }}" }}
 
 {% if cookiecutter.django_media_engine == "GCS" -%}
-{%- raw %}
-DJANGO_GS_BUCKET_NAME={{ django_gs_bucket_name }}
-DJANGO_GS_PROJECT_ID={{ django_gs_project_id }}
-DJANGO_GS_CREDENTIALS={{ django_gs_credentials }}
-{%- endraw %}
+DJANGO_GS_BUCKET_NAME={{ "{{ django_gs_bucket_name }}" }}
+DJANGO_GS_PROJECT_ID={{ "{{ django_gs_project_id }}" }}
+DJANGO_GS_CREDENTIALS={{ "{{ django_gs_credentials }}" }}
 {%- endif %}
 {% if cookiecutter.django_media_engine == "S3" -%}
-{%- raw %}
-DJANGO_AWS_STORAGE_BUCKET_NAME={{ django_aws_storage_bucket_name }}
-DJANGO_AWS_ACCESS_KEY_ID={{ django_aws_access_key_id }}
-DJANGO_AWS_SECRET_ACCESS_KEY={{ django_aws_secret_access_key }}
-{%- endraw %}
+DJANGO_AWS_STORAGE_BUCKET_NAME={{ "{{ django_aws_storage_bucket_name }}" }}
+DJANGO_AWS_ACCESS_KEY_ID={{ "{{ django_aws_access_key_id }}" }}
+DJANGO_AWS_SECRET_ACCESS_KEY={{ "{{ django_aws_secret_access_key }}" }}
 {%- endif %}
