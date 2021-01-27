@@ -43,4 +43,5 @@ build:
   script:
     - EDIT_SETTINGS=no make settings
     # Ensure production images build also
-    - docker-compose -f docker-compose.production.yml build{% endif %}
+    - docker-compose -f docker-compose.production.yml build
+{% endif %}

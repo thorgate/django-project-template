@@ -49,12 +49,24 @@ def validate_project_works(result, config):
         'SITE_ROOT': project_inner_dir,
     })
 
-    for cmd in commands:
-        assert subprocess.check_call(
-            cmd.split(' '),
-            cwd=project_dir,
-            env=env,
-        ) == 0
+    try:
+        for cmd in commands:
+            subprocess.run(
+                cmd.split(' '),
+                cwd=project_dir,
+                env=env,
+                check=True,
+            )
+    finally:
+        # teardown
+        try:
+            subprocess.run(
+                ['docker-compose', 'down'],
+                cwd=project_dir,
+                env=env,
+            )
+        except:
+            print("Failed to call docker-compose down")
 
 
 def test_base_generate(cookies, default_project):
