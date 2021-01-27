@@ -40,13 +40,14 @@
   when: not db_created.stat.exists
 
 
-- name: "Copy .env file"
+- name: "Install/update .env file"
   template:
       src: environment
       dest: "{{ code_dir }}/.env"
-      mode: 0700
+      mode: 0600
       backup: yes
-
+  tags:
+    - env
 
 - name: "Create local settings file"
   template:
@@ -141,5 +142,7 @@
 
 - name: "Update nginx config"
   import_tasks: nginx.yml
+  tags:
+    - nginx
 
 {%- endraw %}

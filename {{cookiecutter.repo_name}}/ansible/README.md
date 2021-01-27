@@ -83,7 +83,7 @@ etc. You can find these paths in [docker-compose.production.yml](../docker-compo
 > NB: If the code has **not been deployed** to the server already follow the instructions in [The first deployment](#the-first-deployment).
 
 Before deploying code ensure that whatever you want deployed is committed and pushed to the server. After that
-you can deploy the project to the a server by running `deploy.yml` stack with Ansible. This will:
+you can deploy the project to the server by running `deploy.yml` stack with Ansible. This will:
 
 1. Clone & checkout the project into test server (with branch/commit specified in `deployment_version` variable)
 2. Add some configuration files (nginx, env, etc)
@@ -221,12 +221,17 @@ Ansible stack again.
 
 ### Configuring the environment
 
-The environment variables for all containers can be configured with ansible. Each container has their own
-env file template:
+All the environment variables necessary on the server are located in the 
+[environment](./roles/deploy/templates/environment) file, which is installed to `.env` 
+in the project root. Variables in this file can be
+(and some should be) populated from Ansible variables, including vault variables. 
 
-- Django: [environment](./roles/deploy/templates/environment)
+All docker containers and `docker-compose` itself use environment variables from the `.env` file. 
 
-If the environment variable should be server specific then set its value trough an Ansible variable.
+There is a special ansible target (tag) to update the `.env` file on the server: `env`, e.g.
+```shell
+ansible-playbook --limit HOST -t env deploy.yml
+```
 
 ## Download server state
 
