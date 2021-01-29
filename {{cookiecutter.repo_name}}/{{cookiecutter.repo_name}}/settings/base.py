@@ -26,12 +26,6 @@ SITE_ROOT = os.path.dirname(os.path.dirname(__file__))
 # Load env to get settings
 env = environ.Env()
 
-READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=True)
-if READ_DOT_ENV_FILE:
-    # Read the .env file from docker image root directory
-    # NOTE: OS environment variables take precedence over variables from .env
-    env.read_env("/.env")
-
 # Set to true during docker image building (e.g. when running collectstatic)
 IS_DOCKER_BUILD = env.bool("DJANGO_DOCKER_BUILD", default=False)
 
@@ -131,8 +125,10 @@ DATABASES = {
             port=env.int("DJANGO_DATABASE_PORT", default=5432),
             name=quote(env.str("DJANGO_DATABASE_NAME", default="{{cookiecutter.repo_name}}")),
             user=quote(env.str("DJANGO_DATABASE_USER", default="{{cookiecutter.repo_name}}")),
-            password=quote(env.str("DJANGO_DATABASE_PASSWORD", default="{{cookiecutter.repo_name}}")),
-            sslmode=env.str("DJANGO_DATABASE_SSLMODE", "disable"),
+            password=quote(
+                env.str("DJANGO_DATABASE_PASSWORD", default="{{cookiecutter.repo_name}}")
+            ),
+            sslmode=env.str("DJANGO_DATABASE_SSLMODE", default="disable"),
         ),
     )
 }
