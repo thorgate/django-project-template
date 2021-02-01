@@ -2,12 +2,12 @@ import { userActions } from '@thorgate/spa-permissions';
 import { put, select } from 'redux-saga/effects';
 import qs from 'qs';
 import { getLocation, replace } from 'connected-react-router';
-import { resolvePath as urlResolve } from 'tg-named-routes';
+import { resolvePath } from 'tg-named-routes';
 
 import { saveToken } from 'sagas/helpers/token';
 
 export default function* logoutWorker() {
-    let url = urlResolve('landing');
+    let url = resolvePath('landing');
 
     const location = yield select(getLocation);
 

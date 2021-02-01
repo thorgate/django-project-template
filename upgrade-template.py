@@ -9,6 +9,7 @@ This needs to be run in the root of the project you are upgrading.
 The template branch needs to be in your local repo, but must not be active/checked out. (git doesn't like this)
 """
 
+import argparse
 import json
 import subprocess
 import shutil
@@ -18,9 +19,23 @@ import tempfile
 from os import listdir
 from os.path import join, exists, isdir, abspath, basename
 
+import docker
 from cookiecutter.generate import generate_files
 from cookiecutter.main import prompt_for_config, generate_context
 from copy import deepcopy
+
+
+def get_codemods(context):
+    frontend_style = context['cookiecutter']['frontend_style']
+
+    codemods = []
+
+    if frontend_style == 'spa':
+        codemods.append('settings-default-export')
+        codemods.append('react-helmet-async-import')
+        codemods.append('tg-named-routes-resolve-path')
+
+    return codemods
 
 
 def load_context(path):
@@ -265,19 +280,84 @@ def update_template(path, template_path, tmp_dir):
 
     vcs.push(tmp_path, branch='template')
 
+    return dumped_context
+
+
+def apply_frontend_codemod(client, codemod, path):
+    container = client.containers.run(
+        "django-project-template-frontend-codemods",
+        f"yarn transform -t {codemod}.ts /src",
+        volumes={
+            path: {'bind': '/src', 'mode': 'rw'},
+        },
+        remove=True,
+        detach=True,
+    )
+
+    print(f"Applying codemod: {codemod}")
+    for line in container.logs(stream=True):
+        print(f"\t{line.strip()}")
+
+
+def apply_frontend_codemods(path, template_path):
+    client = docker.from_env()
+
+    client.images.build(
+        path=join(template_path, 'codemods', 'frontend'),
+        tag="django-project-template-frontend-codemods",
+        rm=True,
+    )
+
+    context_path = join(path, '.cookiecutterrc')
+    context = load_context(context_path)
+    frontend_style = context['cookiecutter']['frontend_style']
+
+    if frontend_style == 'webapp':
+        frontend_path = join(path, 'webapp', 'webapp', 'src')
+    else:
+        frontend_path = join(path, 'app', 'src')
+
+    codemods = get_codemods(context)
+
+    for codemod in codemods:
+        apply_frontend_codemod(client, codemod, abspath(frontend_path))
+
 
 if __name__ == '__main__':
     template_path = os.path.dirname(__file__)
 
-    # until this is resolved: https://github.com/audreyr/cookiecutter/pull/944
-    sys.path.insert(0, os.path.abspath(os.path.join(template_path, "extensions")))
+    parser = argparse.ArgumentParser(
+        description='Upgrade django-project-template.',
+    )
 
-    try:
-        with tempfile.TemporaryDirectory() as tmp:
-            update_template('.', template_path, tmp)
+    parser.add_argument('--template-path',
+                        dest='template_path',
+                        default=template_path,
+                        help=f'Path to django-project-template repository (default={template_path})')
+    parser.add_argument('--project-path',
+                        dest='project_path',
+                        default='.',
+                        help='Project to upgrade (default=.)')
+    parser.add_argument('--apply-frontend-codemods',
+                        dest='apply_frontend_codemods',
+                        action='store_true',
+                        help='Skip applying codemods')
 
-        print('Great! An upgrade commit was pushed to your template branch.')
-        print('Now all you need to do is merge the template branch into your main branch (be it master, a feature '
-              'branch, etc), fix any merge conflicts and commit.')
-    except AssertionError as e:
-        print('Did not upgrade: ' + ' '.join(e.args))
+    args = parser.parse_args()
+
+    # until this is resolved: https://github.com/cookiecutter/cookiecutter/pull/1240
+    sys.path.insert(0, os.path.abspath(os.path.join(args.template_path, "extensions")))
+
+    if not args.apply_frontend_codemods:
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                update_template(args.project_path, args.template_path, tmp)
+
+            print('Great! An upgrade commit was pushed to your template branch.')
+            print('Now all you need to do is merge the template branch into your main branch and apply codemods '
+                  '(be it master, a feature branch, etc), fix any merge conflicts and commit.')
+        except AssertionError as e:
+            print('Did not upgrade: ' + ' '.join(e.args))
+
+    if args.apply_frontend_codemods:
+        apply_frontend_codemods(args.project_path, args.template_path)

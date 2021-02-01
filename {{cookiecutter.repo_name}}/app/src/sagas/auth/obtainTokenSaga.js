@@ -2,7 +2,7 @@ import { createSaveAction, createFormSaveSaga } from '@thorgate/spa-forms';
 import { select, takeLatest, put } from 'redux-saga/effects';
 import { getLocation, push } from 'connected-react-router';
 import qs from 'qs';
-import { resolvePath as urlResolve } from 'tg-named-routes';
+import { resolvePath } from 'tg-named-routes';
 
 import { saveToken } from 'sagas/helpers/token';
 import api from 'services/api';
@@ -21,7 +21,7 @@ function* successHook(result) {
     let { next } = qs.parse(location.search || '', { ignoreQueryPrefix: true });
 
     if (!next) {
-        next = urlResolve('landing');
+        next = resolvePath('landing');
     }
 
     yield put(push(next));

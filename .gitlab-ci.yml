@@ -67,6 +67,23 @@ test_SPA:
   script:
     - pytest -E SPA --maxfail=1 -v
 
+test_frontend_codemods:
+  stage: test
+  image: node:12
+  except:
+    - schedules
+  before_script: []
+  cache:
+    key:
+      files:
+        - codemods/frontend/package.json
+    paths:
+      - codemods/frontend/node_modules
+  script:
+    - cd codemods/frontend
+    - yarn install
+    - yarn test
+
 test_merge_spa_to_master:
   stage: test
   only:

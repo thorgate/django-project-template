@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
 import { Nav, Navbar, NavbarBrand, NavItem, NavLink } from 'reactstrap';
-import { resolvePath as urlResolve } from 'tg-named-routes';
+import { resolvePath } from 'tg-named-routes';
 
 import { SETTINGS } from 'settings';
 import { UserShape } from 'utils/types';
@@ -16,12 +16,12 @@ const NavigationBar = ({ user, isLoggedIn }) => {
     let authNav = (
         <Nav className="ml-auto" navbar>
             <NavItem>
-                <NavLink tag={Link} to={urlResolve('auth:signup')}>
+                <NavLink tag={Link} to={resolvePath('auth:signup')}>
                     {t('Signup')}
                 </NavLink>
             </NavItem>
             <NavItem>
-                <NavLink tag={Link} to={urlResolve('auth:login')}>
+                <NavLink tag={Link} to={resolvePath('auth:login')}>
                     {t('Login')}
                 </NavLink>
             </NavItem>
@@ -35,7 +35,7 @@ const NavigationBar = ({ user, isLoggedIn }) => {
                     <NavLink href="#">{user.email}</NavLink>
                 </NavItem>
                 <NavItem>
-                    <NavLink tag={Link} to={urlResolve('auth:logout')}>
+                    <NavLink tag={Link} to={resolvePath('auth:logout')}>
                         {t('Logout')}
                     </NavLink>
                 </NavItem>
@@ -59,12 +59,12 @@ const NavigationBar = ({ user, isLoggedIn }) => {
 
     return (
         <Navbar color="faded" light expand="md">
-            <NavbarBrand tag={Link} to={urlResolve('landing')}>
+            <NavbarBrand tag={Link} to={resolvePath('landing')}>
                 HOME
             </NavbarBrand>
             <Nav navbar>
                 <NavItem>
-                    <NavLink tag={Link} to={urlResolve('restricted')}>
+                    <NavLink tag={Link} to={resolvePath('restricted')}>
                         {t('Restricted view')}
                     </NavLink>
                 </NavItem>

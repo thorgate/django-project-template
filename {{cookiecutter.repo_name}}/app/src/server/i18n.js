@@ -133,7 +133,7 @@ export const missingKeyHandler = (i18next, options) => {
     };
 };
 
-export const koaI18NextMiddleware = (i18next) =>
+export const koaI18NextMiddleware = (i18next) => {
     async function i18NextMiddleware(ctx, next) {
         const language =
             ctx.cookies.get(SETTINGS.LANGUAGE_COOKIE_NAME) ||
@@ -160,4 +160,7 @@ export const koaI18NextMiddleware = (i18next) =>
         ctx.state.exists = i18n.exists.bind(i18n);
 
         return next();
-    };
+    }
+
+    return i18NextMiddleware;
+};

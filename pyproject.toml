@@ -17,6 +17,7 @@ python = ">=3.6"
 
 cookiecutter = "==1.7.*"
 cookiecutter_repo_extensions = "==0.2.*"
+docker = "==4.*"
 fqdn = "==1.*"
 stringcase = "==1.2.*"
 

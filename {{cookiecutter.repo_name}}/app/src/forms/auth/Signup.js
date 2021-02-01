@@ -5,7 +5,7 @@ import { Row, Col, Alert, Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { withFormik, Form } from 'formik';
 import * as Yup from 'yup';
-import { resolvePath as urlResolve } from 'tg-named-routes';
+import { resolvePath } from 'tg-named-routes';
 
 import FormField from 'forms/fields/FormField';
 import { tNoop } from 'utils/text';
@@ -74,7 +74,7 @@ const Signup = ({ status, isSubmitting }) => {
             <Row>
                 <Col sm={4} className="mt-3 ml-auto mr-auto">
                     <Link
-                        to={urlResolve('auth:forgot-password')}
+                        to={resolvePath('auth:forgot-password')}
                         className="pt-2"
                     >
                         {t('Forgot password?')}

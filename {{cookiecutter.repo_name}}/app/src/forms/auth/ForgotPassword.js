@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import is from 'is_js';
 import { withFormik, Form } from 'formik';
 import * as Yup from 'yup';
-import { resolvePath as urlResolve } from 'tg-named-routes';
+import { resolvePath } from 'tg-named-routes';
 
 import FormField from 'forms/fields/FormField';
 import { tNoop } from 'utils/text';
@@ -76,7 +76,7 @@ const ForgotPassword = ({ values, status, isSubmitting }) => {
                     <Col md={5} className="mt-3">
                         <Button
                             tag={Link}
-                            to={urlResolve('auth:forgot-password')}
+                            to={resolvePath('auth:forgot-password')}
                             className="btn btn-lg btn-block btn-success"
                         >
                             {t('Resend link')}
@@ -85,7 +85,7 @@ const ForgotPassword = ({ values, status, isSubmitting }) => {
                 </Row>
                 <Row>
                     <Col sm={4} className="mt-3">
-                        <Link to={urlResolve('auth:login')} className="pt-2">
+                        <Link to={resolvePath('auth:login')} className="pt-2">
                             {t('Back to login')}
                         </Link>
                     </Col>
