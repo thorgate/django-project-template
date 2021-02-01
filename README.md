@@ -93,7 +93,7 @@ Change the current working directory to the root of the project you want to appl
 
 Then run `python ~/path/to/django-project-template/upgrade-template.py --apply-frontend-codemods`
 
-This will build custom docker image to apply deprecated changes to frontends.
+This will build custom docker image to update old frontend versions.
 
 ## Docker images
 
