@@ -135,12 +135,12 @@ run-python:
 
 .PHONY:
 black-check:
-	@make run-python cmd="black --check $(cmd)"
+	@make run-python cmd="black --check --diff $(cmd)"
 
 
 .PHONY:
 black-check-all:
-	@make run-python cmd="black --check ."
+	@make run-python cmd="black --check --diff ."
 
 
 .PHONY:

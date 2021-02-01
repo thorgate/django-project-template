@@ -126,7 +126,7 @@ DATABASES = {
             name=quote(env.str("DJANGO_DATABASE_NAME", default="{{cookiecutter.repo_name}}")),
             user=quote(env.str("DJANGO_DATABASE_USER", default="{{cookiecutter.repo_name}}")),
             password=quote(
-                env.str("DJANGO_DATABASE_PASSWORD", default="{{cookiecutter.repo_name}}")
+                env.str("DJANGO_DATABASE_PASSWORD", default="{{cookiecutter.repo_name}}"),
             ),
             sslmode=env.str("DJANGO_DATABASE_SSLMODE", default="disable"),
         ),
