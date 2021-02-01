@@ -188,13 +188,13 @@ $(PROJECT_ROOT)/.idea:
 	@mkdir -p $(PROJECT_ROOT)/.idea && cp -R $(PROJECT_ROOT)/.idea_template/* $(PROJECT_ROOT)/.idea/
 
 
-.env:
+$(PROJECT_ROOT)/.env:
 	@echo -e "$(CYAN)Copying .env file$(COFF)"
-	@cp .env.example .env
+	@cp $(PROJECT_ROOT)/.env.example $(PROJECT_ROOT)/.env
 
 
 .PHONY:
-settings: .env poetry.lock $(SITE_ROOT)/settings/local.py $(SITE_ROOT)/settings/local_test.py
+settings: $(PROJECT_ROOT)/.env poetry.lock $(SITE_ROOT)/settings/local.py $(SITE_ROOT)/settings/local_test.py
 
 
 $(SITE_ROOT)/settings/local.py:
