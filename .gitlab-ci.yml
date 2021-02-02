@@ -1,5 +1,5 @@
 # You can also use the fallback image from docker hub: thorgate/django-template-base-ci:latest
-image: registry.gitlab.com/thorgate-public/django-project-template/base-ci:latest
+image: docker:latest
 
 services:
   - docker:dind
@@ -11,6 +11,10 @@ variables:
 
 before_script:
   - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  - apk add python3 python3-dev build-base libffi-dev openssl-dev git bash postgresql-dev
+  - apk add yq --repository http://dl-3.alpinelinux.org/alpine/edge/community/
+  - python3 -m ensurepip
+  - pip3 install -U pip 'pipenv>=2020.6.2' setuptools wheel
   - pipenv install --system --ignore-pipfile --dev
   - git config --global user.email "foo@bar.baz"
   - git config --global user.name "Foo Bar"
@@ -51,21 +55,3 @@ test_DOC:
     - schedules
   script:
     - pytest -E DOC --maxfail=1 -v
-
-publish_ci_image:
-  stage: publish_ci_image
-  only:
-    - master
-    - spa
-    - schedules
-  script:
-    - ./utils/publish-ci-image.sh ci Dockerfile-ci
-
-publish_base_ci_image:
-  stage: publish_ci_image
-  only:
-    - master
-    - spa
-    - schedules
-  script:
-    - ./utils/publish-ci-image.sh base-ci Dockerfile-base-ci
