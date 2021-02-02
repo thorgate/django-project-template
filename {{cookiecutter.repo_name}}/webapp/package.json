@@ -70,6 +70,13 @@
       "!webapp/src/test-setup.js",
       "!**/node_modules/**"
     ],
+    "coverageReporters": [
+      "json",
+      "lcov",
+      "text",
+      "clover",
+      "cobertura"
+    ],
     "globals": {
       "NODE_ENV": "test",
       "DJ_CONST": {}

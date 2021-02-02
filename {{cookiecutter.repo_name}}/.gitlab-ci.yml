@@ -20,19 +20,44 @@ stages:
   - build
 {%- endif %}
 
-test:
+test-django:
   stage: test
   coverage: '/^TOTAL.*\s+(\d+\%)$/'
+  artifacts:
+    reports:
+      cobertura: {{cookiecutter.repo_name}}/coverage.xml
   except:
-    - template # Don't run CI on template branch, should not be required
-  variables:
-    EDIT_SETTINGS: "no"
+    refs:
+      - template  # Don't run CI on template branch, should not be required
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /tests skip/
+      - $CI_COMMIT_MESSAGE =~ /test skip/
+      - $CI_COMMIT_MESSAGE =~ /\[no tests?\]/
   script:
-    - make settings
+    - EDIT_SETTINGS=no make settings
     - docker-compose build
+    - make lint-py
+    - make coverage-py
+
+test-node:
+  stage: test
+  coverage: '/All\sfiles.*?\s+(\d+.\d+)/'
+  artifacts:
+    reports:
+      junit: {% if cookiecutter.frontend_style == 'spa' %}app{% else %}webapp{% endif %}/coverage/cobertura-coverage.xml
+  except:
+    refs:
+      - template  # Don't run CI on template branch, should not be required
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /tests skip/
+      - $CI_COMMIT_MESSAGE =~ /test skip/
+      - $CI_COMMIT_MESSAGE =~ /\[no tests?\]/
+  script:
+    - EDIT_SETTINGS=no make settings
+    - docker-compose build node
     - make node-install
-    - make quality
-    - make coverage
+    - make lint-js
+    - make coverage-js
 
 {%- if cookiecutter.frontend_style == 'spa' %}
 
