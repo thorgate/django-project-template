@@ -15,6 +15,9 @@ from datetime import timedelta
 from urllib.parse import quote
 
 import environ
+{%- if cookiecutter.include_celery == "yes" %}
+from celery.schedules import crontab
+{%- endif %}
 
 
 # Quick-start development settings - unsuitable for production
@@ -146,7 +149,12 @@ CELERYBEAT_SCHEDULE = {
     "default-task": {
         # TODO: Remove the default task after confirming that Celery works.
         "task": "{{cookiecutter.repo_name}}.tasks.default_task",
-        "schedule": 5,
+        "schedule": 5 * 60,
+    },
+    "cleanup-old-sessions": {
+        "task": "{{cookiecutter.repo_name}}.tasks.cleanup_old_sessions",
+        # TODO define the best time suitable for the cleanup.
+        "schedule": crontab(minute=45, hour=2),
     },
 }
 {%- endif %}
