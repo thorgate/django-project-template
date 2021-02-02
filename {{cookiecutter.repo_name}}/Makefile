@@ -135,12 +135,12 @@ run-python:
 
 .PHONY:
 black-check:
-	@make run-python cmd="black --check $(cmd)"
+	@make run-python cmd="black --check --diff $(cmd)"
 
 
 .PHONY:
 black-check-all:
-	@make run-python cmd="black --check ."
+	@make run-python cmd="black --check --diff ."
 
 
 .PHONY:
@@ -188,8 +188,13 @@ $(PROJECT_ROOT)/.idea:
 	@mkdir -p $(PROJECT_ROOT)/.idea && cp -R $(PROJECT_ROOT)/.idea_template/* $(PROJECT_ROOT)/.idea/
 
 
+$(PROJECT_ROOT)/.env:
+	@echo -e "$(CYAN)Copying .env file$(COFF)"
+	@cp $(PROJECT_ROOT)/.env.example $(PROJECT_ROOT)/.env
+
+
 .PHONY:
-settings: poetry.lock $(SITE_ROOT)/settings/local.py $(SITE_ROOT)/settings/local_test.py{% if cookiecutter.frontend_style == 'spa' %} $(SITE_ROOT)/django.env{% endif %}
+settings: $(PROJECT_ROOT)/.env poetry.lock $(SITE_ROOT)/settings/local.py $(SITE_ROOT)/settings/local_test.py
 
 
 $(SITE_ROOT)/settings/local.py:
@@ -203,12 +208,6 @@ $(SITE_ROOT)/settings/local_test.py:
 	@echo -e "$(CYAN)Creating Django settings local_test.py file$(COFF)"
 	@cp $(SITE_ROOT)/settings/local_test.py.example $(SITE_ROOT)/settings/local_test.py
 
-{%- if cookiecutter.frontend_style == 'spa' %}
-
-$(SITE_ROOT)/django.env:
-	@echo -e "$(CYAN)Creating Django .env file$(COFF)"
-	@touch $(SITE_ROOT)/django.env
-{%- endif %}
 
 .PHONY:
 coverage: ## Runs code test coverage calculation

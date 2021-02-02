@@ -35,6 +35,10 @@ COPY ./app/.stylelintrc ./
 # Copy code
 COPY ./app /app
 
+# Define the PORT environment var so that razzle can pick it up in the following `yarn build` command.
+# It may be overridden in the .env file when the container is run.
+ENV PORT 80
+
 # Build node app
 RUN yarn build
 

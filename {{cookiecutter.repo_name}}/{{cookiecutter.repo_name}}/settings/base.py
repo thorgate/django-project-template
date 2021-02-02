@@ -10,7 +10,8 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 
 import os
 {%- if cookiecutter.frontend_style == 'spa' %}
-from datetime import timedelta{% endif %}
+from datetime import timedelta
+{%- endif %}
 from urllib.parse import quote
 
 import environ
@@ -23,15 +24,7 @@ import environ
 SITE_ROOT = os.path.dirname(os.path.dirname(__file__))
 
 # Load env to get settings
-ROOT_DIR = environ.Path(SITE_ROOT)
 env = environ.Env()
-
-READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=True)
-if READ_DOT_ENV_FILE:
-    # OS environment variables take precedence over variables from .env
-    # By default use django.env file from project root directory
-    env.read_env(str(ROOT_DIR.path("django.env")))
-
 
 # Set to true during docker image building (e.g. when running collectstatic)
 IS_DOCKER_BUILD = env.bool("DJANGO_DOCKER_BUILD", default=False)
@@ -54,7 +47,8 @@ CSRF_COOKIE_DOMAIN = env.str("DJANGO_CSRF_COOKIE_DOMAIN", default=None)
 CSRF_COOKIE_HTTPONLY = False
 
 # Tg React Url configurations should be same as frontend forgot password URL
-TGR_PASSWORD_RECOVERY_URL = "/auth/reset-password/%s"{% endif %}
+TGR_PASSWORD_RECOVERY_URL = "/auth/reset-password/%s"
+{%- endif %}
 
 INSTALLED_APPS = [
     # Local apps
@@ -63,11 +57,13 @@ INSTALLED_APPS = [
     # Third-party apps
 {%- if cookiecutter.frontend_style == 'webapp' %}
     "django_js_reverse",
-    "webpack_loader",{% else %}
+    "webpack_loader",
+{%- else %}
     "rest_framework",
     "django_filters",
     "tg_react",
-    "corsheaders",{% endif %}
+    "corsheaders",
+{%- endif %}
     "crispy_forms",
     # Django apps
     "django.contrib.admin",
@@ -81,10 +77,12 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
 {%- if cookiecutter.frontend_style == 'spa' %}
-    "corsheaders.middleware.CorsMiddleware",{% endif %}
+    "corsheaders.middleware.CorsMiddleware",
+{%- endif %}
     "django.contrib.sessions.middleware.SessionMiddleware",
 {%- if cookiecutter.frontend_style == 'spa' %}
-    "django.middleware.locale.LocaleMiddleware",{% endif %}
+    "django.middleware.locale.LocaleMiddleware",
+{%- endif %}
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -109,7 +107,8 @@ TEMPLATES = [
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
                 {%- if cookiecutter.frontend_style == 'webapp' %}
-                "django_settings_export.settings_export",{% endif %}
+                "django_settings_export.settings_export",
+                {%- endif %}
             ],
         },
     },
@@ -126,8 +125,10 @@ DATABASES = {
             port=env.int("DJANGO_DATABASE_PORT", default=5432),
             name=quote(env.str("DJANGO_DATABASE_NAME", default="{{cookiecutter.repo_name}}")),
             user=quote(env.str("DJANGO_DATABASE_USER", default="{{cookiecutter.repo_name}}")),
-            password=quote(env.str("DJANGO_DATABASE_PASSWORD", default="{{cookiecutter.repo_name}}")),
-            sslmode=env.str("DJANGO_DATABASE_SSLMODE", "disable"),
+            password=quote(
+                env.str("DJANGO_DATABASE_PASSWORD", default="{{cookiecutter.repo_name}}"),
+            ),
+            sslmode=env.str("DJANGO_DATABASE_SSLMODE", default="disable"),
         ),
     )
 }
@@ -206,13 +207,15 @@ AWS_S3_ADDRESSING_STYLE = "path"
 AWS_S3_OBJECT_PARAMETERS = {
     "CacheControl": "max-age=1209600",  # 2 weeks in seconds
 }
-{%- endif %}{% if cookiecutter.django_media_engine == "GCS" -%}
+{%- endif %}
+{% if cookiecutter.django_media_engine == "GCS" -%}
 GS_BUCKET_NAME = "<unset>"
 GS_PROJECT_ID = "<unset>"
 GS_CREDENTIALS = "<unset>"
 GS_DEFAULT_ACL = "publicRead"
 GS_FILE_OVERWRITE = False
-GS_CACHE_CONTROL = "max-age=1209600"  # 2 weeks in seconds{% endif %}
+GS_CACHE_CONTROL = "max-age=1209600"  # 2 weeks in seconds
+{%- endif %}
 
 # Static files (CSS, JavaScript, images)
 STATIC_ROOT = "/files/assets"
@@ -224,7 +227,8 @@ STATICFILES_DIRS = (
     os.path.join(SITE_ROOT, "webapp", "build"),
 )
 {%- else %}
-STATICFILES_DIRS = (os.path.join(SITE_ROOT, "static"),){% endif %}
+STATICFILES_DIRS = (os.path.join(SITE_ROOT, "static"),)
+{%- endif %}
 STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
@@ -251,7 +255,8 @@ CSRF_TRUSTED_ORIGINS = env.list("DJANGO_CSRF_TRUSTED_ORIGINS", default=ALLOWED_H
 CORS_ORIGIN_WHITELIST = [
     "http://{host}".format(host=host)
     for host in env.list("DJANGO_CORS_ORIGIN_WHITELIST", default=ALLOWED_HOSTS)
-]{% endif %}
+]
+{%- endif %}
 
 # Don't allow site's content to be included in frames/iframes.
 X_FRAME_OPTIONS = "DENY"
@@ -329,7 +334,8 @@ REST_FRAMEWORK = {
     "UPLOADED_FILES_USE_URL": False,
     # Default request format in tests is json
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
-}{% endif %}
+}
+{%- endif %}
 
 # Default values for sentry
 # Example: https://TODO@sentry.thorgate.eu/TODO
@@ -370,7 +376,8 @@ SETTINGS_EXPORT = [
 # django-js-reverse
 JS_REVERSE_JS_VAR_NAME = "reverse"
 JS_REVERSE_JS_GLOBAL_OBJECT_NAME = "DJ_CONST"
-JS_REVERSE_EXCLUDE_NAMESPACES = ["admin", "djdt"]{% else %}
+JS_REVERSE_EXCLUDE_NAMESPACES = ["admin", "djdt"]
+{%- else %}
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),

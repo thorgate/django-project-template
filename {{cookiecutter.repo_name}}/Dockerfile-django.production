@@ -83,7 +83,7 @@ COPY ./webapp/.eslintignore .
 
 # Install node requirements
 COPY ./webapp/package.json .
-COPY ./webapp/yarn.lock ./
+COPY ./webapp/yarn.lock .
 
 # Install node dependencies
 RUN yarn install --frozen-lockfile

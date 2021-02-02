@@ -1,5 +1,7 @@
-# Ignore everything in .idea
-.idea
+.env
+.idea/
+# pyenv local python version
+.python-version
 
 *.mo
 *.pyo
@@ -12,7 +14,6 @@ venv/
 
 .data*/
 
-{{cookiecutter.repo_name}}/django.env
 {{cookiecutter.repo_name}}/settings/local.py
 {{cookiecutter.repo_name}}/settings/local_test.py
 {{cookiecutter.repo_name}}/db.sqlite3
@@ -30,12 +31,12 @@ webapp/webapp/webpack-stats.json
 {{cookiecutter.repo_name}}/cover/
 
 {%- if cookiecutter.frontend_style == 'spa' %}
-
 # Node Project files
 app/build/
 app/coverage/
 
 # Missing translations file
-**/locales/**/*.missing.json{% endif %}
+**/locales/**/*.missing.json
+{%- endif %}
 
 {% if cookiecutter.include_docs == 'yes' %}{{cookiecutter.repo_name}}/docs/_build{% endif %}

@@ -10,3 +10,4 @@ venv/
 .venv/
 .nvmrc
 codemods/frontend/node_modules/
+.python-version

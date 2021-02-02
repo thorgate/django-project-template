@@ -23,7 +23,6 @@ COPY ./wait-for-it.sh /usr/bin/
 COPY pyproject.toml /
 COPY poetry.lock /
 
-
 # Install all dependencies from poetry.lock (dev included by default)
 RUN poetry install
 
