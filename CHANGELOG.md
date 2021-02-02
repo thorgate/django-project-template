@@ -10,6 +10,11 @@ CHANGES
 Note: Try to add categories to changes and link to MRs/Issues
 -->
 
+## 2021-02-02
+
+- [DEPRECATION] [Default](https://gitlab.com/thorgate-public/django-project-template/tree/master) variant with option `frontend_style == spa` is continuation of this.
+There will be no more further updates to this branch. All future updates will be done in default variant.
+
 ## development
 
 - [ENH] Pipenv >= 2020.8.13 - !136 !137

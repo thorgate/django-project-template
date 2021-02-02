@@ -52,17 +52,6 @@ test_DOC:
   script:
     - pytest -E DOC --maxfail=1 -v
 
-test_merge_master_to_spa:
-  stage: test
-  allow_failure: true
-  only:
-    - spa
-  except:
-    - schedules
-  script:
-    - git merge origin/master || echo "Automatic merge failed $?"
-    - git status
-
 publish_ci_image:
   stage: publish_ci_image
   only:

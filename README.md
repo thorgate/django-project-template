@@ -1,5 +1,10 @@
 # Thorgate's Django template (SPA variant)
 
+## NOTICE: THIS BRANCH HAS BEEN DEPRECATED
+
+[Default](https://gitlab.com/thorgate-public/django-project-template/tree/master) variant with option `frontend_style == spa` is continuation of this. 
+There will be no more further updates to this branch. All future updates will be done in default variant.
+
 [![Build status](https://gitlab.com/thorgate-public/django-project-template/badges/spa/pipeline.svg)](https://gitlab.com/thorgate-public/django-project-template/commits/spa)
 
 [Django](https://www.djangoproject.com/) project template that we use at [Thorgate](https://thorgate.eu).
