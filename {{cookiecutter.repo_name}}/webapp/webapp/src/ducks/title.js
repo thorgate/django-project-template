@@ -20,7 +20,7 @@ export default function titleReducer(state = initialState, action) {
 }
 
 // Action creators
-const setTitle = (title) => ({ type: SET_TITLE, title });
+export const setTitle = (title) => ({ type: SET_TITLE, title });
 
 /*
     This specific example doesn't necessarily require redux-thunk
