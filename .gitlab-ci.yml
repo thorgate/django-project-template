@@ -86,6 +86,9 @@ test_frontend_codemods:
 
 publish_ci_image:
   stage: publish_ci_image
+  image: docker:latest
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   only:
     - master
     - spa
@@ -95,6 +98,9 @@ publish_ci_image:
 
 publish_base_ci_image:
   stage: publish_ci_image
+  image: docker:latest
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   only:
     - master
     - spa
