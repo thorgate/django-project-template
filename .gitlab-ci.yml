@@ -84,18 +84,11 @@ test_frontend_codemods:
     - yarn install
     - yarn test
 
-test_merge_spa_to_master:
-  stage: test
-  only:
-    - master
-  except:
-    - schedules
-  script:
-    - git merge origin/spa || echo "Automatic merge failed $?"
-    - git status
-
 publish_ci_image:
   stage: publish_ci_image
+  image: docker:latest
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   only:
     - master
     - spa
@@ -105,6 +98,9 @@ publish_ci_image:
 
 publish_base_ci_image:
   stage: publish_ci_image
+  image: docker:latest
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   only:
     - master
     - spa

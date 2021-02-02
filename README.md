@@ -26,6 +26,7 @@ _(note that the primary repo is in [Gitlab](https://gitlab.com/thorgate-public/d
     - [Sass](http://sass-lang.com/), [PostCSS](http://postcss.org/) and
       [Autoprefixer](https://github.com/postcss/autoprefixer) for more convenient styling
     - [Webpack](https://webpack.github.io/) is used to bundle and minify JavaScript and styles
+    - [SPA] [Razzle](https://razzlejs.org/) for preconfigured isomorphic application
     - [SPA] Accessible from port `8000` for local development
 
 - Batteries
@@ -68,6 +69,7 @@ After that, you should:
 
 
 It will ask you a few questions, e.g. project's name.
+To create isomorphic single-page application set `frontend_style == spa`. Then separate node application will be created supported by [Razzle](https://razzlejs.org/)
 
 After generation completes, **you should deactivate virtual environment for cookiecutter**,
 search for any TODOs in the code and make appropriate changes where needed.
@@ -75,11 +77,26 @@ search for any TODOs in the code and make appropriate changes where needed.
 See README.md in the generated project for instructions on how to set up your development environment.
 
 
+## Different frontend styles
+
+### SPA
+
+Isomorphic Javascript single-page application rendered with node and backed by Django Rest Framework. Enabled with `frontend_style == spa`.
+During development and production separate node container is used to run and serve assets if needed.
+Translations are done with [i18next](https://www.i18next.com/) and its companion library for React.
+
+### Webapp
+
+React powered application rendered with Django templates. This is the default option. Enabled with `frontend_style == webapp`.
+During development separate container is used to build assets. In production, node built with multi-stage image.
+Translations are done with Django JavaScriptCatalog.
+
+
 ## Upgrading project template
 
 First ensure you have a python3 interpreter with `cookiecutter` installed.
 
-To upgrade an existing project, change the current working directory to the root of the project you want to upgrade. i.e. `cd project-to-upgrade`. Ensure your are not in the `template` branch.
+To upgrade an existing project, change the current working directory to the root of the project you want to upgrade. i.e. `cd project-to-upgrade`. Ensure your have not checked out the `template` branch.
 
 Then run `python ~/path/to/django-project-template/upgrade-template.py`
 

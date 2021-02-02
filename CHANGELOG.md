@@ -10,6 +10,21 @@ CHANGES
 Note: Try to add categories to changes and link to MRs/Issues
 -->
 
+## 2021-02-02
+
+- [DEPRECATION] SPA branch has been deprecated. `frontend_style == spa` option should be used as replacement.
+
+
+## 2021-01-31
+
+- [ENH] Added options to `upgrade-template.py` to define project location with argument
+- [NEW] Added a frontend codemods to replace old imports/function calls in older project.
+- [DEPRECATION] **SPA:** `react-helmet` has been replaced with `react-helmet-async`. Codemod is added to replace the usage.
+- [DEPRECATION] **SPA:** Default export for `SETTINGS` has been removed. Codemod is added to replace the usage.
+- [DEPRECATION] **SPA:** `tg-named-routes` and `configuration/routes` import of `urlResolve` has been removed. Now `resolvePath` import from `tg-named-routes` is expected. 
+  Codemod is added to replace the usage. Check the codemod test fixtures for replaced variants.
+
+
 ## 2020-12-14
 
 - [ENH] Pipenv replaced by Poetry (!160)
