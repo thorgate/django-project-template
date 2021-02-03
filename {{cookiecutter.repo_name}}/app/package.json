@@ -119,6 +119,13 @@
     "modulePaths": [
       "<rootDir>/src/"
     ],
+    "coverageReporters": [
+      "json",
+      "lcov",
+      "text",
+      "clover",
+      "cobertura"
+    ],
     "moduleNameMapper": {
       "\\.module.(css|scss)$": "identity-obj-proxy"
     },

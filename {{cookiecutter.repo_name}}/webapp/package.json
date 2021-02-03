@@ -67,8 +67,18 @@
   "jest": {
     "collectCoverageFrom": [
       "webapp/src/**/*.{js,jsx}",
+      "!webapp/src/main.js",
       "!webapp/src/test-setup.js",
+      "!webapp/src/test-utils.js",
+      "!webapp/src/**/*.stories.js",
       "!**/node_modules/**"
+    ],
+    "coverageReporters": [
+      "json",
+      "lcov",
+      "text",
+      "clover",
+      "cobertura"
     ],
     "globals": {
       "NODE_ENV": "test",
@@ -88,6 +98,10 @@
       "<rootDir>/webapp/src",
       "<rootDir>/node_modules"
     ],
+    "moduleNameMapper": {
+      "styles-src": "<rootDir>/webapp/src/stylesStub.js",
+      "\\.(css|less|scss)$": "<rootDir>/webapp/src/stylesStub.js"
+    },
     "setupFilesAfterEnv": [
       "@testing-library/jest-dom",
       "<rootDir>/webapp/src/test-setup.js"

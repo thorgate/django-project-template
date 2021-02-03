@@ -8,6 +8,7 @@ ignore-paths:
 
 ignore-patterns:
     - migrations/
+    - htmlcov/
 
 pep8:
     enable:

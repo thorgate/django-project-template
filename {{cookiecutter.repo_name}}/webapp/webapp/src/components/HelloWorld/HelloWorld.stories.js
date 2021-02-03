@@ -1,8 +1,8 @@
 import React from 'react';
-import { HelloWorld } from './HelloWorld';
+import { HelloWorldBase } from './HelloWorld';
 
 export default { title: 'HelloWorld' };
 
 export const withExample = () => (
-    <HelloWorld title="Story Book Example" setTitle={() => {}} />
+    <HelloWorldBase title="Story Book Example" onSetTitle={() => {}} />
 );

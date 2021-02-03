@@ -2,15 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { createTitle } from 'ducks/title';
+import { setTitle } from 'ducks/title';
 import Counter from '../Counter';
 import styles from './HelloWorld.scss';
 
-export class HelloWorld extends React.Component {
+export class HelloWorldBase extends React.Component {
     componentDidMount() {
-        const { setTitle } = this.props;
+        const { onSetTitle } = this.props;
 
-        setTitle('Hello world from Redux!');
+        onSetTitle('Hello world from Redux!');
     }
 
     render() {
@@ -25,9 +25,9 @@ export class HelloWorld extends React.Component {
     }
 }
 
-HelloWorld.propTypes = {
+HelloWorldBase.propTypes = {
     title: PropTypes.string.isRequired,
-    setTitle: PropTypes.func.isRequired,
+    onSetTitle: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
@@ -35,7 +35,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    setTitle: (title) => dispatch(createTitle(title)),
+    onSetTitle: (title) => dispatch(setTitle(title)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(HelloWorld);
+export default connect(mapStateToProps, mapDispatchToProps)(HelloWorldBase);

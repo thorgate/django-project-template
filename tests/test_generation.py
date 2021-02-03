@@ -30,8 +30,9 @@ def validate_project_works(result, config):
         gitlab_ci = yaml.load(f, Loader=yaml.FullLoader)
 
     # Grab commands and environment from gitlab-ci
-    commands = gitlab_ci['test']['script']
-    gitlab_ci_env = gitlab_ci['test'].get('variables', {})
+    django_commands = gitlab_ci['test-django']['script']
+    node_commands = gitlab_ci['test-node']['script']
+    commands = django_commands + node_commands
 
     if not commands:
         raise ValueError(
@@ -42,7 +43,8 @@ def validate_project_works(result, config):
 
     env = os.environ.copy()
     env.update({
-        **gitlab_ci_env,
+        **gitlab_ci['test-django'].get('variables', {}),
+        **gitlab_ci['test-node'].get('variables', {}),
 
         # PWD call in Makefile reports wrong path during testing
         'PROJECT_ROOT': project_dir,
