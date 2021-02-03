@@ -28,6 +28,8 @@ webapp/webapp/webpack-stats.json
 {{cookiecutter.repo_name}}/.pytest_cache
 {{cookiecutter.repo_name}}/.coverage
 {{cookiecutter.repo_name}}/coverage
+{{cookiecutter.repo_name}}/coverage.xml
+{{cookiecutter.repo_name}}/htmlcov/
 {{cookiecutter.repo_name}}/cover/
 
 {%- if cookiecutter.frontend_style == 'spa' %}

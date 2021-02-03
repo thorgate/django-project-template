@@ -6,7 +6,7 @@ import { setTitle } from 'ducks/title';
 import Counter from '../Counter';
 import styles from './HelloWorld.scss';
 
-export class HelloWorld extends React.Component {
+export class HelloWorldBase extends React.Component {
     componentDidMount() {
         const { onSetTitle } = this.props;
 
@@ -25,7 +25,7 @@ export class HelloWorld extends React.Component {
     }
 }
 
-HelloWorld.propTypes = {
+HelloWorldBase.propTypes = {
     title: PropTypes.string.isRequired,
     onSetTitle: PropTypes.func.isRequired,
 };
@@ -38,4 +38,4 @@ const mapDispatchToProps = (dispatch) => ({
     onSetTitle: (title) => dispatch(setTitle(title)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(HelloWorld);
+export default connect(mapStateToProps, mapDispatchToProps)(HelloWorldBase);
