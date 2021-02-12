@@ -14,7 +14,7 @@ RUN apk add --no-cache --virtual .build-deps \
     libffi-dev libxml2-dev libxslt-dev jpeg-dev zlib-dev bash gettext
 
 # Copy Python requirements dir and Install requirements
-RUN pip install -U pip setuptools wheel poetry
+RUN pip install -U pip setuptools cryptography==3.3.2 wheel poetry
 
 # -- begin image-specific commands
 

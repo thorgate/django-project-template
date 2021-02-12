@@ -21,6 +21,7 @@ boto3 = "==1.*"
 {% if cookiecutter.include_celery == 'yes' -%}
 celery = {version = "==4.4.*", extras = ["redis"]}
 {% endif -%}
+cryptography = "==3.3.2"  # pin cryptography due to v3.4 requiring Rust to build (on Alpine)
 Django = "==2.2.*"
 django-crispy-forms = "==1.8.*"
 django-environ = "*"
