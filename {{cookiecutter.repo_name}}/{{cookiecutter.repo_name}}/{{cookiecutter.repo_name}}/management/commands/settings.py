@@ -12,15 +12,15 @@ except ImportError:
 
 
 class SettingsEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, set):
-            return list(obj)
+    def default(self, o):  # pylint: disable=method-hidden
+        if isinstance(o, set):
+            return list(o)
 
-        if environ and isinstance(obj, environ.Path):
-            return str(obj)
+        if environ and isinstance(o, environ.Path):
+            return str(o)
 
         # Let the base class default method raise the TypeError
-        return json.JSONEncoder.default(self, obj)
+        return json.JSONEncoder.default(self, o)
 
 
 class Command(BaseCommand):
@@ -30,7 +30,9 @@ class Command(BaseCommand):
         parser.add_argument("--keys", nargs="+", required=False)
 
     def handle(self, *args, **options):
-        settings_as_dict = settings._wrapped.__dict__
+        settings_as_dict = (
+            settings._wrapped.__dict__  # pylint: disable=protected-access
+        )
         if options["keys"]:
             settings_as_dict = {
                 k: v for k, v in settings_as_dict.items() if k in options["keys"]
