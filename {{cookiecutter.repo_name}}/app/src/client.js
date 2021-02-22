@@ -6,6 +6,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'connected-react-router';
 import Cookies from 'js-cookie';
+import i18next from 'i18next';
 import { useSSR } from 'react-i18next';
 import { RenderChildren } from 'tg-named-routes';
 
@@ -125,6 +126,18 @@ maybeInitReactApp();
 if (module.hot) {
     module.hot.accept('./configuration/routes', () => {
         renderApp(routes);
+    });
+
+    module.hot.accept('./configuration/i18n', () => {
+        if (i18next.isInitialized) {
+            // We have to wait a bit to make sure the backend returns the updated files.
+            //  300ms timeout seems to be ok
+            setTimeout(() => {
+                i18next.reloadResources().then(() => {
+                    i18next.changeLanguage(i18next.language);
+                });
+            }, 300);
+        }
     });
 
     module.hot.accept();
