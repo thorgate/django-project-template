@@ -7,7 +7,7 @@ import {
 } from '@thorgate/spa-view-manager';
 import i18next from 'i18next';
 import { I18nextProvider } from 'react-i18next';
-import I18NextFSBackend from 'i18next-node-fs-backend';
+import I18NextFSBackend from 'i18next-fs-backend';
 import Koa from 'koa';
 import koaBody from 'koa-bodyparser';
 import koaServe from 'koa-static';
@@ -33,11 +33,12 @@ import { SETTINGS, getRuntimeConfig } from 'settings';
 import proxyFactory from './appProxy';
 import errorHandler from './errorHandler';
 import {
-    loadTranslationsHandler,
-    missingKeyHandler,
+    getMissingKeyHandler,
+    getResourcesHandler,
     koaI18NextMiddleware,
 } from './i18n';
 import { statsFile, publicDir } from './paths';
+import './rebuildOnLanguagesChanged';
 
 i18next
     // Load translations through the filesystem on the server side
@@ -55,14 +56,12 @@ i18next
             escapeValue: false, // Not needed for React
         },
         react: {
-            // Currently Suspense is not server ready
-            useSuspense: false,
+            useSuspense: true,
         },
         backend: {
             loadPath: `${publicDir}/locales/{{lng}}/{{ns}}.json`,
             addPath: `${publicDir}/locales/{{lng}}/{{ns}}.missing.json`,
         },
-
         // Disable async loading
         initImmediate: false,
     });
@@ -70,10 +69,10 @@ i18next
 // Initialize `koa-router`
 const router = new Router();
 
-router.post('/locales/add/:lng/:ns', missingKeyHandler(i18next));
+router.post('/locales/add/:lng/:ns', getMissingKeyHandler(i18next));
 
 // Add multi-loading i18next backend support
-router.get('/locales/resources.json', loadTranslationsHandler(i18next));
+router.get('/locales/resources.json', getResourcesHandler(i18next));
 
 // Setup a route listening on `GET /*`
 // Logic has been splitted into two chained middleware functions
