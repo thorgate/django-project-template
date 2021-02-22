@@ -90,7 +90,7 @@ Note that the production configuration lacks PostgreSQL, since it runs on a sepa
 
 |Action                                |Makefile shortcut                      |Actual command                                                              |
 |:-------------------------------------|:--------------------------------------|:---------------------------------------------------------------------------|
-|Installing Python packages            |`make poetry-install cmd=<package>`    |Runs `poetry install $(cmd)` in its own container                           |
+|Installing Python packages            |`make poetry-add cmd=<package>`        |Runs `poetry add $(cmd)` in its own container                               |
 |(Re)Generate poetry.lock              |`make poetry-lock`                     |Runs `poetry lock -v` in its own container                                  |
 |Check Python package security warnings|`make poetry-check`                    |`docker-compose run --rm --workdir / django poetry check`                   |
 |make migrations                       |`make makemigrations cmd=<command>`    |`docker-compose run --rm django ./manage.py makemigrations $(cmd)`          |
@@ -130,7 +130,7 @@ we don't install conflicting packages and everything is resolved to matching ver
 
 To install a new Python package, there are two options.
 * Edit the `pyproject.toml` file and add the required package there, then run `make poetry-lock` to regenerate the lock file.
-* Or run `make poetry-install cmd=<package>` -- this will add the package to `pyproject.toml` and regenerate `poetry.lock` in one take.
+* Or run `make poetry-add cmd=<package>` -- this will add the package to `pyproject.toml` and regenerate `poetry.lock` in one take.
 
 #### Using poetry locally for pycharm
 

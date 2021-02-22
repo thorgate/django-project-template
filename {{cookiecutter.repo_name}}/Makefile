@@ -81,8 +81,8 @@ poetry-check:
 
 
 .PHONY:
-poetry-install:
-	@make run-poetry-helper cmd="poetry install $(cmd)"
+poetry-add:
+	@make run-poetry-helper cmd="poetry add $(cmd)"
 
 
 # NOTE:
