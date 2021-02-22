@@ -108,7 +108,7 @@ def validate_config():
         print("Valid thorgate keys are: %s" % ', '.join(valid_thorgate_key))
         sys.exit(1)
 
-    if not re.match(r'(3\.[6-8](\.\d+)?)', "{{ cookiecutter.python_version }}"):
+    if not re.match(r'(3\.[6-9](\.\d+)?)', "{{ cookiecutter.python_version }}"):
         print("Only allowed python version options are 3.6 or later.")
         sys.exit(1)
 
