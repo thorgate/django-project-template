@@ -9,7 +9,7 @@ RUN python3 -m ensurepip
 # As CI docker image is based on alpine and we generate lock file outside of docker then
 #  we need system libraries required for pip dependencies.
 RUN apk add postgresql-dev
-RUN pip3 install -U pip 'pipenv>=2020.6.2' setuptools wheel
+RUN pip3 install -U pip 'pipenv>=2020.6.2' setuptools wheel cryptography==3.3.2
 
 ENV POETRY_HOME "$HOME/.poetry"
 ENV POETRY_NO_INTERACTION 1
