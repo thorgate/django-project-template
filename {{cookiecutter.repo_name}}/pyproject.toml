@@ -45,7 +45,7 @@ django-settings-export = "==1.2.*"
 django-webpack-loader = "==0.6.*"
 {% else %}
 djangorestframework = "==3.9.*"
-djangorestframework_simplejwt = "==4.3.*"
+djangorestframework_simplejwt = "==4.6.*"
 django-cors-headers = "==3.0.*"
 django-filter = "==2.1.*"
 tg-react = "*"
