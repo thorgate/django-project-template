@@ -4,6 +4,10 @@
 FROM {{ cookiecutter.python_version|python_image }}
 
 ENV POETRY_VIRTUALENVS_CREATE 0
+ENV PYTHONPYCACHEPREFIX /.pycache
+
+# Let all *.pyc files stay within the container, for Python >= 3.8
+RUN mkdir -p $PYTHONPYCACHEPREFIX
 
 # Install bash, libpq, libjpeg-turbo and gettext
 # Bash is required to support `wait-for-it.sh` script, should not add too much to docker image
