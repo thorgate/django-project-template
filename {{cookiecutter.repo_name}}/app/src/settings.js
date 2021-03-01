@@ -29,6 +29,7 @@ export const loadSettings = () => {
 
         SITE_URL: process.env.RAZZLE_SITE_URL,
         BACKEND_SITE_URL: process.env.RAZZLE_BACKEND_SITE_URL || '',
+        RAW_BACKEND_SITE_URL: process.env.RAZZLE_BACKEND_SITE_URL || '',
         SENTRY_ENVIRONMENT: process.env.RAZZLE_SENTRY_ENVIRONMENT,
         SENTRY_DSN: process.env.RAZZLE_SENTRY_DSN,
 
@@ -98,12 +99,14 @@ export const getRuntimeConfig = () => {
     const {
         __VERSION__,
         SITE_URL,
+        RAW_BACKEND_SITE_URL,
         SENTRY_ENVIRONMENT,
         SENTRY_DSN,
     } = currentSettings;
     return {
         __VERSION__,
-        BACKEND_SITE_URL: process.env.RAZZLE_BACKEND_SITE_URL || '',
+        BACKEND_SITE_URL: RAW_BACKEND_SITE_URL,
+        RAW_BACKEND_SITE_URL,
         SITE_URL,
         SENTRY_ENVIRONMENT,
         SENTRY_DSN,

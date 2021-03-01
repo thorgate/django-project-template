@@ -3,7 +3,7 @@ import { SETTINGS } from 'settings';
 const resolveAsset = (
     url,
     basePath = null,
-    sitePath = SETTINGS.BACKEND_SITE_URL,
+    sitePath = SETTINGS.RAW_BACKEND_SITE_URL,
 ) => {
     let path = `${basePath || ''}${url}`;
 
