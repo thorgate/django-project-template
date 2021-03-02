@@ -2,6 +2,7 @@
 const path = require('path');
 
 const LoadablePlugin = require('@loadable/webpack-plugin');
+const makeLoaderFinder = require('razzle-dev-utils/makeLoaderFinder');
 
 module.exports = {
     plugins: [
@@ -43,6 +44,11 @@ module.exports = {
             target === 'node'
                 ? 'winston'
                 : path.join(paths.appSrc, 'client', 'winston');
+
+        // Disable failing on eslint errors
+        const eslintLoaderFinder = makeLoaderFinder('eslint-loader');
+        const eslintLoader = config.module.rules.find(eslintLoaderFinder);
+        eslintLoader.options.failOnError = false;
 
         return config;
     },
