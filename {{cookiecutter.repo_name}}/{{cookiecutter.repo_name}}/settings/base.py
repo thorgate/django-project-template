@@ -276,8 +276,13 @@ WSGI_APPLICATION = "{{cookiecutter.repo_name}}.wsgi.application"
 
 
 LOGIN_REDIRECT_URL = "/"
+{%- if cookiecutter.frontend_style == 'spa' %}
+LOGIN_URL = "admin:login"
+LOGOUT_REDIRECT_URL = "admin:login"
+{%- else %}
 LOGIN_URL = "login"
 LOGOUT_REDIRECT_URL = "login"
+{%- endif %}
 
 
 # Crispy-forms
