@@ -6,18 +6,9 @@ from storages.backends.s3boto3 import S3Boto3Storage
 
 class PrivateMediaStorage(S3Boto3Storage):
     """
-    In order to use this storage,
-    change the following settings in Terraform to true:
-    ```
-    resource "aws_s3_bucket_public_access_block" "access_storage" {
-        block_public_acls       = true
-        block_public_policy     = true
-        ignore_public_acls      = true
-        restrict_public_buckets = true
-    }
-    ```
-    in the file
-    {{cookiecutter.repo_name}}/utils/terraform/modules/s3_media/main.tf
+    In order to use this storage, in the file
+    {{cookiecutter.repo_name}}/utils/terraform/variables.tf
+    change the `s3_media_bucket_is_public` setting in Terraform to false
     """
 
     location = settings.MEDIAFILES_LOCATION
