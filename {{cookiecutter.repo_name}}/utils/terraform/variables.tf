@@ -2,7 +2,7 @@
 
 variable "project" {
   type    = string
-  default = "erimell"
+  default = "{{cookiecutter.repo_name|as_hostname}}"
 }
 
 variable "region" {
