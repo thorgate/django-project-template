@@ -16,6 +16,7 @@ provider "aws" {
 module "s3_media" {
   source = "./modules/s3_media"
   name   = "${var.project}-${terraform.workspace}"
+  is_public = var.s3_media_bucket_is_public
   tags = {
     terraform : "",
     project : var.project,

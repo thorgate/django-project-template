@@ -48,13 +48,17 @@ POLICY
 resource "aws_s3_bucket_public_access_block" "access_storage" {
   bucket = aws_s3_bucket.media_bucket.id
 
-  block_public_acls       = false
-  block_public_policy     = false
-  ignore_public_acls      = false
-  restrict_public_buckets = false
+  # Block public access to buckets and objects granted through new access control lists (ACLs)
+  block_public_acls       = !var.is_public
+  # Block public access to buckets and objects granted through any access control lists (ACLs)
+  ignore_public_acls      = !var.is_public
+  # Block public access to buckets and objects granted through new public bucket or access point policies
+  block_public_policy     = true
+  # Block public and cross-account access to buckets and objects through any public bucket or access point policies
+  restrict_public_buckets = true
 }
 
 
 resource "aws_iam_access_key" "bucket_user_key" {
-  user = "${aws_iam_user.bucket_user.name}"
+  user = aws_iam_user.bucket_user.name
 }
