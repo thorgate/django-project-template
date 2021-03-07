@@ -18,6 +18,9 @@ const getMiddlewareOptions = (ctx) => ({
     setHeader: (res, name, value) => {
         ctx.set(name, value);
     },
+    setContentType: (res, type) => {
+        ctx.set('Content-Type', type);
+    },
     send: (res, resources) => {
         ctx.body = resources;
     },
