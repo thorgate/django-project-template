@@ -15,6 +15,19 @@ Note: Try to add categories to changes and link to MRs/Issues
 - [ENH] Use razzle-plugin-modify-eslint-loader-config to stop eslint errors from failing SPA app builds
 
 
+## 2021-03-08
+
+- [ENH] Added an option to select docker base images (currently supported are alpine and debian).
+- [ENH] Added PYTHONPYCACHEPREFIX env var to store *.pyc files in the container instead of on the host
+- [BUG] Fixed AWS S3 access denied error on new projects.
+- [BUG] Fixed logout urls for a spa app.
+- [BUG] Fixed raw backend url for media files
+- [BUG] Replace `make poetry-install` with `make poetry-add` and use `poetry add` to add a Python package
+- [BUG] Bump djangorestframework_simplejwt version to 4.6 (failed on Python 3.8)
+- [ENH] (SPA) Add HMR for locale files
+- [ENH] Regularly clean up expired sessions (requires celery)
+- [ENH] Use a single .env file
+
 ## 2021-02-02
 
 - [DEPRECATION] SPA branch has been deprecated. `frontend_style == spa` option should be used as replacement.
