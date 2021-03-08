@@ -1,5 +1,8 @@
-# Based on Node {{ cookiecutter.node_version }} Alpine image
-FROM node:{{ cookiecutter.node_version }}-alpine
+FROM node:{{ cookiecutter.node_version }}-buster-slim
+
+# Install system requirements
+# Use non-interactive frontend for debconf
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 
 # Set the default directory where CMD will execute
 WORKDIR /app
@@ -17,14 +20,13 @@ VOLUME /files/assets
 COPY ./app/package.json ./
 COPY ./app/yarn.lock ./
 
-# Install node build dependencies
-RUN apk add --no-cache --virtual .build-deps alpine-sdk python bash
+# Install system requirements
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends git python && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install node dependencies
 RUN yarn install --frozen-lockfile
-
-# Remove node build dependencies
-RUN apk del .build-deps
 
 # Copy some utility files
 COPY ./app/.babelrc ./

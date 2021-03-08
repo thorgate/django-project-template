@@ -2,6 +2,7 @@
 import os
 import shutil
 import subprocess
+from typing import List, Tuple
 
 
 def handle_react():
@@ -9,13 +10,34 @@ def handle_react():
     print('cleanup paths in %s' % cwd)
 
     cleanup_paths = []
+    rename_paths: List[Tuple[str, str]] = []  # Tuples of old -> new path
     symlinks = []
 
+    dockerfiles = [
+        'Dockerfile-django',
+        'Dockerfile-django.production',
+        'Dockerfile-node',
+        'Dockerfile-node.production',
+        'Dockerfile-poetry',
+    ]
+
+    if '{{ cookiecutter.docker_base_image }}' == 'alpine':
+        cleanup_paths += [
+            f'{dockerfile}.debian'
+            for dockerfile in dockerfiles
+        ]
+    elif '{{ cookiecutter.docker_base_image }}' == 'debian':
+        rename_paths += [
+            (f'{dockerfile}.debian', dockerfile)
+            for dockerfile in dockerfiles
+        ]
+
     if '{{ cookiecutter.include_celery}}' == 'no':
-        cleanup_paths += ['{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}/celery.py',
-                          '{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}/celery_settings.py',
-                          '{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}/tasks.py',
-                          ]
+        cleanup_paths += [
+            '{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}/celery.py',
+            '{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}/celery_settings.py',
+            '{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}/tasks.py',
+        ]
 
     if '{{ cookiecutter.include_docs }}' == 'no':
         cleanup_paths += ['{{ cookiecutter.repo_name }}/docs']
@@ -70,6 +92,12 @@ def handle_react():
     if repo_type == 'hg':
         print('Repo is hg, removing git specific files')
         cleanup_paths += ['.gitignore']
+
+    for old_path, new_path in rename_paths:
+        old_full_path = os.path.join(cwd, old_path)
+        new_full_path = os.path.join(cwd, new_path)
+
+        os.rename(old_full_path, new_full_path)
 
     for path in cleanup_paths:
         full_path = os.path.join(cwd, path)

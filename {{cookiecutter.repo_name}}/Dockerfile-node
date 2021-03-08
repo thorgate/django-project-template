@@ -1,18 +1,14 @@
-FROM node:{{ cookiecutter.node_version }}-buster-slim
+# Based on Node {{ cookiecutter.node_version }} Alpine image
+FROM node:{{ cookiecutter.node_version }}-alpine
 
 # Install system requirements
-# Use non-interactive frontend for debconf
-RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
-
-# Install system requirements
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends git python && \
-    rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache alpine-sdk python bash
 
 # Set the default directory where CMD will execute
 WORKDIR /app
 
 {%- if cookiecutter.frontend_style == 'spa' %}
+
 # Expose our application ports
 EXPOSE 8000
 EXPOSE 8001
