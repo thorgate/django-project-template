@@ -72,6 +72,7 @@
     "qs": "6.5.2",
     "razzle": "3.3.7",
     "razzle-plugin-eslint": "3.3.7",
+    "razzle-plugin-modify-eslint-loader-config": "^1.0.0",
     "razzle-plugin-long-term-caching": "1.0.0-alpha.30",
     "razzle-plugin-scss": "3.3.7",
     "react": "16.14.0",

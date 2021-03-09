@@ -6,6 +6,7 @@ const LoadablePlugin = require('@loadable/webpack-plugin');
 module.exports = {
     plugins: [
         'eslint',
+        'modify-eslint-loader-config', // This plugin should always be after eslint plugin
         'scss',
         {
             name: 'long-term-caching',
