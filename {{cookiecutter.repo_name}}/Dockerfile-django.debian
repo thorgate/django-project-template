@@ -1,6 +1,6 @@
 # Development Dockerfile for Django app. Keep the first commands in sync with Dockerfile-poetry
 
-FROM {{ python_image(cookiecutter.python_version, 'alpine') }}
+FROM {{ python_image(cookiecutter.python_version, 'debian') }}
 
 ENV POETRY_VIRTUALENVS_CREATE 0
 ENV PYTHONPYCACHEPREFIX /.pycache
@@ -8,17 +8,16 @@ ENV PYTHONPYCACHEPREFIX /.pycache
 # Let all *.pyc files stay within the container, for Python >= 3.8
 RUN mkdir -p $PYTHONPYCACHEPREFIX
 
-# Install bash, libpq, libjpeg-turbo and gettext
-# Bash is required to support `wait-for-it.sh` script, should not add too much to docker image
-RUN apk add --no-cache bash gettext libpq libjpeg-turbo
+# Use non-interactive frontend for debconf
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 
-# Install build dependencies and mark them as virtual packages so they could be removed together
-RUN apk add --no-cache --virtual .build-deps \
-    ca-certificates alpine-sdk postgresql-dev python3-dev linux-headers musl-dev \
-    libffi-dev libxml2-dev libxslt-dev jpeg-dev zlib-dev bash gettext
+# Install system requirements
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends build-essential gettext libpq-dev zlib1g-dev libjpeg62-turbo-dev && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy Python requirements dir and Install requirements
-RUN pip install -U pip setuptools cryptography==3.3.2 wheel poetry
+RUN pip install -U pip setuptools wheel poetry
 
 # -- begin image-specific commands
 

@@ -1,0 +1,96 @@
+# Production Dockerfile for Django app
+
+FROM {{ python_image(cookiecutter.python_version, 'debian') }} as base
+
+# Use non-interactive frontend for debconf
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+
+ENV DJANGO_PRODUCTION_MODE 1
+ENV DJANGO_DEBUG 0
+ENV PYTHONPYCACHEPREFIX /.pycache
+
+# Let all *.pyc files stay within the container, for Python >= 3.8
+RUN mkdir -p $PYTHONPYCACHEPREFIX
+
+# Create a directory for the logs
+RUN mkdir -p /var/log/{{cookiecutter.repo_name}}
+
+COPY ./wait-for-it.sh /usr/bin/
+
+# Install system requirements
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends build-essential gettext libpq-dev zlib1g-dev libjpeg62-turbo-dev wget && \
+    rm -rf /var/lib/apt/lists/*
+
+ENV POETRY_HOME "$HOME/.poetry"
+ENV POETRY_NO_INTERACTION 1
+ENV POETRY_VIRTUALENVS_CREATE 0
+ENV PATH="$POETRY_HOME/bin:$PATH"
+
+RUN wget https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py && \
+    python3 get-poetry.py
+
+COPY pyproject.toml /
+COPY poetry.lock /
+
+# Install all non-dev dependencies from poetry.lock
+RUN poetry install --no-dev
+
+# Copy code
+COPY ./{{cookiecutter.repo_name}} /app
+
+# Set the default directory where CMD will execute
+WORKDIR /app
+
+# Compile translations to .mo files
+RUN DJANGO_DOCKER_BUILD=True python manage.py compilemessages
+
+{%- if cookiecutter.frontend_style == 'webapp' %}
+
+# Based on Node {{ cookiecutter.node_version }} Debian
+FROM node:{{ cookiecutter.node_version }}-buster-slim as node_builder
+
+# Set the default directory where CMD will execute
+WORKDIR /app
+
+# Install system requirements
+# Use non-interactive frontend for debconf
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+
+# Install system requirements
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends git python && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy some utility files
+COPY ./webapp/.babelrc .
+COPY ./webapp/.eslintrc.js .
+COPY ./webapp/.eslintignore .
+
+# Install node requirements
+COPY ./webapp/package.json .
+COPY ./webapp/yarn.lock .
+
+# Install node dependencies
+RUN yarn install --frozen-lockfile
+
+# Copy app assets
+COPY ./webapp/webapp /app/webapp
+COPY ./webapp/static /app/static
+
+# Build node stuff
+RUN yarn build
+
+# Resume Django build
+FROM base
+
+# Copy static files
+COPY ./webapp/static /app/static
+
+# Copy all from node image
+COPY --from=node_builder /app/webapp/build /app/webapp/build
+COPY --from=node_builder /app/webapp/webpack-stats.json /app/webapp/webpack-stats.json
+{%- endif %}
+
+# Run Gunicorn by default
+CMD gunicorn {{ cookiecutter.repo_name }}.wsgi:application --workers 2 --bind :80

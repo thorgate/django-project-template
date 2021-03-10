@@ -1,0 +1,29 @@
+# Dockerfile for Poetry wrapper
+# The first build steps of this file are identical to those in the Django Dockerfile to make the build a bit faster.
+
+FROM {{ python_image(cookiecutter.python_version, 'debian') }}
+
+ENV POETRY_VIRTUALENVS_CREATE 0
+ENV PYTHONPYCACHEPREFIX /.pycache
+
+# Let all *.pyc files stay within the container, for Python >= 3.8
+RUN mkdir -p $PYTHONPYCACHEPREFIX
+
+# Use non-interactive frontend for debconf
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+
+# Install system requirements
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends build-essential gettext libpq-dev zlib1g-dev libjpeg62-turbo-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy Python requirements dir and Install requirements
+RUN pip install -U pip setuptools wheel poetry
+
+# -- begin image-specific commands
+
+# This script provides poetry.lock checking
+COPY scripts/poetry-check-lock.sh /
+
+VOLUME /src
+WORKDIR /src

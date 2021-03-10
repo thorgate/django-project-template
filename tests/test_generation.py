@@ -71,8 +71,10 @@ def validate_project_works(result, config):
             print("Failed to call docker-compose down")
 
 
-def test_base_generate(cookies, default_project):
-    result = generate_project(cookies, default_project)
+@pytest.mark.parametrize('docker_base_image', ['alpine', 'debian'])
+def test_base_generate(cookies, default_project, docker_base_image):
+    config = {**default_project, 'docker_base_image': docker_base_image}
+    result = generate_project(cookies, config)
 
     assert result.project.join('.hgignore').exists()
     assert result.project.join('.gitignore').exists()
@@ -80,7 +82,7 @@ def test_base_generate(cookies, default_project):
     assert result.project.join('webapp/').exists()
     assert not result.project.join('app/').exists()
 
-    validate_project_works(result, default_project)
+    validate_project_works(result, config)
 
 
 @pytest.mark.env("CELERY")

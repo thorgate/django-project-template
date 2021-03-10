@@ -1,7 +1,7 @@
 # Dockerfile for Poetry wrapper
 # The first build steps of this file are identical to those in the Django Dockerfile to make the build a bit faster.
 
-FROM {{ cookiecutter.python_version|python_image }}
+FROM {{ python_image(cookiecutter.python_version, 'alpine') }}
 
 ENV POETRY_VIRTUALENVS_CREATE 0
 ENV PYTHONPYCACHEPREFIX /.pycache
