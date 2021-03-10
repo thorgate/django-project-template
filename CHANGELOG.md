@@ -10,6 +10,11 @@ CHANGES
 Note: Try to add categories to changes and link to MRs/Issues
 -->
 
+## 2021-03-09
+
+- [ENH] Use razzle-plugin-modify-eslint-loader-config to stop eslint errors from failing SPA app builds
+
+
 ## 2021-02-02
 
 - [DEPRECATION] SPA branch has been deprecated. `frontend_style == spa` option should be used as replacement.
