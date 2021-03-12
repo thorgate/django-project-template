@@ -1,4 +1,4 @@
-from django.conf.urls import include, url
+from django.urls import include, path
 
 
 # Adding extra urls
@@ -17,8 +17,8 @@ from django.conf.urls import include, url
 #     urlpatterns = router.urls
 #
 # And finally add include here:
-#     url(r'^some_app/', include('some_app.rest.urls')),
+#     path('some_app/', include('some_app.rest.urls')),
 urlpatterns = [
-    url(r"^auth/", include("accounts.jwt.urls")),
-    url(r"^user/", include("accounts.rest.urls")),
+    path("auth/", include("accounts.jwt.urls")),
+    path("user/", include("accounts.rest.urls")),
 ]

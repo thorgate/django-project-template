@@ -19,13 +19,13 @@ python = "^{{ cookiecutter.python_version }}"
 boto3 = "==1.*"
 {% endif -%}
 {% if cookiecutter.include_celery == 'yes' -%}
-celery = {version = "==4.4.*", extras = ["redis"]}
+celery = {version = "==5.0.*", extras = ["redis"]}
 {% endif -%}
 cryptography = "==3.3.2"  # pin cryptography due to v3.4 requiring Rust to build (on Alpine)
-Django = "==2.2.*"
-django-crispy-forms = "==1.8.*"
+Django = "==3.1.*"
+django-crispy-forms = "==1.11.*"
 django-environ = "*"
-django-redis = "==4.11.*"
+django-redis = "==4.12.*"
 "django-storages{% if cookiecutter.django_media_engine == 'GCS' %}[google]{% endif %}" = "==1.7.*"
 gunicorn = "==20.*"
 {%- if cookiecutter.docker_base_image == 'alpine' %}
@@ -49,8 +49,8 @@ django-webpack-loader = "==0.6.*"
 {% else %}
 djangorestframework = "==3.12.*"
 djangorestframework_simplejwt = "==4.6.*"
-django-cors-headers = "==3.0.*"
-django-filter = "==2.1.*"
+django-cors-headers = "==3.7.*"
+django-filter = "==2.4.*"
 tg-react = "*"
 {% endif %}
 tg-utils = {version = "*", extras = ["model-hash"]}
