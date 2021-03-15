@@ -15,10 +15,10 @@ RUN apk add --no-cache bash gettext libpq libjpeg-turbo
 # Install build dependencies and mark them as virtual packages so they could be removed together
 RUN apk add --no-cache --virtual .build-deps \
     ca-certificates alpine-sdk postgresql-dev python3-dev linux-headers musl-dev \
-    libffi-dev libxml2-dev libxslt-dev jpeg-dev zlib-dev bash gettext
+    libffi-dev libxml2-dev libxslt-dev jpeg-dev zlib-dev bash gettext rust cargo
 
 # Copy Python requirements dir and Install requirements
-RUN pip install -U pip setuptools cryptography==3.3.2 wheel poetry
+RUN pip install -U pip setuptools wheel poetry
 
 # -- begin image-specific commands
 
