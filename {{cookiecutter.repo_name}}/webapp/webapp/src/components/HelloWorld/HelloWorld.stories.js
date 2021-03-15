@@ -3,6 +3,4 @@ import { HelloWorldBase } from './HelloWorld';
 
 export default { title: 'HelloWorld' };
 
-export const withExample = () => (
-    <HelloWorldBase title="Story Book Example" onSetTitle={() => {}} />
-);
+export const withExample = () => <HelloWorldBase title="Story Book Example" />;

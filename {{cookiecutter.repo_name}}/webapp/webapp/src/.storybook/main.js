@@ -1,7 +1,7 @@
 const baseConfig = require('../../webpack/config.dev');
 
 module.exports = {
-    webpackFinal: config => {
+    webpackFinal: (config) => {
         return {
             ...config,
             module: {

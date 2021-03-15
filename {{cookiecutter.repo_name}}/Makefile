@@ -422,6 +422,6 @@ docs:
 {%- if cookiecutter.webapp_include_storybook == 'yes' %}
 .PHONY:
 storybook:
-	@echo "Open http://127.0.0.1:6006 to view after storybook starts"
-	docker-compose run --rm -p 6006:80 node yarn storybook
+	@echo -e "$(CYAN)Open http://127.0.0.1:6006 to view after storybook starts$(COFF)"
+	docker-compose run --rm -p 6006:6006 node yarn storybook
 {%- endif %}
