@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.urls import re_path
 
 from rest_framework_simplejwt.views import (
     token_obtain_pair,
@@ -8,7 +8,7 @@ from rest_framework_simplejwt.views import (
 
 
 urlpatterns = [
-    url(r"^token/$", token_obtain_pair, name="token-obtain"),
-    url(r"^token/refresh/$", token_refresh, name="token-refresh"),
-    url(r"^token/verify/$", token_verify, name="token-verify"),
+    re_path(r"^token/$", token_obtain_pair, name="token-obtain"),
+    re_path(r"^token/refresh/$", token_refresh, name="token-refresh"),
+    re_path(r"^token/verify/$", token_verify, name="token-verify"),
 ]
