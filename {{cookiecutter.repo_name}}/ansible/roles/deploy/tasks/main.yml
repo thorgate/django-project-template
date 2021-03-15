@@ -135,6 +135,15 @@
   vars:
     command_params: "check --deploy"
 
+{%- endraw %}
+{ %- if cookiecutter.frontend_style == 'spa' % }
+
+
+- name: "Set up shared nginx files"
+  import_tasks: nginx_shared.yml
+{%- endif %}
+{%- raw %}
+
 
 - name: "Set up certificates"
   import_tasks: letsencrypt.yml
