@@ -67,7 +67,6 @@ def handle_react():
         cleanup_paths += [
             'webapp/webapp/src/.storybook',
             'webapp/webapp/src/storyshots.test.js',
-            'webapp/webapp/src/stylesStub.js',
             'webapp/webapp/src/components/Counter/Counter.stories.js',
             'webapp/webapp/src/components/HelloWorld/HelloWorld.stories.js',
             'webapp/webapp/src/components/NavigationBar/NavigationBar.stories.js',
