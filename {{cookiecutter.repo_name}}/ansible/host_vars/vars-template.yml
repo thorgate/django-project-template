@@ -4,9 +4,6 @@ django_site_host: "TODO"
 node_site_host: "TODO"
 {%- endif %}
 
-# Base settings file to import from local settings file
-django_base_settings: "staging"
-
 # Sentry config
 django_sentry_environment: "todo"
 django_sentry_dsn: ""  # TODO: Set to correct value or remove the TODO

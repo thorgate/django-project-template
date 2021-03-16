@@ -32,6 +32,7 @@ env = environ.Env()
 # Set to true during docker image building (e.g. when running collectstatic)
 IS_DOCKER_BUILD = env.bool("DJANGO_DOCKER_BUILD", default=False)
 
+PROJECT_NAME = "{{ cookiecutter.repo_name }}"
 # Shown in error pages and some other places
 PROJECT_TITLE = "{{ cookiecutter.project_title }}"
 
@@ -42,12 +43,14 @@ ADMINS = (("Admins", "{{ cookiecutter.admin_email }}"),)
 MANAGERS = ADMINS
 EMAIL_SUBJECT_PREFIX = "[{{cookiecutter.project_title}}] "  # subject prefix for managers & admins
 
-SESSION_COOKIE_NAME = "{{ cookiecutter.repo_name }}_ssid"
+SESSION_COOKIE_NAME = f"{PROJECT_NAME}_ssid"
 SESSION_COOKIE_DOMAIN = env.str("DJANGO_SESSION_COOKIE_DOMAIN", default=None)
 {%- if cookiecutter.frontend_style == 'spa' %}
 
 CSRF_COOKIE_DOMAIN = env.str("DJANGO_CSRF_COOKIE_DOMAIN", default=None)
 CSRF_COOKIE_HTTPONLY = False
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # Tg React Url configurations should be same as frontend forgot password URL
 TGR_PASSWORD_RECOVERY_URL = "/auth/reset-password/%s"
@@ -56,7 +59,7 @@ TGR_PASSWORD_RECOVERY_URL = "/auth/reset-password/%s"
 INSTALLED_APPS = [
     # Local apps
     "accounts",
-    "{{cookiecutter.repo_name}}",
+    PROJECT_NAME,
     # Third-party apps
 {%- if cookiecutter.frontend_style == 'webapp' %}
     "django_js_reverse",
@@ -261,7 +264,7 @@ ALLOWED_HOSTS = env.list(
 )
 CSRF_TRUSTED_ORIGINS = env.list("DJANGO_CSRF_TRUSTED_ORIGINS", default=ALLOWED_HOSTS)
 CORS_ORIGIN_WHITELIST = [
-    "http://{host}".format(host=host)
+    f"http://{host}"
     for host in env.list("DJANGO_CORS_ORIGIN_WHITELIST", default=ALLOWED_HOSTS)
 ]
 {%- endif %}
@@ -270,9 +273,9 @@ CORS_ORIGIN_WHITELIST = [
 X_FRAME_OPTIONS = "DENY"
 
 
-ROOT_URLCONF = "{{cookiecutter.repo_name}}.urls"
+ROOT_URLCONF = f"{PROJECT_NAME}.urls"
 
-WSGI_APPLICATION = "{{cookiecutter.repo_name}}.wsgi.application"
+WSGI_APPLICATION = f"{PROJECT_NAME}.wsgi.application"
 
 
 LOGIN_REDIRECT_URL = "/"
@@ -290,8 +293,8 @@ CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 
 # Email config
-DEFAULT_FROM_EMAIL = "{{cookiecutter.project_title}} <info@{{ cookiecutter.domain_name }}>"
-SERVER_EMAIL = "{{cookiecutter.project_title}} server <server@{{ cookiecutter.domain_name }}>"
+DEFAULT_FROM_EMAIL = f"{PROJECT_TITLE} <info@{{ cookiecutter.domain_name }}>"
+SERVER_EMAIL = f"{PROJECT_TITLE} server <server@{{ cookiecutter.domain_name }}>"
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 

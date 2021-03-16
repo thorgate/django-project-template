@@ -49,12 +49,6 @@
   tags:
     - env
 
-- name: "Create local settings file"
-  template:
-      src: local.py
-      dest: "{{ code_dir }}/{{ project }}/settings/local.py"
-      backup: yes
-
 
 - name: "Create logrotate.conf file"
   template:

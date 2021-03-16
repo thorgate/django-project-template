@@ -6,9 +6,6 @@ node_site_host: "{{ cookiecutter.domain_name }}"
 django_site_host: "{{ cookiecutter.domain_name }}"
 {%- endif %}
 
-# Base settings file to import from local settings file
-django_base_settings: "production"
-
 # Sentry config
 django_sentry_environment: "live"
 django_sentry_dsn: ""  # TODO: Set to correct value or remove the TODO
