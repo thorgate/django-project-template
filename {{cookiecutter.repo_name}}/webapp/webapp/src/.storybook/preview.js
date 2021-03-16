@@ -1,11 +1,11 @@
-import React from 'react';
-import { Provider } from 'react-redux';
-import { createStore } from 'redux';
-
-import rootReducer from '../reducers';
-
 import { addDecorator } from '@storybook/react';
 
-const store = createStore(rootReducer);
+import React from 'react';
+import { Provider } from 'react-redux';
 
-addDecorator(storyFn => <Provider store={store}>{storyFn()}</Provider>);
+import './globals';
+import createAppStore from '../store';
+
+const store = createAppStore({});
+
+addDecorator((storyFn) => <Provider store={store}>{storyFn()}</Provider>);

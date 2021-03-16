@@ -1,9 +1,9 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from '@reduxjs/toolkit';
 
-import title from './ducks/title';
+import titleReducer from './ducks/title';
 
 const rootReducer = combineReducers({
-    title,
+    title: titleReducer,
 });
 
 export default rootReducer;

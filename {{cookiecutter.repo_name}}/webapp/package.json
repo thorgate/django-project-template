@@ -5,6 +5,7 @@
   "prettier": "@thorgate/prettier-config",
   "dependencies": {
     "@babel/polyfill": "^7.12.1",
+    "@reduxjs/toolkit": "^1.5.0",
     "@sentry/react": "5.20.1",
     "@thorgate/babel-preset": "^1.0.0",
     "autoprefixer": "8.4.1",
@@ -23,9 +24,7 @@
     "react-bootstrap": "^1.0.0-beta.16",
     "react-dom": "16.14.0",
     "react-redux": "7.2.2",
-    "redux": "4.0.1",
-    "redux-logger": "3.0.6",
-    "redux-thunk": "2.3.0",
+    "redux-logger": "^3.0.6",
     "resolve-url-loader": "2.3.0",
     "sass-loader": "7.1.0",
     "url-loader": "1.0.1",
@@ -35,8 +34,8 @@
   },
   "devDependencies": {
 {%- if cookiecutter.webapp_include_storybook == 'yes' %}
-    "@storybook/addon-storyshots": "^5.3.12",
-    "@storybook/react": "^5.3.12",
+    "@storybook/addon-storyshots": "^6.1.21",
+    "@storybook/react": "^6.1.21",
 {%- endif %}
     "@testing-library/jest-dom": "^5.11.6",
     "@testing-library/react": "^11.2.2",
@@ -88,12 +87,6 @@
       "js",
       "json"
     ],
-{%- if cookiecutter.webapp_include_storybook == 'yes' %}
-    "moduleNameMapper": {
-      "styles-src": "<rootDir>webapp/src/stylesStub.js",
-      "\\.(css|less|scss)$": "<rootDir>webapp/src/stylesStub.js"
-    },
-{%- endif %}
     "modulePaths": [
       "<rootDir>/webapp/src",
       "<rootDir>/node_modules"
@@ -130,7 +123,7 @@
     "prettier-format-all": "yarn prettier-format 'webapp/src/**/*.{js,jsx,ts,tsx}'",
     "lint": "cd webapp/src && eslint .",
     {%- if cookiecutter.webapp_include_storybook == 'yes' %}
-    "storybook": "start-storybook -c webapp/src/.storybook -p 80",
+    "storybook": "start-storybook -c webapp/src/.storybook -p 6006",
     {%- endif %}
     "stylelint": "cd static/styles-src && stylelint '**/*.scss'",
     "test": "NODE_ENV=test jest",

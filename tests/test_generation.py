@@ -126,7 +126,7 @@ def test_storybook_generate(cookies, default_project):
 
 
 @pytest.mark.env("SPA")
-def test_storybook_generate(cookies, default_project):
+def test_spa_generate(cookies, default_project):
     default_project.update({
         'frontend_style': 'spa',
     })

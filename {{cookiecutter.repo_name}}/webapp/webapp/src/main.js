@@ -6,8 +6,7 @@ import { Provider } from 'react-redux';
 import HelloWorld from 'components/HelloWorld';
 import renderNavigationBar from 'components/NavigationBar';
 
-import rootReducer from './reducers';
-import configureStore from './store';
+import configureAppStore from './store';
 
 // Configure Sentry in deployed envs
 if (process.env.NODE_ENV === 'production') {
@@ -33,7 +32,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Create Redux store
-const store = configureStore(rootReducer);
+const store = configureAppStore({});
 
 function initNavigationBar() {
     renderNavigationBar('navigation-bar');

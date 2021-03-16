@@ -1,14 +1,10 @@
 import React from 'react';
 import { render as rtlRender } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { createStore } from 'redux';
 
-import rootReducer from './reducers';
+import createAppStore from './store';
 
-function render(
-    ui,
-    { store = createStore(rootReducer), ...renderOptions } = {},
-) {
+function render(ui, { store = createAppStore({}), ...renderOptions } = {}) {
     // eslint-disable-next-line react/prop-types
     function Wrapper({ children }) {
         return <Provider store={store}>{children}</Provider>;

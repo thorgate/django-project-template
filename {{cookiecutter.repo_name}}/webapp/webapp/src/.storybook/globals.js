@@ -8,7 +8,7 @@ global.django = {
     interpolate: (fmt, obj, named) => {
         if (named) {
             return fmt.replace(/%\(\w+\)s/g, (match) =>
-                String(obj[match.slice(2, -2)])
+                String(obj[match.slice(2, -2)]),
             );
         } else {
             return fmt.replace(/%s/g, () => String(obj.shift()));

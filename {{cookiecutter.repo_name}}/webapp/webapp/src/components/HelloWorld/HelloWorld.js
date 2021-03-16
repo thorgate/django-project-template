@@ -1,41 +1,36 @@
-import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { setTitle } from 'ducks/title';
+import { createTitle, setTitle, selectTitle } from 'ducks/title';
+import { useEffectOnce } from 'utils/hooks';
+
 import Counter from '../Counter';
 import styles from './HelloWorld.scss';
 
-export class HelloWorldBase extends React.Component {
-    componentDidMount() {
-        const { onSetTitle } = this.props;
-
-        onSetTitle('Hello world from Redux!');
-    }
-
-    render() {
-        const { title } = this.props;
-
-        return (
-            <>
-                <h1 className={styles.title}>{title}</h1>
-                <Counter />
-            </>
-        );
-    }
-}
+export const HelloWorldBase = ({ title }) => (
+    <>
+        <h1 className={styles.title}>{title}</h1>
+        <Counter />
+    </>
+);
 
 HelloWorldBase.propTypes = {
     title: PropTypes.string.isRequired,
-    onSetTitle: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = (state) => ({
-    title: state.title.title,
-});
+const HelloWorld = () => {
+    const dispatch = useDispatch();
 
-const mapDispatchToProps = (dispatch) => ({
-    onSetTitle: (title) => dispatch(setTitle(title)),
-});
+    useEffectOnce(() => {
+        dispatch(setTitle('Hello world from Redux!'));
+        dispatch(createTitle('and from async too'));
+        return true;
+    }, []);
 
-export default connect(mapStateToProps, mapDispatchToProps)(HelloWorldBase);
+    const title = useSelector(selectTitle);
+
+    return <HelloWorldBase title={title} />;
+};
+
+export default HelloWorld;
