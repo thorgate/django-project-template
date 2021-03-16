@@ -22,8 +22,6 @@ const defaultOptions = {
     },
     react: {
         useSuspense: true,
-        // Client-side always waits for translations
-        wait: true,
 
         // Re-bind I18n when the following events occur
         bindI18n: 'languageChanged',

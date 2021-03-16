@@ -21,14 +21,12 @@ RUN apk add --no-cache bash gettext libpq libjpeg-turbo
 # Install build dependencies and mark them as virtual packages so they could be removed together
 RUN apk add --no-cache --virtual .build-deps \
     ca-certificates alpine-sdk postgresql-dev python3-dev linux-headers musl-dev \
-    libffi-dev libxml2-dev libxslt-dev jpeg-dev zlib-dev
+    libffi-dev libxml2-dev libxslt-dev jpeg-dev zlib-dev rust cargo
 
 ENV POETRY_HOME "$HOME/.poetry"
 ENV POETRY_NO_INTERACTION 1
 ENV POETRY_VIRTUALENVS_CREATE 0
 ENV PATH="$POETRY_HOME/bin:$PATH"
-
-RUN pip install cryptography==3.3.2
 
 RUN wget https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py && \
     python3 get-poetry.py

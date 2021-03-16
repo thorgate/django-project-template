@@ -2,10 +2,10 @@ FROM docker:latest
 
 RUN apk update && \
     apk upgrade && \
-    apk add python3 python3-dev build-base libffi-dev openssl-dev git bash && \
+    apk add python3 python3-dev build-base libffi-dev openssl-dev git bash rust cargo && \
     apk add yq --repository http://dl-3.alpinelinux.org/alpine/edge/community/
 RUN python3 -m ensurepip
-RUN pip3 install docker-compose cryptography==3.3.2
+RUN pip3 install docker-compose
 
 ENV POETRY_HOME "$HOME/.poetry"
 ENV POETRY_NO_INTERACTION 1
