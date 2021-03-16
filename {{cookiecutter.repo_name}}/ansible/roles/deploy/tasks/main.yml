@@ -136,7 +136,7 @@
     command_params: "check --deploy"
 
 {%- endraw %}
-{ %- if cookiecutter.frontend_style == 'spa' % }
+{%- if cookiecutter.frontend_style == 'spa' %}
 
 
 - name: "Set up shared nginx files"
