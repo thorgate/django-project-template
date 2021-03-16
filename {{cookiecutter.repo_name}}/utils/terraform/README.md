@@ -17,7 +17,7 @@ and be allowed to create all the resources asked for.
 #### Overview of files here
 
 * `terraform` wrapper for terraform command
-* `setup.sh` Does the initial seutp and deploys for production and staging
+* `setup.sh` Does the initial setup and deploys for production and staging
 * `main.tf` Primary endpoint
 * `variables.tf` Contains [variables](https://www.terraform.io/docs/configuration/variables.html)
 * `modules` [modules](https://www.terraform.io/docs/modules/index.html)
@@ -46,7 +46,7 @@ The `key` in the backend configuration must be unique to this project.
 
 #### Destroy everything
 
-To delete an s3 bucket, it must first be empty, you'll need to manually
+To delete a s3 bucket, it must first be empty, you'll need to manually
 delete everything in it.
 
 Then run:

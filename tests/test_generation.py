@@ -12,7 +12,7 @@ def generate_project(cookies, config):
     cookies._config_file = USER_CONFIG_PATH
     result = cookies.bake(extra_context=config)
 
-    assert result.exit_code == 0
+    assert result.exit_code == 0, f"Failed to generate {result.exit_code} - {result.exception}"
     assert result.exception is None
     assert result.project.basename == config['repo_name']
     assert result.project.isdir()

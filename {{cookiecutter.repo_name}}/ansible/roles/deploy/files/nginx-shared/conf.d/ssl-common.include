@@ -1,0 +1,27 @@
+# From https://mozilla.github.io/server-side-tls/ssl-config-generator/
+#      https://wiki.mozilla.org/Security/Server_Side_TLS#Nginx
+# Note by TG: When you use this script it makes sense to update ciphers via the same tool
+
+# Common ssl configuration
+ssl_session_timeout 1d;
+ssl_session_tickets off;
+
+# Roughly 200k sessions(1mb stores about 4k sessions)
+ssl_session_cache shared:SSL:50m;
+
+# Diffie-Hellman parameter for DHE ciphersuites
+ssl_dhparam /etc/nginx/certs/ffdhe4096.pem;
+
+# modern configuration
+# Supports Firefox 63, Android 10.0, Chrome 70, Edge 75, Java 11, OpenSSL 1.1.1, Opera 57, and Safari 12.1
+# https://ssl-config.mozilla.org/#server=nginx&version=1.18&config=modern
+ssl_protocols TLSv1.3;
+ssl_prefer_server_ciphers off;
+
+# OCSP Stapling
+# fetch OCSP records from URL in ssl_certificate and cache them
+ssl_stapling on;
+ssl_stapling_verify on;
+resolver 8.8.8.8 8.8.4.4 valid=86400;
+resolver_timeout 10;
+

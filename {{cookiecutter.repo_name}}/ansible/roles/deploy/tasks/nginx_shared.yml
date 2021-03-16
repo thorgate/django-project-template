@@ -1,0 +1,4 @@
+- name: Add shared nginx files
+  copy:
+    src: nginx-shared/conf.d
+    dest: /etc/nginx/conf.d/

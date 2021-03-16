@@ -22,6 +22,18 @@ CUR_DIR_NAME ?= $(shell basename `pwd`)
 DJANGO_IMAGE_NAME ?= $(CUR_DIR_NAME)_django
 POETRY_WRAPPER_IMAGE_NAME ?= $(PROJECT_NAME)_poetry_wrapper
 
+# Cache dirs for poetry/pip
+#
+# To have one big cache for all your projects just add the following to your profile:
+#
+# export DPT_POETRY_CACHE_DIR=/path/to/cache/pypoetry
+# export DPT_PIP_CACHE_DIR=/path/to/cache/pip
+#
+# You can also share the cache with your system pip/poetry cache by setting the values
+#  to ~/.cache/pypoetry and ~/.cache/pip respectively.
+DPT_POETRY_CACHE_DIR ?= $(PROJECT_ROOT)/.data/pycache/pypoetry
+DPT_PIP_CACHE_DIR ?= $(PROJECT_ROOT)/.data/pycache/pip
+
 BLACK ?= \033[0;30m
 RED ?= \033[0;31m
 GREEN ?= \033[0;32m
@@ -44,6 +56,8 @@ help:
 	@echo -e "PYTHON: $(PYTHON)"
 	@echo -e "PROJECT_ROOT: $(PROJECT_ROOT)"
 	@echo -e "SITE_ROOT: $(SITE_ROOT)"
+	@echo -e "DPT_POETRY_CACHE_DIR: $(DPT_POETRY_CACHE_DIR)"
+	@echo -e "DPT_PIP_CACHE_DIR: $(DPT_PIP_CACHE_DIR)"
 	@echo -e ""
 	@echo -e "+------<<<<                                     Tasks                                    >>>>------+"
 	@echo -e ""
@@ -57,8 +71,10 @@ build-poetry-helper:
 
 .PHONY:
 run-poetry-helper: build-poetry-helper
-	@docker run --rm --name $(POETRY_WRAPPER_IMAGE_NAME) -v $(PROJECT_ROOT):/src $(POETRY_WRAPPER_IMAGE_NAME) \
-	 sh -c "$(cmd) && chown `id -u`:`id -g` poetry.lock"
+	@docker run --rm --name $(POETRY_WRAPPER_IMAGE_NAME) -v $(PROJECT_ROOT):/src \
+	 -v $(DPT_POETRY_CACHE_DIR):/root/.cache/pypoetry \
+	 -v $(DPT_PIP_CACHE_DIR):/root/.cache/pip \
+	 $(POETRY_WRAPPER_IMAGE_NAME) sh -c "$(cmd) && chown `id -u`:`id -g` poetry.lock"
 
 
 .PHONY:

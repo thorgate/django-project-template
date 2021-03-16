@@ -74,6 +74,11 @@ def handle_react():
 
     if '{{ cookiecutter.thorgate }}' == 'no':
         cleanup_paths += ['utils/terraform', 'tg-repository.yml']
+    else:
+        cleanup_paths += [
+            'ansible/roles/deploy/tasks/nginx_shared.yml',
+            'ansible/roles/deploy/tasks/files/nginx-shared',
+        ]
 
     # If using specific vcs, add some extra cleanup paths
     repo_type = '{{ cookiecutter.vcs }}'.lower()
