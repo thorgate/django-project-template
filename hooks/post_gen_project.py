@@ -61,7 +61,17 @@ def handle_react():
             'deploy/nginx/common.{{cookiecutter.repo_name}}.node.include',
         ]
     elif '{{ cookiecutter.frontend_style }}' == 'spa':
-        cleanup_paths += ['webapp']
+        cleanup_paths += [
+            'webapp',
+            '{{cookiecutter.repo_name}}/accounts/emails.py',
+            '{{cookiecutter.repo_name}}/accounts/forms.py',
+            '{{cookiecutter.repo_name}}/accounts/urls.py',
+            '{{cookiecutter.repo_name}}/accounts/views.py',
+            '{{cookiecutter.repo_name}}/templates/accounts/',
+            '{{cookiecutter.repo_name}}/templates/base.html',
+            '{{cookiecutter.repo_name}}/templates/home.html',
+            '{{cookiecutter.repo_name}}/templates/registration/',
+        ]
 
     if '{{ cookiecutter.webapp_include_storybook }}' == 'no':
         cleanup_paths += [
