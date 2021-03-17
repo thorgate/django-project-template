@@ -231,7 +231,7 @@ $(SITE_ROOT)/settings/local_test.py:
 .PHONY:
 coverage-py: ## Runs python/django test coverage calculation
 	@echo -e "$(CYAN)Running automatic code coverage check$(COFF)"
-	@docker-compose run --rm django pytest --cov --cov-report html --cov-report xml --cov-report term-missing
+	@docker-compose run --rm django pytest --cov=. --cov-report html --cov-report xml --cov-report term-missing
 
 
 .PHONY:
