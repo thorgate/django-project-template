@@ -22,7 +22,6 @@ boto3 = "==1.*"
 celery = {version = "==5.0.*", extras = ["redis"]}
 {% endif -%}
 Django = "==3.1.*"
-django-crispy-forms = "==1.11.*"
 django-environ = "*"
 django-redis = "==4.12.*"
 "django-storages{% if cookiecutter.django_media_engine == 'GCS' %}[google]{% endif %}" = "==1.7.*"
@@ -42,6 +41,7 @@ Sphinx = "*"
 sphinx_rtd_theme = "*"
 {% endif -%}
 {% if cookiecutter.frontend_style == 'webapp' %}
+django-crispy-forms = "==1.11.*"
 django-js-reverse = "==0.9.1"
 django-settings-export = "==1.2.*"
 django-webpack-loader = "==0.6.*"

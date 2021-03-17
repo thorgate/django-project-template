@@ -64,13 +64,13 @@ INSTALLED_APPS = [
 {%- if cookiecutter.frontend_style == 'webapp' %}
     "django_js_reverse",
     "webpack_loader",
+    "crispy_forms",
 {%- else %}
     "rest_framework",
     "django_filters",
     "tg_react",
     "corsheaders",
 {%- endif %}
-    "crispy_forms",
     # Django apps
     "django.contrib.admin",
     "django.contrib.auth",
