@@ -8,9 +8,6 @@ node_site_host: "{{ BASE_HOSTNAME }}"
 django_site_host: "{{ BASE_HOSTNAME }}"
 {%- endif %}
 
-# Base settings file to import from local settings file
-django_base_settings: "staging"
-
 # Sentry config
 django_sentry_environment: "test"
 django_sentry_dsn: ""  # TODO: Set to correct value or remove the TODO
