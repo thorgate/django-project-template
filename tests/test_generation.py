@@ -76,7 +76,6 @@ def test_base_generate(cookies, default_project, docker_base_image):
     config = {**default_project, 'docker_base_image': docker_base_image}
     result = generate_project(cookies, config)
 
-    assert result.project.join('.hgignore').exists()
     assert result.project.join('.gitignore').exists()
 
     assert result.project.join('webapp/').exists()
@@ -154,17 +153,6 @@ def test_doc_not_generate(cookies, default_project):
     result = generate_project(cookies, default_project)
 
     assert not result.project.join('%(repo_name)s/docs' % default_project).exists()
-
-
-def test_git_generate(cookies, default_project):
-    default_project.update({
-        'vcs': 'git',
-    })
-
-    result = generate_project(cookies, default_project)
-
-    assert result.project.join('.gitignore').exists()
-    assert not result.project.join('.hgignore').exists()
 
 
 def test_invalid_project_name_is_error(cookies, default_project):
