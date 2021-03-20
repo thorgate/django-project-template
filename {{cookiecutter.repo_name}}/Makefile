@@ -393,7 +393,7 @@ docker-logs:
 makemessages:
 	docker-compose run --rm django ./manage.py makemessages -a
 {%- if cookiecutter.frontend_style == 'webapp' %}
-	docker-compose run --rm django ./manage.py makemessages -a -d djangojs {% if cookiecutter.include_docs == 'yes' %}--ignore="docs/*"{% endif %}
+	docker-compose run --rm django ./manage.py makemessages -a -d djangojs
 {%- endif %}
 
 
@@ -428,12 +428,6 @@ endif
 .PHONY:
 psql:
 	docker-compose exec postgres psql --user $(PROJECT_NAME) --dbname $(PROJECT_NAME)
-
-{% if cookiecutter.include_docs == 'yes' %}
-.PHONY:
-docs:
-	docker-compose run --rm django sphinx-build ./docs ./docs/_build
-{% endif %}
 
 {%- if cookiecutter.webapp_include_storybook == 'yes' %}
 .PHONY:

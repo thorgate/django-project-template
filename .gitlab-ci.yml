@@ -46,13 +46,6 @@ test_CELERY:
   script:
     - pytest -E CELERY --maxfail=1 -v
 
-test_DOC:
-  stage: test
-  except:
-    - schedules
-  script:
-    - pytest -E DOC --maxfail=1 -v
-
 test_STORYBOOK:
   stage: test
   except:

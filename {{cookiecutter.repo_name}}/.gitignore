@@ -40,5 +40,3 @@ app/coverage/
 # Missing translations file
 **/locales/**/*.missing.json
 {%- endif %}
-
-{% if cookiecutter.include_docs == 'yes' %}{{cookiecutter.repo_name}}/docs/_build{% endif %}

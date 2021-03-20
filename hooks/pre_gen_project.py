@@ -84,16 +84,10 @@ def validate_config():
         print("Valid include Celery keys are: %s" % ', '.join(valid_celery_key))
         sys.exit(1)
 
-    valid_docs_key = ['yes', 'no']
-    if "{{ cookiecutter.include_docs }}" not in valid_docs_key:
-        print("Include docs '{{ cookiecutter.include_docs }}' is not valid!")
-        print("Valid include Docs keys are: %s" % ', '.join(valid_docs_key))
-        sys.exit(1)
-
     valid_storybook_replies = ['yes', 'no']
     if "{{ cookiecutter.webapp_include_storybook }}" not in valid_storybook_replies:
         print("Your answer to Include Storybook: '{{ cookiecutter.webapp_include_storybook }}' is invalid!")
-        print("Valid choices are: %s" % ', '.join(valid_docs_key))
+        print("Valid choices are: %s" % ', '.join(valid_storybook_replies))
         sys.exit(1)
 
     valid_frontend_styles = ['webapp', 'spa']

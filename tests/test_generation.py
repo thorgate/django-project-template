@@ -99,19 +99,6 @@ def test_celery_generate(cookies, default_project):
     validate_project_works(result, default_project)
 
 
-@pytest.mark.env("DOC")
-def test_doc_generate(cookies, default_project):
-    default_project.update({
-        'include_docs': 'yes',
-    })
-    result = generate_project(cookies, default_project)
-
-    assert result.project.join('%(repo_name)s/docs/conf.py' % default_project).exists()
-    assert result.project.join('%(repo_name)s/docs/index.rst' % default_project).exists()
-
-    validate_project_works(result, default_project)
-
-
 @pytest.mark.env("STORYBOOK")
 def test_storybook_generate(cookies, default_project):
     default_project.update({
@@ -144,15 +131,6 @@ def test_storybook_not_generate(cookies, default_project):
     result = generate_project(cookies, default_project)
 
     assert not result.project.join('webapp/webapp/src/.storybook/').exists()
-
-
-def test_doc_not_generate(cookies, default_project):
-    default_project.update({
-        'include_docs': 'no',
-    })
-    result = generate_project(cookies, default_project)
-
-    assert not result.project.join('%(repo_name)s/docs' % default_project).exists()
 
 
 def test_invalid_project_name_is_error(cookies, default_project):
