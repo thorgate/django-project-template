@@ -1,11 +1,12 @@
 #!/usr/bin/env python
+import errno
 import os
 import shutil
 import subprocess
 from typing import List, Tuple
 
 
-def handle_react():
+def cleanup():
     cwd = os.getcwd()
     print('cleanup paths in %s' % cwd)
 
@@ -90,23 +91,6 @@ def handle_react():
             'ansible/roles/deploy/tasks/files/nginx-shared',
         ]
 
-    # If using specific vcs, add some extra cleanup paths
-    repo_type = '{{ cookiecutter.vcs }}'.lower()
-    if repo_type not in {'git', 'hg', 'none'}:
-        repo_type = 'none'
-
-    if repo_type == 'none':
-        print('No VCS, removing IDEA VCS config')
-        cleanup_paths += ['.idea_template/vcs.xml']
-
-    if repo_type == 'git':
-        print('Repo is git, removing hg specific files')
-        cleanup_paths += ['.hgignore']
-
-    if repo_type == 'hg':
-        print('Repo is hg, removing git specific files')
-        cleanup_paths += ['.gitignore']
-
     for old_path, new_path in rename_paths:
         old_full_path = os.path.join(cwd, old_path)
         new_full_path = os.path.join(cwd, new_path)
@@ -129,7 +113,7 @@ def handle_react():
                 res = 'OK'
 
             except OSError as e:
-                if e.errno == os.errno.EACCES:
+                if e.errno == errno.EACCES:
                     res = 'ACCESS DENIED'
 
                 else:
@@ -169,52 +153,42 @@ def get_local_branch(template_dir='{{ cookiecutter._template }}'):
 
 
 def create_repos():
-    repo_type = '{{ cookiecutter.vcs }}'.lower()
+    if subprocess.check_call(['git', '--version']) != 0:
+        # This is unlikely, but just in case, display some sensible message.
+        print("No git executable found on path. Skipping Git setup")
+        return
+
     template_dir = '{{ cookiecutter._template }}'
 
     initial_commit_message = 'Initial commit\n\nCreated from django-project-template'
     if is_git_repository(template_dir):
         commit_id = get_local_commit(template_dir)
-        initial_commit_message = 'Initial commit\n\nCreated from django-project-template `{} {}`'.format(
+        initial_commit_message = '{} `{} {}`'.format(
+            initial_commit_message,
             get_local_branch(),
             ' '.join(get_commit_details(commit_id)),
         )
 
-    if repo_type == 'git' and not os.path.exists('.git'):
-        print('Creating git repository')
-        subprocess.check_call(['git', 'init'])
-        subprocess.check_call(['git', 'checkout', '-b', 'template'])
-        subprocess.check_call(['git', 'add', '.'])
-        subprocess.check_call(['git', 'commit', '-m', initial_commit_message])
-        subprocess.check_call(['git', 'checkout', '-b', 'master'])
+    print('Creating git repository')
+    subprocess.check_call(['git', 'init'])
+    subprocess.check_call(['git', 'checkout', '-b', 'template'])
+    subprocess.check_call(['git', 'add', '.'])
+    subprocess.check_call(['git', 'commit', '-m', initial_commit_message])
+    subprocess.check_call(['git', 'checkout', '-b', 'master'])
 
-        print('Git repository initialized. First commit is in branch `template`.')
-        print('Create a repository in Gitlab (https://gitlab.com/projects/new).')
-        print('Look for the repository address and run:')
-        print('    git remote add origin <repository_address>')
-        print('    git push -u origin master')
-        print('    git checkout template')
-        print('    git push -u origin template')
-
-    elif repo_type == 'hg' and not os.path.exists('.hg'):
-        print('Creating mercurial repository')
-        subprocess.check_call(['hg', 'init'])
-        subprocess.check_call(['hg', 'branch', 'template'])
-        subprocess.check_call(['hg', 'add'])
-        subprocess.check_call(['hg', 'commit', '-m', initial_commit_message])
-        subprocess.check_call(['hg', 'branch', 'default'])
-
-        print('Mercurial repository initialized. First commit is in branch `template`.')
-        print('You are on branch default. Fix some TODOs and commit.')
-        print('After that create a repository in BitBucket (https://bitbucket.org/repo/create).')
-        print('Look for the repository address and run:')
-        print('    hg push <repository_address>')
+    print('Git repository initialized. First commit is in branch `template`.')
+    print('Create a repository in Gitlab (https://gitlab.com/projects/new).')
+    print('Look for the repository address and run:')
+    print('    git remote add origin <repository_address>')
+    print('    git push -u origin master')
+    print('    git checkout template')
+    print('    git push -u origin template')
 
 
 def main():
     """Do some stuff based on configuration"""
 
-    handle_react()
+    cleanup()
     create_repos()
 
 
