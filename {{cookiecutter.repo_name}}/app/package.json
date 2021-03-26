@@ -130,7 +130,8 @@
       "cobertura"
     ],
     "moduleNameMapper": {
-      "\\.module.(css|scss)$": "identity-obj-proxy"
+      "\\.module.(css|scss)$": "identity-obj-proxy",
+      "@winston": "<rootDir>/node_modules/winston"
     },
     "transform": {
       "^.+\\.(js|jsx|mjs|cjs|ts|tsx)$": "<rootDir>/node_modules/razzle/config/jest/babelTransform.js",

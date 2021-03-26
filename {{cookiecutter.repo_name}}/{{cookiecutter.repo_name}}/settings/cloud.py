@@ -12,7 +12,7 @@ DEBUG = False
 SITE_URL = env.str("DJANGO_SITE_URL")
 {%- endif -%}
 
-{% if cookiecutter.frontend_style == 'spa' -%}
+{% if cookiecutter.frontend_style == 'spa' %}
 SITE_URL = env.str("RAZZLE_SITE_URL")
 DJANGO_SITE_URL = env.str("RAZZLE_BACKEND_SITE_URL")
 
