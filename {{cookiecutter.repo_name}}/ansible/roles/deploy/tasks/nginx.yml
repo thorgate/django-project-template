@@ -27,5 +27,5 @@
 
 
 - name: "Reload nginx"
-  shell: "docker exec nginx nginx -t && docker exec nginx nginx -s reload"
+  import_tasks: ../../helpers/reload-nginx.yml
 {%- endraw %}

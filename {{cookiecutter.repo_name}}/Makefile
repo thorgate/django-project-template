@@ -323,12 +323,14 @@ prospector:
 	@make run-python cmd=prospector
 
 
-{% if cookiecutter.use_mypy == 'yes' %}
+{%- if cookiecutter.use_mypy == 'yes' %}
+
+
 .PHONY:
 mypy:
 	@echo -e "$(CYAN)Checking types$(COFF)"
 	@make run-python cmd="mypy --show-error-codes ."
-{% endif %}
+{%- endif %}
 
 
 .PHONY:
@@ -396,16 +398,18 @@ makemessages:
 	docker-compose run --rm django ./manage.py makemessages -a -d djangojs {% if cookiecutter.include_docs == 'yes' %}--ignore="docs/*"{% endif %}
 {%- endif %}
 
+.PHONY:
+compilemessages:
+	docker-compose run --rm django ./manage.py compilemessages
+
 
 {%- if cookiecutter.frontend_style == 'spa' %}
+
+
 .PHONY:
 extract-i18n:
 	docker-compose run --rm node yarn extract-i18n
 {%- endif %}
-
-.PHONY:
-compilemessages:
-	docker-compose run --rm django ./manage.py compilemessages
 
 
 $(SITE_ROOT)/locale:
