@@ -36,10 +36,6 @@ gunicorn = "==20.*"
 {%- endif %}
 "sentry-sdk" = "==0.16.*"
 redis = "==3.*"
-{% if cookiecutter.include_docs == 'yes' -%}
-Sphinx = "*"
-sphinx_rtd_theme = "*"
-{% endif -%}
 {% if cookiecutter.frontend_style == 'webapp' %}
 django-crispy-forms = "==1.11.*"
 django-js-reverse = "==0.9.1"

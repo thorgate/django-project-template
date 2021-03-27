@@ -49,7 +49,6 @@ def default_project():
         "project_title": "Test project",
         "repo_name": "test_project",
         "include_celery": "no",
-        "include_docs": "yes",
         "webapp_include_storybook": "no",
         "test_host": "test1.thorgate.eu",
         "live_host": "test2.thorgate.eu",

@@ -104,9 +104,6 @@ Note that the production configuration lacks PostgreSQL, since it runs on a sepa
 |run Prospector                        |`make prospector`                      |`docker-compose run --rm django prospector`                                 |
 |run isort                             |`make isort`                           |`docker-compose run --rm django isort --recursive --check-only -p . --diff` |
 |run psql                              |`make psql`                            |`docker-compose exec postgres psql --user {{cookiecutter.repo_name}} --dbname {{cookiecutter.repo_name}}` |
-{% if cookiecutter.include_docs == 'yes' -%}
-|generate docs                         |`make docs`                            |`docker-compose run --rm django sphinx-build ./docs ./docs/_build`          |
-{%- endif %}
 
 ## Running commands on the server
 
@@ -164,13 +161,6 @@ anything.
 
 You can also use `--reuse-db` or `--nomigrations` flags to the actual command above to speed things up a bit. See also:
 https://pytest-django.readthedocs.org/en/latest/index.html
-
-{% if cookiecutter.include_docs == 'yes' %}
-## Generating documentation with Sphinx
-
-To build **.rst** files into html, run `make docs`. View the documentation at `/docs/_build/index.html`.
-Read more about contributing to docs from `/docs/contributing.rst`.
-{% endif %}
 
 ### Coverage
 

@@ -40,9 +40,6 @@ def cleanup():
             '{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}/tasks.py',
         ]
 
-    if '{{ cookiecutter.include_docs }}' == 'no':
-        cleanup_paths += ['{{ cookiecutter.repo_name }}/docs']
-
     if '{{ cookiecutter.frontend_style }}' == 'webapp':
         cleanup_paths += [
             'app',
