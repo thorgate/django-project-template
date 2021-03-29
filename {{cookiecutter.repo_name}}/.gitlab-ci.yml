@@ -44,6 +44,12 @@ test-django:
 test-node:
   stage: test
   coverage: '/All\sfiles.*?\s+(\d+.\d+)/'
+  cache:
+    key: ci-node-cache
+    paths:
+      - .data/node_modules
+      - .data/yarn
+    policy: pull-push
   artifacts:
     reports:
       junit: {% if cookiecutter.frontend_style == 'spa' %}app{% else %}webapp{% endif %}/coverage/cobertura-coverage.xml
