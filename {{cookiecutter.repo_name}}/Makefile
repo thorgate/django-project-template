@@ -29,8 +29,8 @@ POETRY_WRAPPER_IMAGE_NAME ?= $(PROJECT_NAME)_poetry_wrapper
 # export DPT_POETRY_CACHE_DIR=/path/to/cache/pypoetry
 # export DPT_PIP_CACHE_DIR=/path/to/cache/pip
 #
-# You can also share the cache with your system pip/poetry cache by setting the values
-#  to ~/.cache/pypoetry and ~/.cache/pip respectively.
+# Note: We do not recommend to share the cache with your system pip/poetry cache as you
+#        will start getting PermissionError's when interfacing with pip/poetry on your machine.
 DPT_POETRY_CACHE_DIR ?= $(PROJECT_ROOT)/.data/pycache/pypoetry
 DPT_PIP_CACHE_DIR ?= $(PROJECT_ROOT)/.data/pycache/pip
 
