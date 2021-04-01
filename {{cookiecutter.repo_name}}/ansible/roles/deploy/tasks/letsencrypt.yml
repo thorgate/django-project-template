@@ -24,10 +24,7 @@
   # This ensures the conf file is updated in case new domains are added to the letsencrypt config
   #  after initial deploy. Ensuring the nginx config file is updated allows certbot to receive
   #  the updated certificate below.
-  template:
-    src: site-nginx.conf
-    dest: "/etc/nginx/sites-enabled/{{ project }}"
-  when: fullchain_file.stat.exists
+  import_tasks: ../../helpers/update-nginx-config.yml
 
 
 - name: "Reload nginx"
