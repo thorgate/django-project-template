@@ -5,10 +5,16 @@ from storages.backends.s3boto3 import S3Boto3Storage
 
 
 class PrivateMediaStorage(S3Boto3Storage):
-    """
-    In order to use this storage, in the file
-    {{cookiecutter.repo_name}}/utils/terraform/variables.tf
-    change the `s3_media_bucket_is_public` setting in Terraform to false
+    """Media storage which disables public access by default
+
+    When you use this as the default storage it makes sense to
+    turn off all public access to the bucket.
+
+{%- if cookiecutter.thorgate == 'yes' %}
+
+    You can do this by changing the `s3_media_bucket_is_public` variable
+    in Terraform to false in the file {{cookiecutter.repo_name}}/utils/terraform/variables.tf
+{%- endif %}
     """
 
     location = settings.MEDIAFILES_LOCATION

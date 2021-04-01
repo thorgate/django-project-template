@@ -52,7 +52,7 @@ delete everything in it.
 Then run:
 
 ```
-workspace=workspace-to-destry
+workspace=workspace-to-destroy
 
 TF_WORKSPACE="$workspace" ./terraform destroy
 

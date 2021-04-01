@@ -193,10 +193,16 @@ setup: pycharm settings ## Sets up the project in your local machine. This inclu
 	@echo -e "SETUP SUCCEEDED"
 	@echo -e "Run 'make docker' to start Django development server and Webpack.$(COFF)"
 
+
+{%- if cookiecutter.thorgate == 'yes' %}
+
+
 .PHONY:
 setup-terraform:
 	@echo -e "$(CYAN)Setting up terraform$(COFF)"
 	@./utils/terraform/setup.sh $(workspace)
+{%- endif %}
+
 
 .PHONY:
 pycharm: $(PROJECT_ROOT)/.idea ## Copies default PyCharm settings (unless they already exist)
