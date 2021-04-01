@@ -2,7 +2,6 @@
 
 FROM {{ python_image(cookiecutter.python_version, 'debian') }}
 
-ENV POETRY_VIRTUALENVS_CREATE 0
 ENV PYTHONPYCACHEPREFIX /.pycache
 
 # Let all *.pyc files stay within the container, for Python >= 3.8
@@ -19,15 +18,40 @@ RUN apt-get update && \
 # Copy Python requirements dir and Install requirements
 RUN pip install -U pip setuptools wheel poetry
 
+ARG DPT_VENV_CACHING
+
+# if --build-arg DPT_VENV_CACHING=1, set POETRY_VIRTUALENVS_CREATE to '1' or set to null otherwise.
+ENV POETRY_VIRTUALENVS_CREATE=${DPT_VENV_CACHING:+1}
+# if POETRY_VIRTUALENVS_CREATE is null, set it to '0' (or leave as is otherwise).
+ENV POETRY_VIRTUALENVS_CREATE=${POETRY_VIRTUALENVS_CREATE:-0}
+
 # -- begin image-specific commands
 
 COPY ./wait-for-it.sh /usr/bin/
+
+COPY ./scripts/django-dev-entrypoint.sh /usr/bin/entrypoint.sh
 
 COPY pyproject.toml /
 COPY poetry.lock /
 
 # Install all dependencies from poetry.lock (dev included by default)
-RUN poetry install
+#
+# Note: Install is skipped when DPT_VENV_CACHING=1
+ENV DPT_VENV_CACHING=${DPT_VENV_CACHING:-''}
+RUN test "${DPT_VENV_CACHING}" = "1" && \
+    echo "skipped install during build" || \
+    poetry install
+
+# Set up PATH to include virtualenv path when DPT_VENV_CACHING is set
+#
+# When the project name or base python changes then ENV_FOLDER needs to be updated
+#  accordingly. New path can be generated with the command `make dev-venv-path`.
+#
+# See context here https://github.com/python-poetry/poetry/issues/1579#issuecomment-586020242
+ENV ENV_FOLDER={{ cookiecutter.repo_name | as_hostname }}-il7asoJj-py{{ cookiecutter.python_version }}
+ENV ENV_DIR="/root/.cache/pypoetry/virtualenvs/${ENV_FOLDER}"
+ENV VIRTUAL_ENV=${DPT_VENV_CACHING:+${ENV_DIR}}
+ENV PATH="${VIRTUAL_ENV:-'/fake'}/bin:${PATH}"
 
 # Set the default directory where CMD will execute
 WORKDIR /app
