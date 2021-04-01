@@ -155,31 +155,35 @@ def create_repos():
         print("No git executable found on path. Skipping Git setup")
         return
 
-    template_dir = '{{ cookiecutter._template }}'
+    if os.path.exists('.git'):
+        print('Creating git repository - SKIP - already exists')
 
-    initial_commit_message = 'Initial commit\n\nCreated from django-project-template'
-    if is_git_repository(template_dir):
-        commit_id = get_local_commit(template_dir)
-        initial_commit_message = '{} `{} {}`'.format(
-            initial_commit_message,
-            get_local_branch(),
-            ' '.join(get_commit_details(commit_id)),
-        )
+    else:
+        template_dir = '{{ cookiecutter._template }}'
 
-    print('Creating git repository')
-    subprocess.check_call(['git', 'init'])
-    subprocess.check_call(['git', 'checkout', '-b', 'template'])
-    subprocess.check_call(['git', 'add', '.'])
-    subprocess.check_call(['git', 'commit', '-m', initial_commit_message])
-    subprocess.check_call(['git', 'checkout', '-b', 'master'])
+        initial_commit_message = 'Initial commit\n\nCreated from django-project-template'
+        if is_git_repository(template_dir):
+            commit_id = get_local_commit(template_dir)
+            initial_commit_message = '{} `{} {}`'.format(
+                initial_commit_message,
+                get_local_branch(),
+                ' '.join(get_commit_details(commit_id)),
+            )
 
-    print('Git repository initialized. First commit is in branch `template`.')
-    print('Create a repository in Gitlab (https://gitlab.com/projects/new).')
-    print('Look for the repository address and run:')
-    print('    git remote add origin <repository_address>')
-    print('    git push -u origin master')
-    print('    git checkout template')
-    print('    git push -u origin template')
+        print('Creating git repository')
+        subprocess.check_call(['git', 'init'])
+        subprocess.check_call(['git', 'checkout', '-b', 'template'])
+        subprocess.check_call(['git', 'add', '.'])
+        subprocess.check_call(['git', 'commit', '-m', initial_commit_message])
+        subprocess.check_call(['git', 'checkout', '-b', 'master'])
+
+        print('Git repository initialized. First commit is in branch `template`.')
+        print('Create a repository in Gitlab (https://gitlab.com/projects/new).')
+        print('Look for the repository address and run:')
+        print('    git remote add origin <repository_address>')
+        print('    git push -u origin master')
+        print('    git checkout template')
+        print('    git push -u origin template')
 
 
 def main():
