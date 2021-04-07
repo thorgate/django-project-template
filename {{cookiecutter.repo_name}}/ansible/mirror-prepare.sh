@@ -5,7 +5,7 @@ set -e
 # Note: This script should be executed manually before running mirror.yml role since ansible does not have good support
 #  for different sudo passwords per host (e.g. for localhost).
 
-if ! command -v yq2 &> /dev/null
+if ! command -v yq &> /dev/null
 then
     echo 'Error: yq could not be found. Please install it with pip or the OS package manager.'
     echo ''
