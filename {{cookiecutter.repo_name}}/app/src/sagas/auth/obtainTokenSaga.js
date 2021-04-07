@@ -1,5 +1,9 @@
-import { createSaveAction, createFormSaveSaga } from '@thorgate/spa-forms';
-import { select, takeLatest, put } from 'redux-saga/effects';
+import {
+    createSaveAction,
+    createFormSaveSaga,
+    formErrorsHandler,
+} from '@thorgate/spa-forms';
+import { call, select, takeLatest, put } from 'redux-saga/effects';
 import { getLocation, push } from 'connected-react-router';
 import qs from 'qs';
 import { resolvePath } from 'tg-named-routes';
@@ -27,9 +31,28 @@ function* successHook(result) {
     yield put(push(next));
 }
 
+function* errorHook(data) {
+    // If credentials are invalid, the API responds with a status of 401
+    //   which results in an InvalidResponseCode error.
+    //   Let's show the original message to the user.
+    const { error, setStatus } = data;
+    if (error?.statusCode === 401) {
+        try {
+            // The InvalidResponseCode error has no JSON associated, but contains a responseText as plain text.
+            // Let's try to parse it as JSON. Otherwise just fall back to the default formErrorsHandler
+            const { detail } = JSON.parse(error?.responseText);
+            yield call(setStatus, { message: detail });
+            return;
+        } catch (_err) {} // eslint-disable-line no-empty
+    }
+
+    yield call(formErrorsHandler, data);
+}
+
 const obtainTokenSaga = createFormSaveSaga({
     resource: api.auth.obtain,
     successHook,
+    errorHook,
 });
 
 export default function* loginWatcherSaga() {
