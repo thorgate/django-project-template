@@ -81,7 +81,7 @@ def cleanup():
         ]
 
     if '{{ cookiecutter.thorgate }}' == 'no':
-        cleanup_paths += ['utils/terraform', 'tg-repository.yml']
+        cleanup_paths += ['utils/terraform', 'tg-project.yaml']
     else:
         cleanup_paths += [
             'ansible/roles/deploy/tasks/nginx_shared.yml',
