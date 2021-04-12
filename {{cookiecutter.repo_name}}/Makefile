@@ -286,7 +286,7 @@ clean:
 lint-py: black-check-all isort prospector{% if cookiecutter.use_mypy == 'yes' %} mypy{% endif %}
 
 .PHONY:
-lint-js: prettier-check-all eslint
+lint-js: prettier-check-all eslint stylelint
 
 .PHONY:
 lint: lint-py lint-js
