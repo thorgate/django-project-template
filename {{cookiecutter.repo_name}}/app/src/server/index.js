@@ -75,10 +75,10 @@ router.post('/locales/add/:lng/:ns', getMissingKeyHandler(i18next));
 router.get('/locales/resources.json', getResourcesHandler(i18next));
 
 // Setup a route listening on `GET /*`
-// Logic has been splitted into two chained middleware functions
+// Logic has been split into two chained middleware functions
 // @see https://github.com/alexmingoia/koa-router#multiple-middleware
 router.get(
-    '*',
+    '(.*)',
     async (ctx, next) => {
         const { i18n } = ctx.state;
         const { store } = configureStore(
@@ -227,6 +227,7 @@ server
     .use(
         koaHelmet({
             hsts: false, // hsts is managed by nginx
+            contentSecurityPolicy: false, // Don't add csp. We are not ready yet.
         }),
     )
     // Parse body of the request, required for adding missing translations
