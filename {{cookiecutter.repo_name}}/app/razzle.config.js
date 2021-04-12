@@ -4,6 +4,9 @@ const path = require('path');
 const LoadablePlugin = require('@loadable/webpack-plugin');
 
 module.exports = {
+    options: {
+        buildType: 'iso'
+    },
     plugins: [
         'eslint',
         'modify-eslint-loader-config', // This plugin should always be after eslint plugin
