@@ -1,5 +1,4 @@
 // Note: @winston is aliased to node_modules winston on the server and to `client/winston.js` on the client.
-import { join, normalize } from 'path';
 
 import { SETTINGS } from 'settings';
 import { addColors, createLogger, transports, format } from '@winston';
@@ -30,13 +29,18 @@ function createTransport(level) {
         ),
     };
 
-    if (SETTINGS.FILE_LOGGING) {
-        cfg.filename = normalize(
-            join(
-                SETTINGS.LOGGING_DIR,
-                `${SETTINGS.LOGGING_FILE_PREFIX}-${level}.log`,
-            ),
-        );
+    if (process.env.BUILD_TARGET === 'server') {
+        if (SETTINGS.FILE_LOGGING) {
+            // eslint-disable-next-line global-require,@typescript-eslint/no-var-requires
+            const { join, normalize } = require('path');
+
+            cfg.filename = normalize(
+                join(
+                    SETTINGS.LOGGING_DIR,
+                    `${SETTINGS.LOGGING_FILE_PREFIX}-${level}.log`,
+                ),
+            );
+        }
     }
 
     if (level === 'error' || level === 'debug') {

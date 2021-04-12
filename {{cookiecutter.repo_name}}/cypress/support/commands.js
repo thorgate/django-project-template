@@ -22,15 +22,15 @@ import { testAccount, adminAccount, URLS } from '../constants';
 
 Cypress.Commands.add('login', () => {
     cy.visit(URLS.login);
-    /* {% if cookiecutter.frontend_style == "spa" %} */
+    // - {% if cookiecutter.frontend_style == "spa" %}
     cy.get('input#email').clear().type(testAccount.email);
     cy.get('input#password').clear().type(testAccount.password);
     cy.get('button[type=submit]').click();
-    /* {% else %} */
+    // - {% else %}
     cy.get('#id_username').clear().type(testAccount.email);
     cy.get('#id_password').clear().type(testAccount.password);
     cy.get('input[type=submit]').click();
-    /* {% endif %} */
+    // - {% endif %}
     cy.location('pathname').should('eq', '/');
 });
 

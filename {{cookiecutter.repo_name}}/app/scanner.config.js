@@ -1,4 +1,5 @@
-{% raw %}/* eslint-disable */
+// - {% raw %}
+/* eslint-disable */
 'use strict';
 
 const fs = require('fs');
@@ -159,4 +160,5 @@ module.exports = {
 
         done();
     },
-};{% endraw %}
+};
+// - {% endraw %}

@@ -37,7 +37,7 @@ export CI_COMMIT_REF_SLUG=""
 
 ```bash
 ./publish-prod-image.sh django Dockerfile-django.production
-{%- if cookiecutter.frontend_style == 'spa' %}
+{%- if cookiecutter.frontend_style == SPA %}
 ./publish-prod-image.sh node Dockerfile-node.production
 {%- endif %}
 ```
