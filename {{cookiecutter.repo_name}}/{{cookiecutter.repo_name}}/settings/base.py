@@ -350,6 +350,11 @@ REST_FRAMEWORK = {
     "UPLOADED_FILES_USE_URL": False,
     # Default request format in tests is json
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
+    # Prevent the data changing by anonymous users
+    # TODO: change it to more suitable for the project
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.IsAuthenticatedOrReadOnly",
+    ),
 }
 {%- endif %}
 
