@@ -8,7 +8,7 @@
 
 - name: "Check if certificate has already been acquired"
   stat:
-      path: /etc/letsencrypt/live/{{ django_site_host }}/fullchain.pem
+      path: /etc/letsencrypt/live/{% endraw %}{% if cookiecutter.frontend_style == 'spa' %}{% raw %}{{ node_site_host }}{% endraw %}{% else %}{% raw %}{{ django_site_host }}{% endraw %}{% endif %}{% raw %}/fullchain.pem
   register: fullchain_file
 
 
@@ -24,15 +24,11 @@
   # This ensures the conf file is updated in case new domains are added to the letsencrypt config
   #  after initial deploy. Ensuring the nginx config file is updated allows certbot to receive
   #  the updated certificate below.
-  template:
-    src: site-nginx.conf
-    dest: "/etc/nginx/sites-enabled/{{ project }}"
-  when: fullchain_file.stat.exists
+  import_tasks: ../../helpers/update-nginx-config.yml
 
 
 - name: "Reload nginx"
-    shell: "docker exec nginx nginx -t && docker exec nginx nginx -s reload"
-  when: not fullchain_file.stat.exists
+  import_tasks: ../../helpers/reload-nginx.yml
 
 
 - set_fact:
@@ -69,5 +65,5 @@
 
 
 - name: "Retrieve certificate with certbot"
-  command: "{{ certbot_binary }} --no-self-upgrade certonly --noninteractive --agree-tos -c /etc/letsencrypt/configs/letsencrypt.{{ project }}.conf"
+  command: "{{ certbot_binary }} certonly --noninteractive --agree-tos -c /etc/letsencrypt/configs/letsencrypt.{{ project }}.conf"
 {%- endraw %}
