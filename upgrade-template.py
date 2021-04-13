@@ -53,7 +53,7 @@ def dump_context(path, context):
         json.dump(context, outfile, sort_keys=True, indent=4)
 
 
-def get_or_create_context(template_context_path, context_path, template_path):
+def get_or_create_context(template_context_path, context_path, template_path, update_params):
     template_context = generate_context(context_file=template_context_path)
     ask_config = not exists(context_path)
 
@@ -78,6 +78,10 @@ def get_or_create_context(template_context_path, context_path, template_path):
                 if k == '*' or k.startswith('_'):
                     del context['cookiecutter'][k]
             ask_config = True
+
+    if update_params and not ask_config:
+        print('--update-params provided, regenerating')
+        ask_config = True
 
     if ask_config:
         # Merge existing values into the new config template, so that the user won't have to fill them in again.
@@ -209,7 +213,7 @@ def get_vcs(path):
     return None
 
 
-def update_template(path, template_path, tmp_dir):
+def update_template(path, template_path, tmp_dir, update_params=False):
     vcs = get_vcs(path)
     assert vcs, "Couldn't detect VCS in \"{}\", are you sure you have the right path?".format(path)
 
@@ -221,7 +225,7 @@ def update_template(path, template_path, tmp_dir):
     context_path = join(path, '.cookiecutterrc')
 
     # prompt if necessary
-    context, created = get_or_create_context(template_context_path, context_path, template_path)
+    context, created = get_or_create_context(template_context_path, context_path, template_path, update_params)
     # Always dump the used config into .cookiecutterrc so that it stays up to date
     # Don't dump the template dir (stored under '_template' key)
     dumped_context = deepcopy(context)
@@ -338,6 +342,10 @@ if __name__ == '__main__':
                         dest='project_path',
                         default='.',
                         help='Project to upgrade (default=.)')
+    parser.add_argument('-u', '--update-params',
+                        dest='update_params',
+                        action='store_true',
+                        help='Allow updating cookiecutter params even when keys match.')
     parser.add_argument('--apply-frontend-codemods',
                         dest='apply_frontend_codemods',
                         action='store_true',
@@ -351,7 +359,7 @@ if __name__ == '__main__':
     if not args.apply_frontend_codemods:
         try:
             with tempfile.TemporaryDirectory() as tmp:
-                update_template(args.project_path, args.template_path, tmp)
+                update_template(args.project_path, args.template_path, tmp, args.update_params)
 
             print('Great! An upgrade commit was pushed to your template branch.')
             print('Now all you need to do is merge the template branch into your main branch and apply codemods '

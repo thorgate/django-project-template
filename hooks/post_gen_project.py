@@ -155,6 +155,10 @@ def create_repos():
         print("No git executable found on path. Skipping Git setup")
         return
 
+    if os.path.exists('.git'):
+        print('Creating git repository - SKIP - already exists')
+        return
+
     template_dir = '{{ cookiecutter._template }}'
 
     initial_commit_message = 'Initial commit\n\nCreated from django-project-template'
