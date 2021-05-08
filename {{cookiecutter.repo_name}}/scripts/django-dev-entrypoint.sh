@@ -1,6 +1,22 @@
 #!/usr/bin/env bash
 
+# A script that is used as a django entrypoint during development.
+#
+# When `DPT_VENV_CACHING` environemnt variable is 1 then this script:
+#
+#  - runs `poetry install` (only when `SKIP_INSTALL` is not defined)
+#  - verifies that poetry virtualenv path matches `ENV_FOLDER` environment variable value
+#
+# Finally the script executes the original command supplied in from arguments.
+#
+# Requirements: `ENV_FOLDER` environment variable must be set.
+
 set -e
+
+if [[ -z ${ENV_FOLDER} ]]; then
+    echo "ENV_FOLDER environment variable must be set"
+    exit 1
+fi
 
 cmdname=$(basename $0)
 
