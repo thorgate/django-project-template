@@ -4,9 +4,7 @@ version: '2.1'
 
 services:
   django:
-    build:
-      context: .
-      dockerfile: Dockerfile-django.production
+    image: "${SITE_DJANGO_IMAGE}:${SITE_VERSION}"
     env_file: .env
     container_name: {{cookiecutter.repo_name}}_django
     restart: unless-stopped
@@ -28,9 +26,7 @@ services:
   {%- if cookiecutter.frontend_style == 'spa' %}
 
   node:
-    build:
-      context: .
-      dockerfile: Dockerfile-node.production
+    image: "${SITE_NODE_IMAGE}:${SITE_VERSION}"
     env_file: .env
     container_name: {{cookiecutter.repo_name}}_node
     restart: unless-stopped
@@ -46,9 +42,7 @@ services:
   {%- if cookiecutter.include_celery == 'yes' %}
 
   celery:
-    build:
-      context: .
-      dockerfile: Dockerfile-django.production
+    image: "${SITE_DJANGO_IMAGE}:${SITE_VERSION}"
     env_file: .env
     restart: unless-stopped
     volumes:
@@ -65,9 +59,7 @@ services:
     command: celery --app {{cookiecutter.repo_name}} worker --autoscale 6,2 --loglevel INFO
 
   celery_beat:
-    build:
-      context: .
-      dockerfile: Dockerfile-django.production
+    image: "${SITE_DJANGO_IMAGE}:${SITE_VERSION}"
     env_file: .env
     container_name: {{cookiecutter.repo_name}}_celery_beat
     restart: unless-stopped

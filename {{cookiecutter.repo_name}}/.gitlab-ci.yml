@@ -85,5 +85,28 @@ build:
     EDIT_SETTINGS: "no"
   script:
     - make settings
+    - ./scripts/images/prod-version-env.sh >> .env
     # Ensure production images build also
     - docker-compose -f docker-compose.production.yml build
+
+
+publish_django:
+  stage: build
+  needs: []
+  except:
+    - template # Don't run CI on template branch, should not be required
+  script:
+    - ./scripts/images/publish-prod-image.sh django Dockerfile-django.production
+
+
+{%- if cookiecutter.frontend_style == 'spa' %}
+
+
+publish_node:
+  stage: build
+  needs: []
+  except:
+    - template # Don't run CI on template branch, should not be required
+  script:
+    - ./scripts/images/publish-prod-image.sh node Dockerfile-node.production
+{% endif %}
