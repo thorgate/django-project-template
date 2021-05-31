@@ -6,6 +6,7 @@ FROM {{ python_image(cookiecutter.python_version, 'debian') }} as base
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 
 ENV DJANGO_PRODUCTION_MODE 1
+ENV DJANGO_SETTINGS_MODULE settings.cloud
 ENV DJANGO_DEBUG 0
 ENV PYTHONPYCACHEPREFIX /.pycache
 

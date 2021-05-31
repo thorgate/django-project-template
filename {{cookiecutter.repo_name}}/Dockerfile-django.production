@@ -3,6 +3,7 @@
 FROM {{ python_image(cookiecutter.python_version, 'alpine') }} as base
 
 ENV DJANGO_PRODUCTION_MODE 1
+ENV DJANGO_SETTINGS_MODULE settings.cloud
 ENV DJANGO_DEBUG 0
 ENV PYTHONPYCACHEPREFIX /.pycache
 
