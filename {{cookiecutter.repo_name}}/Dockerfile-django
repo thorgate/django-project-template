@@ -49,7 +49,7 @@ RUN test "${DPT_VENV_CACHING}" = "1" && \
 #  accordingly. New path can be generated with the command `make dev-venv-path`.
 #
 # See context here https://github.com/python-poetry/poetry/issues/1579#issuecomment-586020242
-ENV ENV_FOLDER={{ cookiecutter.repo_name | as_hostname }}-9TtSrW0h-py{{ cookiecutter.python_version }}
+ENV ENV_FOLDER={{ cookiecutter.repo_name | as_hostname }}-il7asoJj-py{{ cookiecutter.python_version }}
 ENV ENV_DIR="/root/.cache/pypoetry/virtualenvs/${ENV_FOLDER}"
 ENV VIRTUAL_ENV=${DPT_VENV_CACHING:+${ENV_DIR}}
 ENV PATH="${VIRTUAL_ENV:-'/fake'}/bin:${PATH}"
