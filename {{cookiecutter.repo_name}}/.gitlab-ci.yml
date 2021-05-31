@@ -76,7 +76,7 @@ test-node:
     - make coverage-js
 
 
-build:
+build_compose_file:
   stage: build
   needs: []
   except:

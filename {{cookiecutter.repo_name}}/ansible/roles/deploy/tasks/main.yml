@@ -10,11 +10,18 @@
 - name: "Checkout the code"
   git:
     repo: "{{ repository }}"
-    dest: "{{ code_dir }}"
+    dest: "{{ code_dir }}/repository"
     version: "{% if force_deploy is defined %}{{ force_deploy }}{% else %}{{ deployment_version }}{% endif %}"
     update: yes
     # force=yes will discard any changes in working directory
     # force: yes
+
+
+- name: "Get the commit id"
+  command: "git rev-parse HEAD"
+  args:
+      chdir: "{{ code_dir }}/repository"
+  register: git_commit_sha
 
 
 - name: "Check if database has been created previously"
@@ -50,6 +57,21 @@
     - env
 
 
+- name: "Create a helper script for sourcing to interface with container registry"
+  template:
+    src: registry.sh
+    dest: "{{ code_dir }}/registry.sh"
+
+
+- name: "Ensure server has access to the container registry"
+  shell:
+    cmd: echo "$REGISTRY_TOKEN" | docker login -u {{ project }} --password-stdin registry.gitlab.com
+    chdir: "{{ code_dir }}"
+  environment:
+    DOCKER_CONFIG: "{{ code_dir }}/.docker-cfg"
+    REGISTRY_TOKEN: "{{ registry_token }}"
+
+
 - name: "Create logrotate.conf file"
   template:
       src: "logrotate.conf"
@@ -83,16 +105,22 @@
       networks_cli_compatible: yes
 
 
+- name: "Copy compose file"
+  copy:
+    src: "{{ code_dir }}/repository/{{ compose_file }}"
+    dest: "{{ code_dir }}/docker-compose.yml"
+    remote_src: true
+
+
 - name: "Build the project"
   docker_compose:
       project_src: "{{ code_dir }}"
-      build: yes
       state: present
       # Force re-start even if source files have not changed. This ensures that when env is updated the container
       #  always gets the latest values.
       restarted: yes
-      files:
-          - "{{ compose_file }}"
+  environment:
+      DOCKER_CONFIG: "{{ code_dir }}/.docker-cfg"
   register: result
 
 
@@ -111,7 +139,7 @@
 
 
 - name: "Run export assets"
-  command: "docker-compose -f {% raw %}{{ compose_file }}{% endraw %} run --rm node yarn export-assets"
+  command: "docker-compose run --rm node yarn export-assets"
   args:
       chdir: "{% raw %}{{ code_dir }}{% endraw %}"
 {%- endif %}
@@ -130,7 +158,7 @@
     command_params: "check --deploy"
 
 {%- endraw %}
-{%- if cookiecutter.frontend_style == 'spa' %}
+{%- if cookiecutter.thorgate == 'no' %}
 
 
 - name: "Set up shared nginx files"

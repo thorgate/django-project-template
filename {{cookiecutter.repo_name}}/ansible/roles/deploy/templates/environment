@@ -9,6 +9,11 @@
 {#- otherwise the "raw/endraw" tags would make it very difficult to process the logic. #}
 {#- ************************************* #}
 
+SITE_VERSION={{ "{{ git_commit_sha.stdout }}" }}
+SITE_DJANGO_IMAGE=registry.gitlab.com/{{ cookiecutter.gitlab_repo_url | as_image_path }}/django
+SITE_NODE_IMAGE=registry.gitlab.com/{{ cookiecutter.gitlab_repo_url | as_image_path }}/node
+SITE_DASHBOARD_IMAGE=registry.gitlab.com/{{ cookiecutter.gitlab_repo_url | as_image_path }}/dashboard
+
 DJANGO_SITE_URL=https://{{ "{{ django_site_host }}" }}
 DJANGO_ALLOWED_HOSTS={{ "{{ django_site_host }}" }}{% if cookiecutter.frontend_style == 'spa' %},{{ "{{ node_site_host }}" }}{% endif %}
 

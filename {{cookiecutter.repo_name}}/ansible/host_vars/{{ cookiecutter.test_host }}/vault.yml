@@ -16,3 +16,5 @@ django_gs_credentials: '{ ... json string ... }'
 django_aws_access_key_id: "TODO"
 django_aws_secret_access_key: "TODO"
 {%- endif %}
+
+registry_token: "TODO"
