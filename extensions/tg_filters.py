@@ -25,7 +25,13 @@ def as_git_path(value):
     return f"git@{domain}:{rest}.git"
 
 
-def as_image_path(value):
+def get_url_path(value):
+    """Takes a gitlab repository url and returns its path component
+
+    Example:
+    >>> get_url_path("https://gitlab.com/thorgate-public/django-project-template")
+    >>> "thorgate-public/django-project-template"
+    """
     if not value or not value.strip():
         return value
 
@@ -45,4 +51,4 @@ class TGFiltersModule(Extension):
         environment.filters['as_hostname'] = as_hostname
         environment.filters['snake_to_pascal_case'] = snake_to_pascal_case
         environment.filters['as_git_path'] = as_git_path
-        environment.filters['as_image_path'] = as_image_path
+        environment.filters['get_url_path'] = get_url_path

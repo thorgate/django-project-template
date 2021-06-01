@@ -85,9 +85,13 @@ build_compose_file:
     EDIT_SETTINGS: "no"
   script:
     - make settings
+{%- if cookiecutter.build_in_ci == 'yes' %}
     - ./scripts/images/prod-version-env.sh >> .env
+{%- endif %}
     # Ensure production images build also
     - docker-compose -f docker-compose.production.yml build
+
+{%- if cookiecutter.build_in_ci == 'yes' %}
 
 
 publish_django:
@@ -110,3 +114,4 @@ publish_node:
   script:
     - ./scripts/images/publish-prod-image.sh node Dockerfile-node.production
 {% endif %}
+{%- endif %}

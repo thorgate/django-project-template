@@ -78,6 +78,8 @@ We also assume that you have Nginx and Postgres (version 10 by default) running 
 'private' network. We also make a few assumptions regards directories that will be used as volumes for static assets,
 etc. You can find these paths in [docker-compose.production.yml](../docker-compose.production.yml).
 
+{%- if cookiecutter.build_in_ci == 'yes' %}
+
 #### Enable registry access for server
 
 This project is deployed with docker images. The images themselves are built in Gitlab CI. To
@@ -95,12 +97,14 @@ Note: When you are working directly in the server run the following command to b
        from the docker registry:
 
 ```bash
-source /srv/plastok/registry.sh
+source /srv/{{ cookiecutter.repo_name }}/registry.sh
 ```
 
 The script sets the value of DOCKER_CONFIG to a project specific directory to allow using multiple
 credentials for the same docker registry host. This is a workaround for the following
 [issue in docker](https://github.com/moby/moby/issues/37569).
+
+{%- endif %}
 
 ### Incremental deploy
 
@@ -111,7 +115,11 @@ you can deploy the project to the server by running `deploy.yml` stack with Ansi
 
 1. Clone & checkout the project into test server (with branch/commit specified in `deployment_version` variable)
 2. Add some configuration files (nginx, env, etc)
+{%- if cookiecutter.build_in_ci == 'yes' %}
 3. Pull docker images for the project from the registry and restart containers if needed
+{%- else -%}
+3. Build docker images for the project
+{%- endif %}
 4. Run migrations and collectstatic
 
 
