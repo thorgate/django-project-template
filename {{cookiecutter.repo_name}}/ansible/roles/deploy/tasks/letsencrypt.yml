@@ -25,6 +25,7 @@
   #  after initial deploy. Ensuring the nginx config file is updated allows certbot to receive
   #  the updated certificate below.
   import_tasks: ../../helpers/update-nginx-config.yml
+  when: fullchain_file.stat.exists
 
 
 - name: "Reload nginx"

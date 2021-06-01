@@ -7,14 +7,16 @@ from settings.base import *
 
 DEBUG = False
 
-# Static site url, used when we need absolute url but lack request object, e.g. in email sending.
-{%- if cookiecutter.frontend_style == 'webapp' %}
-SITE_URL = env.str("DJANGO_SITE_URL")
-{%- endif -%}
+if not IS_DOCKER_BUILD:
+    # Static site url, used when we need absolute url but lack request object, e.g. in email sending.
+    {%- if cookiecutter.frontend_style == 'webapp' %}
+    SITE_URL = env.str("DJANGO_SITE_URL")
+    {%- endif -%}
 
 {% if cookiecutter.frontend_style == 'spa' %}
-SITE_URL = env.str("RAZZLE_SITE_URL")
-DJANGO_SITE_URL = env.str("RAZZLE_BACKEND_SITE_URL")
+    SITE_URL = env.str("RAZZLE_SITE_URL")
+    DJANGO_SITE_URL = env.str("RAZZLE_BACKEND_SITE_URL")
+    CSRF_COOKIE_DOMAIN = env.str("DJANGO_CSRF_COOKIE_DOMAIN")
 
 # CORS overrides
 CORS_ORIGIN_ALLOW_ALL = False
@@ -23,8 +25,6 @@ CORS_ORIGIN_WHITELIST = [
     f"https://{host}"
     for host in env.list("DJANGO_CORS_ORIGIN_WHITELIST", default=ALLOWED_HOSTS)
 ]
-
-CSRF_COOKIE_DOMAIN = env.str("DJANGO_CSRF_COOKIE_DOMAIN")
 {% endif %}
 
 EMAIL_HOST = env.str("DJANGO_EMAIL_HOST", default="smtp.sparkpostmail.com")
