@@ -66,7 +66,10 @@ help:
 
 .PHONY:
 build-poetry-helper:
-	@docker build -q $(PROJECT_ROOT) -f Dockerfile-poetry --tag $(POETRY_WRAPPER_IMAGE_NAME) > /dev/null
+	@docker build -q $(PROJECT_ROOT) \
+	    -f Dockerfile-poetry \
+	    --build-arg DPT_VENV_CACHING \
+	    --tag $(POETRY_WRAPPER_IMAGE_NAME) > /dev/null
 
 
 .PHONY:
@@ -94,11 +97,17 @@ pyproject.toml:
 .PHONY:
 poetry-check:
 	@make run-poetry-helper cmd="sh /poetry-check-lock.sh"
+	@make run-poetry-helper cmd="poetry check"
 
 
 .PHONY:
 poetry-add:
 	@make run-poetry-helper cmd="poetry add $(cmd)"
+
+
+.PHONY:
+dev-venv-path:
+	@make run-poetry-helper cmd="python /generate-path.py"
 
 
 # NOTE:
@@ -146,7 +155,10 @@ run-python:
 	if [ "`docker images|grep $(DJANGO_IMAGE_NAME)`" = '' ]; then \
 	    docker-compose build django || exit $$?; \
 	fi; \
-	docker run -t --rm -v $(SITE_ROOT):/app $(DJANGO_IMAGE_NAME) $(cmd)
+	docker run -t --rm \
+	 -v $(DPT_POETRY_CACHE_DIR):/root/.cache/pypoetry \
+	 -v $(DPT_PIP_CACHE_DIR):/root/.cache/pip \
+	 -v $(SITE_ROOT):/app $(DJANGO_IMAGE_NAME) $(cmd)
 
 
 .PHONY:

@@ -21,6 +21,12 @@ stages:
 test-django:
   stage: test
   coverage: '/^TOTAL.*\s+(\d+\%)$/'
+  cache:
+    key: django-cache
+    paths:
+      - .data/pycache/pip
+      - .data/pycache/pypoetry
+    policy: pull-push
   artifacts:
     reports:
       cobertura: {{cookiecutter.repo_name}}/coverage.xml
@@ -33,9 +39,11 @@ test-django:
       - $CI_COMMIT_MESSAGE =~ /\[no tests?\]/
   variables:
     EDIT_SETTINGS: "no"
+    DPT_VENV_CACHING: "1"
   script:
     - make settings
-    - docker-compose build
+    - docker-compose build django
+    - make run-python cmd='entrypoint.sh -- echo "Installed dependencies"'
     - make lint-py
     - make coverage-py
 

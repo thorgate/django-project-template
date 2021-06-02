@@ -1,4 +1,5 @@
 import os
+import re
 import subprocess
 import yaml
 
@@ -53,10 +54,20 @@ def validate_project_works(result, config):
 
     try:
         for cmd in commands:
+            cmd_env = {}
+            cmd_env.update(env)
+
+            # If the command includes a cmd='anything' then extract it out into an
+            #  env variable. This is not the most elegant way but should work well enough.
+            mat = re.search(r"cmd='([^']+)'", cmd)
+            if mat is not None:
+                cmd = re.sub(r"cmd='([^']+)'", '', cmd).strip()
+                cmd_env["cmd"] = mat.group(1)
+
             subprocess.run(
                 cmd.split(' '),
                 cwd=project_dir,
-                env=env,
+                env=cmd_env,
                 check=True,
             )
     finally:
