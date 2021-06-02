@@ -59,7 +59,7 @@ RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selectio
 
 # Install system requirements
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends git python && \
+    apt-get install -y --no-install-recommends git python build-essential && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy some utility files

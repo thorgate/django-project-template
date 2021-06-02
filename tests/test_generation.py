@@ -124,6 +124,47 @@ def test_spa_generate(cookies, default_project):
     validate_project_works(result, default_project)
 
 
+@pytest.mark.env("DEBIAN_SPA")
+def test_debian_spa_generate(cookies, default_project):
+    default_project.update({
+        'frontend_style': 'spa',
+        'docker_base_image': 'debian',
+    })
+    result = generate_project(cookies, default_project)
+
+    assert result.project.join('app/').exists()
+    assert not result.project.join('webapp/').exists()
+
+    validate_project_works(result, default_project)
+
+
+@pytest.mark.env("DEBIAN_WEBAPP")
+def test_debian_webapp_generate(cookies, default_project):
+    default_project.update({
+        'frontend_style': 'webapp',
+        'docker_base_image': 'debian',
+    })
+    result = generate_project(cookies, default_project)
+
+    assert result.project.join('webapp/').exists()
+    assert not result.project.join('app/').exists()
+
+    validate_project_works(result, default_project)
+
+
+@pytest.mark.env("MYPY")
+def test_mypy_generate(cookies, default_project):
+    default_project.update({
+        'use_mypy': True,
+    })
+    result = generate_project(cookies, default_project)
+
+    assert result.project.join('webapp/').exists()
+    assert not result.project.join('app/').exists()
+
+    validate_project_works(result, default_project)
+
+
 def test_storybook_not_generate(cookies, default_project):
     default_project.update({
         'webapp_include_storybook': 'no',

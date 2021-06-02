@@ -60,6 +60,27 @@ test_SPA:
   script:
     - pytest -E SPA --maxfail=1 -v
 
+test_debian_SPA:
+  stage: test
+  except:
+    - schedules
+  script:
+    - pytest -E DEBIAN_SPA --maxfail=1 -v
+
+test_debian_WEBAPP:
+  stage: test
+  except:
+    - schedules
+  script:
+    - pytest -E DEBIAN_WEBAPP --maxfail=1 -v
+
+test_mypy:
+  stage: test
+  except:
+    - schedules
+  script:
+    - pytest -E MYPY --maxfail=1 -v
+
 test_frontend_codemods:
   stage: test
   image: node:12
