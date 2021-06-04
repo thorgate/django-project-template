@@ -10,6 +10,47 @@ CHANGES
 Note: Try to add categories to changes and link to MRs/Issues
 -->
 
+## 2021-06-04
+
+Add new configuration option `build_in_ci`. Currently, this defaults to `no` however the plan is to make
+building images in CI the default sometime in the future.
+
+The main changes to deployments are:
+
+- Code is checked out to `/srv/<project>/repository`
+- Runtime lock/config files are still in `/srv/<project>`
+- docker-compose.yml is copied from repository folder to `/srv/<project>` based on compose_file ansible variable value
+- Images are pulled from a docker registry instead of being built in the server during a deploy
+
+### Migration
+
+To migrate an existing deployment to this version just make the following changes in the server prior to the
+deployment (note: no need to turn the application off). First you need to move the project repository folder
+to the correct inner directory:
+
+```bash
+PROJECT="project"
+cd /srv/${PROJECT}
+shopt -s extglob dotglob
+mv !(repository) repository
+shopt -u dotglob
+```
+
+Also make sure there are no changes in the working directory as these will get reverted during deployment (and
+would not work anyway as images are built in CI).
+
+Last step before doing the deployment is to move any deployment specific lock/environment files from the repository
+folder back to the root folder `/srv/<project>`. Out of the box these files are:
+
+- database.lock
+- .env
+
+> Make sure to also check for any project specific files you may have added yourself.
+
+After these manual steps you should be able to just execute the updated ansible stack, and your site should
+be accessible again once it completes. We expect the deployments themselves to be faster with this method as
+building the images was the most time-consuming part of the deployment process.
+
 ## 2021-06-02 - Bugfixes and python dependency caching in CI (also opt-in for local development)
 
 - [BUG] Fix django production image build issue (runtime env variables being required during build) - !219
