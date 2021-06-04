@@ -10,6 +10,84 @@ CHANGES
 Note: Try to add categories to changes and link to MRs/Issues
 -->
 
+## 2021-06-02 - Bugfixes and python dependency caching in CI (also opt-in for local development)
+
+- [BUG] Fix django production image build issue (runtime env variables being required during build) - !219
+- [BUG] Ensure initial cert is retrieved with fake config not the real nginx config - !219
+- [BUG] Fix map_files filename - !219
+- [BUG] Debian baseimage: Add build-essential to node builder deps during prod build - !219
+- [ENH] Include CI build stage for webapp too - !219
+- [ENH] Add needs to ci jobs so build stage is executed in parallel to tests - !219
+- [ENH] Use /assets/ as the static url for webapp too - !219
+- [ENH] Enable python dependency caching in CI - !209
+  - Before using this locally see [this comment](https://gitlab.com/thorgate-public/django-project-template/-/merge_requests/209#note_579443335)
+
+Add extra test jobs to the template CI matrix:
+
+- debian webapp
+- debian SPA
+- default project with mypy enabled
+
+## 2021-04-17 Node CI cache
+
+- [ENH] Enable node dependency caching in CI - !208
+
+## 2021-04-13
+
+- [CLEANUP] Remove unused `api_urls.py` file - !205
+- [ENH] Deployment: Certbot - Remove deprecated --no-self-upgrade flag - !204
+- [ENH] Deployment: Move nginx reload command into a shared location: `../../helpers/reload-nginx.yml` - !204
+- [ENH] Deployment: Add helper for nginx config update - !204
+- [BUG] Fix winston import in node tests - !206
+- [CLEANUP] Remove terraform references when thorgate=no - !211
+- [ENH] Set IsAuthenticatedOrReadOnly as default permission for DRF views - !217
+- [BUG] Post-gen hook: Don't try to re-create git repository if it already exists - !210
+- [BUG] upgrade-template.py add parameter -u / --update-params which prompts for cookiecutter
+         options even when no changes are detected in config keys - !210
+
+## 2021-04-07
+
+- [BUG] Fix naming of tg metadata file - !215 !214
+
+## 2021-04-07
+
+- [BUG] Fix typo in `mirror-prepare.sh` script - !212
+- [ENH] SPA: Fix error message on login with invalid credentials - !213
+
+## 2021-03-27
+
+- [CLEANUP] Remove `include_docs` option and Sphinx (.rst) docs - !203
+
+## 2021-03-23
+
+- [CLEANUP] Remove mercurial support - !202
+
+## 2021-03-22
+
+- [ENH] Make coverage-py display un-imported files - !201
+
+## 2021-03-17
+
+- [NEW] Deployment: Add shared nginx files during deployment when thorgate is false - !198
+- [NEW] Introduce cache dirs for poetry/pip for local development - !198
+- [BUG] Ensure certbot requests new certificate when domains are updated after initial deploy - !198
+- [NEW] Print exception when template generation fails during template CI - !198
+- [ENH] Unify server settings (cloud.py instead of staging.py and production.py) - !199
+- [CLEANUP] Remove crispy_forms from the SPA version - !200
+
+## 2021-03-16
+
+- [NEW] Update django to 3.1 - !195
+- [NEW] Update django-rest-framework to 3.12 - !194
+- [NEW] WEBAPP: Use redux trough @reduxjs/toolkit - !196
+- [ENH] WEBAPP: Upgrade storybook to latest - !196
+- [NEW] WEBAPP: Add useEffectOnce utility hook
+- [ENH] Enable using latest cryptography - !197
+
+## 2021-03-10
+
+- [BUG] Fix i18n being missing on initial setup for spa - !193
+
 ## 2021-03-09
 
 - [ENH] Use razzle-plugin-modify-eslint-loader-config to stop eslint errors from failing SPA app builds
