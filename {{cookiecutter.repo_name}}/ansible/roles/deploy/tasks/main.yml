@@ -1,41 +1,50 @@
-{% raw %}
-- name: "Create needed directories {{ code_dir }}"
+- name: "Create needed directories {{ "{{ code_dir }}" }}"
   file:
-      path: "{{ item }}"
+      path: "{{ "{{ item }}" }} "
       state: directory
   loop:
-      - "/var/log/{{ project }}"
+      - "/var/log/{{ "{{ project }}" }}"
 
 
 - name: "Checkout the code"
   git:
-    repo: "{{ repository }}"
-    dest: "{{ code_dir }}"
-    version: "{% if force_deploy is defined %}{{ force_deploy }}{% else %}{{ deployment_version }}{% endif %}"
+    repo: "{{ "{{ repository }}" }}"
+    dest: "{{ "{{ code_dir }}" }}{% if cookiecutter.build_in_ci == 'yes' %}/repository{% endif %}"
+    version: "{{ "{% if force_deploy is defined %}{{ force_deploy }}{% else %}{{ deployment_version }}{% endif %}" }}"
     update: yes
     # force=yes will discard any changes in working directory
     # force: yes
 
+{%- if cookiecutter.build_in_ci == 'yes' %}
+
+
+- name: "Get the commit id"
+  command: "git rev-parse HEAD"
+  args:
+      chdir: "{{ "{{ code_dir }}" }}/repository"
+  register: git_commit_sha
+{%- endif %}
+
 
 - name: "Check if database has been created previously"
   stat:
-      path: "{{ code_dir }}/database.lock"
+      path: "{{ "{{ code_dir }}" }}/database.lock"
   register: db_created
 
 
 - name: "Create database"
   shell: >
       echo "
-        CREATE DATABASE {{ project }};
-        CREATE USER {{ project }} WITH password '{{ django_database_password | mandatory }}';
-        GRANT ALL PRIVILEGES ON DATABASE {{ project }} to {{ project }};
-      " | docker exec -i postgres-{{ postgres_version | mandatory }} psql -U postgres
+        CREATE DATABASE {{ "{{ project }}" }};
+        CREATE USER {{ "{{ project }}" }} WITH password '{{ "{{ django_database_password | mandatory }}" }}';
+        GRANT ALL PRIVILEGES ON DATABASE {{ "{{ project }}" }} to {{ "{{ project }}" }};
+      " | docker exec -i postgres-{{ "{{ postgres_version | mandatory }}" }} psql -U postgres
   when: not db_created.stat.exists
 
 
 - name: "Create db creation lockfile"
   file:
-      path: "{{ code_dir }}/database.lock"
+      path: "{{ "{{ code_dir }}" }}/database.lock"
       state: touch
   when: not db_created.stat.exists
 
@@ -43,56 +52,91 @@
 - name: "Install/update .env file"
   template:
       src: environment
-      dest: "{{ code_dir }}/.env"
+      dest: "{{ "{{ code_dir }}" }}/.env"
       mode: 0600
       backup: yes
   tags:
     - env
 
 
+{%- if cookiecutter.build_in_ci == 'yes' %}
+
+
+- name: "Create a helper script for sourcing to interface with container registry"
+  template:
+    src: registry.sh
+    dest: "{{ "{{ code_dir }}" }}/registry.sh"
+
+
+- name: "Ensure server has access to the container registry"
+  shell:
+    cmd: echo "$REGISTRY_TOKEN" | docker login -u {{ "{{ project }}" }} --password-stdin registry.gitlab.com
+    chdir: "{{ "{{ code_dir }}" }}"
+  environment:
+    DOCKER_CONFIG: "{{ "{{ code_dir }}" }}/.docker-cfg"
+    REGISTRY_TOKEN: "{{ "{{ registry_token }}" }}"
+{%- endif %}
+
+
 - name: "Create logrotate.conf file"
   template:
       src: "logrotate.conf"
-      dest: "/etc/logrotate.d/{{ project }}"
+      dest: "/etc/logrotate.d/{{ "{{ project }}" }}"
 
 
 - name: "Ensure docker networks exist"
   docker_network:
-      name: "{{ item }}"
+      name: "{{ "{{ item }}" }}"
   loop:
-      - "{{ project }}_default"
-      - "{{ project }}_nginx"
-      - "{{ project }}_postgres"
+      - "{{ "{{ project }}" }}_default"
+      - "{{ "{{ project }}" }}_nginx"
+      - "{{ "{{ project }}" }}_postgres"
 
 
-- name: "Add nginx to {{ project }}_nginx network"
+- name: "Add nginx to {{ "{{ project }}" }}_nginx network"
   docker_container:
       name: nginx
       networks:
-          - name: "{{ project }}_nginx"
+          - name: "{{ "{{ project }}" }}_nginx"
       purge_networks: no
       networks_cli_compatible: yes
 
 
-- name: "Add postgres-{{ postgres_version }} to {{ project }}_postgres network"
+- name: "Add postgres-{{ "{{ postgres_version }}" }} to {{ "{{ project }}" }}_postgres network"
   docker_container:
-      name: "postgres-{{ postgres_version }}"
+      name: "postgres-{{ "{{ postgres_version }}" }}"
       networks:
-          - name: "{{ project }}_postgres"
+          - name: "{{ "{{ project }}" }}_postgres"
       purge_networks: no
       networks_cli_compatible: yes
+
+
+{%- if cookiecutter.build_in_ci == 'yes' %}
+
+
+- name: "Copy compose file"
+  copy:
+    src: "{{ "{{ code_dir }}" }}/repository/{{ "{{ compose_file }}" }}"
+    dest: "{{ "{{ code_dir }}" }}/docker-compose.yml"
+    remote_src: true
+{%- endif %}
 
 
 - name: "Build the project"
   docker_compose:
-      project_src: "{{ code_dir }}"
-      build: yes
+      project_src: "{{ "{{ code_dir }}" }}"
       state: present
       # Force re-start even if source files have not changed. This ensures that when env is updated the container
       #  always gets the latest values.
       restarted: yes
+{%- if cookiecutter.build_in_ci == 'no' %}
+      build: yes
       files:
-          - "{{ compose_file }}"
+          - "{{ "{{ compose_file }}" }}"
+{%- else %}
+  environment:
+      DOCKER_CONFIG: "{{ "{{ code_dir }}" }}/.docker-cfg"
+{%- endif %}
   register: result
 
 
@@ -106,16 +150,18 @@
   vars:
     command_params: "migrate --noinput"
 
-{%- endraw %}
 {%- if cookiecutter.frontend_style == 'spa' %}
 
 
 - name: "Run export assets"
-  command: "docker-compose -f {% raw %}{{ compose_file }}{% endraw %} run --rm node yarn export-assets"
-  args:
-      chdir: "{% raw %}{{ code_dir }}{% endraw %}"
+{%- if cookiecutter.build_in_ci == 'yes' %}
+  command: "docker-compose run --rm node yarn export-assets"
+{%- else %}
+  command: "docker-compose -f {{ "{{ compose_file }}" }} run --rm node yarn export-assets"
 {%- endif %}
-{%- raw %}
+  args:
+      chdir: "{{ "{{ code_dir }}" }}"
+{%- endif %}
 
 
 - name: "Run collectstatic"
@@ -129,14 +175,12 @@
   vars:
     command_params: "check --deploy"
 
-{%- endraw %}
-{%- if cookiecutter.frontend_style == 'spa' %}
+{%- if cookiecutter.thorgate == 'no' %}
 
 
 - name: "Set up shared nginx files"
   import_tasks: nginx_shared.yml
 {%- endif %}
-{%- raw %}
 
 
 - name: "Set up certificates"
@@ -147,5 +191,3 @@
   import_tasks: nginx.yml
   tags:
     - nginx
-
-{%- endraw %}

@@ -4,9 +4,13 @@ version: '2.1'
 
 services:
   django:
+{%- if cookiecutter.build_in_ci == 'yes' %}
+    image: "${SITE_DJANGO_IMAGE}:${SITE_VERSION}"
+{%- else %}
     build:
       context: .
       dockerfile: Dockerfile-django.production
+{%- endif %}
     env_file: .env
     container_name: {{cookiecutter.repo_name}}_django
     restart: unless-stopped
@@ -28,9 +32,13 @@ services:
   {%- if cookiecutter.frontend_style == 'spa' %}
 
   node:
+{%- if cookiecutter.build_in_ci == 'yes' %}
+    image: "${SITE_NODE_IMAGE}:${SITE_VERSION}"
+{%- else %}
     build:
       context: .
       dockerfile: Dockerfile-node.production
+{%- endif %}
     env_file: .env
     container_name: {{cookiecutter.repo_name}}_node
     restart: unless-stopped
@@ -46,10 +54,13 @@ services:
   {%- if cookiecutter.include_celery == 'yes' %}
 
   celery:
+{%- if cookiecutter.build_in_ci == 'yes' %}
+    image: "${SITE_DJANGO_IMAGE}:${SITE_VERSION}"
+{%- else %}
     build:
       context: .
       dockerfile: Dockerfile-django.production
-    env_file: .env
+{%- endif %}    env_file: .env
     restart: unless-stopped
     volumes:
       - "/var/lib/docker-nginx/files/{{cookiecutter.repo_name}}/media:/files/media"
@@ -65,10 +76,13 @@ services:
     command: celery --app {{cookiecutter.repo_name}} worker --autoscale 6,2 --loglevel INFO
 
   celery_beat:
+{%- if cookiecutter.build_in_ci == 'yes' %}
+    image: "${SITE_DJANGO_IMAGE}:${SITE_VERSION}"
+{%- else %}
     build:
       context: .
       dockerfile: Dockerfile-django.production
-    env_file: .env
+{%- endif %}    env_file: .env
     container_name: {{cookiecutter.repo_name}}_celery_beat
     restart: unless-stopped
     volumes:

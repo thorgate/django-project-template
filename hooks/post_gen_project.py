@@ -88,6 +88,12 @@ def cleanup():
             'ansible/roles/deploy/tasks/files/nginx-shared',
         ]
 
+    if '{{ cookiecutter.build_in_ci }}' == 'no':
+        cleanup_paths += [
+            "ansible/roles/deploy/templates/registry.sh",
+            "scripts/images",
+        ]
+
     for old_path, new_path in rename_paths:
         old_full_path = os.path.join(cwd, old_path)
         new_full_path = os.path.join(cwd, new_path)
