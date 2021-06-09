@@ -78,6 +78,34 @@ We also assume that you have Nginx and Postgres (version 10 by default) running 
 'private' network. We also make a few assumptions regards directories that will be used as volumes for static assets,
 etc. You can find these paths in [docker-compose.production.yml](../docker-compose.production.yml).
 
+{%- if cookiecutter.build_in_ci == 'yes' %}
+
+#### Enable registry access for server
+
+This project is deployed with docker images. The images themselves are built in Gitlab CI. To
+be able to deploy the code to the cloud the target server must be able to pull images from registry.gitlab.com.
+
+1. Navigate to repository settings of the project in gitlab
+    - {{ cookiecutter.gitlab_repo_url }}/-/settings/repository/
+2. Expand `Deploy tokens`
+3. Add a deploy token if it does not exist already for the server. Set the name to server name and use
+    the project name for username. Under permissions make sure to only enable `read_registry`.
+4. Add the deploy token value to the host specific vault file under `registry_token` variable.
+5. Now you can run the ansible stack to set up the docker authentication
+
+Note: When you are working directly in the server run the following command to be able to pull images
+       from the docker registry:
+
+```bash
+source /srv/{{ cookiecutter.repo_name }}/registry.sh
+```
+
+The script sets the value of DOCKER_CONFIG to a project specific directory to allow using multiple
+credentials for the same docker registry host. This is a workaround for the following
+[issue in docker](https://github.com/moby/moby/issues/37569).
+
+{%- endif %}
+
 ### Incremental deploy
 
 > NB: If the code has **not been deployed** to the server already follow the instructions in [The first deployment](#the-first-deployment).
@@ -87,7 +115,11 @@ you can deploy the project to the server by running `deploy.yml` stack with Ansi
 
 1. Clone & checkout the project into test server (with branch/commit specified in `deployment_version` variable)
 2. Add some configuration files (nginx, env, etc)
+{%- if cookiecutter.build_in_ci == 'yes' %}
+3. Pull docker images for the project from the registry and restart containers if needed
+{%- else -%}
 3. Build docker images for the project
+{%- endif %}
 4. Run migrations and collectstatic
 
 

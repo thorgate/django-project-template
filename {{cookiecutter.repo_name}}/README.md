@@ -260,3 +260,6 @@ In development Node server needs to be restarted to see updated translations.
 ## Deployment
 
 We use Ansible for deployment, see more information in [ansible directory](./ansible/README.md).
+{%- if cookiecutter.build_in_ci == 'yes' %}
+You may also be interested in [building & pushing production docker images locally](./scripts/images/README.md#locally).
+{%- endif %}
