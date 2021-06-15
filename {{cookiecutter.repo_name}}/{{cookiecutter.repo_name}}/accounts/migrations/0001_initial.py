@@ -12,6 +12,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        CreateExtension("citext"),
         migrations.CreateModel(
             name="User",
             fields=[
