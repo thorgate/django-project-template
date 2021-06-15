@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.contrib.postgres.operations import CreateExtension
-from django.contrib.postgres.fields import CIEmailField
-
 import django.utils.timezone
 from django.db import migrations, models
+from django.contrib.postgres.operations import CreateExtension
+from django.contrib.postgres.fields import CIEmailField
 
 
 class Migration(migrations.Migration):

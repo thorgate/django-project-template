@@ -4,8 +4,8 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
-from django.contrib.postgres.fields import CIEmailField
 from django.db import models
+from django.contrib.postgres.fields import CIEmailField
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
