@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
 import django.utils.timezone
 from django.db import migrations, models
-
+from django.contrib.postgres.operations import CreateExtension
+from django.contrib.postgres.fields import CIEmailField
 
 class Migration(migrations.Migration):
 
@@ -41,9 +41,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "email",
-                    models.EmailField(
-                        max_length=254, unique=True, verbose_name="email address"
-                    ),
+                    CIEmailField("email address", max_length=254, unique=True),
                 ),
                 ("name", models.CharField(max_length=255)),
                 (
