@@ -24,7 +24,7 @@ const config = makeConfig({
     prependSources: [path.resolve(app_root, 'webpack', 'set-public-path.js')],
 
     // This must be same as Django's STATIC_URL setting
-    publicPath: '/static/',
+    publicPath: '/assets/',
 
     plugins: [],
 
