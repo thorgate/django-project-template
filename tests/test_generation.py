@@ -44,6 +44,7 @@ def validate_project_works(result, config):
 
     env = os.environ.copy()
     env.update({
+        'EDIT_SETTINGS': 'no',
         **gitlab_ci['test-django'].get('variables', {}),
         **gitlab_ci['test-node'].get('variables', {}),
 
@@ -171,6 +172,38 @@ def test_mypy_generate(cookies, default_project):
     result = generate_project(cookies, default_project)
 
     assert result.project.join('webapp/').exists()
+    assert not result.project.join('app/').exists()
+
+    validate_project_works(result, default_project)
+
+
+@pytest.mark.env("CYPRESS_SPA")
+def test_spa_generate(cookies, default_project):
+    default_project.update({
+        'frontend_style': 'spa',
+        'use_cypress': 'yes',
+    })
+    result = generate_project(cookies, default_project)
+
+    assert result.project.join('app/').exists()
+    assert result.project.join('app/cypress/').exists()
+    assert result.project.join('app/cypress.json').exists()
+    assert not result.project.join('webapp/').exists()
+
+    validate_project_works(result, default_project)
+
+
+@pytest.mark.env("CYPRESS_WEBAPP")
+def test_spa_generate(cookies, default_project):
+    default_project.update({
+        'frontend_style': 'webapp',
+        'use_cypress': 'yes',
+    })
+    result = generate_project(cookies, default_project)
+
+    assert result.project.join('webapp/').exists()
+    assert result.project.join('webapp/cypress/').exists()
+    assert result.project.join('webapp/cypress.json').exists()
     assert not result.project.join('app/').exists()
 
     validate_project_works(result, default_project)

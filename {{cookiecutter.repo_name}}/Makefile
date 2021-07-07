@@ -421,9 +421,7 @@ compilemessages:
 	docker-compose run --rm django ./manage.py compilemessages
 
 
-{%- if cookiecutter.frontend_style == 'spa' %}
-
-
+{% if cookiecutter.frontend_style == 'spa' -%}
 .PHONY:
 extract-i18n:
 	docker-compose run --rm node yarn extract-i18n
@@ -456,4 +454,8 @@ psql:
 storybook:
 	@echo -e "$(CYAN)Open http://127.0.0.1:6006 to view after storybook starts$(COFF)"
 	docker-compose run --rm -p 6006:6006 node yarn storybook
+{%- endif %}
+
+{%- if cookiecutter.use_cypress == 'yes' %}
+include Makefile-cypress
 {%- endif %}

@@ -1,0 +1,41 @@
+# In CI, we don't have a TTY so need to pass the -T option to docker-compose exec.
+NOTTY := $(shell test -n "${GITLAB_CI}" && echo -n '-T')
+DC_CMD := docker-compose -f docker-compose.yml -f docker-compose.cypress.yml --env-file .env.cypress
+CYPRESS_DEFAULT_COMMAND_TIMEOUT := 10000
+
+.PHONY:
+cypress-cmd:
+	sh -c "$(DC_CMD) $(cmd)"
+
+.PHONY:
+cypress-destroy:
+	$(DC_CMD) stop django-cypress node-cypress
+	$(DC_CMD) rm -f django-cypress node-cypress
+
+.PHONY:
+cypress-build:
+	$(DC_CMD) build django-cypress node-cypress
+	$(DC_CMD) run --rm node-cypress sh -c 'yarn && yarn run cypress install'
+
+.PHONY:
+cypress-prepare:
+	$(DC_CMD) up -d django-cypress
+	$(DC_CMD) exec $(NOTTY) django-cypress ./manage.py migrate
+	$(DC_CMD) exec $(NOTTY) django-cypress ./manage.py loaddata cypress
+
+.PHONY:
+cypress-run:  ## run tests in the console
+	$(DC_CMD) exec $(NOTTY) -e CYPRESS_DEFAULT_COMMAND_TIMEOUT=$(CYPRESS_DEFAULT_COMMAND_TIMEOUT) node-cypress yarn cy:run-ci
+
+.PHONY:
+cypress-open:  ## open the browser on host: requires locally installed packages, please refer to the Readme
+	yarn cy:open
+
+.PHONY:
+cypress-test: cypress-build cypress-prepare cypress-run  ## run tests and leave django running
+
+.PHONY:
+cypress: cypress-test cypress-destroy  ## run tests and clean up
+
+.PHONY:
+cypress-reset: cypress-destroy cypress-prepare
