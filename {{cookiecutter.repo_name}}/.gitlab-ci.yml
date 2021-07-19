@@ -5,21 +5,33 @@ services:
   - docker:dind
 
 variables:
-  POSTGRES_USER: "{{ cookiecutter.repo_name }}"
-  POSTGRES_PASSWORD: "{{ cookiecutter.repo_name }}"
-  DOCKER_DRIVER: overlay2
-  DOCKER_BUILDKIT: "1"
   COMPOSE_DOCKER_CLI_BUILD: "1"
+{%- if cookiecutter.use_cypress == 'yes' %}
+  CYPRESS_DEFAULT_COMMAND_TIMEOUT: 60000
+{%- endif %}
+  DOCKER_BUILDKIT: "1"
+  DOCKER_DRIVER: overlay2
+  DPT_VENV_CACHING: "1"
+  EDIT_SETTINGS: "no"
+  POSTGRES_PASSWORD: "{{ cookiecutter.repo_name }}"
+  POSTGRES_USER: "{{ cookiecutter.repo_name }}"
 
 before_script:
   - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
 
 stages:
   - test
+{%- if cookiecutter.use_cypress == 'yes' %}
+  - test-cypress
+{%- endif %}
   - build
 
 test-django:
   stage: test
+{%- if cookiecutter.thorgate == 'yes' %}
+  tags:
+    - thorgate
+{%- endif %}
   coverage: '/^TOTAL.*\s+(\d+\%)$/'
   cache:
     key: django-cache
@@ -37,9 +49,6 @@ test-django:
       - $CI_COMMIT_MESSAGE =~ /tests skip/
       - $CI_COMMIT_MESSAGE =~ /test skip/
       - $CI_COMMIT_MESSAGE =~ /\[no tests?\]/
-  variables:
-    EDIT_SETTINGS: "no"
-    DPT_VENV_CACHING: "1"
   script:
     - make settings
     - docker-compose build django
@@ -49,6 +58,10 @@ test-django:
 
 test-node:
   stage: test
+{%- if cookiecutter.thorgate == 'yes' %}
+  tags:
+    - thorgate
+{%- endif %}
   coverage: '/All\sfiles.*?\s+(\d+.\d+)/'
   cache:
     key: ci-node-cache
@@ -66,8 +79,6 @@ test-node:
       - $CI_COMMIT_MESSAGE =~ /tests skip/
       - $CI_COMMIT_MESSAGE =~ /test skip/
       - $CI_COMMIT_MESSAGE =~ /\[no tests?\]/
-  variables:
-    EDIT_SETTINGS: "no"
   script:
     - make settings
     - docker-compose build node
@@ -75,14 +86,30 @@ test-node:
     - make lint-js
     - make coverage-js
 
+{% if cookiecutter.use_cypress == 'yes' -%}
+test-cypress:
+  stage: test-cypress
+{%- if cookiecutter.thorgate == 'yes' %}
+  tags:
+    - thorgate
+{%- endif %}
+  except:
+    refs:
+      - template  # Don't run CI on template branch, should not be required
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /tests skip/
+      - $CI_COMMIT_MESSAGE =~ /test skip/
+      - $CI_COMMIT_MESSAGE =~ /\[no tests?\]/
+  script:
+    - make settings
+    - make cypress CYPRESS_DEFAULT_COMMAND_TIMEOUT=${CYPRESS_DEFAULT_COMMAND_TIMEOUT}
+{%- endif %}
 
 build_compose_file:
   stage: build
   needs: []
   except:
     - template # Don't run CI on template branch, should not be required
-  variables:
-    EDIT_SETTINGS: "no"
   script:
     - make settings
 {%- if cookiecutter.build_in_ci == 'yes' %}

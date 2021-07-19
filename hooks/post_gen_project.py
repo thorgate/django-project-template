@@ -80,6 +80,37 @@ def cleanup():
             'webapp/webapp/src/components/NavigationBar/NavigationBar.stories.js',
         ]
 
+    if '{{ cookiecutter.use_cypress }}' == 'no':
+        cleanup_paths += [
+            '.env.cypress',
+            'docker-compose.cypress.yml',
+            'Makefile-cypress',
+            'cypress/',
+            '{{cookiecutter.repo_name}}/cypress/',
+            '{{cookiecutter.repo_name}}/settings/test_cypress.py',
+        ]
+    else:
+        if '{{ cookiecutter.frontend_style }}' == 'spa':
+            # Order is important: rename first, then cleanup
+            rename_paths = [
+                ('cypress/cypress.json', 'app/cypress.json'),
+                ('cypress/integration/spa.auth.spec.js', 'cypress/integration/auth.spec.js'),
+                ('cypress/', 'app/cypress'),
+            ]
+            cleanup_paths += [
+                'app/cypress/integration/webapp.auth.spec.js',  # operate on an already renamed path
+            ]
+        elif '{{ cookiecutter.frontend_style }}' == 'webapp':
+            # Order is important: rename first, then cleanup
+            rename_paths = [
+                ('cypress/cypress.json', 'webapp/cypress.json'),
+                ('cypress/integration/webapp.auth.spec.js', 'cypress/integration/auth.spec.js'),
+                ('cypress/', 'webapp/cypress'),
+            ]
+            cleanup_paths += [
+                'webapp/cypress/integration/spa.auth.spec.js',  # operate on an already renamed path
+            ]
+
     if '{{ cookiecutter.thorgate }}' == 'no':
         cleanup_paths += ['utils/terraform', 'tg-project.yaml']
     else:
@@ -94,6 +125,7 @@ def cleanup():
             "scripts/images",
         ]
 
+    # Rename first, then cleanup
     for old_path, new_path in rename_paths:
         old_full_path = os.path.join(cwd, old_path)
         new_full_path = os.path.join(cwd, new_path)

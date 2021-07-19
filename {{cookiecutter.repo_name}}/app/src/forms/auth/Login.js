@@ -11,7 +11,7 @@ import FormField from 'forms/fields/FormField';
 import { tNoop } from 'utils/text';
 import { getFormPropTypes } from 'utils/types';
 
-const Login = ({ status, isSubmitting }) => {
+const Login = ({ dirty, isValid, status, isSubmitting }) => {
     const { t } = useTranslation();
     return (
         <Form>
@@ -46,7 +46,7 @@ const Login = ({ status, isSubmitting }) => {
                 <Col sm={12} md={4} className="mt-3 ml-auto mr-auto">
                     <Button
                         type="submit"
-                        disabled={isSubmitting}
+                        disabled={isSubmitting || (dirty && !isValid)}
                         className="btn btn-lg btn-block btn-success"
                     >
                         {t('Log in')}
