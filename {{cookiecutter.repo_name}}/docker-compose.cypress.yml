@@ -1,0 +1,66 @@
+# Docker-compose configuration for Cypress testing
+# Note: -cypress suffixes were added to the container names so that
+#  Cypress tests could be run while the project is up.
+
+version: '2.1'
+
+services:
+  django-cypress:
+    build:
+      context: .
+      dockerfile: Dockerfile-django
+    env_file: .env.cypress
+    ports:
+      # use the same ports to be able to access it from host and from docker at the same time
+      - "${DJANGO_PORT}:${DJANGO_PORT}"
+    volumes:
+      - "./{{cookiecutter.repo_name}}:/app"
+      {%- if cookiecutter.frontend_style == "webapp" %}
+      - "./webapp/static:/app/static"
+      - "./webapp/webapp:/app/webapp"
+      {%- endif %}
+      - ".data/media:/files/media"
+      - "${DPT_POETRY_CACHE_DIR:-.data/pycache/pypoetry}:/root/.cache/pypoetry"
+      - "${DPT_PIP_CACHE_DIR:-.data/pycache/pip}:/root/.cache/pip"
+    command: "python manage.py runserver 0.0.0.0:${DJANGO_PORT}"
+    depends_on:
+      - node-cypress
+      - postgres-cypress
+      - redis
+      - mailhog
+    networks:
+      default:
+        aliases:
+          - django-cypress.{{cookiecutter.domain_name}}.docker.local
+
+  node-cypress:
+    {%- if cookiecutter.node_version|int < 14 %}
+    image: cypress/browsers:node12.18.3-chrome89-ff86
+    {%- else -%}
+    image: cypress/browsers:node14.16.0-chrome90-ff88
+    {%- endif %}
+    env_file: .env.cypress
+    {%- if cookiecutter.frontend_style == "spa" %}
+    ports:
+      - "9990:9990"
+      - "9991:9991"
+    {%- endif %}
+    volumes:
+      - "./{% if cookiecutter.frontend_style == "spa" %}app{% else %}webapp{% endif %}:/app"
+      - ".data/node_modules_cypress:/app/node_modules"
+      - ".data/cypress/.cache:/root/.cache/cypress"
+      - ".data/cypress/screenshots:/app/cypress/screenshots"
+      - ".data/cypress/videos:/app/cypress/videos"
+    working_dir: "/app"
+    # The dependency installation step is assumed to have been performed separately
+    # because it also involves `cypress install`.
+    command: yarn dev
+    networks:
+      default:
+        aliases:
+          - node-cypress.{{cookiecutter.domain_name}}.docker.local
+
+  postgres-cypress:
+    # We want to always start with a fresh db, so don't mount any local volumes.
+    image: postgres:{{cookiecutter.postgres_version}}
+    env_file: .env.cypress

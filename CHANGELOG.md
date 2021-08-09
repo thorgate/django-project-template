@@ -32,6 +32,7 @@ to the correct inner directory:
 PROJECT="project"
 cd /srv/${PROJECT}
 shopt -s extglob dotglob
+mkdir repository
 mv !(repository) repository
 shopt -u dotglob
 ```

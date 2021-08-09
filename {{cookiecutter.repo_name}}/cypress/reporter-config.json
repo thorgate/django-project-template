@@ -1,0 +1,3 @@
+{
+  "reporterEnabled": "spec, cypress/reporter.js"
+}

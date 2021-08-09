@@ -1,0 +1,24 @@
+{
+  {% if cookiecutter.frontend_style == 'spa' -%}
+  "baseUrl": "http://node-cypress.{{cookiecutter.domain_name}}.docker.local:9990",
+  {%- else -%}
+  "baseUrl": "http://django-cypress.{{cookiecutter.domain_name}}.docker.local:9999",
+  {%- endif %}
+  "pageLoadTimeout": 60000,
+  "defaultCommandTimeout": 10000,
+  "fixturesFolder": false,
+  "integrationFolder": "cypress/integration",
+  "modifyObstructiveCode": false,
+  "pluginsFile": "cypress/plugins/index.js",
+  "reporter": "cypress-multi-reporters",
+  "reporterOptions": {
+    "configFile": "cypress/reporter-config.json"
+  },
+  "screenshotsFolder": "cypress/screenshots",
+  "screenshotOnRunFailure": false,
+  "supportFile": "cypress/support/index.js",
+  "video": false,
+  "videosFolder": "cypress/videos",
+  "viewportWidth": 1200,
+  "experimentalStudio": true
+}

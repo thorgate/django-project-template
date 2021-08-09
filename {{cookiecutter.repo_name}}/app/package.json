@@ -6,6 +6,11 @@
     "dev": "razzle start",
     "predev": "yarn clean",
     "clean": "rimraf build",
+    {%- if cookiecutter.use_cypress == 'yes' %}
+    "cy:run-ci": "wait-on http://node-cypress.{{cookiecutter.domain_name}}.docker.local:9990 && cypress run --browser chrome --headless",
+    "cy:run": "cypress run --browser chrome",
+    "cy:open": "cypress open",
+    {%- endif %}
     "build": "razzle build",
     "prebuild": "yarn clean",
     "test": "razzle test --env=jsdom",
@@ -43,6 +48,10 @@
     "babel-core": "^7.0.0-bridge.0",
     "bootstrap": "4.3.1",
     "classnames": "2.2.6",
+    {%- if cookiecutter.use_cypress == 'yes' %}
+    "cypress": "^7.6.0",
+    "cypress-multi-reporters": "^1.4.0",
+    {%- endif %}
     "connected-react-router": "6.4.0",
     "date-fns": "2.5.0",
     "formik": "1.5.8",
@@ -115,6 +124,9 @@
     "i18next-scanner": "3.0.0",
     "identity-obj-proxy": "3.0.0",
     "prettier": "2.2.1",
+    {%- if cookiecutter.use_cypress == 'yes' %}
+    "wait-on": "^6.0.0",
+    {%- endif %}
     "stylelint": "10.1.0",
     "stylelint-config-standard": "18.3.0"
   },

@@ -16,7 +16,8 @@ services:
       - "./{{cookiecutter.repo_name}}:/app"
       {%- if cookiecutter.frontend_style == "webapp" %}
       - "./webapp/static:/app/static"
-      - "./webapp/webapp:/app/webapp"{% endif %}
+      - "./webapp/webapp:/app/webapp"
+      {%- endif %}
       - ".data/media:/files/media"
       - "${DPT_POETRY_CACHE_DIR:-.data/pycache/pypoetry}:/root/.cache/pypoetry"
       - "${DPT_PIP_CACHE_DIR:-.data/pycache/pip}:/root/.cache/pip"
@@ -38,11 +39,13 @@ services:
     env_file: .env
     {%- if cookiecutter.frontend_style == "webapp" and cookiecutter.webapp_include_storybook == 'yes' %}
     ports:
-      - "6006:80"{% endif %}
+      - "6006:80"
+    {%- endif %}
     {%- if cookiecutter.frontend_style == "spa" %}
     ports:
       - "8000:8000"
-      - "8001:8001"{% endif %}
+      - "8001:8001"
+    {%- endif %}
     volumes:
       - "./{% if cookiecutter.frontend_style == "spa" %}app{% else %}webapp{% endif %}:/app"
       - ".data/node_modules:/app/node_modules"
