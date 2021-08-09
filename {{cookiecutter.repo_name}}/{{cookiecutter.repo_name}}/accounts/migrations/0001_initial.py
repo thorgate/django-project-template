@@ -2,9 +2,9 @@
 from __future__ import unicode_literals
 
 import django.utils.timezone
-from django.db import migrations, models
-from django.contrib.postgres.operations import CreateExtension
 from django.contrib.postgres.fields import CIEmailField
+from django.contrib.postgres.operations import CreateExtension
+from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
