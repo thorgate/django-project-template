@@ -225,6 +225,22 @@ def test_cypress_webapp_generate(cookies, default_project):
     validate_project_works(result, default_project)
 
 
+@pytest.mark.env("AUTO_DEPLOY")
+def test_spa_generate(cookies, default_project):
+    default_project.update({
+        'frontend_style': SPA,
+        'build_in_ci': YES,
+        'use_auto_deploy': YES,
+    })
+    result = generate_project(cookies, default_project)
+
+    assert result.project.join('ansible/autodeploy.yml').exists()
+    assert result.project.join('ansible/roles/autodeploy').exists()
+    assert result.project.join('scripts/deploy').exists()
+
+    validate_project_works(result, default_project)
+
+
 def test_storybook_not_generate(cookies, default_project):
     default_project.update({
         'webapp_include_storybook': NO,
@@ -281,6 +297,18 @@ def test_invalid_test_hostname_is_error(cookies, default_project):
 def test_invalid_domain_name_is_error(cookies, default_project):
     default_project.update({
         'domain_name': '-foo.com',
+    })
+
+    result = cookies.bake(extra_context=default_project)
+
+    assert result.exit_code == -1
+    assert isinstance(result.exception, FailedHookException)
+
+
+def test_auto_deploy_requires_build_in_ci(cookies, default_project):
+    default_project.update({
+        'build_in_ci': NO,
+        'use_auto_deploy': YES,
     })
 
     result = cookies.bake(extra_context=default_project)

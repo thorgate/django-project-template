@@ -1,0 +1,12 @@
+- user:
+    name: "{{ "{{ autodeploy_user_name | mandatory }}" }}"
+    shell: /bin/bash
+    update_password: on_create
+    password: "{{ "{{ autodeploy_pw_hash | mandatory }}" }}"
+    groups: "adm,sudo,docker"
+
+
+- authorized_key:
+    user: "{{ "{{ autodeploy_user_name | mandatory }}" }}"
+    key: "{{ "{{ autodeploy_public_key | mandatory }}" }}"
+    path: "/home/{{ "{{ autodeploy_user_name | mandatory }}" }}/.ssh/authorized_keys"

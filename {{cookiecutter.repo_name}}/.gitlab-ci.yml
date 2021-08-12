@@ -9,6 +9,9 @@ variables:
 # - {% if cookiecutter.use_cypress == YES %}
   CYPRESS_DEFAULT_COMMAND_TIMEOUT: 60000
 # - {% endif %}
+# - {% if cookiecutter.use_cypress == YES %}
+  DPT_AUTO_DEPLOY_ENABLED: "true"
+# - {% endif %}
   DOCKER_BUILDKIT: "1"
   DOCKER_DRIVER: overlay2
   DPT_VENV_CACHING: "1"
@@ -25,6 +28,9 @@ stages:
   - test-cypress
 # - {% endif %}
   - build
+# - {% if cookiecutter.use_auto_deploy == YES %}
+  - deploy
+# - {% endif %}
 
 test-django:
   stage: test
@@ -128,21 +134,93 @@ build_compose_file:
     - docker-compose -f docker-compose.production.yml build
 
 # - {%- if cookiecutter.build_in_ci == YES %}
-publish_django:
+.publish_image:
   stage: build
   needs: []
   except:
     - template # Don't run CI on template branch, should not be required
   script:
-    - ./scripts/images/publish-prod-image.sh django Dockerfile-django.production
+    - ./scripts/images/publish-prod-image.sh ${PUBLISH_NAME} ${PUBLISH_DOCKER_FILE}
+
+publish_django:
+  extends: .publish_image
+  variables:
+    PUBLISH_NAME: django
+    PUBLISH_DOCKER_FILE: Dockerfile-django.production
 
 # - {%- if cookiecutter.frontend_style == SPA %}
 
 publish_node:
-  stage: build
-  needs: []
-  except:
-    - template # Don't run CI on template branch, should not be required
-  script:
-    - ./scripts/images/publish-prod-image.sh node Dockerfile-node.production
+  extends: .publish_image
+  variables:
+    PUBLISH_NAME: node
+    PUBLISH_DOCKER_FILE: Dockerfile-node.production
 # - {% endif %}{%- endif %}
+
+# - {%- if cookiecutter.use_auto_deploy == YES %}
+.deploy_to_env:
+  stage: deploy
+  tags:
+    - office  # The deploys must execute on CI machines tagged with office to avoid need for VPN.
+  except:
+    refs:
+      # Don't run CI on template branch, should not be required
+      - template
+    variables:
+      # Allow ability to disable auto deployment
+      - $DPT_AUTO_DEPLOY_ENABLED != "true"
+      - $CI_JOB_MANUAL != "true" && $CI_COMMIT_MESSAGE =~ /skip[\- ]?deploy/
+      - $CI_JOB_MANUAL != "true" && $CI_COMMIT_MESSAGE =~ /no[\- ]?deploy/
+  variables: &auto_deploy_base_env_variables
+    PIP_CACHE_DIR: "${CI_PROJECT_DIR}/.pip"
+    POETRY_CACHE_DIR: "${CI_PROJECT_DIR}/.pypoetry"
+    # Workaround for https://docs.ansible.com/ansible/devel/reference_appendices/config.html#cfg-in-world-writable-dir
+    ANSIBLE_CONFIG: "ansible.cfg"
+  cache:
+    paths:
+      - .pip/
+      - .pypoetry/
+  before_script:
+    # Set up ssh dirs
+    - mkdir -p ~/.ssh && chmod 0700 ~/.ssh
+    # See https://docs.gitlab.com/ee/ci/ssh_keys/#verifying-the-ssh-host-keys
+    - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+
+
+.deploy_to_test:
+  extends: .deploy_to_env
+  variables:
+    <<: *auto_deploy_base_env_variables
+    DPT_AUTO_DEPLOY_ENVIRONMENT: test
+    DPT_AUTO_DEPLOY_HOSTNAME: "{{ cookiecutter.test_host }}"
+  script:
+    # Note: For test deployments `DPT_AUTO_DEPLOY_TEST_VAULT_PASSWORD` secret should only be masked not protected. This is
+    #        due to the fact that protected variables are only accessible in protected branches or tags.
+    - ./scripts/deploy/autodeploy.sh ${DPT_AUTO_DEPLOY_ENVIRONMENT} ${DPT_AUTO_DEPLOY_HOSTNAME} ${DPT_AUTO_DEPLOY_TEST_VAULT_PASSWORD} ${CI_COMMIT_SHA}
+
+deploy_to_test:
+  extends: .deploy_to_test
+  only:
+    - master
+
+manual_deploy_to_test:
+  extends: .deploy_to_test
+  when: manual
+
+deploy_to_live:
+  extends: .deploy_to_env
+  variables:
+    <<: *auto_deploy_base_env_variables
+    DPT_AUTO_DEPLOY_ENVIRONMENT: live
+    DPT_AUTO_DEPLOY_HOSTNAME: "{{ cookiecutter.live_host }}"
+  script:
+    # Create a new release in sentry
+    - ./scripts/deploy/create-sentry-release.sh
+    # Note: `DPT_AUTODEPLOY_LIVE_VAULT_PASSWORD` secret should only be masked and protected.
+    - ./scripts/deploy/autodeploy.sh ${DPT_AUTO_DEPLOY_ENVIRONMENT} ${DPT_AUTO_DEPLOY_HOSTNAME} ${DPT_AUTODEPLOY_LIVE_VAULT_PASSWORD} ${CI_COMMIT_SHA}
+    # Finalize sentry release
+    - ./scripts/deploy/finalize-sentry-release.sh
+  only:
+    - tags  # Live deployments should only occur from tags
+# - {%- endif %}
