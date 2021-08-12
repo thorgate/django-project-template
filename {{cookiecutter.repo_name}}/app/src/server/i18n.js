@@ -1,5 +1,8 @@
 import addYears from 'date-fns/addYears';
-import I18NMiddleware from 'i18next-http-middleware';
+import {
+    missingKeyHandler,
+    getResourcesHandler as baseResourcesHandler,
+} from 'i18next-http-middleware';
 import { SETTINGS } from 'settings';
 
 const getMiddlewareOptions = (ctx) => ({
@@ -27,18 +30,10 @@ const getMiddlewareOptions = (ctx) => ({
 });
 
 export const getMissingKeyHandler = (i18next) => (ctx, next) =>
-    I18NMiddleware.missingKeyHandler(i18next, getMiddlewareOptions(ctx))(
-        ctx,
-        null,
-        next,
-    );
+    missingKeyHandler(i18next, getMiddlewareOptions(ctx))(ctx, null, next);
 
 export const getResourcesHandler = (i18next) => (ctx, next) =>
-    I18NMiddleware.getResourcesHandler(i18next, getMiddlewareOptions(ctx))(
-        ctx,
-        null,
-        next,
-    );
+    baseResourcesHandler(i18next, getMiddlewareOptions(ctx))(ctx, null, next);
 
 export const koaI18NextMiddleware = (i18next) => {
     async function i18NextMiddleware(ctx, next) {

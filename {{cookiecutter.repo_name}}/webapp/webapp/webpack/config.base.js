@@ -41,7 +41,7 @@ function makeConfig(options) {
 
         module: {
             rules: [{
-                test: /\.js$/, // Transform all .js files required somewhere with Babel
+                test: /\.([tj])sx?$/, // Transform all .js/.jsx/.ts/.tsx files required somewhere with Babel
                 exclude: /node_modules/,
                 use: 'babel-loader',
             }, {
@@ -144,7 +144,7 @@ function makeConfig(options) {
 
         resolve: {
             modules: ['webapp/src', 'node_modules'],
-            extensions: ['.js'],
+            extensions: ['.js', '.ts', '.tsx'],
         },
 
         devtool: options.devtool,

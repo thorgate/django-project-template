@@ -109,6 +109,7 @@ export default function configureStore(initialState = {}, options = {}) {
     }
 
     /* eslint-disable global-require */
+    /* eslint-disable @typescript-eslint/no-var-requires */
     if (module.hot) {
         module.hot.accept('./reducers', () => {
             const nextRootReducer = require('./reducers').default;

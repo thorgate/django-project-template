@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 
 import withView from 'decorators/withView';
 import LanguageSwitch from 'components/LanguageSwitch';
+import HelloWorld from 'components/HelloWorld';
 import logo from 'styles/images/react.svg';
 
 import styles from './Home.module.css';
@@ -42,6 +43,7 @@ const Home = () => (
         </ul>
         <ul className="Home-resources">
             <LanguageSwitch />
+            <HelloWorld name="TypeScript" />
         </ul>
     </div>
 );

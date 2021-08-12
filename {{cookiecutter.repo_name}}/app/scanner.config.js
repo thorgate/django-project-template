@@ -5,17 +5,19 @@ const fs = require('fs');
 const eol = require('eol');
 const path = require('path');
 const VirtualFile = require('vinyl');
+const typescript = require("typescript");
+const merge = require('lodash.merge');
 
 const i18nSettings = require('./i18n.json');
 
 const appDir = path.resolve(__dirname);
 
-
 module.exports = {
     input: [
-        'src/**/*.{js,jsx}',
-        '!src/**/*.test.{js,jsx}',
+        'src/**/*.{js,jsx,ts,tsx}',
+        '!src/**/*.test.{js,jsx,ts,tsx}',
         '!src/client/winston.js',
+        '!src/client/winston.ts',
     ],
     output: './public/locales',
     options: {
@@ -45,22 +47,41 @@ module.exports = {
         },
     },
     transform(file, enc, done) {
+        const tsExtensions = ['.ts', '.tsx'];
+
+        const { base, ext } = path.parse(file.path);
+        const content = fs.readFileSync(file.path, enc);
+        let result;
+
         const parser = this.parser;
 
-        const content = fs.readFileSync(file.path, enc);
-        const code = require('@babel/core').transformSync(content, {
-            // Required plugins to parse code but keep it close to the source
-            // This is for handling jsx syntax, dynamic imports and optional chaining
-            plugins: [
-                '@babel/plugin-syntax-jsx',
-                '@babel/plugin-syntax-dynamic-import',
-                '@babel/plugin-proposal-optional-chaining',
-            ],
-        });
-        parser.parseFuncFromString(code.code, {
+        if (tsExtensions.includes(ext) && !base.includes(".d.ts")) {
+            const { outputText } = typescript.transpileModule(content, {
+                compilerOptions: {
+                    target: "es2018",
+                },
+                fileName: path.basename(file.path),
+            });
+
+            result = outputText;
+        } else {
+            const code = require('@babel/core').transformSync(content, {
+                // Required plugins to parse code but keep it close to the source
+                // This is for handling jsx syntax, dynamic imports and optional chaining
+                plugins: [
+                    '@babel/plugin-syntax-jsx',
+                    '@babel/plugin-syntax-dynamic-import',
+                    '@babel/plugin-proposal-optional-chaining',
+                ],
+            });
+
+            result = code.code;
+        }
+
+        parser.parseFuncFromString(result, {
             list: ['_', '__', 'i18next.t', 'i18n.t', 't', 'tNoop'],
         });
-        parser.parseTransFromString(code.code, {
+        parser.parseTransFromString(result, {
             component: 'Trans',
             i18nKey: 'i18nKey',
             defaultsKey: 'defaults',
@@ -85,14 +106,23 @@ module.exports = {
                 let resContent;
                 try {
                     resContent = JSON.parse(
-                        fs.readFileSync(
-                            fs.realpathSync(path.join(appDir, 'public', 'locales', resPath)),
-                        ).toString('utf-8'),
+                        fs
+                            .readFileSync(
+                                fs.realpathSync(
+                                    path.join(
+                                        appDir,
+                                        'public',
+                                        'locales',
+                                        resPath,
+                                    ),
+                                ),
+                            )
+                            .toString('utf-8'),
                     );
                 } catch (e) {
                     resContent = {};
                 }
-                const obj = { ...namespaces[ns], ...resContent };
+                const obj = merge(namespaces[ns], resContent);
                 let text = JSON.stringify(obj, null, jsonIndent) + '\n';
 
                 if (lineEnding === 'auto') {
@@ -103,7 +133,8 @@ module.exports = {
                     text = eol.lf(text);
                 } else if (lineEnding === '\r' || lineEnding === 'cr') {
                     text = eol.cr(text);
-                } else { // Defaults to LF
+                } else {
+                    // Defaults to LF
                     text = eol.lf(text);
                 }
 
@@ -117,10 +148,12 @@ module.exports = {
                     contents = new Buffer(text);
                 }
 
-                this.push(new VirtualFile({
-                    path: resPath,
-                    contents: contents,
-                }));
+                this.push(
+                    new VirtualFile({
+                        path: resPath,
+                        contents: contents,
+                    }),
+                );
             });
         });
 

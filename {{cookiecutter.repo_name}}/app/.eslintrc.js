@@ -1,5 +1,8 @@
 module.exports = {
-    extends: ['@thorgate'],
+    extends: ['@thorgate/eslint-config-typescript'],
+    parserOptions: {
+        project: './tsconfig.json',
+    },
     settings: {
         'import/ignore': [
             '^@winston$'

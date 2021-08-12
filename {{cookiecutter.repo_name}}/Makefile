@@ -328,11 +328,10 @@ eslint:
 	@echo -e "$(CYAN)Running ESLint$(COFF)"
 	@docker-compose run --rm node yarn lint
 
-
 .PHONY:
 eslint-fix:
 	@echo -e "$(CYAN)Running ESLint$(COFF)"
-	@docker-compose run --rm node yarn lint --fix
+	@docker-compose run --rm node yarn lint:eslint --fix
 
 
 .PHONY:

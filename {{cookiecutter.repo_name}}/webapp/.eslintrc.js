@@ -1,5 +1,8 @@
 module.exports = {
-    extends: ['@thorgate'],
+    extends: ['@thorgate/eslint-config-typescript'],
+    parserOptions: {
+        project: './tsconfig.json',
+    },
     settings: {
         'import/resolver': {
             node: {}, // https://github.com/benmosher/eslint-plugin-import/issues/1396#issuecomment-511007063
