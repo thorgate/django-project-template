@@ -1,4 +1,5 @@
 /* eslint-disable global-require */
+/* eslint-disable @typescript-eslint/no-var-requires */
 const i18nSettings = require('../i18n.json');
 
 let currentSettings;

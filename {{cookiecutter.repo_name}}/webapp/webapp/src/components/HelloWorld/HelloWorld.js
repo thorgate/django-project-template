@@ -6,12 +6,14 @@ import { createTitle, setTitle, selectTitle } from 'ducks/title';
 import { useEffectOnce } from 'utils/hooks';
 
 import Counter from '../Counter';
+import WelcomeTest from '../WelcomeTest';
 import styles from './HelloWorld.scss';
 
 export const HelloWorldBase = ({ title }) => (
     <>
         <h1 className={styles.title}>{title}</h1>
         <Counter />
+        <WelcomeTest name="from TypeScript" />
     </>
 );
 
