@@ -226,7 +226,7 @@ def test_cypress_webapp_generate(cookies, default_project):
 
 
 @pytest.mark.env("AUTO_DEPLOY")
-def test_spa_generate(cookies, default_project):
+def test_auto_deploy_generate(cookies, default_project):
     default_project.update({
         'frontend_style': SPA,
         'build_in_ci': YES,
@@ -297,18 +297,6 @@ def test_invalid_test_hostname_is_error(cookies, default_project):
 def test_invalid_domain_name_is_error(cookies, default_project):
     default_project.update({
         'domain_name': '-foo.com',
-    })
-
-    result = cookies.bake(extra_context=default_project)
-
-    assert result.exit_code == -1
-    assert isinstance(result.exception, FailedHookException)
-
-
-def test_auto_deploy_requires_build_in_ci(cookies, default_project):
-    default_project.update({
-        'build_in_ci': NO,
-        'use_auto_deploy': YES,
     })
 
     result = cookies.bake(extra_context=default_project)

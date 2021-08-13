@@ -121,10 +121,6 @@ def validate_config():
         print("Valid use_auto_deploy keys are: %s" % ', '.join(valid_use_auto_deploy_key))
         sys.exit(1)
 
-    if use_auto_deploy == YES and build_in_ci == NO:
-        print("Auto deployment requires 'Build in CI' to be enabled!")
-        sys.exit(1)
-
     if not re.match(r'(alpine|debian)$', "{{ cookiecutter.docker_base_image }}"):
         print("Only alpine and debian options for docker_base_image are supported.")
         sys.exit(1)

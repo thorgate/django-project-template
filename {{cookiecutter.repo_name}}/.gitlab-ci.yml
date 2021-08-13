@@ -160,8 +160,10 @@ publish_node:
 # - {%- if cookiecutter.use_auto_deploy == YES %}
 .deploy_to_env:
   stage: deploy
+# - {%- if cookiecutter.thorgate == 'yes' %}
   tags:
     - office  # The deploys must execute on CI machines tagged with office to avoid need for VPN.
+# - {%- endif %}
   except:
     refs:
       # Don't run CI on template branch, should not be required
