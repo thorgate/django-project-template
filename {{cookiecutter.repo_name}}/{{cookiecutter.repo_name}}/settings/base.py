@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 """
 
 import os
+from typing import Any, Dict
 {%- if cookiecutter.frontend_style == 'spa' %}
 from datetime import timedelta
 {%- endif %}
@@ -308,7 +309,7 @@ EMAIL_HOST_PASSWORD = ""
 #  production.py.
 #  Notably we modify existing Django loggers to propagate and delegate their logging to the root handler, so that we
 #  only have to configure the root handler.
-LOGGING = {
+LOGGING :  Dict[str, Any] = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
