@@ -309,7 +309,7 @@ EMAIL_HOST_PASSWORD = ""
 #  production.py.
 #  Notably we modify existing Django loggers to propagate and delegate their logging to the root handler, so that we
 #  only have to configure the root handler.
-LOGGING :  Dict[str, Any] = {
+LOGGING: Dict[str, Any] = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
