@@ -75,12 +75,19 @@ test_debian_WEBAPP:
   script:
     - pytest -E DEBIAN_WEBAPP --maxfail=1 -v
 
-test_mypy:
+test_mypy_WEBAPP:
   stage: test
   except:
     - schedules
   script:
-    - pytest -E MYPY --maxfail=1 -v
+    - pytest -E MYPY_WEBAPP --maxfail=1 -v
+
+test_mypy_SPA:
+  stage: test
+  except:
+    - schedules
+  script:
+    - pytest -E MYPY_SPA --maxfail=1 -v
 
 test_cypress_spa:
   stage: test

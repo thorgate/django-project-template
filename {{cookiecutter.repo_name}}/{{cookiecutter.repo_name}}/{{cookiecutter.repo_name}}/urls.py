@@ -17,10 +17,9 @@ urlpatterns = [
     path("jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"),{% else %}
     path("api/", include("{{cookiecutter.repo_name}}.rest.urls")),{% endif %}
     path("{{cookiecutter.django_admin_path}}/", admin.site.urls),
+    *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
+    *static(settings.STATIC_URL, document_root=settings.STATIC_ROOT),
 ]
-
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if not settings.DEBUG:
     handler500 = "{{cookiecutter.repo_name}}.views.server_error"

@@ -12,6 +12,7 @@ import os
 {%- if cookiecutter.frontend_style == 'spa' %}
 from datetime import timedelta
 {%- endif %}
+from typing import Any, Dict
 from urllib.parse import quote
 
 import environ
@@ -308,7 +309,7 @@ EMAIL_HOST_PASSWORD = ""
 #  production.py.
 #  Notably we modify existing Django loggers to propagate and delegate their logging to the root handler, so that we
 #  only have to configure the root handler.
-LOGGING = {
+LOGGING: Dict[str, Any] = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
