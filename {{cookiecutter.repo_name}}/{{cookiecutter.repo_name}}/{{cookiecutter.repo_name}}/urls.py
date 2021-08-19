@@ -11,7 +11,7 @@ from django.views.generic.base import RedirectView{% endif %}
 admin.autodiscover()
 
 urlpatterns = [
-    {%- if cookiecutter.frontend_style == 'webapp' %}
+{%- if cookiecutter.frontend_style == 'webapp' %}
     path("", include("accounts.urls")),
     path("", TemplateView.as_view(template_name="home.html"), name="home"),
     path("jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"),{% else %}
