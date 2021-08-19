@@ -9,10 +9,10 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 """
 
 import os
-from typing import Any, Dict
 {%- if cookiecutter.frontend_style == 'spa' %}
 from datetime import timedelta
 {%- endif %}
+from typing import Any, Dict
 from urllib.parse import quote
 
 import environ
