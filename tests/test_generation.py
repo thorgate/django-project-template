@@ -164,15 +164,30 @@ def test_debian_webapp_generate(cookies, default_project):
     validate_project_works(result, default_project)
 
 
-@pytest.mark.env("MYPY")
-def test_mypy_generate(cookies, default_project):
+@pytest.mark.env("MYPY_WEBAPP")
+def test_mypy_webapp_generate(cookies, default_project):
     default_project.update({
         'use_mypy': True,
+        'frontend_style': 'webapp',
+
     })
     result = generate_project(cookies, default_project)
 
     assert result.project.join('webapp/').exists()
     assert not result.project.join('app/').exists()
+
+    validate_project_works(result, default_project)
+
+@pytest.mark.env("MYPY_SPA")
+def test_mypy_spa_generate(cookies, default_project):
+    default_project.update({
+        'use_mypy': True,
+        'frontend_style': 'spa',
+    })
+    result = generate_project(cookies, default_project)
+
+    assert result.project.join('app/').exists()
+    assert not result.project.join('webapp/').exists()
 
     validate_project_works(result, default_project)
 
