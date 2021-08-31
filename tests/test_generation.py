@@ -193,7 +193,7 @@ def test_mypy_spa_generate(cookies, default_project):
 
 
 @pytest.mark.env("CYPRESS_SPA")
-def test_spa_generate(cookies, default_project):
+def test_cypress_spa_generate(cookies, default_project):
     default_project.update({
         'frontend_style': 'spa',
         'use_cypress': 'yes',
@@ -209,7 +209,7 @@ def test_spa_generate(cookies, default_project):
 
 
 @pytest.mark.env("CYPRESS_WEBAPP")
-def test_spa_generate(cookies, default_project):
+def test_cypress_webapp_generate(cookies, default_project):
     default_project.update({
         'frontend_style': 'webapp',
         'use_cypress': 'yes',
