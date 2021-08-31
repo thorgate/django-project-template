@@ -2,7 +2,7 @@
 .idea
 
 {{cookiecutter.repo_name}}/node_modules/
-{% if cookiecutter.frontend_style == 'webapp' %}web{% endif %}app/node_modules/
+{% if cookiecutter.frontend_style == WEBAPP %}web{% endif %}app/node_modules/
 venv/
 
 .data*/

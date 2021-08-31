@@ -1,4 +1,4 @@
-{% raw %}
+# - {% raw %}
 - name: "Create certbot config"
   template:
       src: letsencrypt.conf
@@ -8,7 +8,14 @@
 
 - name: "Check if certificate has already been acquired"
   stat:
-      path: /etc/letsencrypt/live/{% endraw %}{% if cookiecutter.frontend_style == 'spa' %}{% raw %}{{ node_site_host }}{% endraw %}{% else %}{% raw %}{{ django_site_host }}{% endraw %}{% endif %}{% raw %}/fullchain.pem
+# - {% endraw %}
+# -  {% if cookiecutter.frontend_style == SPA %}
+# -    {% set LE_domain="{{ node_site_host }}" %}
+# -  {% elif cookiecutter.frontend_style == WEBAPP %}
+# -    {% set LE_domain="{{ django_site_host }}" %}
+# -  {% endif %}
+      path: /etc/letsencrypt/live/{{ LE_domain }}/fullchain.pem
+# - {% raw %}
   register: fullchain_file
 
 
@@ -67,4 +74,4 @@
 
 - name: "Retrieve certificate with certbot"
   command: "{{ certbot_binary }} certonly --noninteractive --agree-tos -c /etc/letsencrypt/configs/letsencrypt.{{ project }}.conf"
-{%- endraw %}
+# - {% endraw %}

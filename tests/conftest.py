@@ -2,6 +2,7 @@ import os
 import pytest
 import sys
 
+from .constants import YES, NO, WEBAPP
 
 def pytest_addoption(parser):
     parser.addoption(
@@ -21,8 +22,8 @@ def pytest_configure(config):
 
     # Set the base temp directory to TPL_PLAYGROUND so pytest-cookies creates its files into shared storage
     #  see the following issue for reasoning: https://gitlab.com/gitlab-org/gitlab-ce/issues/41227
-    if os.environ.get('CI_SERVER') == 'yes':
-        config.option.basetemp = os.environ['TPL_PLAYGROUND']
+    if os.environ.get("CI_SERVER") == YES:
+        config.option.basetemp = os.environ["TPL_PLAYGROUND"]
 
     # until this is resolved: https://github.com/audreyr/cookiecutter/pull/944
     sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "extensions")))
@@ -48,12 +49,12 @@ def default_project():
     return {
         "project_title": "Test project",
         "repo_name": "test_project",
-        "include_celery": "no",
-        "webapp_include_storybook": "no",
+        "include_celery": NO,
+        "webapp_include_storybook": NO,
         "test_host": "test1.thorgate.eu",
         "live_host": "test2.thorgate.eu",
         "python_version": "3.8",
         "node_version": "12",
-        "frontend_style": "webapp",
-        "use_cypress": "no",
+        "frontend_style": WEBAPP,
+        "use_cypress": NO,
     }

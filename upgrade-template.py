@@ -25,12 +25,16 @@ from cookiecutter.main import prompt_for_config, generate_context
 from copy import deepcopy
 
 
+WEBAPP = "{{WEBAPP}}"
+SPA = "{{SPA}}"
+
+
 def get_codemods(context):
     frontend_style = context['cookiecutter']['frontend_style']
 
     codemods = []
 
-    if frontend_style == 'spa':
+    if frontend_style == SPA:
         codemods.append('settings-default-export')
         codemods.append('react-helmet-async-import')
         codemods.append('tg-named-routes-resolve-path')
@@ -316,9 +320,9 @@ def apply_frontend_codemods(path, template_path):
     context = load_context(context_path)
     frontend_style = context['cookiecutter']['frontend_style']
 
-    if frontend_style == 'webapp':
+    if frontend_style == WEBAPP:
         frontend_path = join(path, 'webapp', 'webapp', 'src')
-    else:
+    elif frontend_style == SPA:
         frontend_path = join(path, 'app', 'src')
 
     codemods = get_codemods(context)

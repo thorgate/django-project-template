@@ -1,7 +1,7 @@
-{%- if cookiecutter.frontend_style == 'spa' -%}
+# - {%- if cookiecutter.frontend_style == SPA %}
 from corsheaders.defaults import default_headers
 
-{% endif -%}
+# - {% endif %}
 from settings.base import *
 
 
@@ -9,11 +9,9 @@ DEBUG = False
 
 if not IS_DOCKER_BUILD:
     # Static site url, used when we need absolute url but lack request object, e.g. in email sending.
-    {%- if cookiecutter.frontend_style == 'webapp' %}
+    # - {%- if cookiecutter.frontend_style == WEBAPP %}
     SITE_URL = env.str("DJANGO_SITE_URL")
-    {%- endif -%}
-
-{% if cookiecutter.frontend_style == 'spa' %}
+    # - {%- elif cookiecutter.frontend_style == SPA %}
     SITE_URL = env.str("RAZZLE_SITE_URL")
     DJANGO_SITE_URL = env.str("RAZZLE_BACKEND_SITE_URL")
     CSRF_COOKIE_DOMAIN = env.str("DJANGO_CSRF_COOKIE_DOMAIN")
@@ -25,7 +23,7 @@ CORS_ORIGIN_WHITELIST = [
     f"https://{host}"
     for host in env.list("DJANGO_CORS_ORIGIN_WHITELIST", default=ALLOWED_HOSTS)
 ]
-{% endif %}
+# - {% endif %}
 
 EMAIL_HOST = env.str("DJANGO_EMAIL_HOST", default="smtp.sparkpostmail.com")
 EMAIL_PORT = env.int("DJANGO_EMAIL_PORT", default=587)
@@ -70,14 +68,13 @@ else:
 # Enable {{ cookiecutter.django_media_engine }} storage
 DEFAULT_FILE_STORAGE = f"{PROJECT_NAME}.storages.MediaStorage"
 MEDIA_ROOT = env.str("DJANGO_MEDIA_ROOT", default="")
-{% if cookiecutter.django_media_engine == "S3" -%}
+# - {% if cookiecutter.django_media_engine == "S3" %}
 AWS_STORAGE_BUCKET_NAME = env.str(
     "DJANGO_AWS_STORAGE_BUCKET_NAME", default=f"{PROJECT_NAME}-TODO"
 )
 AWS_ACCESS_KEY_ID = env.str("DJANGO_AWS_ACCESS_KEY_ID", default="***UNSET***")
 AWS_SECRET_ACCESS_KEY = env.str("DJANGO_AWS_SECRET_ACCESS_KEY", default="***UNSET***")
-{% endif -%}
-{% if cookiecutter.django_media_engine == "GCS" -%}
+# - {% elif cookiecutter.django_media_engine == "GCS" %}
 GS_BUCKET_NAME = env.str("DJANGO_GS_BUCKET_NAME", default=f"{PROJECT_NAME}-TODO")
 GS_PROJECT_ID = env.str("DJANGO_GS_PROJECT_ID", default="***UNSET***")
 
@@ -86,4 +83,4 @@ from google.oauth2 import service_account  # NOQA
 GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
     json.load(env.str("DJANGO_GS_CREDENTIALS", default="{}")),
 )
-{% endif -%}
+# - {% endif %}

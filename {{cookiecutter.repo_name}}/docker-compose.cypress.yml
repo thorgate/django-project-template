@@ -15,10 +15,10 @@ services:
       - "${DJANGO_PORT}:${DJANGO_PORT}"
     volumes:
       - "./{{cookiecutter.repo_name}}:/app"
-      {%- if cookiecutter.frontend_style == "webapp" %}
+# -   {%- if cookiecutter.frontend_style == WEBAPP %}
       - "./webapp/static:/app/static"
       - "./webapp/webapp:/app/webapp"
-      {%- endif %}
+# -   {%- endif %}
       - ".data/media:/files/media"
       - "${DPT_POETRY_CACHE_DIR:-.data/pycache/pypoetry}:/root/.cache/pypoetry"
       - "${DPT_PIP_CACHE_DIR:-.data/pycache/pip}:/root/.cache/pip"
@@ -34,19 +34,23 @@ services:
           - django-cypress.{{cookiecutter.domain_name}}.docker.local
 
   node-cypress:
-    {%- if cookiecutter.node_version|int < 14 %}
+# - {%- if cookiecutter.node_version|int < 14 %}
     image: cypress/browsers:node12.18.3-chrome89-ff86
-    {%- else -%}
+# - {%- else %}
     image: cypress/browsers:node14.16.0-chrome90-ff88
-    {%- endif %}
+# - {% endif %}
     env_file: .env.cypress
-    {%- if cookiecutter.frontend_style == "spa" %}
+# - {%- if cookiecutter.frontend_style == SPA %}
     ports:
       - "9990:9990"
       - "9991:9991"
-    {%- endif %}
+# - {%- endif %}
     volumes:
-      - "./{% if cookiecutter.frontend_style == "spa" %}app{% else %}webapp{% endif %}:/app"
+# - {%- if cookiecutter.frontend_style == SPA %}
+      - "./app:/app"
+# - {%- elif cookiecutter.frontend_style == WEBAPP %}
+      - "./webapp:/app"
+# - {% endif %}
       - ".data/node_modules_cypress:/app/node_modules"
       - ".data/cypress/.cache:/root/.cache/cypress"
       - ".data/cypress/screenshots:/app/cypress/screenshots"

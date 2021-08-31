@@ -46,7 +46,7 @@ WORKDIR /app
 # Compile translations to .mo files
 RUN DJANGO_DOCKER_BUILD=True python manage.py compilemessages
 
-{%- if cookiecutter.frontend_style == 'webapp' %}
+{%- if cookiecutter.frontend_style == WEBAPP %}
 
 # Based on Node {{ cookiecutter.node_version }} Debian
 FROM node:{{ cookiecutter.node_version }}-buster-slim as node_builder

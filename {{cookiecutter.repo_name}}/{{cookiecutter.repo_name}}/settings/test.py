@@ -9,9 +9,10 @@ DATABASES["default"]["TEST"] = {
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
-{%- if cookiecutter.frontend_style == 'spa' %}
+# - {%- if cookiecutter.frontend_style == SPA %}
 
 # Use session in tests to make api login easier
 REST_FRAMEWORK["DEFAULT_AUTHENTICATION_CLASSES"] = (
     "rest_framework.authentication.SessionAuthentication",
-){% endif %}
+)
+# - {% endif %}

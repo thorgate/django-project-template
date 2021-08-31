@@ -135,7 +135,7 @@ prettier-format:
 
 .PHONY:
 prettier-format-cut-prefix:
-{%- if cookiecutter.frontend_style == 'spa' %}
+{%- if cookiecutter.frontend_style == SPA %}
 	@make run-prettier cmd="yarn prettier-format $(subst app/src, src, $(cmd))"
 {%- else %}
 	@make run-prettier cmd="yarn prettier-format $(subst webapp/webapp, webapp, $(cmd))"
@@ -197,7 +197,7 @@ setup: pycharm settings ## Sets up the project in your local machine. This inclu
 	@make migrate
 	@echo -e "$(CYAN)Installing node modules$(COFF)"
 	@make node-install
-{% if cookiecutter.frontend_style == 'spa' %}
+{% if cookiecutter.frontend_style == SPA %}
 	@echo -e "$(CYAN)Extracting JS translations$(COFF)"
 	@make extract-i18n
 {% endif %}
@@ -206,7 +206,7 @@ setup: pycharm settings ## Sets up the project in your local machine. This inclu
 	@echo -e "Run 'make docker' to start Django development server and Webpack.$(COFF)"
 
 
-{%- if cookiecutter.thorgate == 'yes' %}
+{%- if cookiecutter.thorgate == YES %}
 
 
 .PHONY:
@@ -295,7 +295,7 @@ clean:
 
 
 .PHONY:
-lint-py: black-check-all isort prospector{% if cookiecutter.use_mypy == 'yes' %} mypy{% endif %}
+lint-py: black-check-all isort prospector{% if cookiecutter.use_mypy == YES %} mypy{% endif %}
 
 .PHONY:
 lint-js: prettier-check-all eslint
@@ -340,7 +340,7 @@ prospector:
 	@make run-python cmd=prospector
 
 
-{%- if cookiecutter.use_mypy == 'yes' %}
+{%- if cookiecutter.use_mypy == YES %}
 
 
 .PHONY:
@@ -411,7 +411,7 @@ docker-logs:
 .PHONY:
 makemessages:
 	docker-compose run --rm django ./manage.py makemessages -a
-{%- if cookiecutter.frontend_style == 'webapp' %}
+{%- if cookiecutter.frontend_style == WEBAPP %}
 	docker-compose run --rm django ./manage.py makemessages -a -d djangojs
 {%- endif %}
 
@@ -448,13 +448,13 @@ endif
 psql:
 	docker-compose exec postgres psql --user $(PROJECT_NAME) --dbname $(PROJECT_NAME)
 
-{%- if cookiecutter.webapp_include_storybook == 'yes' %}
+{%- if cookiecutter.webapp_include_storybook == YES %}
 .PHONY:
 storybook:
 	@echo -e "$(CYAN)Open http://127.0.0.1:6006 to view after storybook starts$(COFF)"
 	docker-compose run --rm -p 6006:6006 node yarn storybook
 {%- endif %}
 
-{%- if cookiecutter.use_cypress == 'yes' %}
+{%- if cookiecutter.use_cypress == YES %}
 include Makefile-cypress
 {%- endif %}

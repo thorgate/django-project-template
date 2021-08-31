@@ -1,24 +1,24 @@
 # Hostnames for the site
 django_site_host: "TODO"
-{%- if cookiecutter.frontend_style == 'spa' %}
+# - {%- if cookiecutter.frontend_style == SPA %}
 node_site_host: "TODO"
-{%- endif %}
+# - {%- endif %}
 
 # Sentry config
 django_sentry_environment: "todo"
 django_sentry_dsn: ""  # TODO: Set to correct value or remove the TODO
-{%- if cookiecutter.frontend_style == 'spa' %}
+# - {%- if cookiecutter.frontend_style == SPA %}
 razzle_sentry_environment: "todo"
 razzle_sentry_dsn: ""  # TODO: Set to correct value or remove the TODO
-{%- endif %}
+# - {%- endif %}
 
-{% if cookiecutter.django_media_engine == "GCS" -%}
+# - {% if cookiecutter.django_media_engine == "GCS" %}
 django_gs_bucket_name: "TODO"
 django_gs_project_id: "TODO"
-{%- endif %}{% if cookiecutter.django_media_engine == "S3" -%}
+# - {%- endif %}{% if cookiecutter.django_media_engine == "S3" %}
 # S3 bucket name to use
 django_aws_storage_bucket_name: "TODO"
-{%- endif %}
+# - {%- endif %}
 
 # Which compose file to use in the server
 compose_file: "docker-compose.production.yml"

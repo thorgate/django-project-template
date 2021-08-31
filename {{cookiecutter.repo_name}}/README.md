@@ -52,8 +52,11 @@ Both docker and docker-compose are used to run this project, so the run command 
     docker-compose up
 
 This builds, (re)creates and starts containers for Django, Node, PostgreSQL and Redis. Refer to `docker-compose.yml` for
-more insight.{% if cookiecutter.frontend_style == 'spa' %} Django app is running on `3000` port. Front-end server is running on `8000` port.
-For more information see [SPA docs](app/README.md).{% endif %}
+more insight.
+{%- if cookiecutter.frontend_style == SPA %}
+Django app is running on `3000` port. Front-end server is running on `8000` port.
+For more information see [SPA docs](app/README.md).
+{%- endif %}
 
 Logs from all running containers are shown in the terminal. To run in "detached mode", pass the `-d` flag to
 docker-compose. To see running containers, use `docker-compose ps`. To see logs from these containers, run
@@ -167,7 +170,7 @@ https://pytest-django.readthedocs.org/en/latest/index.html
 You can also calculate tests coverage via `make coverage`. The results will be in the following directories:
 
 - python: [`{{cookiecutter.repo_name}}/cover`](./{{cookiecutter.repo_name}}/cover)
-- javascript: [{% if cookiecutter.frontend_style == 'webapp' %}`webapp/coverage`{% else %}`app/coverage`{% endif %}](./{% if cookiecutter.frontend_style == 'webapp' %}webapp/coverage{% else %}app/coverage{% endif %})
+- javascript: [{% if cookiecutter.frontend_style == WEBAPP %}`webapp/coverage`{% else %}`app/coverage`{% endif %}](./{% if cookiecutter.frontend_style == WEBAPP %}webapp/coverage{% else %}app/coverage{% endif %})
 
 ## Running code formatting tools
 
@@ -246,7 +249,7 @@ Howewer if you are adding a new language or are creating translations for the fi
 different command to create the initial locale files. The command is `add-locale`. After you have used this command once per each
 new language you can safely use `makemessages` and `compilemessages`
 
-{% if cookiecutter.frontend_style == 'spa' %}
+{% if cookiecutter.frontend_style == SPA %}
 ## SPA translations
 
 Frontend app uses [i18next](https://github.com/i18next/i18next) for translations and locale data is stored in `public/locale/**/translations.json`.
@@ -260,6 +263,6 @@ In development Node server needs to be restarted to see updated translations.
 ## Deployment
 
 We use Ansible for deployment, see more information in [ansible directory](./ansible/README.md).
-{%- if cookiecutter.build_in_ci == 'yes' %}
+{%- if cookiecutter.build_in_ci == YES %}
 You may also be interested in [building & pushing production docker images locally](./scripts/images/README.md#locally).
 {%- endif %}
