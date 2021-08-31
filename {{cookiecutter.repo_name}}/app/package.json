@@ -133,6 +133,7 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "html-webpack-plugin": "^5.3.1",
     "i18next-scanner": "3.0.0",
+    "jest-junit": "^12.0.0",
     "identity-obj-proxy": "3.0.0",
     "mini-css-extract-plugin": "0.9.0",
     "prettier": "2.2.1",
@@ -152,20 +153,47 @@
     "webpack-dev-server": "3.11.2"
   },
   "jest": {
-    "modulePaths": [
-      "<rootDir>/src/"
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx,ts,tsx}"
     ],
     "coverageReporters": [
       "json",
       "lcov",
       "text",
       "clover",
-      "cobertura"
+      [
+        "cobertura",
+        {
+          "projectRoot": "../"
+        }
+      ]
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "json"
     ],
     "moduleNameMapper": {
       "\\.module.(css|scss)$": "identity-obj-proxy",
       "@winston": "<rootDir>/node_modules/winston"
     },
+    "modulePaths": [
+      "<rootDir>/src/"
+    ],
+    "reporters": [
+      "default",
+      [
+        "jest-junit",
+        {
+          "outputDirectory": "coverage"
+        }
+      ]
+    ],
+    "testMatch": [
+      "<rootDir>/src/**/__tests__/**/*.(ts|js)?(x)",
+      "<rootDir>/src/**/?(*.)(spec|test).(ts|js)?(x)"
+    ],
     "transform": {
       "^.+\\.(js|jsx|mjs|cjs|ts|tsx)$": "<rootDir>/node_modules/razzle/config/jest/babelTransform.js",
       "^.+\\.css$": "<rootDir>/node_modules/razzle/config/jest/cssTransform.js",
