@@ -25,8 +25,8 @@ from cookiecutter.main import prompt_for_config, generate_context
 from copy import deepcopy
 
 
-WEBAPP = "{{WEBAPP}}"
-SPA = "{{SPA}}"
+WEBAPP = "webapp"
+SPA = "spa"
 
 
 def get_codemods(context):
