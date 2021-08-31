@@ -1,7 +1,7 @@
 {% raw %}{% load static %}
 {% load i18n %}
 {% load render_bundle from webpack_loader %}{% endraw %}
-{% if cookiecutter.frontend_style == 'webapp' %}
+{% if cookiecutter.frontend_style == WEBAPP %}
 {% raw %}{% load js_reverse %}{% endraw %}
 {% endif %}{% raw %}
 
@@ -29,12 +29,12 @@
                 user: null,
             {% endif %}
         };
-        {% endraw %}{% if cookiecutter.frontend_style == 'webapp' %}{% raw %}
+        {% endraw %}{% if cookiecutter.frontend_style == WEBAPP %}{% raw %}
         {% js_reverse_inline %}
         {% endraw %}{% endif %}{% raw %}
     </script>
 
-    {% endraw %}{% if cookiecutter.frontend_style == 'webapp' %}{% raw %}
+    {% endraw %}{% if cookiecutter.frontend_style == WEBAPP %}{% raw %}
     <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
 
     {% render_bundle 'runtime' %}
@@ -61,7 +61,7 @@
         <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
 
-    {% endraw %}{% if cookiecutter.frontend_style == 'webapp' %}{% raw %}
+    {% endraw %}{% if cookiecutter.frontend_style == WEBAPP %}{% raw %}
     <div id="navigation-bar">
         <header class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
             <div class="container">
@@ -110,7 +110,7 @@
     </div>
 
     {% render_bundle 'app' %}
-    {% endraw %}{% if cookiecutter.frontend_style == 'webapp' %}{% raw %}
+    {% endraw %}{% if cookiecutter.frontend_style == WEBAPP %}{% raw %}
     <script>
         {% endraw %}{{cookiecutter.repo_name}}{% raw %}.initNavigationBar();
     </script>

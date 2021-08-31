@@ -10,7 +10,7 @@ location = /assets/502.html {
     add_header Retry-After 180 always;
 }
 
-{%- if cookiecutter.frontend_style == 'webapp' %}
+{%- if cookiecutter.frontend_style == WEBAPP %}
 
 location ^~ /assets/assets/ {
     # Stuff under assets is versioned, so we can set expiry to max

@@ -15,39 +15,39 @@ default = true
 [tool.poetry.dependencies]
 python = "^{{ cookiecutter.python_version }}"
 
-{% if cookiecutter.django_media_engine == 'S3' -%}
+# - {% if cookiecutter.django_media_engine == 'S3' %}
 boto3 = "==1.*"
-{% endif -%}
-{% if cookiecutter.include_celery == 'yes' -%}
+# - {% endif %}
+# - {% if cookiecutter.include_celery == YES %}
 celery = {version = "==5.0.*", extras = ["redis"]}
-{% endif -%}
+# - {% endif %}
 Django = "==3.1.*"
 django-environ = "*"
 django-redis = "==4.12.*"
 "django-storages{% if cookiecutter.django_media_engine == 'GCS' %}[google]{% endif %}" = "==1.7.*"
 gunicorn = "==20.*"
-{%- if cookiecutter.docker_base_image == 'alpine' %}
+# - {%- if cookiecutter.docker_base_image == 'alpine' %}
 # If you change the docker base image to be non-alpine
 # This can be changed to psycopg2-binary to get advantage from
 # using wheels
 "psycopg2" = "==2.8.*"
-{%- else %}
+# - {%- else %}
 "psycopg2-binary" = "==2.8.*"
-{%- endif %}
+# - {%- endif %}
 "sentry-sdk" = "==0.16.*"
 redis = "==3.*"
-{% if cookiecutter.frontend_style == 'webapp' %}
+# - {% if cookiecutter.frontend_style == WEBAPP %}
 django-crispy-forms = "==1.11.*"
 django-js-reverse = "==0.9.1"
 django-settings-export = "==1.2.*"
 django-webpack-loader = "==0.6.*"
-{% else %}
+# - {% elif cookiecutter.frontend_style == SPA %}
 djangorestframework = "==3.12.*"
 djangorestframework_simplejwt = "==4.6.*"
 django-cors-headers = "==3.7.*"
 django-filter = "==2.4.*"
 tg-react = "*"
-{% endif %}
+# - {% endif %}
 tg-utils = {version = "*", extras = ["model-hash"]}
 
 [tool.poetry.dev-dependencies]
@@ -65,13 +65,13 @@ pytest = "==6.*"
 pytest-django = "*"
 pytest-cov = "*"
 pylint-django = "*"
-{% if cookiecutter.use_mypy == 'yes' %}
+# - {% if cookiecutter.use_mypy == YES %}
 # MyPy dependencies
 boto3-stubs = "*"
 django-stubs = "*"
 djangorestframework-stubs = "*"
 mypy = "*"
-{% endif %}
+# - {% endif %}
 
 [build-system]
 requires = ["poetry>=0.12"]
@@ -140,7 +140,11 @@ markers = ["django_db", "parametrize", "unit"]
 norecursedirs = [
     "migrations",
     ".data",
-    "{% if cookiecutter.frontend_style == 'spa' %}app{% else %}webapp{% endif %}",
+# - {% if cookiecutter.frontend_style == SPA %}
+    "app",
+# - {% elif cookiecutter.frontend_style == WEBAPP %}
+    "webapp",
+# - {% endif %}"
     "node_modules",
 ]
 python_files = ["test_*.py", "tests/*.py", "tests.py"]

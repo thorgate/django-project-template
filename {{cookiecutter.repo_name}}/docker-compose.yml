@@ -14,10 +14,10 @@ services:
       - "${DJANGO_PORT-8000}:80"
     volumes:
       - "./{{cookiecutter.repo_name}}:/app"
-      {%- if cookiecutter.frontend_style == "webapp" %}
+# -   {%- if cookiecutter.frontend_style == WEBAPP %}
       - "./webapp/static:/app/static"
       - "./webapp/webapp:/app/webapp"
-      {%- endif %}
+# -   {%- endif %}
       - ".data/media:/files/media"
       - "${DPT_POETRY_CACHE_DIR:-.data/pycache/pypoetry}:/root/.cache/pypoetry"
       - "${DPT_PIP_CACHE_DIR:-.data/pycache/pip}:/root/.cache/pip"
@@ -37,17 +37,21 @@ services:
       context: .
       dockerfile: Dockerfile-node
     env_file: .env
-    {%- if cookiecutter.frontend_style == "webapp" and cookiecutter.webapp_include_storybook == 'yes' %}
+# - {%- if cookiecutter.frontend_style == WEBAPP and cookiecutter.webapp_include_storybook == YES %}
     ports:
       - "6006:80"
-    {%- endif %}
-    {%- if cookiecutter.frontend_style == "spa" %}
+# - {%- endif %}
+# - {%- if cookiecutter.frontend_style == SPA %}
     ports:
       - "8000:8000"
       - "8001:8001"
-    {%- endif %}
+# - {%- endif %}
     volumes:
-      - "./{% if cookiecutter.frontend_style == "spa" %}app{% else %}webapp{% endif %}:/app"
+# -   {%- if cookiecutter.frontend_style == WEBAPP %}
+      - "./webapp:/app"
+# -   {%- elif cookiecutter.frontend_style == SPA %}
+      - "./app:/app"
+# -   {% endif %}
       - ".data/node_modules:/app/node_modules"
       - ".data/yarn:/usr/local/share/.cache/yarn"
 
@@ -64,8 +68,8 @@ services:
       # credentials taken from .env file
       POSTGRES_USER: "${DJANGO_DATABASE_USER-'{{ cookiecutter.repo_name }}'}"
       POSTGRES_PASSWORD: "${DJANGO_DATABASE_PASSWORD-'{{ cookiecutter.repo_name }}'}"
-  {%- if cookiecutter.include_celery == 'yes' %}
 
+# - {%- if cookiecutter.include_celery == YES %}
   celery:
     build:
       context: .
@@ -110,7 +114,7 @@ services:
     #  guarantee and the lack of pidfile ensures that Celery Beat starts even if the Docker container was killed and
     #  then restarted (in which case the pidfile would still be present).
     command: celery --app {{cookiecutter.repo_name}} beat --loglevel INFO --pidfile= --schedule /celery/celerybeat-schedule
-  {%- endif %}
+# - {%- endif %}
 
   redis:
     image: redis:4.0.10-alpine

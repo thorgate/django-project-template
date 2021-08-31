@@ -5,6 +5,11 @@ import shutil
 import subprocess
 from typing import List, Tuple
 
+YES = "{{YES}}"
+NO = "{{NO}}"
+WEBAPP = "{{WEBAPP}}"
+SPA = "{{SPA}}"
+
 
 def cleanup():
     cwd = os.getcwd()
@@ -33,14 +38,14 @@ def cleanup():
             for dockerfile in dockerfiles
         ]
 
-    if '{{ cookiecutter.include_celery}}' == 'no':
+    if '{{ cookiecutter.include_celery}}' == NO:
         cleanup_paths += [
             '{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}/celery.py',
             '{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}/celery_settings.py',
             '{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}/tasks.py',
         ]
 
-    if '{{ cookiecutter.frontend_style }}' == 'webapp':
+    if '{{ cookiecutter.frontend_style }}' == WEBAPP:
         cleanup_paths += [
             'app',
             'Dockerfile-node.production',
@@ -58,7 +63,7 @@ def cleanup():
             'deploy/nginx/app.{{cookiecutter.repo_name}}.proxy_node.include',
             'deploy/nginx/common.{{cookiecutter.repo_name}}.node.include',
         ]
-    elif '{{ cookiecutter.frontend_style }}' == 'spa':
+    elif '{{ cookiecutter.frontend_style }}' == SPA:
         cleanup_paths += [
             'webapp',
             '{{cookiecutter.repo_name}}/accounts/emails.py',
@@ -71,7 +76,7 @@ def cleanup():
             '{{cookiecutter.repo_name}}/templates/registration/',
         ]
 
-    if '{{ cookiecutter.webapp_include_storybook }}' == 'no':
+    if '{{ cookiecutter.webapp_include_storybook }}' == NO:
         cleanup_paths += [
             'webapp/webapp/src/.storybook',
             'webapp/webapp/src/storyshots.test.js',
@@ -80,7 +85,7 @@ def cleanup():
             'webapp/webapp/src/components/NavigationBar/NavigationBar.stories.js',
         ]
 
-    if '{{ cookiecutter.use_cypress }}' == 'no':
+    if '{{ cookiecutter.use_cypress }}' == NO:
         cleanup_paths += [
             '.env.cypress',
             'docker-compose.cypress.yml',
@@ -90,7 +95,7 @@ def cleanup():
             '{{cookiecutter.repo_name}}/settings/test_cypress.py',
         ]
     else:
-        if '{{ cookiecutter.frontend_style }}' == 'spa':
+        if '{{ cookiecutter.frontend_style }}' == SPA:
             # Order is important: rename first, then cleanup
             rename_paths = [
                 ('cypress/cypress.json', 'app/cypress.json'),
@@ -100,7 +105,7 @@ def cleanup():
             cleanup_paths += [
                 'app/cypress/integration/webapp.auth.spec.js',  # operate on an already renamed path
             ]
-        elif '{{ cookiecutter.frontend_style }}' == 'webapp':
+        elif '{{ cookiecutter.frontend_style }}' == WEBAPP:
             # Order is important: rename first, then cleanup
             rename_paths = [
                 ('cypress/cypress.json', 'webapp/cypress.json'),
@@ -111,7 +116,7 @@ def cleanup():
                 'webapp/cypress/integration/spa.auth.spec.js',  # operate on an already renamed path
             ]
 
-    if '{{ cookiecutter.thorgate }}' == 'no':
+    if '{{ cookiecutter.thorgate }}' == NO:
         cleanup_paths += ['utils/terraform', 'tg-project.yaml']
     else:
         cleanup_paths += [
@@ -119,11 +124,14 @@ def cleanup():
             'ansible/roles/deploy/tasks/files/nginx-shared',
         ]
 
-    if '{{ cookiecutter.build_in_ci }}' == 'no':
+    if '{{ cookiecutter.build_in_ci }}' == NO:
         cleanup_paths += [
             "ansible/roles/deploy/templates/registry.sh",
             "scripts/images",
         ]
+
+    # remove CC leftoevers
+    kill_lines(cwd)
 
     # Rename first, then cleanup
     for old_path, new_path in rename_paths:
@@ -158,6 +166,31 @@ def cleanup():
 
     for src, dst in symlinks:
         os.symlink(src, dst)
+
+    run_lint_fix(cwd)
+
+
+def kill_lines(path):
+    """
+    Will run sed all files in poth and remove leftovers from commented out cookie cutter code ` # - ` or ` // - `
+    """
+    re = '^\s*(#|//) -\s*$'
+    for escape in "()/|":
+        re=re.replace(escape, fr"\{escape}")
+    sed_command=f"/{re}/d"
+    print(f"remving kill lines | {sed_command} | @ { path }")
+    return subprocess.check_call(["find", path, "-type", "f", "-exec", "sed", "-i", sed_command, "{}", "+"])
+
+
+def run_lint_fix(path):
+    print("Running black")
+    subprocess.check_call(["black", path])
+
+    #  isort has issues.
+    #  Getting different results depending for local ipython isort,  make isort, in posthook.
+
+    # print("Running isort")
+    # print(subprocess.check_output(["isort", cwd, "-p", path, "-y"]))
 
 
 def is_git_repository(path):
@@ -229,7 +262,6 @@ def main():
 
     cleanup()
     create_repos()
-
 
 if __name__ == '__main__':
     main()

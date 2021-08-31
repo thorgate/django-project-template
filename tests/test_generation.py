@@ -8,6 +8,7 @@ import pytest
 from cookiecutter.config import USER_CONFIG_PATH
 from cookiecutter.exceptions import FailedHookException
 
+from .constants import YES, NO, WEBAPP, SPA
 
 def generate_project(cookies, config):
     cookies._config_file = USER_CONFIG_PATH
@@ -44,7 +45,7 @@ def validate_project_works(result, config):
 
     env = os.environ.copy()
     env.update({
-        'EDIT_SETTINGS': 'no',
+        'EDIT_SETTINGS': NO,
         **gitlab_ci['test-django'].get('variables', {}),
         **gitlab_ci['test-node'].get('variables', {}),
 
@@ -99,7 +100,7 @@ def test_base_generate(cookies, default_project, docker_base_image):
 @pytest.mark.env("CELERY")
 def test_celery_generate(cookies, default_project):
     default_project.update({
-        'include_celery': 'yes',
+        'include_celery': YES,
     })
     result = generate_project(cookies, default_project)
 
@@ -114,7 +115,7 @@ def test_celery_generate(cookies, default_project):
 @pytest.mark.env("STORYBOOK")
 def test_storybook_generate(cookies, default_project):
     default_project.update({
-        'webapp_include_storybook': 'yes',
+        'webapp_include_storybook': YES,
     })
     result = generate_project(cookies, default_project)
 
@@ -126,7 +127,7 @@ def test_storybook_generate(cookies, default_project):
 @pytest.mark.env("SPA")
 def test_spa_generate(cookies, default_project):
     default_project.update({
-        'frontend_style': 'spa',
+        'frontend_style': SPA,
     })
     result = generate_project(cookies, default_project)
 
@@ -139,7 +140,7 @@ def test_spa_generate(cookies, default_project):
 @pytest.mark.env("DEBIAN_SPA")
 def test_debian_spa_generate(cookies, default_project):
     default_project.update({
-        'frontend_style': 'spa',
+        'frontend_style': SPA,
         'docker_base_image': 'debian',
     })
     result = generate_project(cookies, default_project)
@@ -153,7 +154,7 @@ def test_debian_spa_generate(cookies, default_project):
 @pytest.mark.env("DEBIAN_WEBAPP")
 def test_debian_webapp_generate(cookies, default_project):
     default_project.update({
-        'frontend_style': 'webapp',
+        'frontend_style': WEBAPP,
         'docker_base_image': 'debian',
     })
     result = generate_project(cookies, default_project)
@@ -167,8 +168,8 @@ def test_debian_webapp_generate(cookies, default_project):
 @pytest.mark.env("MYPY_WEBAPP")
 def test_mypy_webapp_generate(cookies, default_project):
     default_project.update({
-        'use_mypy': 'yes',
-        'frontend_style': 'webapp',
+        'use_mypy': YES,
+        'frontend_style': WEBAPP,
 
     })
     result = generate_project(cookies, default_project)
@@ -181,8 +182,8 @@ def test_mypy_webapp_generate(cookies, default_project):
 @pytest.mark.env("MYPY_SPA")
 def test_mypy_spa_generate(cookies, default_project):
     default_project.update({
-        'use_mypy': 'yes',
-        'frontend_style': 'spa',
+        'use_mypy': YES,
+        'frontend_style': SPA,
     })
     result = generate_project(cookies, default_project)
 
@@ -195,8 +196,8 @@ def test_mypy_spa_generate(cookies, default_project):
 @pytest.mark.env("CYPRESS_SPA")
 def test_cypress_spa_generate(cookies, default_project):
     default_project.update({
-        'frontend_style': 'spa',
-        'use_cypress': 'yes',
+        'frontend_style': SPA,
+        'use_cypress': YES,
     })
     result = generate_project(cookies, default_project)
 
@@ -211,8 +212,8 @@ def test_cypress_spa_generate(cookies, default_project):
 @pytest.mark.env("CYPRESS_WEBAPP")
 def test_cypress_webapp_generate(cookies, default_project):
     default_project.update({
-        'frontend_style': 'webapp',
-        'use_cypress': 'yes',
+        'frontend_style': WEBAPP,
+        'use_cypress': YES,
     })
     result = generate_project(cookies, default_project)
 
@@ -226,7 +227,7 @@ def test_cypress_webapp_generate(cookies, default_project):
 
 def test_storybook_not_generate(cookies, default_project):
     default_project.update({
-        'webapp_include_storybook': 'no',
+        'webapp_include_storybook': NO,
     })
     result = generate_project(cookies, default_project)
 

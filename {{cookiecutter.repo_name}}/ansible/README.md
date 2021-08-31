@@ -78,7 +78,7 @@ We also assume that you have Nginx and Postgres (version 10 by default) running 
 'private' network. We also make a few assumptions regards directories that will be used as volumes for static assets,
 etc. You can find these paths in [docker-compose.production.yml](../docker-compose.production.yml).
 
-{%- if cookiecutter.build_in_ci == 'yes' %}
+{%- if cookiecutter.build_in_ci == YES %}
 
 #### Enable registry access for server
 
@@ -115,7 +115,7 @@ you can deploy the project to the server by running `deploy.yml` stack with Ansi
 
 1. Clone & checkout the project into test server (with branch/commit specified in `deployment_version` variable)
 2. Add some configuration files (nginx, env, etc)
-{%- if cookiecutter.build_in_ci == 'yes' %}
+{%- if cookiecutter.build_in_ci == YES %}
 3. Pull docker images for the project from the registry and restart containers if needed
 {%- else -%}
 3. Build docker images for the project
@@ -154,7 +154,7 @@ ansible-playbook --limit test -e "force_deploy=stable" deploy.yml
 * Ensure you've committed and pushed all relevant changes.
 
 {% if cookiecutter.django_media_engine == 'S3' -%}
-{% if cookiecutter.thorgate == 'yes' %}
+{% if cookiecutter.thorgate == YES %}
 * Ensure you have sufficient permissions in AWS to create a bucket and assume the terraform role (see manual steps below if not using terraform)
 * Look over the terraform definitions
   * ./deploy/terraform/variables.tf Make sure that the region is the closest one to the user of the project.
@@ -227,7 +227,7 @@ ansible-playbook --limit test -e "force_deploy=stable" deploy.yml
     * B) make sure that `AWS_S3_ADDRESSING_STYLE = "path"` is in django settings. See details in this issue: [django-storages issue](https://github.com/jschneier/django-storages/issues/649),
   * More information about working with S3 can be found [here](https://github.com/Fueled/django-init/wiki/Working-with-S3).
 
-{% if cookiecutter.thorgate == 'yes' %}
+{% if cookiecutter.thorgate == YES %}
 </details>
 {% endif %}
 

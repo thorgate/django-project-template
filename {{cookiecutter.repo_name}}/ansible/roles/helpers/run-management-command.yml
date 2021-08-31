@@ -1,6 +1,11 @@
 
 - name: "Run manage.py {{ "{{ command_params | mandatory }}" }}"
-  command: "docker-compose {% if cookiecutter.build_in_ci == 'no' %}-f {{ "{{ compose_file "}} }} {% endif %}run --rm django python manage.py {{ "{{ command_params | mandatory }}" }}"
+  command: >-
+            docker-compose
+# - {% if cookiecutter.build_in_ci == NO %}
+            -f {{ "{{ compose_file "}} }}
+# - {% endif %}
+            run --rm django python manage.py {{ "{{ command_params | mandatory }}" }}
   args:
       chdir: "{{ "{{ code_dir }}" }}"
   register: result

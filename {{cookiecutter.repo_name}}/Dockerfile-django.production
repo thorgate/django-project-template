@@ -68,7 +68,7 @@ WORKDIR /app
 # Compile translations to .mo files
 RUN DJANGO_DOCKER_BUILD=True python manage.py compilemessages
 
-{%- if cookiecutter.frontend_style == 'webapp' %}
+# - {% if cookiecutter.frontend_style == WEBAPP %}
 
 # Based on Node {{ cookiecutter.node_version }} Alpine image
 FROM node:{{ cookiecutter.node_version }}-alpine as node_builder
@@ -109,7 +109,7 @@ COPY ./webapp/static /app/static
 # Copy all from node image
 COPY --from=node_builder /app/webapp/build /app/webapp/build
 COPY --from=node_builder /app/webapp/webpack-stats.json /app/webapp/webpack-stats.json
-{%- endif %}
+# - {% endif %}
 
 # Run Gunicorn by default
 CMD gunicorn {{ cookiecutter.repo_name }}.wsgi:application --workers 2 --bind :80

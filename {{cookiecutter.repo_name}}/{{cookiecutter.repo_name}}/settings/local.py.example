@@ -68,7 +68,7 @@ from settings.base import *
 {% if cookiecutter.django_media_engine == "S3" -%}
 # AWS_ACCESS_KEY_ID = "TODO (access key)"
 # AWS_SECRET_ACCESS_KEY = "TODO (secret key)"
-{% endif %}{% if cookiecutter.django_media_engine == "GCS" -%}
+{% elif cookiecutter.django_media_engine == "GCS" -%}
 # from google.oauth2 import service_account
 # GS_PROJECT_ID = "TODO (project id)"
 # GS_CREDENTIALS = service_account.Credentials.from_service_account_info(

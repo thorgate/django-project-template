@@ -10,6 +10,11 @@ from cookiecutter.prompt import read_user_yes_no
 
 from fqdn import FQDN
 
+YES = "{{YES}}"
+NO = "{{NO}}"
+WEBAPP = "{{WEBAPP}}"
+SPA = "{{SPA}}"
+
 
 # Ensure cookiecutter is recent enough
 cookiecutter_min_version = '1.6.0'
@@ -62,7 +67,7 @@ def check_remote_repository_updates():
     if local_sha != remote_sha:
         if not read_user_yes_no(
                 'The template version you are using is not the latest available, are you sure you want to continue?',
-                default_value='yes'):
+                default_value=YES):
             print("Bye!")
             sys.exit(1)
 
@@ -78,25 +83,25 @@ def validate_config():
         identifier_re = re.compile(r"[a-zA-Z_][a-zA-Z0-9_]*$")
         assert bool(identifier_re.match(repo_name)), assert_msg
 
-    valid_celery_key = ['yes', 'no']
+    valid_celery_key = [YES, NO]
     if "{{ cookiecutter.include_celery }}" not in valid_celery_key:
         print("Include Celery '{{ cookiecutter.include_celery }}' is not valid!")
         print("Valid include Celery keys are: %s" % ', '.join(valid_celery_key))
         sys.exit(1)
 
-    valid_storybook_replies = ['yes', 'no']
+    valid_storybook_replies = [YES, NO]
     if "{{ cookiecutter.webapp_include_storybook }}" not in valid_storybook_replies:
         print("Your answer to Include Storybook: '{{ cookiecutter.webapp_include_storybook }}' is invalid!")
         print("Valid choices are: %s" % ', '.join(valid_storybook_replies))
         sys.exit(1)
 
-    valid_frontend_styles = ['webapp', 'spa']
+    valid_frontend_styles = [WEBAPP, SPA]
     if "{{ cookiecutter.frontend_style }}" not in valid_frontend_styles:
         print("Your answer to Frontend style: '{{ cookiecutter.webapp_include_storybook }}' is invalid!")
         print("Valid choices are: %s" % ', '.join(valid_frontend_styles))
         sys.exit(1)
 
-    valid_thorgate_key = ['yes', 'no']
+    valid_thorgate_key = [YES, NO]
     if "{{ cookiecutter.thorgate }}" not in valid_thorgate_key:
         print("Thorgate '{{ cookiecutter.thorgate }}' is not valid!")
         print("Valid thorgate keys are: %s" % ', '.join(valid_thorgate_key))
