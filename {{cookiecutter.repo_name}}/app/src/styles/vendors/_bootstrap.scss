@@ -1,5 +1,5 @@
 /*!
- * Bootstrap v4.1.1 (https://getbootstrap.com/)
+ * Bootstrap v4.6.0 (https://getbootstrap.com/)
  * Copyright 2011-2018 The Bootstrap Authors
  * Copyright 2011-2018 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
@@ -9,10 +9,6 @@
 @import "../config/bootstrap-variables";
 @import "~bootstrap/scss/mixins";
 @import "~bootstrap/scss/root";
-// TODO: Bootstrap actually has the print styles as the last import here. For us however, it breaks CSS minification
-// (when running `yarn build`). The problem doesn't seem to exist in `spa` branch which has newer Webpack.
-// See https://github.com/twbs/bootstrap/issues/24931 for context.
-@import "~bootstrap/scss/print";
 @import "~bootstrap/scss/reboot";
 @import "~bootstrap/scss/type";
 @import "~bootstrap/scss/images";
@@ -38,8 +34,11 @@
 @import "~bootstrap/scss/media";
 @import "~bootstrap/scss/list-group";
 @import "~bootstrap/scss/close";
+@import "~bootstrap/scss/toasts";
 @import "~bootstrap/scss/modal";
 @import "~bootstrap/scss/tooltip";
 @import "~bootstrap/scss/popover";
 @import "~bootstrap/scss/carousel";
+@import "~bootstrap/scss/spinners";
 @import "~bootstrap/scss/utilities";
+@import "~bootstrap/scss/print";

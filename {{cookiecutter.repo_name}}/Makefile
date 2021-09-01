@@ -298,7 +298,7 @@ clean:
 lint-py: black-check-all isort prospector{% if cookiecutter.use_mypy == YES %} mypy{% endif %}
 
 .PHONY:
-lint-js: prettier-check-all eslint
+lint-js: prettier-check-all eslint stylelint
 
 .PHONY:
 lint: lint-py lint-js
@@ -420,7 +420,7 @@ compilemessages:
 	docker-compose run --rm django ./manage.py compilemessages
 
 
-{% if cookiecutter.frontend_style == 'spa' -%}
+{% if cookiecutter.frontend_style == SPA -%}
 .PHONY:
 extract-i18n:
 	docker-compose run --rm node yarn extract-i18n

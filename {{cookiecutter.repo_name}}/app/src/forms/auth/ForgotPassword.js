@@ -1,4 +1,5 @@
-{% raw %}import React from 'react';
+// - {% raw %}
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Row, Col, Button, Alert } from 'reactstrap';
 import { Trans, useTranslation } from 'react-i18next';
@@ -127,4 +128,5 @@ ForgotPasswordForm.propTypes = {
     onForgotPassword: PropTypes.func.isRequired,
 };
 
-export default ForgotPasswordForm;{% endraw %}
+export default ForgotPasswordForm;
+// - {% endraw %}

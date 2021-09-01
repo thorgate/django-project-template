@@ -1,4 +1,5 @@
-{% raw %}/* Client-side translation configuration */
+// - {% raw %}
+/* Client-side translation configuration */
 import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import i18nFetchBackend from 'i18next-fetch-backend';
@@ -61,4 +62,5 @@ export const setupI18Next = async (language) => {
     return i18next;
 };
 
-export default i18next;{% endraw %}
+export default i18next;
+// - {% endraw %}
