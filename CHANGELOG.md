@@ -14,7 +14,7 @@ Note: Try to add categories to changes and link to MRs/Issues
 
 Add new option `use_cypress` and basic support for TypeScript.
 
-Enchantments:
+Enhancements:
 
 - [ENH] Add cypress autotests - !226
 - [ENH] Enable node dependency caching - !208
