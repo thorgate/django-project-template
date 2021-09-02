@@ -10,6 +10,27 @@ CHANGES
 Note: Try to add categories to changes and link to MRs/Issues
 -->
 
+## 2021-09-02
+
+Add new option `use_cypress` and basic support for TypeScript.
+
+Enchantments:
+
+- [ENH] Add cypress autotests - !226
+- [ENH] Enable node dependency caching - !208
+- [ENH] Add basic typescript support - !227
+- [ENH] Jinja globals, run black on post_gen, remove empty comments - !230
+- [ENH] Update dependencies - !216
+
+
+Bugfixes:
+
+- [BUG] Fix typo in docker-compose.production.yml - !223
+- [BUG] Fix wrong public URL for static in webpack - !224
+- [BUG] Fix mypy errors for LOGGING dict - !229
+- [BUG] Fix DPT test names - !231
+
+
 ## 2021-06-04
 
 Add new configuration option `build_in_ci`. Currently, this defaults to `no` however the plan is to make
