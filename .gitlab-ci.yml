@@ -15,6 +15,7 @@ before_script:
   - poetry install
   - git config --global user.email "foo@bar.baz"
   - git config --global user.name "Foo Bar"
+  - git config --global init.defaultBranch master
   # See the following issue for reasoning: https://gitlab.com/gitlab-org/gitlab-ce/issues/41227
   - export SHARED_PATH="$(dirname ${CI_PROJECT_DIR})/shared"
   - export TPL_PLAYGROUND="${SHARED_PATH}/tpl-playground"
@@ -74,12 +75,19 @@ test_debian_WEBAPP:
   script:
     - pytest -E DEBIAN_WEBAPP --maxfail=1 -v
 
-test_mypy:
+test_mypy_WEBAPP:
   stage: test
   except:
     - schedules
   script:
-    - pytest -E MYPY --maxfail=1 -v
+    - pytest -E MYPY_WEBAPP --maxfail=1 -v
+
+test_mypy_SPA:
+  stage: test
+  except:
+    - schedules
+  script:
+    - pytest -E MYPY_SPA --maxfail=1 -v
 
 test_cypress_spa:
   stage: test

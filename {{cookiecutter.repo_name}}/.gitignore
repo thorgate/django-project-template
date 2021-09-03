@@ -18,7 +18,7 @@ venv/
 {{cookiecutter.repo_name}}/settings/local_test.py
 {{cookiecutter.repo_name}}/db.sqlite3
 {{cookiecutter.repo_name}}/assets/
-{%- if cookiecutter.frontend_style == 'webapp' %}
+{%- if cookiecutter.frontend_style == WEBAPP %}
 webapp/webapp/build/
 webapp/coverage/
 webapp/webapp/webpack-stats.json
@@ -32,7 +32,7 @@ webapp/webapp/webpack-stats.json
 {{cookiecutter.repo_name}}/htmlcov/
 {{cookiecutter.repo_name}}/cover/
 
-{%- if cookiecutter.frontend_style == 'spa' %}
+{%- if cookiecutter.frontend_style == SPA %}
 # Node Project files
 app/build/
 app/coverage/

@@ -9,21 +9,20 @@
 - name: "Checkout the code"
   git:
     repo: "{{ "{{ repository }}" }}"
-    dest: "{{ "{{ code_dir }}" }}{% if cookiecutter.build_in_ci == 'yes' %}/repository{% endif %}"
+    dest: "{{ "{{ code_dir }}" }}{% if cookiecutter.build_in_ci == YES %}/repository{% endif %}"
     version: "{{ "{% if force_deploy is defined %}{{ force_deploy }}{% else %}{{ deployment_version }}{% endif %}" }}"
     update: yes
     # force=yes will discard any changes in working directory
     # force: yes
 
-{%- if cookiecutter.build_in_ci == 'yes' %}
 
-
+# - {% if cookiecutter.build_in_ci == YES %}
 - name: "Get the commit id"
   command: "git rev-parse HEAD"
   args:
       chdir: "{{ "{{ code_dir }}" }}/repository"
   register: git_commit_sha
-{%- endif %}
+# - {% endif %}
 
 
 - name: "Check if database has been created previously"
@@ -59,9 +58,7 @@
     - env
 
 
-{%- if cookiecutter.build_in_ci == 'yes' %}
-
-
+# - {%- if cookiecutter.build_in_ci == YES %}
 - name: "Create a helper script for sourcing to interface with container registry"
   template:
     src: registry.sh
@@ -75,9 +72,9 @@
   environment:
     DOCKER_CONFIG: "{{ "{{ code_dir }}" }}/.docker-cfg"
     REGISTRY_TOKEN: "{{ "{{ registry_token }}" }}"
-{%- endif %}
 
 
+# - {%- endif %}
 - name: "Create logrotate.conf file"
   template:
       src: "logrotate.conf"
@@ -111,17 +108,15 @@
       networks_cli_compatible: yes
 
 
-{%- if cookiecutter.build_in_ci == 'yes' %}
-
-
+# - {% if cookiecutter.build_in_ci == YES %}
 - name: "Copy compose file"
   copy:
     src: "{{ "{{ code_dir }}" }}/repository/{{ "{{ compose_file }}" }}"
     dest: "{{ "{{ code_dir }}" }}/docker-compose.yml"
     remote_src: true
-{%- endif %}
 
 
+# - {%- endif %}
 - name: "Build the project"
   docker_compose:
       project_src: "{{ "{{ code_dir }}" }}"
@@ -129,14 +124,14 @@
       # Force re-start even if source files have not changed. This ensures that when env is updated the container
       #  always gets the latest values.
       restarted: yes
-{%- if cookiecutter.build_in_ci == 'no' %}
+# - {%- if cookiecutter.build_in_ci == NO %}
       build: yes
       files:
           - "{{ "{{ compose_file }}" }}"
-{%- else %}
+# - {%- else %}
   environment:
       DOCKER_CONFIG: "{{ "{{ code_dir }}" }}/.docker-cfg"
-{%- endif %}
+# - {%- endif %}
   register: result
 
 
@@ -150,18 +145,18 @@
   vars:
     command_params: "migrate --noinput"
 
-{%- if cookiecutter.frontend_style == 'spa' %}
+# - {%- if cookiecutter.frontend_style == SPA %}
 
 
 - name: "Run export assets"
-{%- if cookiecutter.build_in_ci == 'yes' %}
+# -   {%- if cookiecutter.build_in_ci == YES %}
   command: "docker-compose run --rm node yarn export-assets"
-{%- else %}
+# -   {%- else %}
   command: "docker-compose -f {{ "{{ compose_file }}" }} run --rm node yarn export-assets"
-{%- endif %}
+# -   {%- endif %}
   args:
       chdir: "{{ "{{ code_dir }}" }}"
-{%- endif %}
+# - {%- endif %}
 
 
 - name: "Run collectstatic"
@@ -175,14 +170,13 @@
   vars:
     command_params: "check --deploy"
 
-{%- if cookiecutter.thorgate == 'no' %}
 
-
+# - {% if cookiecutter.thorgate == NO %}
 - name: "Set up shared nginx files"
   import_tasks: nginx_shared.yml
-{%- endif %}
 
 
+# - {%- endif %}
 - name: "Set up certificates"
   import_tasks: letsencrypt.yml
 

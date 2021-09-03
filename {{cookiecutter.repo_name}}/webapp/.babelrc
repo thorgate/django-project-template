@@ -1,3 +1,6 @@
 {
-    "presets": ["@thorgate/babel-preset"]
+    "presets": [
+        "babel-preset-razzle",
+        "@thorgate/babel-preset"
+    ]
 }

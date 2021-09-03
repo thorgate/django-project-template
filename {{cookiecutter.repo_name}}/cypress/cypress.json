@@ -1,5 +1,5 @@
 {
-  {% if cookiecutter.frontend_style == 'spa' -%}
+  {% if cookiecutter.frontend_style == SPA -%}
   "baseUrl": "http://node-cypress.{{cookiecutter.domain_name}}.docker.local:9990",
   {%- else -%}
   "baseUrl": "http://django-cypress.{{cookiecutter.domain_name}}.docker.local:9999",

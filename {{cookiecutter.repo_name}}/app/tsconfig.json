@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "allowUnreachableCode": false,
+    "noFallthroughCasesInSwitch": true,
+    "allowSyntheticDefaultImports": true,
+    "downlevelIteration": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": false,
+    "sourceMap": true,
+    "strictNullChecks": true,
+    "strict": true,
+    "pretty": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "skipLibCheck": true,
+    "jsx": "react",
+    "lib": ["es2017", "dom", "esnext"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es6",
+    "baseUrl": "./src"
+  },
+  "exclude": [
+    "node_modules",
+    "build",
+    "polyfills",
+    "scripts",
+    "*.config.js"
+  ],
+  "types": ["typings", "node", "webpack-env"]
+}

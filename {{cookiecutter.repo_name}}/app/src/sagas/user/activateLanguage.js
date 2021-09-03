@@ -1,4 +1,5 @@
-{% raw %}import { takeLatest } from 'redux-saga/effects';
+// - {% raw %}
+import { takeLatest } from 'redux-saga/effects';
 import Cookies from 'js-cookie';
 
 import { SETTINGS } from 'settings';
@@ -26,4 +27,5 @@ function setActiveLanguageWorker({ language }) {
 
 export default function* activeLanguageWatcher() {
     yield takeLatest(SET_ACTIVE_LANGUAGE, setActiveLanguageWorker);
-}{% endraw %}
+}
+// - {% endraw %}

@@ -52,3 +52,10 @@ class TGFiltersModule(Extension):
         environment.filters['snake_to_pascal_case'] = snake_to_pascal_case
         environment.filters['as_git_path'] = as_git_path
         environment.filters['get_url_path'] = get_url_path
+
+        environment.globals.update(
+            SPA="spa",
+            WEBAPP="webapp",
+            YES='yes',
+            NO='no'
+        )

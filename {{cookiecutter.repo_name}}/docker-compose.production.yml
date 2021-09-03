@@ -4,13 +4,13 @@ version: '2.1'
 
 services:
   django:
-{%- if cookiecutter.build_in_ci == 'yes' %}
+# - {%  if cookiecutter.build_in_ci == YES %}
     image: "${SITE_DJANGO_IMAGE}:${SITE_VERSION}"
-{%- else %}
+# - {%  else %}
     build:
       context: .
       dockerfile: Dockerfile-django.production
-{%- endif %}
+# - {%  endif %}
     env_file: .env
     container_name: {{cookiecutter.repo_name}}_django
     restart: unless-stopped
@@ -29,16 +29,16 @@ services:
       - redis
     external_links:
       - postgres-{{cookiecutter.postgres_version}}:postgres
-  {%- if cookiecutter.frontend_style == 'spa' %}
+# - {%  if cookiecutter.frontend_style == SPA %}
 
   node:
-{%- if cookiecutter.build_in_ci == 'yes' %}
+# -   {%  if cookiecutter.build_in_ci == YES %}
     image: "${SITE_NODE_IMAGE}:${SITE_VERSION}"
-{%- else %}
+# -   {%  else %}
     build:
       context: .
       dockerfile: Dockerfile-node.production
-{%- endif %}
+# -   {%  endif %}
     env_file: .env
     container_name: {{cookiecutter.repo_name}}_node
     restart: unless-stopped
@@ -49,18 +49,17 @@ services:
     networks:
       - default
       - {{cookiecutter.repo_name}}_nginx
-  {%- endif %}
+# - {%  endif %}
 
-  {%- if cookiecutter.include_celery == 'yes' %}
-
+# - {%  if cookiecutter.include_celery == YES %}
   celery:
-{%- if cookiecutter.build_in_ci == 'yes' %}
+# -   {%  if cookiecutter.build_in_ci == YES %}
     image: "${SITE_DJANGO_IMAGE}:${SITE_VERSION}"
-{%- else %}
+# -   {%  else %}
     build:
       context: .
       dockerfile: Dockerfile-django.production
-{%- endif %}
+# -   {%  endif %}
     env_file: .env
     restart: unless-stopped
     volumes:
@@ -77,13 +76,13 @@ services:
     command: celery --app {{cookiecutter.repo_name}} worker --autoscale 6,2 --loglevel INFO
 
   celery_beat:
-{%- if cookiecutter.build_in_ci == 'yes' %}
+# -   {%  if cookiecutter.build_in_ci == YES %}
     image: "${SITE_DJANGO_IMAGE}:${SITE_VERSION}"
-{%- else %}
+# -   {%  else %}
     build:
       context: .
       dockerfile: Dockerfile-django.production
-{%- endif %}
+# -   {%  endif %}
     env_file: .env
     container_name: {{cookiecutter.repo_name}}_celery_beat
     restart: unless-stopped
@@ -98,7 +97,7 @@ services:
     #  guarantee and the lack of pidfile ensures that Celery Beat starts even if the Docker container was killed and
     #  then restarted (in which case the pidfile would still be present).
     command: celery --app {{cookiecutter.repo_name}} beat --loglevel INFO --logfile /var/log/{{cookiecutter.repo_name}}/celery-beat.log --pidfile= --schedule /celery/celerybeat-schedule
-  {%- endif %}
+# - {%  endif %}
 
   redis:
     image: redis:4.0.10-alpine

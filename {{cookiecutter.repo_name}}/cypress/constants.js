@@ -1,8 +1,15 @@
 export const URLS = {
     admin: '/adminpanel/',
     adminLogout: '/adminpanel/logout/',
-    login: '{% if cookiecutter.frontend_style == "spa" %}/auth/login{% else %}/login/{% endif %}',
-    logout: '{% if cookiecutter.frontend_style == "spa" %}/auth/logout{% else %}/logout/{% endif %}',
+    // - {% if cookiecutter.frontend_style == SPA %}
+    // -     {% set login_url="/auth/login" %}
+    // -     {% set logout_url="/auth/logout" %}
+    // - {% elif cookiecutter.frontend_style == WEBAPP %}
+    // -     {% set login_url="/login" %}
+    // -     {% set logout_url="/logout" %}
+    // - {% endif %}
+    login: '{{ login_url }}',
+    logout: '{{ logout_url }}',
 };
 
 export const adminAccount = {

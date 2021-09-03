@@ -1,28 +1,28 @@
-{%- set BASE_HOSTNAME = cookiecutter.repo_name | as_hostname + "." + cookiecutter.test_host -%}
+# - {%- set BASE_HOSTNAME = cookiecutter.repo_name | as_hostname + "." + cookiecutter.test_host %}
 
 # Hostnames for the site
-{%- if cookiecutter.frontend_style == 'spa' %}
+# - {%- if cookiecutter.frontend_style == SPA %}
 django_site_host: "{{ cookiecutter.spa_django_host_prefix | as_hostname }}.{{ BASE_HOSTNAME }}"
 node_site_host: "{{ BASE_HOSTNAME }}"
-{%- else %}
+# - {%- else %}
 django_site_host: "{{ BASE_HOSTNAME }}"
-{%- endif %}
+# - {%- endif %}
 
 # Sentry config
 django_sentry_environment: "test"
 django_sentry_dsn: ""  # TODO: Set to correct value or remove the TODO
-{%- if cookiecutter.frontend_style == 'spa' %}
+# - {%- if cookiecutter.frontend_style == SPA %}
 razzle_sentry_environment: "test"
 razzle_sentry_dsn: ""  # TODO: Set to correct value or remove the TODO
-{%- endif %}
+# - {%- endif %}
 
-{% if cookiecutter.django_media_engine == "GCS" -%}
+# - {% if cookiecutter.django_media_engine == "GCS" %}
 django_gs_bucket_name: "{{ cookiecutter.repo_name }}-staging"
 django_gs_project_id: "TODO"
-{%- endif %}{% if cookiecutter.django_media_engine == "S3" -%}
+# - {%- endif %}{% if cookiecutter.django_media_engine == "S3" %}
 # S3 bucket name to use
 django_aws_storage_bucket_name: "{{ cookiecutter.repo_name }}-staging"
-{%- endif %}
+# - {%- endif %}
 
 # Which compose file to use in the server
 compose_file: "docker-compose.production.yml"

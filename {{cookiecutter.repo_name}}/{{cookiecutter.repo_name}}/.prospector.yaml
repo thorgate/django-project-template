@@ -3,7 +3,7 @@ uses:
 
 ignore-paths:
     - node_modules
-    - {% if cookiecutter.frontend_style == 'webapp' %}webapp{% else %}app{% endif %}
+    - {% if cookiecutter.frontend_style == WEBAPP %}webapp{% else %}app{% endif %}
     - settings
 
 ignore-patterns:

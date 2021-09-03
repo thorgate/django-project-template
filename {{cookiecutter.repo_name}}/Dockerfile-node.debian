@@ -12,11 +12,11 @@ RUN apt-get update && \
 # Set the default directory where CMD will execute
 WORKDIR /app
 
-{%- if cookiecutter.frontend_style == 'spa' %}
+# - {% if cookiecutter.frontend_style == SPA %}
 # Expose our application ports
 EXPOSE 8000
 EXPOSE 8001
-{% endif %}
+# - {% endif %}
 
 # Set the default command to execute when creating a new container
 CMD /bin/bash -c "yarn && yarn dev"

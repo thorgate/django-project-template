@@ -1,4 +1,4 @@
-{%- raw -%}
+# - {%- raw %}
 - name: "Update nginx include files"
   template:
       src: "../deploy/templates/nginx/conf.d/{{ item.src }}"
@@ -10,18 +10,18 @@
     - { src: "app.proxy_django.include", dest: "app.{{ project }}.proxy_django.include" }
     - { src: "common.django.include", dest: "common.{{ project }}.django.include" }
     - { src: "ssl.include", dest: "ssl.{{ project }}.include" }
-{%- endraw -%}
-{%- if cookiecutter.frontend_style == 'spa' %}
-{%- raw %}
+# - {%- endraw %}
+# - {%- if cookiecutter.frontend_style == SPA %}
+# - {%- raw %}
     - { src: "app.proxy_node.include", dest: "app.{{ project }}.proxy_node.include" }
     - { src: "common.node.include", dest: "common.{{ project }}.node.include" }
-{%- endraw %}
-{%- endif %}
-{%- raw %}
+# - {%- endraw %}
+# - {%- endif %}
+# - {%- raw %}
 
 
 - name: "Update nginx config"
   template:
       src: "../deploy/templates/site-nginx.conf"
       dest: "/etc/nginx/sites-enabled/{{ project }}"
-{%- endraw %}
+# - {%- endraw %}

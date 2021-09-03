@@ -6,9 +6,9 @@ services:
 
 variables:
   COMPOSE_DOCKER_CLI_BUILD: "1"
-{%- if cookiecutter.use_cypress == 'yes' %}
+# - {% if cookiecutter.use_cypress == YES %}
   CYPRESS_DEFAULT_COMMAND_TIMEOUT: 60000
-{%- endif %}
+# - {% endif %}
   DOCKER_BUILDKIT: "1"
   DOCKER_DRIVER: overlay2
   DPT_VENV_CACHING: "1"
@@ -21,17 +21,17 @@ before_script:
 
 stages:
   - test
-{%- if cookiecutter.use_cypress == 'yes' %}
+# - {% if cookiecutter.use_cypress == YES %}
   - test-cypress
-{%- endif %}
+# - {% endif %}
   - build
 
 test-django:
   stage: test
-{%- if cookiecutter.thorgate == 'yes' %}
+# - {% if cookiecutter.thorgate == YES %}
   tags:
     - thorgate
-{%- endif %}
+# - {% endif %}
   coverage: '/^TOTAL.*\s+(\d+\%)$/'
   cache:
     key: django-cache
@@ -58,10 +58,10 @@ test-django:
 
 test-node:
   stage: test
-{%- if cookiecutter.thorgate == 'yes' %}
+# - {% if cookiecutter.thorgate == YES %}
   tags:
     - thorgate
-{%- endif %}
+# - {% endif %}
   coverage: '/All\sfiles.*?\s+(\d+.\d+)/'
   cache:
     key: ci-node-cache
@@ -71,7 +71,11 @@ test-node:
     policy: pull-push
   artifacts:
     reports:
-      junit: {% if cookiecutter.frontend_style == 'spa' %}app{% else %}webapp{% endif %}/coverage/cobertura-coverage.xml
+      # - {% if cookiecutter.frontend_style == SPA %}
+      junit: app/coverage/cobertura-coverage.xml
+      # - {% elif cookiecutter.frontend_style == WEBAPP %}
+      junit: webapp/coverage/cobertura-coverage.xml
+      # - {% endif %}
   except:
     refs:
       - template  # Don't run CI on template branch, should not be required
@@ -86,13 +90,13 @@ test-node:
     - make lint-js
     - make coverage-js
 
-{% if cookiecutter.use_cypress == 'yes' -%}
+# - {% if cookiecutter.use_cypress == YES %}
 test-cypress:
   stage: test-cypress
-{%- if cookiecutter.thorgate == 'yes' %}
+# - {%- if cookiecutter.thorgate == YES %}
   tags:
     - thorgate
-{%- endif %}
+# - {%- endif %}
   except:
     refs:
       - template  # Don't run CI on template branch, should not be required
@@ -103,7 +107,7 @@ test-cypress:
   script:
     - make settings
     - make cypress CYPRESS_DEFAULT_COMMAND_TIMEOUT=${CYPRESS_DEFAULT_COMMAND_TIMEOUT}
-{%- endif %}
+# - {%- endif %}
 
 build_compose_file:
   stage: build
@@ -112,15 +116,13 @@ build_compose_file:
     - template # Don't run CI on template branch, should not be required
   script:
     - make settings
-{%- if cookiecutter.build_in_ci == 'yes' %}
+# - {%- if cookiecutter.build_in_ci == YES %}
     - ./scripts/images/prod-version-env.sh >> .env
-{%- endif %}
+# - {%- endif %}
     # Ensure production images build also
     - docker-compose -f docker-compose.production.yml build
 
-{%- if cookiecutter.build_in_ci == 'yes' %}
-
-
+# - {%- if cookiecutter.build_in_ci == YES %}
 publish_django:
   stage: build
   needs: []
@@ -129,9 +131,7 @@ publish_django:
   script:
     - ./scripts/images/publish-prod-image.sh django Dockerfile-django.production
 
-
-{%- if cookiecutter.frontend_style == 'spa' %}
-
+# - {%- if cookiecutter.frontend_style == SPA %}
 
 publish_node:
   stage: build
@@ -140,5 +140,4 @@ publish_node:
     - template # Don't run CI on template branch, should not be required
   script:
     - ./scripts/images/publish-prod-image.sh node Dockerfile-node.production
-{% endif %}
-{%- endif %}
+# - {% endif %}{%- endif %}
