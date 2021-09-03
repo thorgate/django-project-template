@@ -1,6 +1,5 @@
 {%- if cookiecutter.frontend_style == 'spa' -%}
 from corsheaders.defaults import default_headers
-
 {% endif -%}
 from settings.base import *
 
