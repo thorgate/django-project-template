@@ -34,31 +34,30 @@ echo_cyan() {
     echo -e "\033[1;36m$1\033[0m"
 }
 
+extract_from_vault() {
+    field=${1}
+
+    poetry run ansible-vault decrypt \
+            --vault-password-file ${AUTODEPLOY_VAULT_PW_FILE} \
+            --output - ${VAULT_FILE} \
+            | yq e ${field} -
+}
+
 setup_ssh() {
     echo_cyan "Setting up SSH dependencies"
 
     # Extract keys from vault
     cd ${ANSIBLE_DIR}
 
-    poetry run ansible-vault decrypt \
-        --vault-password-file ${AUTODEPLOY_VAULT_PW_FILE} \
-        --output - ${VAULT_FILE} \
-        | yq e '.autodeploy_public_key' - >> ~/.ssh/id_ed25519.pub
-
-    poetry run ansible-vault decrypt \
-        --vault-password-file ${AUTODEPLOY_VAULT_PW_FILE} \
-        --output - ${VAULT_FILE} \
-        | yq e '.autodeploy_private_key' - >> ~/.ssh/id_ed25519
+    extract_from_vault '.autodeploy_public_key' >> ~/.ssh/id_ed25519.pub
+    extract_from_vault '.autodeploy_private_key' >> ~/.ssh/id_ed25519
 
     chmod 0600 ~/.ssh/*
 }
 
 install_deps() {
     echo_cyan "Installing dependencies"
-    cd ${ANSIBLE_DIR} && \
-        poetry install && \
-        sed -i ansible.cfg -e 's|ask_vault_pass|;ask_vault_pass|' && \
-        sed -i ansible.cfg -e 's|become_ask_pass|;become_ask_pass|'
+    cd ${ANSIBLE_DIR} && poetry install
 }
 
 deploy() {
@@ -67,19 +66,10 @@ deploy() {
     set +x # stop echoing commands
 
     echo_cyan "EXTRACTING CREDENTIALS FROM VAULT ${VAULT_FILE}"
-    DEPLOY_USERNAME=`poetry run ansible-vault decrypt \
-        --vault-password-file ${AUTODEPLOY_VAULT_PW_FILE} \
-        --output - ${VAULT_FILE} \
-        | yq e '.autodeploy_user_name' -`
-    DEPLOY_PASSWORD=`poetry run ansible-vault decrypt \
-        --vault-password-file ${AUTODEPLOY_VAULT_PW_FILE} \
-        --output - ${VAULT_FILE} \
-        | yq e '.autodeploy_user_password' -`
+    DEPLOY_USERNAME=`extract_from_vault '.autodeploy_user_name'`
+    DEPLOY_PASSWORD=`extract_from_vault '.autodeploy_user_password'`
 
-    poetry run ansible-vault decrypt \
-        --vault-password-file ${AUTODEPLOY_VAULT_PW_FILE} \
-        --output - ${VAULT_FILE} \
-        | yq e '.deploy_vault_pw' - > /tmp/vault.pw
+    extract_from_vault '.deploy_vault_pw' > /tmp/vault.pw
 
     echo_cyan "EXECUTING ANSIBLE against ${DEPLOY_HOSTNAME}"
     poetry run ansible-playbook \

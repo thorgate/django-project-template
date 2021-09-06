@@ -9,8 +9,9 @@ variables:
 # - {% if cookiecutter.use_cypress == YES %}
   CYPRESS_DEFAULT_COMMAND_TIMEOUT: 60000
 # - {% endif %}
-# - {% if cookiecutter.use_cypress == YES %}
+# - {% if cookiecutter.use_auto_deploy == YES %}
   DPT_AUTO_DEPLOY_ENABLED: "true"
+  ANSIBLE_CONFIG: "ansible-ci.cfg"
 # - {% endif %}
   DOCKER_BUILDKIT: "1"
   DOCKER_DRIVER: overlay2

@@ -138,6 +138,7 @@ def cleanup():
     if '{{ cookiecutter.use_auto_deploy }}' == NO:
         cleanup_paths += [
             "ansible/roles/autodeploy",
+            "ansible/ansible-ci.cfg",
             "ansible/autodeploy.yml",
             "scripts/deploy",
         ]
@@ -184,7 +185,7 @@ def cleanup():
 
 def kill_lines(path):
     """
-    Will run sed all files in path and remove leftovers from commented out cookie cutter code ` # - ` or ` // - `
+    Will run sed on all files in path and remove leftovers from commented out cookie cutter code ` # - ` or ` // - `
     """
     re = '^\s*(#|//) -\s*$'
     for escape in "()/|":

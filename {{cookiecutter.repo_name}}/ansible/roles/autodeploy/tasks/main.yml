@@ -1,7 +1,7 @@
 - user:
     name: "{{ "{{ autodeploy_user_name | mandatory }}" }}"
     shell: /bin/bash
-    update_password: on_create
+    update_password: always
     password: "{{ "{{ autodeploy_pw_hash | mandatory }}" }}"
     groups: "adm,sudo,docker"
 

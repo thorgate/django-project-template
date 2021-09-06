@@ -4,6 +4,15 @@ This project supports automatic deploys :fire: to the test server from master br
 job runs ansible with credentials retrieved from CI variables. For this to work make sure the auto deployment users have
 been set up. See [steps here](#set-up-autodeploy-users).
 
+## Notes about security
+
+- CI Will execute code on the server
+  - In default branch against test server 
+  - For protected tags or branches against live server 
+- Code will run with root privileges
+    - Needs research to secure and remove need for root privileges 
+- Any person with Maintainer or higher permissions can access CI variables and run it locally
+
 ## Automated deployments to test
 
 Merge stuff to master or execute manual deployment job for a branch and the code will be deployed to the test server
@@ -79,5 +88,17 @@ Finally you need to set up a CI job which deployes the code. See `deploy_to_test
 and `deploy_to_live` jobs in [.gitlab-ci.yml](../../../.gitlab-ci.yml) for an example.
 
 > Please note: When the target environment is a production server then the deploy should only
->  be done from tags or protected branches. This is since the production vault password must be
+>  be done from protected tags or branches. This is since the production vault password must be
 >  added as a protected and masked secret.
+
+> Note: To rotate secrets generate new secrets, run the ansible playbook again and then update values in Gitlab.
+
+
+## Remove autodeploy users
+
+To remove the auto-deployment setup. One needs to remove project deploy user from the server.
+
+```shell
+userdel {{ cookiecutter.repo_name }}-autodeploy
+sude rm -rf /home/{{ cookiecutter.repo_name }}-autodeploy
+```
