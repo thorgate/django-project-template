@@ -20,7 +20,8 @@ python = "^{{ cookiecutter.python_version }}"
 celery = {version = "==5.0.*", extras = ["redis"]}
 # - {% endif %}
 Django = "==3.2.*"
-django-environ = "*"
+environs = "*"
+dj-database-url = "*"
 django-redis = "==4.12.*"
 # - {%- if cookiecutter.django_media_engine == GCS %}
 django-storages = { version = "==1.*", extras = ["google"] }

@@ -15,7 +15,7 @@ from datetime import timedelta
 from typing import Any, Dict
 from urllib.parse import quote
 
-import environ
+import environs
 # - {%- if cookiecutter.include_celery == "yes" %}
 from celery.schedules import crontab
 # - {%- endif %}
@@ -28,7 +28,7 @@ from celery.schedules import crontab
 SITE_ROOT = os.path.dirname(os.path.dirname(__file__))
 
 # Load env to get settings
-env = environ.Env()
+env = environs.Env()
 
 # Set to true during docker image building (e.g. when running collectstatic)
 IS_DOCKER_BUILD = env.bool("DJANGO_DOCKER_BUILD", default=False)
@@ -136,9 +136,9 @@ TEMPLATES = [
 DATABASES = {
     # When using DJANGO_DATABASE_URL, unsafe characters in the url should be encoded.
     # See: https://django-environ.readthedocs.io/en/latest/#using-unsafe-characters-in-urls
-    "default": env.db_url(
+    "default": env.dj_db_url(
         "DJANGO_DATABASE_URL",
-        default="psql://{user}:{password}@{host}:{port}/{name}?sslmode={sslmode}".format(
+        default="postgres://{user}:{password}@{host}:{port}/{name}?sslmode={sslmode}".format(
             host=env.str("DJANGO_DATABASE_HOST", default="postgres"),
             port=env.int("DJANGO_DATABASE_PORT", default=5432),
             name=quote(
