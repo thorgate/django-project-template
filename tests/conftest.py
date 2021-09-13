@@ -54,7 +54,7 @@ def default_project():
         "test_host": "test1.thorgate.eu",
         "live_host": "test2.thorgate.eu",
         "python_version": "3.8",
-        "node_version": "12",
+        "node_version": "14",
         "frontend_style": WEBAPP,
         "use_cypress": NO,
     }
