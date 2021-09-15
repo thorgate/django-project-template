@@ -10,6 +10,12 @@ CHANGES
 Note: Try to add categories to changes and link to MRs/Issues
 -->
 
+## 2021-09-15
+
+- [ENH] Make `accounts.email` field case-insensitive
+- [BUG] Make sure that mypy.ini is not added when `use_mypy=no`
+- [BUG] tg-project.yaml: Ensure postgres version is based on cookiecutter option and set django to 3
+
 ## 2021-09-02
 
 Add new option `use_cypress` and basic support for TypeScript.

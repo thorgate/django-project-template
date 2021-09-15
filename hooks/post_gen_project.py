@@ -130,7 +130,12 @@ def cleanup():
             "scripts/images",
         ]
 
-    # remove CC leftoevers
+    if '{{ cookiecutter.use_mypy }}' == NO:
+        cleanup_paths += [
+            '{{cookiecutter.repo_name}}/mypy.ini',
+        ]
+
+    # remove CC leftovers
     kill_lines(cwd)
 
     # Rename first, then cleanup
