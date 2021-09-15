@@ -17,6 +17,6 @@ jiraProject: TODO
 #    name: live
 #    fqdn: https://{{ cookiecutter.domain_name }}
 tags:
-  - django2
-  - postgres10
+  - django3
+  - "postgres{{ cookiecutter.postgres_version }}"
   - "python{{ cookiecutter.python_version }}"

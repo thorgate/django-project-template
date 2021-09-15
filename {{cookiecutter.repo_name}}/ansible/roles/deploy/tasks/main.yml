@@ -1,6 +1,6 @@
 - name: "Create needed directories {{ "{{ code_dir }}" }}"
   file:
-      path: "{{ "{{ item }}" }} "
+      path: "{{ "{{ item }}" }}"
       state: directory
   loop:
       - "/var/log/{{ "{{ project }}" }}"
