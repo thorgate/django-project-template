@@ -18,7 +18,7 @@ python = "^{{ cookiecutter.python_version }}"
 # - {% if cookiecutter.include_celery == YES %}
 celery = {version = "==5.0.*", extras = ["redis"]}
 # - {% endif %}
-Django = "==3.1.*"
+Django = "==3.2.*"
 django-environ = "*"
 django-redis = "==4.12.*"
 # - {%- if cookiecutter.django_media_engine == 'GCS' %}
@@ -50,7 +50,7 @@ django-cors-headers = "==3.7.*"
 django-filter = "==2.4.*"
 tg-react = "*"
 # - {% endif %}
-tg-utils = {version = "*", extras = ["model-hash"]}
+tg-utils = {version = "*", extras = ["model-hash", "health_check"]}
 
 [tool.poetry.dev-dependencies]
 black = "==20.8b1"
@@ -66,6 +66,7 @@ prospector = "==1.2.*"
 pytest = "==6.*"
 pytest-django = "*"
 pytest-cov = "*"
+pytest-mock = "*"
 pylint-django = "*"
 # - {% if cookiecutter.use_mypy == YES %}
 # MyPy dependencies

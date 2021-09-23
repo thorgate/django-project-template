@@ -12,6 +12,9 @@ razzle_sentry_environment: "todo"
 razzle_sentry_dsn: ""  # TODO: Set to correct value or remove the TODO
 # - {%- endif %}
 
+# Django health-check access token
+django_health_check_access_token: "TODO"
+
 # - {% if cookiecutter.django_media_engine == "GCS" %}
 django_gs_bucket_name: "TODO"
 django_gs_project_id: "TODO"
