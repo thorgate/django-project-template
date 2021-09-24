@@ -14,7 +14,7 @@
     "_7":  "\n\t                admin_email: Administrative email (for Django, Let’s Encrypt, etc).",
     "_8":  "\n\t          docker_base_image: Which base Docker images to use?  [alpine/debian]",
     "_9":  "\n\t             python_version: Which python version to use? [>= 3.6]",
-    "_10": "\n\t               node_version: Which Node.js version to use?  [10 >=]",
+    "_10": "\n\t               node_version: Which Node.js version to use?  [14 >=]",
     "_11": "\n\t           postgres_version: Which version Postgres container to use in the server?  [9/10/11/12]",
     "_12": "\n\t          django_admin_path: URL path for Django Admin.",
     "_13": "\n\t        django_media_engine: Which CDN to use for media files [S3/GCS].",
