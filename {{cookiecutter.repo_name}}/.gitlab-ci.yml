@@ -33,15 +33,16 @@ test-django:
     - thorgate
 # - {% endif %}
   coverage: '/^TOTAL.*\s+(\d+\%)$/'
+  artifacts:
+    reports:
+      cobertura: "{{ cookiecutter.repo_name }}/coverage.xml"
+      junit: "{{ cookiecutter.repo_name }}/report.xml"
   cache:
     key: django-cache
     paths:
       - .data/pycache/pip
       - .data/pycache/pypoetry
     policy: pull-push
-  artifacts:
-    reports:
-      cobertura: {{cookiecutter.repo_name}}/coverage.xml
   except:
     refs:
       - template  # Don't run CI on template branch, should not be required
@@ -55,6 +56,7 @@ test-django:
     - make run-python cmd='entrypoint.sh -- echo "Installed dependencies"'
     - make lint-py
     - make coverage-py
+    - make patch-coverage-py-paths
 
 test-node:
   stage: test
@@ -62,7 +64,7 @@ test-node:
   tags:
     - thorgate
 # - {% endif %}
-  coverage: '/All\sfiles.*?\s+(\d+.\d+)/'
+  coverage: '/All\sfiles.*?\s+(\d+(?:.\d+)?)/'
   cache:
     key: ci-node-cache
     paths:
@@ -72,9 +74,11 @@ test-node:
   artifacts:
     reports:
       # - {% if cookiecutter.frontend_style == SPA %}
-      junit: app/coverage/cobertura-coverage.xml
+      cobertura: app/coverage/cobertura-coverage.xml
+      junit: app/coverage/junit.xml
       # - {% elif cookiecutter.frontend_style == WEBAPP %}
-      junit: webapp/coverage/cobertura-coverage.xml
+      cobertura: webapp/coverage/cobertura-coverage.xml
+      junit: webapp/coverage/junit.xml
       # - {% endif %}
   except:
     refs:
@@ -89,6 +93,7 @@ test-node:
     - make node-install
     - make lint-js
     - make coverage-js
+    - make patch-coverage-js-paths
 
 # - {% if cookiecutter.use_cypress == YES %}
 test-cypress:

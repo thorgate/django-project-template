@@ -10,6 +10,30 @@ CHANGES
 Note: Try to add categories to changes and link to MRs/Issues
 -->
 
+## Development
+
+- [NEW] Enable [Gitlab inline code coverage](https://docs.gitlab.com/ee/user/project/merge_requests/test_coverage_visualization.html) for merge requests (cobertura) - !232
+- [NEW] Add gitlab test reports to pipelines - !232
+- [BUG] Ensure pyproject.toml symlink is created correctly inside the backed project folder
+- [NEW] Allow using `cmd` argument to pass extra parameters to `make test-node` and `make test-django`
+
+**Migration:** 
+
+After updating to this version make sure to run `make poetry-lock`. This will ensure that your projects
+ pyproject.toml is correctly set up inside the inner backend project folder too.
+
+In addition to that you also need to run `make dev-venv-path` and then update the `ENV_FOLDER` environment
+ variable inside your `Dockerfile-django`. This is necessary since previously the code that was supposed to
+ create a symlink did not execute as it was incorrectly not marked as a PHONY make target (which made it
+ not run as the file existed in the root level already).
+
+## 2021-09-24
+
+- [ENH] Update default node to 14 - !235
+- [ENH] WEBAPP: Update node-sass to 6.x - !235
+- [ENH] Allow all minor versions for django-storages and let poetry choose the correct version - !237
+- [ENH] Update sentry-sdk to 1.x - !237
+
 ## 2021-09-15
 
 - [ENH] Make `accounts.email` field case-insensitive
