@@ -29,12 +29,14 @@ webapp/webapp/webpack-stats.json
 {{cookiecutter.repo_name}}/.coverage
 {{cookiecutter.repo_name}}/coverage
 {{cookiecutter.repo_name}}/coverage.xml
+{{cookiecutter.repo_name}}/report.xml
 {{cookiecutter.repo_name}}/htmlcov/
 {{cookiecutter.repo_name}}/cover/
 
 {%- if cookiecutter.frontend_style == SPA %}
 # Node Project files
 app/build/
+app/cache/
 app/coverage/
 
 # Missing translations file

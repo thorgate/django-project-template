@@ -22,6 +22,12 @@ CUR_DIR_NAME ?= $(shell basename `pwd`)
 DJANGO_IMAGE_NAME ?= $(CUR_DIR_NAME)_django
 POETRY_WRAPPER_IMAGE_NAME ?= $(PROJECT_NAME)_poetry_wrapper
 
+# - {%- if cookiecutter.frontend_style == SPA %}
+JS_COBERTURA="app/coverage/cobertura-coverage.xml"
+# - {% elif cookiecutter.frontend_style == WEBAPP %}
+JS_COBERTURA="webapp/coverage/cobertura-coverage.xml"
+# - {%- endif %}
+
 # Cache dirs for poetry/pip
 #
 # To have one big cache for all your projects just add the following to your profile:
@@ -90,7 +96,11 @@ poetry.lock:
 	@make poetry-lock
 
 
-pyproject.toml:
+.PHONY:
+pyproject.toml: $(SITE_ROOT)/pyproject.toml
+
+
+$(SITE_ROOT)/pyproject.toml:
 	@cd $(SITE_ROOT) && ln -sf ../pyproject.toml .
 
 
@@ -249,13 +259,28 @@ $(SITE_ROOT)/settings/local_test.py:
 .PHONY:
 coverage-py: ## Runs python/django test coverage calculation
 	@echo -e "$(CYAN)Running automatic code coverage check$(COFF)"
-	@docker-compose run --rm django pytest --cov=. --cov-report html --cov-report xml --cov-report term-missing
+	@docker-compose run --rm django pytest --cov=. --cov-report html --cov-report xml --cov-report term-missing $(cmd)
+
+
+.PHONY:
+patch-coverage-py-paths:  ## Updates the paths in python cobertura report to make it work with Gitlab
+	sed -i -e "s|<source>.|<source>${CI_PROJECT_DIR}/${PROJECT_NAME}/|" ${PROJECT_NAME}/coverage.xml
 
 
 .PHONY:
 coverage-js:
 	@echo -e "$(CYAN)Running automatic code coverage check$(COFF)"
-	@docker-compose run --rm node yarn test --coverage
+	@docker-compose run --rm node yarn test --coverage $(cmd)
+
+
+.PHONY:
+patch-coverage-js-paths:  ## Updates the paths in JS cobertura report to make it work with Gitlab
+	sed -i -e "s|<source>../</source>| |" ${JS_COBERTURA}
+	sed -i -e "s|<sources>| |" ${JS_COBERTURA}
+	sed -i -e "s|</sources>| |" ${JS_COBERTURA}
+{%- if cookiecutter.frontend_style == 'webapp' %}
+	sed -i -e "s|app/|webapp/|" ${JS_COBERTURA}
+{%- endif %}
 
 
 .PHONY:
@@ -275,13 +300,13 @@ test-node-watch: clean
 .PHONY:
 test-node: clean
 	@echo -e "$(CYAN)Running automatic node.js tests$(COFF)"
-	@docker-compose run --rm node yarn test
+	@docker-compose run --rm node yarn test $(cmd)
 
 
 .PHONY:
 test-django: clean
 	@echo -e "$(CYAN)Running automatic django tests$(COFF)"
-	@docker-compose run --rm django py.test
+	@docker-compose run --rm django py.test $(cmd)
 
 
 .PHONY:

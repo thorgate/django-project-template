@@ -177,7 +177,7 @@ def cleanup():
 
 def kill_lines(path):
     """
-    Will run sed all files in poth and remove leftovers from commented out cookie cutter code ` # - ` or ` // - `
+    Will run sed all files in path and remove leftovers from commented out cookie cutter code ` # - ` or ` // - `
     """
     re = '^\s*(#|//) -\s*$'
     for escape in "()/|":
