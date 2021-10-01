@@ -157,6 +157,8 @@ DATABASES = {
     )
 }
 
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
 
 # Redis config (used for caching{% if cookiecutter.include_celery == YES %} and celery{% endif %})
 REDIS_URL = env.str("DJANGO_REDIS_URL", default="redis://redis:6379/1")

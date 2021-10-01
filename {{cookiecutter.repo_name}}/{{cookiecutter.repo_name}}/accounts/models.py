@@ -42,7 +42,7 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    email = CIEmailField(_("email address"), max_length=254, unique=True)
+    email = CIEmailField(verbose_name=_("email address"), max_length=254, unique=True)
     name = models.CharField(max_length=255)
 
     is_staff = models.BooleanField(_("staff status"), default=False)

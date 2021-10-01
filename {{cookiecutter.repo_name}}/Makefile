@@ -415,6 +415,15 @@ node-shell:
 
 
 .PHONY:
+django-fix-ownership:
+	@docker-compose run --rm django chown -R `id -u`:`id -g` ./
+
+.PHONY:
+node-fix-ownership:
+	@docker-compose run --rm node chown -R `id -u`:`id -g` ./
+
+
+.PHONY:
 django-manage:
 	docker-compose run --rm django ./manage.py $(cmd)
 
@@ -430,6 +439,9 @@ shell:
 .PHONY:
 makemigrations:
 	docker-compose run --rm django ./manage.py makemigrations $(cmd)
+	@make django-fix-ownership
+	@make fmt-py
+
 
 
 .PHONY:
