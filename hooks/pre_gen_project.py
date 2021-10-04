@@ -107,6 +107,20 @@ def validate_config():
         print("Valid thorgate keys are: %s" % ', '.join(valid_thorgate_key))
         sys.exit(1)
 
+    build_in_ci = "{{ cookiecutter.build_in_ci }}"
+    valid_build_in_ci_key = [YES, NO]
+    if build_in_ci not in valid_build_in_ci_key:
+        print("Build in CI '{0}' is not valid!".format(build_in_ci))
+        print("Valid build_in_ci keys are: %s" % ', '.join(valid_build_in_ci_key))
+        sys.exit(1)
+
+    use_auto_deploy = "{{ cookiecutter.use_auto_deploy }}"
+    valid_use_auto_deploy_key = [YES, NO]
+    if use_auto_deploy not in valid_use_auto_deploy_key:
+        print("Use auto deploy '{0}' is not valid!".format(use_auto_deploy))
+        print("Valid use_auto_deploy keys are: %s" % ', '.join(valid_use_auto_deploy_key))
+        sys.exit(1)
+
     if not re.match(r'(alpine|debian)$', "{{ cookiecutter.docker_base_image }}"):
         print("Only alpine and debian options for docker_base_image are supported.")
         sys.exit(1)

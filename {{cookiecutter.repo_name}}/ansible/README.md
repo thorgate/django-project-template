@@ -12,6 +12,9 @@ Contents:
       - [Deploying a different version](#deploying-a-different-version)
     - [The first deployment](#the-first-deployment)
     - [Configuring the environment](#configuring-the-environment)
+{%- if cookiecutter.use_auto_deploy == YES %}
+  - [Automated deployments](./roles/autodeploy/README.md)
+{%- endif %}
   - [Download server state](#download-server-state)
 
 ## TL;DR

@@ -1,0 +1,27 @@
+---
+
+- name: "Bootstrap"
+  gather_facts: no
+  hosts: all
+  tags:
+    - always
+  tasks:
+    - apt:
+      name: aptitude
+
+
+- name: "Setup autodeploy user (test)"
+  hosts: test
+  roles:
+    - { role: autodeploy }
+  vars_files:
+    - autodeploy_vault.test.yml
+
+# Note: When different env is added add user setup for that env also
+
+- name: "Setup autodeploy user (live)"
+  hosts: live
+  roles:
+    - { role: autodeploy }
+  vars_files:
+    - autodeploy_vault.live.yml

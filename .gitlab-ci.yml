@@ -103,6 +103,13 @@ test_cypress_webapp:
   script:
     - pytest -E CYPRESS_WEBAPP --maxfail=1 -v
 
+test_auto_deploy_generation:
+  stage: test
+  except:
+    - schedules
+  script:
+    - pytest -E AUTO_DEPLOY --maxfail=1 -v
+
 test_frontend_codemods:
   stage: test
   image: node:12
