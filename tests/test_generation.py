@@ -225,6 +225,22 @@ def test_cypress_webapp_generate(cookies, default_project):
     validate_project_works(result, default_project)
 
 
+@pytest.mark.env("AUTO_DEPLOY")
+def test_auto_deploy_generate(cookies, default_project):
+    default_project.update({
+        'frontend_style': SPA,
+        'build_in_ci': YES,
+        'use_auto_deploy': YES,
+    })
+    result = generate_project(cookies, default_project)
+
+    assert result.project.join('ansible/autodeploy.yml').exists()
+    assert result.project.join('ansible/roles/autodeploy').exists()
+    assert result.project.join('scripts/deploy').exists()
+
+    validate_project_works(result, default_project)
+
+
 def test_storybook_not_generate(cookies, default_project):
     default_project.update({
         'webapp_include_storybook': NO,

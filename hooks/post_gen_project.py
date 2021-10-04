@@ -76,7 +76,7 @@ def cleanup():
             '{{cookiecutter.repo_name}}/templates/registration/',
         ]
 
-    if '{{ cookiecutter.webapp_include_storybook }}' == NO:
+    if '{{ cookiecutter.webapp_include_storybook }}' == NO and '{{ cookiecutter.frontend_style }}' == WEBAPP:
         cleanup_paths += [
             'webapp/webapp/src/.storybook',
             'webapp/webapp/src/storyshots.test.js',
@@ -135,6 +135,14 @@ def cleanup():
             '{{cookiecutter.repo_name}}/mypy.ini',
         ]
 
+    if '{{ cookiecutter.use_auto_deploy }}' == NO:
+        cleanup_paths += [
+            "ansible/roles/autodeploy",
+            "ansible/ansible-ci.cfg",
+            "ansible/autodeploy.yml",
+            "scripts/deploy",
+        ]
+
     # remove CC leftovers
     kill_lines(cwd)
 
@@ -177,13 +185,13 @@ def cleanup():
 
 def kill_lines(path):
     """
-    Will run sed all files in path and remove leftovers from commented out cookie cutter code ` # - ` or ` // - `
+    Will run sed on all files in path and remove leftovers from commented out cookie cutter code ` # - ` or ` // - `
     """
     re = '^\s*(#|//) -\s*$'
     for escape in "()/|":
-        re=re.replace(escape, fr"\{escape}")
-    sed_command=f"/{re}/d"
-    print(f"remving kill lines | {sed_command} | @ { path }")
+        re = re.replace(escape, fr"\{escape}")
+    sed_command = f"/{re}/d"
+    print(f"removing kill lines | {sed_command} | @ { path }")
     return subprocess.check_call(["find", path, "-type", "f", "-exec", "sed", "-i", sed_command, "{}", "+"])
 
 
@@ -267,6 +275,7 @@ def main():
 
     cleanup()
     create_repos()
+
 
 if __name__ == '__main__':
     main()

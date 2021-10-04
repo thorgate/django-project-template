@@ -8,4 +8,4 @@
 #
 # Workaround idea from: https://stackoverflow.com/a/51610644
 
-export DOCKER_CONFIG="{% raw %}{{ code_dir }}{% endraw %}/.docker-cfg"
+export DOCKER_CONFIG="{{ "{{ code_dir }}" }}/.docker-cfg"

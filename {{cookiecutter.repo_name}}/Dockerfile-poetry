@@ -18,7 +18,7 @@ RUN apk add --no-cache --virtual .build-deps \
     libffi-dev libxml2-dev libxslt-dev jpeg-dev zlib-dev bash gettext rust cargo
 
 # Copy Python requirements dir and Install requirements
-RUN pip install -U pip setuptools wheel poetry
+RUN pip install -U pip 'setuptools<58' wheel poetry
 
 ARG DPT_VENV_CACHING
 

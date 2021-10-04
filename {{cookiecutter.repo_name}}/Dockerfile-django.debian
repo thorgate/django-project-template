@@ -16,7 +16,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy Python requirements dir and Install requirements
-RUN pip install -U pip setuptools wheel poetry
+RUN pip install -U pip 'setuptools<58' wheel poetry
 
 ARG DPT_VENV_CACHING
 

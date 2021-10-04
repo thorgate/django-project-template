@@ -1,0 +1,12 @@
+autodeploy_public_key: |
+  put the ssh public key here
+
+autodeploy_private_key: |
+  contents of the private key
+  go here on multiple lines
+
+autodeploy_user_name: "{{ cookiecutter.repo_name }}-autodeploy"
+autodeploy_user_password: "set to a secure password"
+autodeploy_pw_hash: "set to a hash of autodeploy_user_password (see ./README.md)"
+
+deploy_vault_pw: "set to the password of the environment vault"
