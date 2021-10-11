@@ -368,7 +368,7 @@ eslint-fix:
 .PHONY:
 prospector:
 	@echo -e "$(CYAN)Running Prospector$(COFF)"
-	@make run-python cmd=prospector
+	@make run-python cmd='prospector --with-tool bandit --without-tool pep257'
 
 
 {%- if cookiecutter.use_mypy == YES %}
@@ -390,13 +390,13 @@ stylelint:
 .PHONY:
 isort:
 	@echo -e "$(CYAN)Checking imports with isort$(COFF)"
-	@make run-python cmd='isort --check-only -p . --diff'
+	@make run-python cmd='isort . --check --diff'
 
 
 .PHONY:
 isort-fix: ## Fix imports automatically with isort
 	@echo -e "$(CYAN)Fixing imports with isort$(COFF)"
-	@make run-python cmd='isort -p . -y'
+	@make run-python cmd='isort .'
 
 
 .PHONY:
