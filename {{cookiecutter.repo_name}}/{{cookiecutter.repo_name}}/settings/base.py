@@ -48,12 +48,13 @@ EMAIL_SUBJECT_PREFIX = (
 
 SESSION_COOKIE_NAME = f"{PROJECT_NAME}_ssid"
 SESSION_COOKIE_DOMAIN = env.str("DJANGO_SESSION_COOKIE_DOMAIN", default=None)
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
 # - {%- if cookiecutter.frontend_style == SPA %}
 
 CSRF_COOKIE_DOMAIN = env.str("DJANGO_CSRF_COOKIE_DOMAIN", default=None)
 CSRF_COOKIE_HTTPONLY = False
-
-SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # Tg React Url configurations should be same as frontend forgot password URL
 TGR_PASSWORD_RECOVERY_URL = "/auth/reset-password/%s"
