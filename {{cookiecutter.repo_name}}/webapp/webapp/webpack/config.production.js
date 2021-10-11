@@ -15,7 +15,6 @@ const config = makeConfig({
 
     devtool: 'source-map',
 
-    namedModules: false,
     minimize: true,
 
     // This must be same as Django's STATIC_URL setting

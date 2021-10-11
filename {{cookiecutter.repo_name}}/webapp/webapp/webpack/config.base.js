@@ -5,7 +5,6 @@ const webpack = require('webpack');
 const ExtractCssChunks = require('extract-css-chunks-webpack-plugin');
 const BundleTracker = require('webpack-bundle-tracker');
 const autoprefixer = require('autoprefixer');
-const getLocalIdent = require('css-loader/lib/getLocalIdent');
 
 
 // The app/ dir
@@ -60,24 +59,27 @@ function makeConfig(options) {
                         loader: 'css-loader',
                         options: {
                             sourceMap: true,
-                            modules: true,
-                            importLoader: 1,
-                            localIdentName: '[path][name]__[local]--[hash:base64:5]',
-                            getLocalIdent: (loaderContext, localIdentName, localName, options) => {
-                                // Everything that comes from our global style folder and node_modules will be in global scope
-                                if (/styles-src|node_modules/.test(loaderContext.resourcePath)) {
-                                    return localName;
-                                }
+                            importLoaders: 1,
+                            modules: {
+                                localIdentName: '[path][name]__[local]--[hash:base64:5]',
+                                getLocalIdent: (loaderContext, localIdentName, localName, options) => {
+                                    // Everything that comes from our global style folder and node_modules will be in global scope
+                                    if (/styles-src|node_modules/.test(loaderContext.resourcePath)) {
+                                        return localName;
+                                    }
 
-                                return getLocalIdent(loaderContext, localIdentName, localName, options);
-                            },
+                                    return null;
+                                },
+                            }
                         },
                     }, {
                         loader: "postcss-loader",
                         options: {
-                            plugins: function() {
-                                return [autoprefixer]
-                            },
+                            postcssOptions: {
+                                plugins: function() {
+                                    return [autoprefixer]
+                                },
+                            }
                         },
                     }, {
                         loader: "resolve-url-loader",
@@ -85,19 +87,21 @@ function makeConfig(options) {
                         loader: "sass-loader",
                         options: {
                             sourceMap: true,
-                            includePaths: [
-                                path.resolve(project_root, 'static', 'styles-src'),
-                            ],
-                            outputStyle: 'expanded',
+                            sassOptions: {
+                                includePaths: [
+                                    path.resolve(project_root, 'static', 'styles-src'),
+                                ],
+                                outputStyle: 'expanded',
+                            }
                         }
                     },
                 ],
             }, {
                 test: /\.(jpe?g|png|gif|svg|woff2?|eot|ttf)$/,
                 loader: 'url-loader',
-                query: {
+                options: {
                     limit: 2000,
-                    name: 'assets/[name].[hash].[ext]',
+                    name: 'assets/[name].[contenthash].[ext]',
                 },
             }],
         },
@@ -110,7 +114,7 @@ function makeConfig(options) {
             }),
             new BundleTracker({
                 path: __dirname,
-                filename: '../webpack-stats.json',
+                filename: 'webpack-stats.json',
                 indent: 2,
                 logTime: true,
             }),
@@ -120,17 +124,15 @@ function makeConfig(options) {
         ].concat(options.plugins),
 
         optimization: {
-            namedModules: options.namedModules,
             minimize: options.minimize,
 
             splitChunks: {
                 chunks: 'all',
-                name : false,
 
                 cacheGroups: {
                     default: false,
-                    vendors: {
-                        name: 'vendors',
+                    defaultVendors: {
+                        idHint: 'vendors',
                         test: /node_modules/,  // Include all assets in node_modules directory
                         reuseExistingChunk: true,
                         enforce: true,
