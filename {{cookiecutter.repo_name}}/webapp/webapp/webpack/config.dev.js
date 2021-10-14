@@ -17,7 +17,6 @@ const config = makeConfig({
 
     devtool: 'eval-source-map',
 
-    namedModules: true,
     minimize: false,
 
     // Needed for inline CSS (via JS) - see set-public-path.js for more info

@@ -37,8 +37,6 @@
     {% endraw %}{% if cookiecutter.frontend_style == WEBAPP %}{% raw %}
     <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
 
-    {% render_bundle 'runtime' %}
-    {% render_bundle 'vendors' %}
     {% endraw %}{% endif %}{% raw %}
 
     {# In production, don't include the styles js file (which is unused anyway) #}

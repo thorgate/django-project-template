@@ -42,7 +42,7 @@ redis = "==3.*"
 django-crispy-forms = "==1.11.*"
 django-js-reverse = "==0.9.1"
 django-settings-export = "==1.2.*"
-django-webpack-loader = "==0.6.*"
+django-webpack-loader = "==1.4.*"
 # - {% elif cookiecutter.frontend_style == SPA %}
 djangorestframework = "==3.12.*"
 djangorestframework_simplejwt = "==4.6.*"
