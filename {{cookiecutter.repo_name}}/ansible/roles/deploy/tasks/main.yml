@@ -44,7 +44,7 @@
   shell: >
     echo "
       CREATE EXTENSION IF NOT EXISTS citext;
-    " | docker exec -i postgres-{{ postgres_version | mandatory }} psql -U postgres -d {{ project }}
+    " | docker exec -i postgres-{{ "{{ postgres_version | mandatory }}" }} psql -U postgres -d {{ "{{ project }}" }}
   when: not db_created.stat.exists
 
 
