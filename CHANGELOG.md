@@ -20,6 +20,7 @@ Note: Try to add categories to changes and link to MRs/Issues
 - [NEW] WEBAPP: Upgrade to webpack 5 - !239
 - [BUG] WEBAPP: Fix build error due to incompatibility with node-sass==6 and sass-loader versions - !239
 - [NEW] WEBAPP: Set SECURE_PROXY_SSL_HEADER for webapp too to ensure build_absolute_uri always uses correct protocol - !239
+- [BUG] SPA: Update @loadable packages to fix stats mismatch issue when code is deployed to servers with build in ci enabled - !241
 
 **Migration:** 
 
