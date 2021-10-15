@@ -152,7 +152,7 @@ ansible-playbook --limit test -e "force_deploy=stable" deploy.yml
      [vault-template.yml](./host_vars/vault-template.yml) as an example.
 * If you created the vault file make sure to encrypt it: `ansible-vault encrypt host_vars/<hostname>/vault.yml`
   * NB: Vault for production and test should have different password.
-* Check django settings (`settings/staging.py` and/or `settings/production.py`)
+* Check django settings (`settings/cloud.py`)
 * Add the server's SSH key (`/root/.ssh/id_rsa.pub`) to the project repo settings as deployment key.
 * Ensure you've committed and pushed all relevant changes.
 

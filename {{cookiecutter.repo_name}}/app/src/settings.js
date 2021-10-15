@@ -26,6 +26,7 @@ export const loadSettings = () => {
         DJANGO_URL_PREFIX: '/d/',
         DJANGO_MEDIA_URL: '/media/',
         DJANGO_STATIC_URL: '/assets/',
+        DJANGO_HEALTH_CHECK_URL: '/{{ cookiecutter.django_health_check_path }}/',
         DJANGO_ADMIN_PANEL: '/{{ cookiecutter.django_admin_path }}/',
 
         SITE_URL: process.env.RAZZLE_SITE_URL,
@@ -71,6 +72,7 @@ export const loadSettings = () => {
             // This is here so the `Site` model in the backend can be used to point to the frontend.
             cfg.APP_PROXY = {
                 [cfg.DJANGO_STATIC_URL]: cfg.BACKEND_SITE_URL,
+                [cfg.DJANGO_HEALTH_CHECK_URL]: cfg.BACKEND_SITE_URL,
             };
         } else {
             const docker = require('is-docker');
@@ -86,6 +88,7 @@ export const loadSettings = () => {
                 [cfg.DJANGO_URL_PREFIX]: cfg.BACKEND_SITE_URL,
                 [cfg.DJANGO_MEDIA_URL]: cfg.BACKEND_SITE_URL,
                 [cfg.DJANGO_STATIC_URL]: cfg.BACKEND_SITE_URL,
+                [cfg.DJANGO_HEALTH_CHECK_URL]: cfg.BACKEND_SITE_URL,
                 [cfg.DJANGO_ADMIN_PANEL]: cfg.BACKEND_SITE_URL,
             };
         }

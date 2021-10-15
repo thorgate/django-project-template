@@ -75,6 +75,14 @@ INSTALLED_APPS = [
     "tg_react",
     "corsheaders",
     # - {%- endif %}
+    # Health-checks
+    "health_check",
+    "health_check.db",
+    "health_check.cache",
+    # - {%- if cookiecutter.include_celery == YES %}
+    "health_check.contrib.celery",
+    "tg_utils.health_check.checks.celery_beat",
+    # - {%- endif %}
     # Django apps
     "django.contrib.admin",
     "django.contrib.auth",
@@ -149,13 +157,15 @@ DATABASES = {
     )
 }
 
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
 
 # Redis config (used for caching{% if cookiecutter.include_celery == YES %} and celery{% endif %})
 REDIS_URL = env.str("DJANGO_REDIS_URL", default="redis://redis:6379/1")
 REDIS_CACHE_URL = env.str("DJANGO_REDIS_CACHE_URL", default=REDIS_URL)
 REDIS_CELERY_URL = env.str("DJANGO_REDIS_CELERY_URL", default=REDIS_URL)
 
-# - {%- if cookiecutter.include_celery == "yes" %}
+# - {%- if cookiecutter.include_celery == YES %}
 # Set your Celerybeat tasks/schedule here
 # Rest of Celery configuration lives in celery_settings.py
 CELERYBEAT_SCHEDULE = {
@@ -424,4 +434,20 @@ SIMPLE_JWT = {
 # CORS settings
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
+# - {%- endif %}
+
+# Health-check related
+HEALTH_CHECK_ACCESS_TOKEN = env.str(
+    "DJANGO_HEALTH_CHECK_ACCESS_TOKEN", default=PROJECT_NAME,
+)
+
+# - {%- if cookiecutter.include_celery == YES %}
+HEALTH_CHECK = {
+    # For 'tg_utils.health_check.checks.celery_beat'
+    "CELERY_APP": f"{PROJECT_NAME}.celery.app",
+    # Schedule timestamping task every minute
+    "CELERY_BEAT_CHECK_INTERVAL": 60,
+    # It is okay if the task is delayed no more than 5 minutes
+    "CELERY_BEAT_DELAY_THRESHOLD": 5 * 60,
+}
 # - {%- endif %}
