@@ -298,19 +298,25 @@ test-node-watch: clean
 
 
 .PHONY:
-test-node: clean
+test-js: clean
 	@echo -e "$(CYAN)Running automatic node.js tests$(COFF)"
 	@docker-compose run --rm node yarn test $(cmd)
 
 
 .PHONY:
-test-django: clean
+test-py: clean
 	@echo -e "$(CYAN)Running automatic django tests$(COFF)"
 	@docker-compose run --rm django py.test $(cmd)
 
 
 .PHONY:
-test: test-node test-django ## Runs automatic tests on your code
+test-django: test-py
+
+.PHONY:
+test-node: test-js
+
+.PHONY:
+test: test-js test-py ## Runs automatic tests on your code
 
 
 .PHONY:
@@ -409,8 +415,20 @@ node-shell:
 
 
 .PHONY:
-docker-manage:
+django-fix-ownership:
+	@docker-compose run --rm django chown -R `id -u`:`id -g` ./
+
+.PHONY:
+node-fix-ownership:
+	@docker-compose run --rm node chown -R `id -u`:`id -g` ./
+
+
+.PHONY:
+django-manage:
 	docker-compose run --rm django ./manage.py $(cmd)
+
+.PHONY:
+docker-manage: django-manage
 
 
 .PHONY:
@@ -421,6 +439,9 @@ shell:
 .PHONY:
 makemigrations:
 	docker-compose run --rm django ./manage.py makemigrations $(cmd)
+	@make django-fix-ownership
+	@make fmt-py
+
 
 
 .PHONY:

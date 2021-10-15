@@ -64,6 +64,7 @@ services:
     volumes:
       - ".data/postgres:/var/lib/postgresql/data"
       - ".data/db-mirror:/db-mirror"  # Used by ansible mirror playbook
+      - "./scripts/create-citext-extension.sql:/docker-entrypoint-initdb.d/create-citext-extension.sql"
     environment:
       # credentials taken from .env file
       POSTGRES_USER: "${DJANGO_DATABASE_USER-'{{ cookiecutter.repo_name }}'}"
