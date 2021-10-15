@@ -23,6 +23,7 @@ Note: Try to add categories to changes and link to MRs/Issues
 - [BUG] WEBAPP: Fix build error due to incompatibility with node-sass==6 and sass-loader versions - !239
 - [NEW] WEBAPP: Set SECURE_PROXY_SSL_HEADER for webapp too to ensure build_absolute_uri always uses correct protocol - !239
 - [BUG] SPA: Update @loadable packages to fix stats mismatch issue when code is deployed to servers with build in ci enabled - !241
+- [BUG] Unify AWS S3 region throughout the project (so terraform matches default settings) - !242
 
 **Migration:** 
 
