@@ -220,7 +220,7 @@ AWS_STORAGE_BUCKET_NAME = "<unset>"
 AWS_DEFAULT_ACL = "public-read"
 AWS_IS_GZIPPED = True
 AWS_S3_FILE_OVERWRITE = False
-AWS_S3_REGION_NAME = "eu-central-1"
+AWS_S3_REGION_NAME = "eu-north-1"
 AWS_S3_SIGNATURE_VERSION = "s3v4"
 
 # Only set DJANGO_AWS_S3_ENDPOINT_URL if it's defined in environment, fallback to default value in other cases
