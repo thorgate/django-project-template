@@ -96,7 +96,14 @@ be able to deploy the code to the cloud the target server must be able to pull i
 4. Add the deploy token value to the host specific vault file under `registry_token` variable.
 5. Now you can run the ansible stack to set up the docker authentication
 
-Note: When you are working directly in the server run the following command to be able to pull images
+**Note:** If `docker login` times out then check if your server has `golang-docker-credential-helpers` installed.
+      This helper requires X-Server configuration but this fails when used within servers.
+      If it is then either remove it or configure headless helper instead. You can remove it following command:
+      ````
+      dpkg -r --ignore-depends=golang-docker-credential-helpers golang-docker-credential-helpers
+      ````
+
+**Note:** When you are working directly in the server run the following command to be able to pull images
        from the docker registry:
 
 ```bash
