@@ -1,37 +1,45 @@
 # Docker-compose configuration for production
 
-version: '2.1'
+version: '3.8'
+
+x-common-spec: &common-spec
+  env_file: .env
+  restart: unless-stopped
+
+x-django-container-spec: &django-container-spec
+  <<: *common-spec
+# - {%  if cookiecutter.build_in_ci == YES %}
+  image: "${SITE_DJANGO_IMAGE}:${SITE_VERSION}"
+# - {%  else %}
+  build:
+    context: .
+    dockerfile: Dockerfile-django.production
+# - {%  endif %}
+  volumes:
+    - "/var/lib/docker-nginx/files/{{cookiecutter.repo_name}}/assets:/files/assets"
+    - &django-media-volume "/var/lib/docker-nginx/files/{{cookiecutter.repo_name}}/media:/files/media"
+    - &logs-volume "/var/log/{{cookiecutter.repo_name}}:/var/log/{{cookiecutter.repo_name}}"
+  networks:
+    - default
+    - nginx-network
+    - postgres-network
+  depends_on:
+    - redis
+  external_links:
+    - postgres-{{cookiecutter.postgres_version}}:postgres
 
 services:
   django:
-# - {%  if cookiecutter.build_in_ci == YES %}
-    image: "${SITE_DJANGO_IMAGE}:${SITE_VERSION}"
-# - {%  else %}
-    build:
-      context: .
-      dockerfile: Dockerfile-django.production
-# - {%  endif %}
-    env_file: .env
+    <<: *django-container-spec
     container_name: {{cookiecutter.repo_name}}_django
-    restart: unless-stopped
-    volumes:
-      - "/var/lib/docker-nginx/files/{{cookiecutter.repo_name}}/assets:/files/assets"
-      - "/var/log/{{cookiecutter.repo_name}}:/var/log/{{cookiecutter.repo_name}}"
     # For some reason the command also has to be specified here, otherwise the entrypoint+command combination won't
     #  work.
     entrypoint: /usr/bin/wait-for-it.sh postgres:5432 -t 60 --
     command: gunicorn {{cookiecutter.repo_name}}.wsgi:application --workers 2 --bind :80
-    networks:
-      - default
-      - {{cookiecutter.repo_name}}_nginx
-      - {{cookiecutter.repo_name}}_postgres
-    depends_on:
-      - redis
-    external_links:
-      - postgres-{{cookiecutter.postgres_version}}:postgres
 # - {%  if cookiecutter.frontend_style == SPA %}
 
   node:
+    <<: *common-spec
 # -   {%  if cookiecutter.build_in_ci == YES %}
     image: "${SITE_NODE_IMAGE}:${SITE_VERSION}"
 # -   {%  else %}
@@ -39,56 +47,34 @@ services:
       context: .
       dockerfile: Dockerfile-node.production
 # -   {%  endif %}
-    env_file: .env
     container_name: {{cookiecutter.repo_name}}_node
-    restart: unless-stopped
     command: yarn start
     volumes:
       - "/var/lib/docker-nginx/files/{{cookiecutter.repo_name}}/app/assets:/files/assets"
-      - "/var/log/{{cookiecutter.repo_name}}:/var/log/{{cookiecutter.repo_name}}"
+      - *logs-volume
     networks:
       - default
-      - {{cookiecutter.repo_name}}_nginx
+      - nginx-network
 # - {%  endif %}
 
 # - {%  if cookiecutter.include_celery == YES %}
   celery:
-# -   {%  if cookiecutter.build_in_ci == YES %}
-    image: "${SITE_DJANGO_IMAGE}:${SITE_VERSION}"
-# -   {%  else %}
-    build:
-      context: .
-      dockerfile: Dockerfile-django.production
-# -   {%  endif %}
-    env_file: .env
-    restart: unless-stopped
+    <<: *django-container-spec
     volumes:
-      - "/var/lib/docker-nginx/files/{{cookiecutter.repo_name}}/media:/files/media"
-      - "/var/log/{{cookiecutter.repo_name}}:/var/log/{{cookiecutter.repo_name}}"
+      - *django-media-volume
+      - *logs-volume
     networks:
       - default
-      - {{cookiecutter.repo_name}}_postgres
-    depends_on:
-      - redis
-    external_links:
-      - postgres-{{cookiecutter.postgres_version}}:postgres
+      - postgres-network
     entrypoint: /usr/bin/wait-for-it.sh postgres:5432 -t 60 --
     command: celery --app {{cookiecutter.repo_name}} worker --autoscale 6,2 --loglevel INFO
 
   celery_beat:
-# -   {%  if cookiecutter.build_in_ci == YES %}
-    image: "${SITE_DJANGO_IMAGE}:${SITE_VERSION}"
-# -   {%  else %}
-    build:
-      context: .
-      dockerfile: Dockerfile-django.production
-# -   {%  endif %}
-    env_file: .env
+    <<: *django-container-spec
     container_name: {{cookiecutter.repo_name}}_celery_beat
-    restart: unless-stopped
     volumes:
       - "/var/lib/docker-{{cookiecutter.repo_name}}/celery:/celery"
-      - "/var/log/{{cookiecutter.repo_name}}:/var/log/{{cookiecutter.repo_name}}"
+      - *logs-volume
     networks:
       - default
     depends_on:
@@ -116,7 +102,9 @@ networks:
   default:
     external:
       name: {{cookiecutter.repo_name}}_default
-  {{cookiecutter.repo_name}}_nginx:
-    external: true
-  {{cookiecutter.repo_name}}_postgres:
-    external: true
+  nginx-network:
+    external:
+      name: {{cookiecutter.repo_name}}_nginx
+  postgres-network:
+    external:
+      name: {{cookiecutter.repo_name}}_postgres
