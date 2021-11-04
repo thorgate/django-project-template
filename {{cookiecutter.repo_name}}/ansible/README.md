@@ -97,8 +97,8 @@ be able to deploy the code to the cloud the target server must be able to pull i
 5. Now you can run the ansible stack to set up the docker authentication
 
 **Note:** If `docker login` times out then check if your server has `golang-docker-credential-helpers` installed.
-      This helper requires X-Server configuration but this fails when used within servers.
-      If it is then either remove it or configure headless helper instead. You can remove it following command:
+      This helper requires X-Server configuration but this fails when it is not installed (which is usually the case within servers).
+      If the helper is installed then either remove it or configure a headless helper instead. You can remove it with the following command:
       ````
       dpkg -r --ignore-depends=golang-docker-credential-helpers golang-docker-credential-helpers
       ````
