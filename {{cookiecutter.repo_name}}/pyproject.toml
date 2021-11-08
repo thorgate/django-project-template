@@ -63,7 +63,7 @@ isort = "==5*"
 # Note prospector is very picky about its dependencies,
 # avoid specifying versions for pylint/pylint-django/astroid
 # and let prospector determine which versions work together
-prospector = "==1.4.*"
+prospector = {version = "==1.4.*", extras=["with_bandit"]}
 pytest = "==6.*"
 pytest-django = "*"
 pytest-cov = "*"
