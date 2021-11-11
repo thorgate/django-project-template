@@ -108,9 +108,7 @@ $(SITE_ROOT)/pyproject.toml:
 poetry-check:
 	@make run-poetry-helper cmd="sh /poetry-check-lock.sh"
 	@make run-poetry-helper cmd="poetry check"
-	# Pylint is installed as a dependency of prospector. Lets ignore the issue until we
-	#  can update it: 39621
-	@make run-python cmd="poetry run safety check -i 39621"
+	@make run-python cmd="poetry run safety check"
 
 
 .PHONY:

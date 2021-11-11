@@ -2,7 +2,7 @@
 FROM node:{{ cookiecutter.node_version }}-alpine
 
 # Install system requirements
-RUN apk add --no-cache alpine-sdk python bash
+RUN apk add --no-cache alpine-sdk python3 bash
 
 # Set the default directory where CMD will execute
 WORKDIR /app
