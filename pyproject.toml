@@ -13,7 +13,7 @@ url = "https://pypi.org/simple"
 default = true
 
 [tool.poetry.dependencies]
-python = ">=3.6"
+python = "^3.6.2"
 
 cookiecutter = "==1.7.*"
 cookiecutter_repo_extensions = "==0.2.*"
