@@ -13,10 +13,8 @@ logger = logging.getLogger("accounts.emails")
 def send_password_reset(user, uid, token):
     try:
         email_subject = _("{{cookiecutter.project_title}} password reset")
-        confirm_reset_url = "%s%s" % (
-            settings.SITE_URL,
-            reverse("password_reset_confirm", kwargs={"uidb64": uid, "token": token}),
-        )
+        path = reverse("password_reset_confirm", kwargs={"uidb64": uid, "token": token})
+        confirm_reset_url = f"{settings.SITE_URL}{path}"
 
         return send_email(
             user.email,
@@ -26,3 +24,4 @@ def send_password_reset(user, uid, token):
         )
     except Exception:
         logger.exception("Couldn't send password reset to %s (%d)", user.email, user.id)
+        return None
