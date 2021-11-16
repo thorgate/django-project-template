@@ -85,3 +85,4 @@ pylint:
         - unused-argument
     options:
         max-line-length: 140
+        django-settings-module: settings.local_test

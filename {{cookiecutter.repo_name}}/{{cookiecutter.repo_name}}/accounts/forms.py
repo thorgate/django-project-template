@@ -18,7 +18,7 @@ from accounts.models import User
 
 class LoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
-        super(LoginForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.helper = FormHelper()
         self.helper.form_class = "login-form"
@@ -35,7 +35,6 @@ class PasswordResetForm(auth_forms.PasswordResetForm):
     helper.form_class = "login-form"
     helper.layout = Layout("email", Submit("submit", _("Reset my password")))
 
-    # pylint: disable=arguments-differ
     def save(self, *args, **kwargs):
         """
         Generates a one-use only link for resetting password and sends to the
@@ -61,7 +60,7 @@ class SetPasswordForm(auth_forms.SetPasswordForm):
     helper.layout = Layout("new_password1", Submit("submit", _("Change my password")))
 
     def __init__(self, user, *args, **kwargs):
-        super(SetPasswordForm, self).__init__(user, *args, **kwargs)
+        super().__init__(user, *args, **kwargs)
 
         del self.fields["new_password2"]
 
@@ -88,7 +87,7 @@ class ChangePasswordForm(forms.ModelForm):
     )
 
     def clean(self):
-        cleaned_data = super(ChangePasswordForm, self).clean()
+        cleaned_data = super().clean()
         password_old = cleaned_data.get("password_old", "")
         self.password_new = cleaned_data.get("password_new", "")
 
@@ -107,4 +106,4 @@ class ChangePasswordForm(forms.ModelForm):
     def save(self, commit=True):
         self.instance.set_password(self.password_new)
 
-        return super(ChangePasswordForm, self).save(commit)
+        return super().save(commit)

@@ -53,16 +53,17 @@ tg-react = "*"
 tg-utils = {version = "*", extras = ["model-hash", "health_check"]}
 
 [tool.poetry.dev-dependencies]
-black = "==20.8b1"
+black = "==21.10b0"
 django-debug-toolbar = "*"
 # Testing & quality tools
 coverage = "==5.4.*"  # 5.5 is missing install candidate for Alpine
 ipdb = "*"
-isort = "==4.*"
+safety = "*"
+isort = "==5.*"
 # Note prospector is very picky about its dependencies,
 # avoid specifying versions for pylint/pylint-django/astroid
 # and let prospector determine which versions work together
-prospector = "==1.2.*"
+prospector = {version = "==1.5.*", extras=["with_bandit"]}
 pytest = "==6.*"
 pytest-django = "*"
 pytest-cov = "*"
@@ -113,6 +114,7 @@ multi_line_output = '3'
 include_trailing_comma = 'true'
 known_django = "django"
 known_pytest = "pytest"
+overwrite_in_place = 'true'
 known_first_party = "accounts,{{cookiecutter.repo_name}},settings"
 lines_between_types = '0'
 sections = "FUTURE,STDLIB,DJANGO,PYTEST,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"
@@ -149,7 +151,7 @@ norecursedirs = [
     "app",
 # - {% elif cookiecutter.frontend_style == WEBAPP %}
     "webapp",
-# - {% endif %}"
+# - {% endif %}
     "node_modules",
 ]
 python_files = ["test_*.py", "tests/*.py", "tests.py"]

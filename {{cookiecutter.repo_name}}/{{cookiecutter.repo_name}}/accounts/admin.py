@@ -9,7 +9,7 @@ from accounts.models import User
 class UserChangeForm(auth_forms.UserChangeForm):
     # Hackish variant of builtin UserChangeForm with no username
     def __init__(self, *args, **kwargs):
-        super(UserChangeForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if "username" in self.fields:
             del self.fields["username"]
@@ -22,7 +22,7 @@ class UserCreationForm(auth_forms.UserCreationForm):
         fields = ("email",)
 
     def __init__(self, *args, **kwargs):
-        super(UserCreationForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if "username" in self.fields:
             del self.fields["username"]

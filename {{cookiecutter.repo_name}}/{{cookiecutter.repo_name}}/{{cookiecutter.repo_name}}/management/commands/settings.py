@@ -12,7 +12,7 @@ except ImportError:
 
 
 class SettingsEncoder(json.JSONEncoder):
-    def default(self, o):  # pylint: disable=method-hidden
+    def default(self, o):
         if isinstance(o, set):
             return list(o)
 
