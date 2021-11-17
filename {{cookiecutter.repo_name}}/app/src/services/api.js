@@ -37,7 +37,8 @@ function onRequestError(error) {
         error.isInvalidResponseCode &&
             [404, 403, 401].includes(error.statusCode),
         error.isValidationError,
-        error.isNetworkError,
+        // Note: network errors should only be ignored on the client
+        process.env.BUILD_TARGET === 'server' ? false : error.isNetworkError,
         error.isAbortError,
     ].some(Boolean);
 
