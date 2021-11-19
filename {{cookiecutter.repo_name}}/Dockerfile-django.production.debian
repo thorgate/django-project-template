@@ -1,6 +1,6 @@
 # Production Dockerfile for Django app
 
-FROM {{ python_image(cookiecutter.python_version, 'debian') }} as base
+FROM {{ python_image(cookiecutter.python_version, DEBIAN) }} as base
 
 # Use non-interactive frontend for debconf
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections

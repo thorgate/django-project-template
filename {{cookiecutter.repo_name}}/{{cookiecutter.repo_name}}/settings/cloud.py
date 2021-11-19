@@ -68,13 +68,13 @@ else:
 # Enable {{ cookiecutter.django_media_engine }} storage
 DEFAULT_FILE_STORAGE = f"{PROJECT_NAME}.storages.MediaStorage"
 MEDIA_ROOT = env.str("DJANGO_MEDIA_ROOT", default="")
-# - {% if cookiecutter.django_media_engine == "S3" %}
+# - {% if cookiecutter.django_media_engine == S3 %}
 AWS_STORAGE_BUCKET_NAME = env.str(
     "DJANGO_AWS_STORAGE_BUCKET_NAME", default=f"{PROJECT_NAME}-TODO"
 )
 AWS_ACCESS_KEY_ID = env.str("DJANGO_AWS_ACCESS_KEY_ID", default="***UNSET***")
 AWS_SECRET_ACCESS_KEY = env.str("DJANGO_AWS_SECRET_ACCESS_KEY", default="***UNSET***")
-# - {% elif cookiecutter.django_media_engine == "GCS" %}
+# - {% elif cookiecutter.django_media_engine == GCS %}
 GS_BUCKET_NAME = env.str("DJANGO_GS_BUCKET_NAME", default=f"{PROJECT_NAME}-TODO")
 GS_PROJECT_ID = env.str("DJANGO_GS_PROJECT_ID", default="***UNSET***")
 

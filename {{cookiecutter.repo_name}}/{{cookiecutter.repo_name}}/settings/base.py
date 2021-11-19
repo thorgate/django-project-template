@@ -213,7 +213,7 @@ MEDIA_URL = env.str("DJANGO_MEDIA_URL", default="/media/")
 MEDIAFILES_LOCATION = env.str("DJANGO_MEDIAFILES_LOCATION", default="media")
 
 # In staging/prod we use {{ cookiecutter.django_media_engine }} for file storage engine
-# - {% if cookiecutter.django_media_engine == "S3" %}
+# - {% if cookiecutter.django_media_engine == S3 %}
 AWS_ACCESS_KEY_ID = "<unset>"
 AWS_SECRET_ACCESS_KEY = "<unset>"
 AWS_STORAGE_BUCKET_NAME = "<unset>"
@@ -240,7 +240,7 @@ AWS_S3_OBJECT_PARAMETERS = {
 }
 
 # - {%- endif %}
-# - {% if cookiecutter.django_media_engine == "GCS" %}
+# - {% if cookiecutter.django_media_engine == GCS %}
 GS_BUCKET_NAME = "<unset>"
 GS_PROJECT_ID = "<unset>"
 GS_CREDENTIALS = "<unset>"

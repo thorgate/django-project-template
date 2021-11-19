@@ -34,41 +34,10 @@ from settings.base import *
 # EMAIL_HOST_USER = "TODO"
 # EMAIL_HOST_PASSWORD = "TODO (api key)"
 
-# Do run locally without docker uncomment following code lines
-# This overrides settings to use services from local machine instead
-# If project adds any other services then specify overrides for those as well
-# Media files root uses same directory as docker does
-# import socket  # noqa
-# if socket.gethostname() == "YOUR_MACHINE_NAME":
-#     # If defining different SITE_URLs, if not using 127.0.0.1
-#     # SITE_URL = "http://YOUR_MACHINE_IP:8000"
-#     # DJANGO_SITE_URL = "http://YOUR_MACHINE_IP:3000"
-#
-#     # Add proper database name, user and password here, if necessary
-#     DATABASES = {
-#         "default": {
-#             "ENGINE": "django.db.backends.postgresql_psycopg2",
-#             "HOST": "localhost",
-#             "NAME": "{{cookiecutter.repo_name}}",
-#             "USER": "{{cookiecutter.repo_name}}",
-#             "PASSWORD": "{{cookiecutter.repo_name}}",
-#         }
-#     }
-#
-#     # Redis config (used for caching and celery)
-#     REDIS_HOST = "localhost"
-#     REDIS_URL = "redis://%s:%d/%d" % (REDIS_HOST, REDIS_PORT, REDIS_DB)
-#
-#     # Override caching config
-#     CACHES["default"]["LOCATION"] = REDIS_URL
-#
-#     # Override media root for local
-#     MEDIA_ROOT = os.path.join(os.path.dirname(SITE_ROOT), ".data-media")
-
-{% if cookiecutter.django_media_engine == "S3" -%}
+{% if cookiecutter.django_media_engine == S3 -%}
 # AWS_ACCESS_KEY_ID = "TODO (access key)"
 # AWS_SECRET_ACCESS_KEY = "TODO (secret key)"
-{% elif cookiecutter.django_media_engine == "GCS" -%}
+{% elif cookiecutter.django_media_engine == GCS -%}
 # from google.oauth2 import service_account
 # GS_PROJECT_ID = "TODO (project id)"
 # GS_CREDENTIALS = service_account.Credentials.from_service_account_info(

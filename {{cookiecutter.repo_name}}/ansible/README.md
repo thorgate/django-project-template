@@ -163,7 +163,7 @@ ansible-playbook --limit test -e "force_deploy=stable" deploy.yml
 * Add the server's SSH key (`/root/.ssh/id_rsa.pub`) to the project repo settings as deployment key.
 * Ensure you've committed and pushed all relevant changes.
 
-{% if cookiecutter.django_media_engine == 'S3' -%}
+{% if cookiecutter.django_media_engine == S3 -%}
 {% if cookiecutter.thorgate == YES %}
 * Ensure you have sufficient permissions in AWS to create a bucket and assume the terraform role (see manual steps below if not using terraform)
 * Look over the terraform definitions
@@ -241,7 +241,7 @@ ansible-playbook --limit test -e "force_deploy=stable" deploy.yml
 </details>
 {% endif %}
 
-{% endif %}{% if cookiecutter.django_media_engine == 'GCS' -%}
+{% endif %}{% if cookiecutter.django_media_engine == GCS -%}
 1. Create a service account ([Google Getting Started Guide](https://cloud.google.com/docs/authentication/getting-started)).
 2. Create the key and download your-project-XXXXX.json file.
 3. Make sure your service account has access to the bucket and appropriate permissions. ([Using IAM Permissions](https://cloud.google.com/storage/docs/access-control/using-iam-permissions)).
