@@ -1,14 +1,12 @@
 {
     "_extensions": [
-        "cookiecutter.extensions.SlugifyExtension",
-        "cookiecutter.extensions.RandomStringExtension",
         "cookiecutter_repo_extensions:Extension",
         "tg_filters:TGFiltersModule",
         "tg_dockerimage_lookup:TGDockerImageModule"
     ],
     "*": "See variable reference: https://gitlab.com/thorgate-public/django-project-template/-/blob/master/README.md\n\t Press ENTER to continue.\n",
     "project_title": "User-visible title of the project.",
-    "repo_name": "{{slugify(cookiecutter.project_title, separator='_')}}",
+    "repo_name": "{{cookiecutter.project_title|slugify(separator='_')}}",
     "include_celery": ["no", "yes"],
     "domain_name": "TODO.com",
     "test_host": "test.{{cookiecutter.domain_name}}",

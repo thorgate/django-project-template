@@ -83,11 +83,13 @@ def validate_config():
         identifier_re = re.compile(r"[a-zA-Z_][a-zA-Z0-9_]*$")
         assert bool(identifier_re.match(repo_name)), assert_msg
 
-    if re.match(r'/(.*)/$', "{{ cookiecutter.django_admin_path }}"):
+    django_admin_path = "{{ cookiecutter.django_admin_path }}"
+    if django_admin_path.startswith("/") or django_admin_path.endswith("/"):
         print("Django Admin URL path should not start or end with a `/`.")
         sys.exit(1)
 
-    if re.match(r'/(.*)/$', "{{ cookiecutter.django_health_check_path }}"):
+    django_health_check_path = "{{ cookiecutter.django_health_check_path }}"
+    if django_health_check_path.startswith("/") or django_health_check_path.endswith("/"):
         print("Django Health check URL path should not start or end with a `/`.")
         sys.exit(1)
 
