@@ -41,6 +41,7 @@ output "DJANGO_AWS_ACCESS_KEY_ID" {
 output "DJANGO_AWS_SECRET_ACCESS_KEY" {
   value       = module.s3_media.key.secret
   description = "SECRET_ACCESS_KEY for media bucket user"
+  sensitive   = true
 }
 
 output "AWS_S3_REGION_NAME" {
