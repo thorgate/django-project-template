@@ -125,19 +125,17 @@
 
 # - {%- endif %}
 - name: "Build the project"
-  docker_compose:
-      project_src: "{{ "{{ code_dir }}" }}"
-      state: present
-      # Force re-start even if source files have not changed. This ensures that when env is updated the container
-      #  always gets the latest values.
-      restarted: yes
-# - {%- if cookiecutter.build_in_ci == NO %}
-      build: yes
-      files:
-          - "{{ "{{ compose_file }}" }}"
-# - {%- else %}
+  shell:
+    cmd: >-
+      docker-compose
+# - {% if cookiecutter.build_in_ci == NO %}
+           -f {{ "{{ compose_file "}} }}
+# - {% endif %}
+      up --build --detach --no-color --force-recreate --remove-orphans
+    chdir: "{{ "{{ code_dir }}" }}"
+# - {%- if cookiecutter.build_in_ci == YES %}
   environment:
-      DOCKER_CONFIG: "{{ "{{ code_dir }}" }}/.docker-cfg"
+    DOCKER_CONFIG: "{{ "{{ code_dir }}" }}/.docker-cfg"
 # - {%- endif %}
   register: result
 
