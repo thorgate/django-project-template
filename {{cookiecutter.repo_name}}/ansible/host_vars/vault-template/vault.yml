@@ -6,10 +6,10 @@ django_secret_key: "TODO (generate it)"
 
 django_email_host_password: "TODO"
 
-# - {% if cookiecutter.django_media_engine == "GCS" %}
+# - {% if cookiecutter.django_media_engine == GCS %}
 # Note: Set to the contents of the credentials.json file (as a string)
 django_gs_credentials: '{ ... json string ... }'
-# - {%- endif %}{% if cookiecutter.django_media_engine == "S3" %}
+# - {%- endif %}{% if cookiecutter.django_media_engine == S3 %}
 django_aws_access_key_id: "TODO"
 django_aws_secret_access_key: "TODO"
 # - {%- endif %}

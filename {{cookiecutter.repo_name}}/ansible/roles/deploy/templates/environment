@@ -53,12 +53,12 @@ DJANGO_SENTRY_DSN={{ "{{ django_sentry_dsn }}" }}
 
 DJANGO_EMAIL_HOST_PASSWORD={{ "{{ django_email_host_password }}" }}
 
-{% if cookiecutter.django_media_engine == "GCS" -%}
+{% if cookiecutter.django_media_engine == GCS -%}
 DJANGO_GS_BUCKET_NAME={{ "{{ django_gs_bucket_name }}" }}
 DJANGO_GS_PROJECT_ID={{ "{{ django_gs_project_id }}" }}
 DJANGO_GS_CREDENTIALS={{ "{{ django_gs_credentials }}" }}
 {%- endif %}
-{% if cookiecutter.django_media_engine == "S3" -%}
+{% if cookiecutter.django_media_engine == S3 -%}
 DJANGO_AWS_STORAGE_BUCKET_NAME={{ "{{ django_aws_storage_bucket_name }}" }}
 DJANGO_AWS_ACCESS_KEY_ID={{ "{{ django_aws_access_key_id }}" }}
 DJANGO_AWS_SECRET_ACCESS_KEY={{ "{{ django_aws_secret_access_key }}" }}

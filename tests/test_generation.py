@@ -8,7 +8,8 @@ import pytest
 from cookiecutter.config import USER_CONFIG_PATH
 from cookiecutter.exceptions import FailedHookException
 
-from .constants import YES, NO, WEBAPP, SPA
+from .constants import YES, NO, WEBAPP, SPA, ALPINE, DEBIAN
+
 
 def generate_project(cookies, config):
     cookies._config_file = USER_CONFIG_PATH
@@ -84,7 +85,7 @@ def validate_project_works(result, config):
             print("Failed to call docker-compose down")
 
 
-@pytest.mark.parametrize('docker_base_image', ['alpine', 'debian'])
+@pytest.mark.parametrize('docker_base_image', [ALPINE, DEBIAN])
 def test_base_generate(cookies, default_project, docker_base_image):
     config = {**default_project, 'docker_base_image': docker_base_image}
     result = generate_project(cookies, config)
@@ -141,7 +142,7 @@ def test_spa_generate(cookies, default_project):
 def test_debian_spa_generate(cookies, default_project):
     default_project.update({
         'frontend_style': SPA,
-        'docker_base_image': 'debian',
+        'docker_base_image': DEBIAN,
     })
     result = generate_project(cookies, default_project)
 
@@ -155,7 +156,7 @@ def test_debian_spa_generate(cookies, default_project):
 def test_debian_webapp_generate(cookies, default_project):
     default_project.update({
         'frontend_style': WEBAPP,
-        'docker_base_image': 'debian',
+        'docker_base_image': DEBIAN,
     })
     result = generate_project(cookies, default_project)
 
@@ -178,6 +179,7 @@ def test_mypy_webapp_generate(cookies, default_project):
     assert not result.project.join('app/').exists()
 
     validate_project_works(result, default_project)
+
 
 @pytest.mark.env("MYPY_SPA")
 def test_mypy_spa_generate(cookies, default_project):
@@ -261,9 +263,9 @@ def test_invalid_project_name_is_error(cookies, default_project):
     assert isinstance(result.exception, FailedHookException)
 
 
-def test_invalid_test_host_is_error(cookies, default_project):
+def test_invalid_django_admin_path_is_error(cookies, default_project):
     default_project.update({
-        'test_host': '-foo.com',
+        'django_admin_path': '/invalid-path/'
     })
 
     result = cookies.bake(extra_context=default_project)
@@ -272,9 +274,20 @@ def test_invalid_test_host_is_error(cookies, default_project):
     assert isinstance(result.exception, FailedHookException)
 
 
-def test_invalid_live_host_is_error(cookies, default_project):
+def test_invalid_django_health_check_path_is_error(cookies, default_project):
     default_project.update({
-        'live_host': '-foo.com',
+        'django_health_check_path': '/invalid-path/'
+    })
+
+    result = cookies.bake(extra_context=default_project)
+
+    assert result.exit_code == -1
+    assert isinstance(result.exception, FailedHookException)
+
+
+def test_invalid_test_host_is_error(cookies, default_project):
+    default_project.update({
+        'test_host': '-foo.com',
     })
 
     result = cookies.bake(extra_context=default_project)

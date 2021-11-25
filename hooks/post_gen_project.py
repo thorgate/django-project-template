@@ -9,6 +9,8 @@ YES = "{{YES}}"
 NO = "{{NO}}"
 WEBAPP = "{{WEBAPP}}"
 SPA = "{{SPA}}"
+ALPINE = "{{ALPINE}}"
+DEBIAN = "{{DEBIAN}}"
 
 
 def cleanup():
@@ -27,12 +29,12 @@ def cleanup():
         'Dockerfile-poetry',
     ]
 
-    if '{{ cookiecutter.docker_base_image }}' == 'alpine':
+    if '{{ cookiecutter.docker_base_image }}' == ALPINE:
         cleanup_paths += [
             f'{dockerfile}.debian'
             for dockerfile in dockerfiles
         ]
-    elif '{{ cookiecutter.docker_base_image }}' == 'debian':
+    elif '{{ cookiecutter.docker_base_image }}' == DEBIAN:
         rename_paths += [
             (f'{dockerfile}.debian', dockerfile)
             for dockerfile in dockerfiles

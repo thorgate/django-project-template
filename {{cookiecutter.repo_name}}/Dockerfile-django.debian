@@ -1,6 +1,6 @@
 # Development Dockerfile for Django app. Keep the first commands in sync with Dockerfile-poetry
 
-FROM {{ python_image(cookiecutter.python_version, 'debian') }}
+FROM {{ python_image(cookiecutter.python_version, DEBIAN) }}
 
 ENV PYTHONPYCACHEPREFIX /.pycache
 

@@ -17,7 +17,7 @@ SPA = "{{SPA}}"
 
 
 # Ensure cookiecutter is recent enough
-cookiecutter_min_version = '1.6.0'
+cookiecutter_min_version = '1.7.0'
 if cookiecutter.__version__ < cookiecutter_min_version:
     print("--------------------------------------------------------------")
     print("!! Your cookiecutter is too old, at least %s is required !!" % cookiecutter_min_version)
@@ -83,68 +83,18 @@ def validate_config():
         identifier_re = re.compile(r"[a-zA-Z_][a-zA-Z0-9_]*$")
         assert bool(identifier_re.match(repo_name)), assert_msg
 
-    valid_celery_key = [YES, NO]
-    if "{{ cookiecutter.include_celery }}" not in valid_celery_key:
-        print("Include Celery '{{ cookiecutter.include_celery }}' is not valid!")
-        print("Valid include Celery keys are: %s" % ', '.join(valid_celery_key))
+    django_admin_path = "{{ cookiecutter.django_admin_path }}"
+    if django_admin_path.startswith("/") or django_admin_path.endswith("/"):
+        print("Django Admin URL path should not start or end with a `/`.")
         sys.exit(1)
 
-    valid_storybook_replies = [YES, NO]
-    if "{{ cookiecutter.webapp_include_storybook }}" not in valid_storybook_replies:
-        print("Your answer to Include Storybook: '{{ cookiecutter.webapp_include_storybook }}' is invalid!")
-        print("Valid choices are: %s" % ', '.join(valid_storybook_replies))
-        sys.exit(1)
-
-    valid_frontend_styles = [WEBAPP, SPA]
-    if "{{ cookiecutter.frontend_style }}" not in valid_frontend_styles:
-        print("Your answer to Frontend style: '{{ cookiecutter.webapp_include_storybook }}' is invalid!")
-        print("Valid choices are: %s" % ', '.join(valid_frontend_styles))
-        sys.exit(1)
-
-    valid_thorgate_key = [YES, NO]
-    if "{{ cookiecutter.thorgate }}" not in valid_thorgate_key:
-        print("Thorgate '{{ cookiecutter.thorgate }}' is not valid!")
-        print("Valid thorgate keys are: %s" % ', '.join(valid_thorgate_key))
-        sys.exit(1)
-
-    build_in_ci = "{{ cookiecutter.build_in_ci }}"
-    valid_build_in_ci_key = [YES, NO]
-    if build_in_ci not in valid_build_in_ci_key:
-        print("Build in CI '{0}' is not valid!".format(build_in_ci))
-        print("Valid build_in_ci keys are: %s" % ', '.join(valid_build_in_ci_key))
-        sys.exit(1)
-
-    use_auto_deploy = "{{ cookiecutter.use_auto_deploy }}"
-    valid_use_auto_deploy_key = [YES, NO]
-    if use_auto_deploy not in valid_use_auto_deploy_key:
-        print("Use auto deploy '{0}' is not valid!".format(use_auto_deploy))
-        print("Valid use_auto_deploy keys are: %s" % ', '.join(valid_use_auto_deploy_key))
-        sys.exit(1)
-
-    if not re.match(r'(alpine|debian)$', "{{ cookiecutter.docker_base_image }}"):
-        print("Only alpine and debian options for docker_base_image are supported.")
-        sys.exit(1)
-
-    if not re.match(r'(3\.[6-9](\.\d+)?)', "{{ cookiecutter.python_version }}"):
-        print("Only allowed python version options are 3.6 or later.")
-        sys.exit(1)
-
-    if not re.match(r'((8|10|11|12|14)(\.\d+){0,2})', "{{ cookiecutter.node_version }}"):
-        print("Only allowed Node.js version's start from 8 or 10 and greater.")
-        sys.exit(1)
-
-    valid_dme_keys = ['S3', 'GCS']
-    if "{{ cookiecutter.django_media_engine }}" not in valid_dme_keys:
-        print("Django media engine '{{ cookiecutter.django_media_engine }}' is not valid!")
-        print("Valid media engines are: %s" % ', '.join(valid_dme_keys))
+    django_health_check_path = "{{ cookiecutter.django_health_check_path }}"
+    if django_health_check_path.startswith("/") or django_health_check_path.endswith("/"):
+        print("Django Health check URL path should not start or end with a `/`.")
         sys.exit(1)
 
     if not FQDN("{{ cookiecutter.test_host }}").is_valid:
         print("Test host is not a valid domain name")
-        sys.exit(1)
-
-    if not FQDN("{{ cookiecutter.live_host }}").is_valid:
-        print("Live host is not a valid domain name")
         sys.exit(1)
 
     if not FQDN("{{ cookiecutter.repo_name|as_hostname }}.{{ cookiecutter.test_host }}").is_valid:

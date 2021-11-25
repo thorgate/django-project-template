@@ -56,6 +56,10 @@ class TGFiltersModule(Extension):
         environment.globals.update(
             SPA="spa",
             WEBAPP="webapp",
+            ALPINE='alpine',
+            DEBIAN='debian',
             YES='yes',
-            NO='no'
+            NO='no',
+            S3='S3',
+            GCS='GCS',
         )
