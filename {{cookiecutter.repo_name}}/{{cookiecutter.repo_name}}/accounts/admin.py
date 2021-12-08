@@ -11,7 +11,7 @@ class UserChangeForm(auth_forms.UserChangeForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        if "username" in self.fields:
+        if "username" in self.fields:  # pragma: no cover
             del self.fields["username"]
 
 
@@ -24,7 +24,7 @@ class UserCreationForm(auth_forms.UserCreationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        if "username" in self.fields:
+        if "username" in self.fields:  # pragma: no cover
             del self.fields["username"]
 
 

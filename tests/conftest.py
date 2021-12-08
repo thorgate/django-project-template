@@ -48,7 +48,7 @@ def pytest_runtest_setup(item):
 def default_project():
     return {
         "project_title": "Test project",
-        "repo_name": "test_project",
+        "repo_name": "ci_project",
         "include_celery": NO,
         "webapp_include_storybook": NO,
         "test_host": "test1.thorgate.eu",

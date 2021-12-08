@@ -45,6 +45,19 @@ if settings.DEBUG:
     except ImportError:
         pass
 
+if settings.IS_UNITTEST:  # pragma: no branch
+
+    def failing_view(*args, **kwargs):
+        """
+        This view is used during unit tests to ensure correct error view is
+        used by the application when another view fails.
+        """
+        raise Exception("Example error")
+
+    urlpatterns += [
+        path("test500", failing_view),
+    ]
+
 # - {%- if cookiecutter.frontend_style == SPA %}
 
 

@@ -1,39 +1,38 @@
 from django.http import HttpResponseNotFound, HttpResponseServerError, JsonResponse
-from django.template import Context, Engine, loader, TemplateDoesNotExist
+from django.shortcuts import render
+from django.template import TemplateDoesNotExist
+from django.utils.html import format_html
 from django.utils.translation import gettext as _
 from django.views.decorators.csrf import requires_csrf_token
 
-
-def sentry_id_from_request(request):
-    if getattr(request, "sentry", None) is not None:
-        return request.sentry.get("id", None)
-
-    return None
+from sentry_sdk import last_event_id
 
 
 def page_not_found(request, exception, template_name="404.html"):
-    context = {
-        "request_path": request.path,
-        "error": {
-            "title": _("Page not found"),
-            "message": _("We tried but couldn't find this page, sorry."),
-        },
-    }
-
     try:
-        template = loader.get_template(template_name)
-        body = template.render(context, request)
-        content_type = None
+        context = {
+            "request_path": request.path,
+            "error": {
+                "title": _("Page not found"),
+                "message": _("We tried but couldn't find this page, sorry."),
+            },
+        }
+
+        return render(request, template_name, context=context, status=404)
 
     except TemplateDoesNotExist:
-        template = Engine().from_string(
-            "<h1>Not Found</h1>"
-            "<p>The requested URL {% raw %}{{ request_path }}{% endraw %} was not found on this server.</p>"
-        )
-        body = template.render(Context(context))
-        content_type = "text/html"
+        content = """
+        <h1>Not Found</h1>
+        <p>The requested URL {} was not found on this server.</p>
+        """
 
-    return HttpResponseNotFound(body, content_type=content_type)
+        return HttpResponseNotFound(
+            format_html(
+                content,
+                request.path,
+            ),
+            content_type="text/html",
+        )
 
 
 @requires_csrf_token
@@ -44,31 +43,37 @@ def server_error(request, template_name="500.html"):
     ):
         return JsonResponse(
             {
-                "sentry": sentry_id_from_request(request),
-                "error": {"title": _("Something went wrong")},
+                "sentry": last_event_id(),
+                "error": {
+                    "title": _("Something went wrong"),
+                },
             },
             status=500,
         )
 
     try:
-        template = loader.get_template(template_name)
-    except TemplateDoesNotExist:
-        return HttpResponseServerError(
-            "<h1>Server Error (500)</h1>", content_type="text/html"
-        )
+        messages = _(
+            "Something went wrong on our side... \n Please hold on while we fix it."
+        ).split("\n")
 
-    message = _(
-        "Something went wrong on our side... \n Please hold on while we fix it."
-    ).replace("\n", "<br>")
-    return HttpResponseServerError(
-        template.render(
-            {
-                "sentry": sentry_id_from_request(request),
+        return render(
+            request,
+            template_name,
+            context={
+                "sentry": last_event_id(),
                 "error": {
                     "title": _("Something went wrong"),
-                    "message": message,
+                    "message": format_html("{}<br/>{}", *messages),
                     "sentry": _("Fault code: #"),
                 },
-            }
+            },
+            status=500,
         )
-    )
+    except TemplateDoesNotExist:
+        sentry_id = last_event_id()
+
+        message = "<h1>Server Error (500)</h1>"
+        if sentry_id:
+            message += format_html("\n<p>{}{}</p>", _("Fault code: #"), sentry_id)
+
+        return HttpResponseServerError(message, content_type="text/html")

@@ -1,6 +1,8 @@
 from settings.local import *
 
 
+IS_UNITTEST = True
+
 SEND_EMAILS = False
 
 DATABASES["default"]["TEST"] = {

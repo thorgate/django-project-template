@@ -70,6 +70,8 @@ pytest-django = "*"
 pytest-cov = "*"
 pytest-mock = "*"
 pylint-django = "*"
+model-bakery = "*"
+freezegun = "*"
 # - {% if cookiecutter.use_mypy == YES %}
 # MyPy dependencies
 boto3-stubs = "*"
