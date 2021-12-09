@@ -40,7 +40,7 @@ def test_admin_change_user(superuser):
 
     url = reverse(
         f"admin:{User._meta.app_label}_{User._meta.model_name}_change",
-        args={superuser.pk},
+        args=(superuser.pk, ),
     )
 
     # This request gets the csrf token for following request
