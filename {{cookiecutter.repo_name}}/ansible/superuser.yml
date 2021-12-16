@@ -6,8 +6,5 @@
       prompt: Enter superuser email?
       private: no
 
-    - name: superuser_password
-      prompt: Enter superuser password?
-
   roles:
     - { role: superuser }

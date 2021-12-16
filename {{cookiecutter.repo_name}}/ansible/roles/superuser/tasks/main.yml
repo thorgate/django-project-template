@@ -1,5 +1,9 @@
 # NOTE: This command only works on Django 3.0+
 
+- name: "Generate random password"
+  set_fact:
+    superuser_password: "{{ "{{ lookup('password', '/dev/null length=64 chars=ascii_letters,digits') }}" }}"
+
 - name: "Create Django superuser"
   command: >-
     docker-compose
@@ -17,3 +21,6 @@
 
 - debug:
     var: result
+
+- debug:
+    msg: "{{ "Generated password for {{ superuser_email }} is '{{ superuser_password }}'" }}"
