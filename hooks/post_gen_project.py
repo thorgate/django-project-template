@@ -3,6 +3,7 @@ import errno
 import os
 import shutil
 import subprocess
+from enum import Enum
 from typing import List, Tuple
 
 YES = "{{YES}}"
@@ -11,6 +12,11 @@ WEBAPP = "{{WEBAPP}}"
 SPA = "{{SPA}}"
 ALPINE = "{{ALPINE}}"
 DEBIAN = "{{DEBIAN}}"
+
+
+class EncryptionPrompt(Enum):
+    ENCRYPTED = 1
+    EXCLUDED = 2
 
 
 def cleanup():
@@ -208,6 +214,58 @@ def run_lint_fix(path):
     # print(subprocess.check_output(["isort", cwd, "-p", path, "-y"]))
 
 
+def ask_input(prompt, default_response=None, allowed_responses=None):
+    while True:
+        result = input(prompt)
+
+        if allowed_responses is None:
+            if result:
+                return result.lower()
+
+        if result.lower() in allowed_responses:
+            return result.lower()
+
+        if not result and default_response:
+            return default_response.lower()
+
+
+def ansible_vault_encrypt():
+    ansible_vault_file = "host_vars/{{ cookiecutter.test_host }}/vault.yml"
+
+    with open(os.path.join('ansible', ansible_vault_file)) as fp:
+        if "ANSIBLE_VAULT" in fp.readline():
+            return EncryptionPrompt.ENCRYPTED
+
+    # Disable vault encryption and any prompts
+    # This means that default action of not committing vault file will be applied
+    is_disabled = os.getenv("DISABLE_PROJECT_TEMPLATE_VAULT_ENCRYPT")
+    if is_disabled and is_disabled == '1':
+        return EncryptionPrompt.EXCLUDED
+
+    has_ansible_support = False
+    if subprocess.check_call(['ansible-vault', '--version']) == 0:
+        has_ansible_support = True
+
+    if has_ansible_support:
+        should_encrypt = ask_input(
+            "Encrypt encrypt ansible vault for {{ cookiecutter.test_host }}? [Y/n] ",
+            default_response="y",
+            allowed_responses=["y", "n"]
+        )
+
+        if should_encrypt == "y":
+            cwd = os.getcwd()
+            subprocess.check_call(
+                ['ansible-vault', 'encrypt', ansible_vault_file],
+                cwd=os.path.join(cwd, 'ansible'),
+            )
+            print("Vault files are encrypted")
+            return EncryptionPrompt.ENCRYPTED
+
+    print("Vault files are not added to VCS")
+    return EncryptionPrompt.EXCLUDED
+
+
 def is_git_repository(path):
     return path.startswith('/') and os.path.exists(path) and os.path.exists(os.path.join(path, '.git'))
 
@@ -236,6 +294,8 @@ def get_local_branch(template_dir='{{ cookiecutter._template }}'):
 
 
 def create_repos():
+    ansible_vault_encryption = ansible_vault_encrypt()
+
     if subprocess.check_call(['git', '--version']) != 0:
         # This is unlikely, but just in case, display some sensible message.
         print("No git executable found on path. Skipping Git setup")
@@ -260,6 +320,11 @@ def create_repos():
     subprocess.check_call(['git', 'init'])
     subprocess.check_call(['git', 'checkout', '-b', 'template'])
     subprocess.check_call(['git', 'add', '.'])
+
+    if ansible_vault_encryption == EncryptionPrompt.EXCLUDED:
+        ansible_vault_file = "ansible/host_vars/{{ cookiecutter.test_host }}/vault.yml"
+        subprocess.check_call(['git', 'rm', '--cached', ansible_vault_file])
+
     subprocess.check_call(['git', 'commit', '-m', initial_commit_message])
     subprocess.check_call(['git', 'checkout', '-b', 'master'])
 
