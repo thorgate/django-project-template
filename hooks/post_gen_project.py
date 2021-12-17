@@ -233,7 +233,7 @@ def ansible_vault_encrypt():
     ansible_vault_file = "host_vars/{{ cookiecutter.test_host }}/vault.yml"
 
     with open(os.path.join('ansible', ansible_vault_file)) as fp:
-        if "ANSIBLE_VAULT" in fp.readline():
+        if "ANSIBLE_VAULT" in fp.read():
             return EncryptionPrompt.ENCRYPTED
 
     # Disable vault encryption and any prompts
@@ -243,7 +243,7 @@ def ansible_vault_encrypt():
         return EncryptionPrompt.EXCLUDED
 
     has_ansible_support = False
-    if subprocess.check_call(['ansible-vault', '--version']) == 0:
+    if shutil.which('ansible-vault') is not None:
         has_ansible_support = True
 
     if has_ansible_support:
@@ -294,8 +294,6 @@ def get_local_branch(template_dir='{{ cookiecutter._template }}'):
 
 
 def create_repos():
-    ansible_vault_encryption = ansible_vault_encrypt()
-
     if subprocess.check_call(['git', '--version']) != 0:
         # This is unlikely, but just in case, display some sensible message.
         print("No git executable found on path. Skipping Git setup")
@@ -304,6 +302,8 @@ def create_repos():
     if os.path.exists('.git'):
         print('Creating git repository - SKIP - already exists')
         return
+
+    ansible_vault_encryption = ansible_vault_encrypt()
 
     template_dir = '{{ cookiecutter._template }}'
 
