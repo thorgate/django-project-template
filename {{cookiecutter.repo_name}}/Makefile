@@ -330,7 +330,7 @@ clean:
 lint-py: black-check-all isort prospector{% if cookiecutter.use_mypy == YES %} mypy{% endif %}
 
 .PHONY:
-lint-js: prettier-check-all eslint stylelint
+lint-js: prettier-check-all eslint node-typecheck stylelint
 
 .PHONY:
 lint: lint-py lint-js
@@ -358,7 +358,13 @@ format: fmt
 .PHONY:
 eslint:
 	@echo -e "$(CYAN)Running ESLint$(COFF)"
-	@docker-compose run --rm node yarn lint
+	@docker-compose run --rm node yarn lint:eslint
+
+.PHONY:
+node-typecheck:
+	@echo "$(CYAN)Running Node Typecheck(COFF)"
+	@docker-compose run --rm node yarn lint:tsc $(cmd)
+
 
 .PHONY:
 eslint-fix:
