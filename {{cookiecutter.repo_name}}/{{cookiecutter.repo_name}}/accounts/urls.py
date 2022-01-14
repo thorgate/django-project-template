@@ -1,5 +1,5 @@
 from django.contrib.auth import views
-from django.urls import path, re_path
+from django.urls import path
 
 from accounts.forms import LoginForm, PasswordResetForm, SetPasswordForm
 
@@ -24,8 +24,8 @@ urlpatterns = [
         views.PasswordResetDoneView.as_view(),
         name="password_reset_done",
     ),
-    re_path(
-        r"^account/reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$",
+    path(
+        r"account/reset/<uidb64>/<token>/",
         views.PasswordResetConfirmView.as_view(form_class=SetPasswordForm),
         name="password_reset_confirm",
     ),
