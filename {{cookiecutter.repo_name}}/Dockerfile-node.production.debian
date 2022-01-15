@@ -7,9 +7,6 @@ RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selectio
 # Set the default directory where CMD will execute
 WORKDIR /app
 
-# Expose our application port
-EXPOSE 80
-
 # Create a directory for the logs
 RUN mkdir -p /var/log/{{cookiecutter.repo_name}}
 
@@ -27,12 +24,6 @@ RUN apt-get update && \
 
 # Install node dependencies
 RUN yarn install --frozen-lockfile
-
-# Copy some utility files
-COPY ./app/.babelrc ./
-COPY ./app/.eslintrc.js ./
-COPY ./app/.eslintignore ./
-COPY ./app/.stylelintrc ./
 
 # Copy code
 COPY ./app /app

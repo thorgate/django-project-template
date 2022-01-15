@@ -4,9 +4,6 @@ FROM node:{{ cookiecutter.node_version }}-alpine
 # Set the default directory where CMD will execute
 WORKDIR /app
 
-# Expose our application port
-EXPOSE 80
-
 # Create a directory for the logs
 RUN mkdir -p /var/log/{{cookiecutter.repo_name}}
 
@@ -25,12 +22,6 @@ RUN yarn install --frozen-lockfile
 
 # Remove node build dependencies
 RUN apk del .build-deps
-
-# Copy some utility files
-COPY ./app/.babelrc ./
-COPY ./app/.eslintrc.js ./
-COPY ./app/.eslintignore ./
-COPY ./app/.stylelintrc ./
 
 # Copy code
 COPY ./app /app

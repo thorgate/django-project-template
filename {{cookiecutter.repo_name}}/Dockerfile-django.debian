@@ -56,5 +56,4 @@ ENV PATH="${VIRTUAL_ENV:-'/fake'}/bin:${PATH}"
 # Set the default directory where CMD will execute
 WORKDIR /app
 
-# Run Django's runserver by default
-CMD python manage.py runserver 0.0.0.0:80
+CMD bash
