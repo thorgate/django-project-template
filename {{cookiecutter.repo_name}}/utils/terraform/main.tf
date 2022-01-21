@@ -6,11 +6,16 @@ terraform {
     role_arn       = "arn:aws:iam::930111947669:role/terraform_state_role"
     key            = "django-project-template-{{cookiecutter.repo_name|as_hostname}}"
   }
+
+  required_providers {
+    aws = {
+      version = "~> 2.26"
+    }
+  }
 }
 
 provider "aws" {
   region  = var.region
-  version = "~> 2.26"
 }
 
 module "s3_media" {
@@ -39,7 +44,7 @@ output "DJANGO_AWS_ACCESS_KEY_ID" {
 }
 
 output "DJANGO_AWS_SECRET_ACCESS_KEY" {
-  value       = module.s3_media.key.secret
+  value       = nonsensitive(module.s3_media.key.secret)
   description = "SECRET_ACCESS_KEY for media bucket user"
 }
 
