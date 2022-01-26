@@ -91,7 +91,7 @@
 
             {% if sentry %}
                 <p class="text-muted">
-                    {% if error.sentry %}{{ error.sentry }}{% else %}Fault code: {% endif %}{{ sentry }}
+                    {% if error.sentry %}{{ error.sentry }}{% else %}Fault code: #{% endif %}{{ sentry }}
                 </p>
             {% endif %}
         </div>

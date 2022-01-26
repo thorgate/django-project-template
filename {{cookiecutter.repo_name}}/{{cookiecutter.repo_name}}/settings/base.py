@@ -32,6 +32,7 @@ env = environs.Env()
 
 # Set to true during docker image building (e.g. when running collectstatic)
 IS_DOCKER_BUILD = env.bool("DJANGO_DOCKER_BUILD", default=False)
+IS_UNITTEST = False
 
 PROJECT_NAME = "{{ cookiecutter.repo_name }}"
 # Shown in error pages and some other places

@@ -197,7 +197,7 @@ For Python we use Black formatter.
 make black-check-all
 
 # To check single Python file use:
-make black-check cmd="test_project/accounts/admin.py" # File path should be relative to project root
+make black-check cmd="{{ cookiecutter.repo_name }}/accounts/admin.py" # File path should be relative to project root
 
 # To format Python code use:
 make black-format-all
