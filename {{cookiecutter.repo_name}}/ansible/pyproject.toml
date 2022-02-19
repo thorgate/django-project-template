@@ -10,6 +10,8 @@ ansible = "^2.9"
 jinja2 = "^2.10"
 docker-compose = "^1.25"
 cryptography = "^2.8"
+yq = "^2.12.2"
+jq = "^1.2.1"
 
 [tool.poetry.dev-dependencies]
 PyYAML = "^5.3"

@@ -49,10 +49,15 @@
 
 
 - name: "Download the dump file"
-  fetch:
+  synchronize:
     src: "{{ dump_filename }}"
     dest: "{{ local_mirror_path }}/mirror-db-dump.pg_dump"
-    flat: yes
+    mode: pull
+    set_remote_user: no
+    recursive: no
+  delegate_to: localhost
+  vars:
+    ansible_become: no
 
 
 - name: "Turn postgres on again"
