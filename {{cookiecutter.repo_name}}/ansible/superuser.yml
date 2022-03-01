@@ -1,0 +1,10 @@
+- name: "Create superuser for the project in targeted server(s)"
+  hosts: all
+
+  vars_prompt:
+    - name: superuser_email
+      prompt: Enter superuser email?
+      private: no
+
+  roles:
+    - { role: superuser }
