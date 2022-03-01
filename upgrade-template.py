@@ -244,6 +244,11 @@ def update_template(path, template_path, tmp_dir, update_params=False):
     vcs.clone(source=path, target=tmp_path, branch='template')
     dump_context(join(tmp_path, '.cookiecutterrc'), dumped_context)
 
+    # Read original test host vault file
+    vault_filename = join(tmp_path, 'ansible', 'host_vars', dumped_context['cookiecutter']['test_host'], 'vault.yml')
+    with open(vault_filename, mode='rb') as fp:
+        vault_file = fp.read()
+
     # clean up everything except for VCS directories and cookiecutter config
     for f in listdir(tmp_path):
         if f in ['.git', '.hg', '.cookiecutterrc']:
@@ -264,6 +269,10 @@ def update_template(path, template_path, tmp_dir, update_params=False):
     # your git references are in tmp_path but template upgrade files in generated_dir
     # but repo name should also be a valid Python identifier!
     assert generated_dir == tmp_path, "Your .cookiecutterrc repo_name should not differ from the actual repo name"
+
+    # Write the original vault file
+    with open(vault_filename, mode='wb') as fp:
+        fp.write(vault_file)
 
     vcs.add_all(tmp_path)
 
