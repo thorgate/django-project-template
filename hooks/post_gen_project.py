@@ -248,7 +248,7 @@ def ansible_vault_encrypt():
 
     if has_ansible_support:
         should_encrypt = ask_input(
-            "Encrypt encrypt ansible vault for {{ cookiecutter.test_host }}? [Y/n] ",
+            "Encrypt ansible vault for {{ cookiecutter.test_host }}? [Y/n] ",
             default_response="y",
             allowed_responses=["y", "n"]
         )
