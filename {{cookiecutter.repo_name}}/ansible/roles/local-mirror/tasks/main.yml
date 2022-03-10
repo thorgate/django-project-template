@@ -1,8 +1,13 @@
 - name: "Run preparation script"
-  shell: "poetry run sh mirror-prepare.sh"
+  shell: "bash mirror-prepare.sh"
   delegate_to: localhost
   vars:
     ansible_become: no
+  tags:
+    - media
+    - files
+    - db
+    - database
 
 
 - name: "Mirror the media files"
