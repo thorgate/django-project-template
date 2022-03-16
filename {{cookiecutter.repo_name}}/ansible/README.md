@@ -284,11 +284,8 @@ We have a playbook to download the media and database state from a remote server
 files in the remote server are using S3 then you must first install [aws-cli](https://pypi.org/project/awscli/) locally.
 The easiest way to do it is via pip: `sudo pip install awscli`.
 
-Every time before you can use the mirror role you also need to run [mirror-prepare.sh](./mirror-prepare.sh) script:
-
-```bash
-./mirror-prepare.sh
-```
+Every time before you can use the mirror role you also need to activate virtual env containing ansible.
+You can do this via: `poetry shell`
 
 This ensures the permissions of local paths are correct to allow the mirror role to work. Once this is done you
 can run the restore role with:
