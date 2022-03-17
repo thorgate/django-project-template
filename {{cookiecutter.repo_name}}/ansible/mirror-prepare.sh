@@ -19,17 +19,21 @@ fi
 
 yq --help | grep 'https://github.com/kislyuk/yq' &> /dev/null || (echo "Error: Not using correct yq" && exit 1)
 
+checkDirectory() {
+    if [[ "$1" != *".data"* ]]; then
+        echo "Data directory does not end with .data"
+        exit 1
+    fi
+}
+
 echo "Turning off the site"
 docker-compose down
 
 echo "Detecting media dir"
 media_dir=`docker-compose config | yq -r '.services.django.volumes[]' | grep '/files/media' | cut -d: -f1`
-data_dir=`dirname ${media_dir}`
+checkDirectory $media_dir
 
-if [[ "$data_dir" != *".data" ]]; then
-    echo "Data directory does not end with .data"
-    exit 1
-fi
+data_dir=`dirname ${media_dir}`
 
 echo "Media dir is ${media_dir}"
 
@@ -41,6 +45,7 @@ sudo chown -R ${USER}: ${media_dir}
 
 echo "Detecting postgres data dir"
 postgres_dir=`docker-compose config | yq -r '.services.postgres.volumes[]' | grep '/var/lib/postgresql/data' | cut -d: -f1`
+checkDirectory $postgres_dir
 echo echo "Postgres dir is ${postgres_dir}"
 
 echo "Changing postgres dir ownership to ${USER}"
@@ -48,6 +53,7 @@ sudo chown -R ${USER}: ${postgres_dir}
 
 echo "Detecting postgres mirror dir"
 postgres_dir=`docker-compose config | yq -r '.services.postgres.volumes[]' | grep 'db-mirror' | cut -d: -f1`
+checkDirectory $postgres_dir
 echo "Postgres mirror dir is ${postgres_dir}"
 
 sudo mkdir -p ${postgres_dir}
