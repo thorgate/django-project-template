@@ -274,9 +274,10 @@ def update_template(path, template_path, tmp_dir, update_params=False):
     # but repo name should also be a valid Python identifier!
     assert generated_dir == tmp_path, "Your .cookiecutterrc repo_name should not differ from the actual repo name"
 
-    # Write the original vault file
-    with open(vault_filename, mode='wb') as fp:
-        fp.write(vault_file)
+    if vault_file:
+        # Write the original vault file
+        with open(vault_filename, mode='wb') as fp:
+            fp.write(vault_file)
 
     vcs.add_all(tmp_path)
 
