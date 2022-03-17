@@ -46,7 +46,7 @@ sudo chown -R ${USER}: ${media_dir}
 echo "Detecting postgres data dir"
 postgres_dir=`docker-compose config | yq -r '.services.postgres.volumes[]' | grep '/var/lib/postgresql/data' | cut -d: -f1`
 checkDirectory $postgres_dir
-echo echo "Postgres dir is ${postgres_dir}"
+echo "Postgres dir is ${postgres_dir}"
 
 echo "Changing postgres dir ownership to ${USER}"
 sudo chown -R ${USER}: ${postgres_dir}
