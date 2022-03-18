@@ -19,9 +19,11 @@ fi
 
 yq --help | grep 'https://github.com/kislyuk/yq' &> /dev/null || (echo "Error: Not using correct yq" && exit 1)
 
+DATA_DIR_NAME=".data"
+
 checkDirectory() {
-    if [[ "$1" != *".data"* ]]; then
-        echo "Data directory does not end with .data"
+    if [[ "$1" != *"/${DATA_DIR_NAME}/"* ]]; then
+        echo "Data directory does not end with ${DATA_DIR_NAME}"
         exit 1
     fi
 }
