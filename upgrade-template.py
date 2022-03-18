@@ -246,8 +246,12 @@ def update_template(path, template_path, tmp_dir, update_params=False):
 
     # Read original test host vault file
     vault_filename = join(tmp_path, 'ansible', 'host_vars', dumped_context['cookiecutter']['test_host'], 'vault.yml')
-    with open(vault_filename, mode='rb') as fp:
-        vault_file = fp.read()
+    try:
+        with open(vault_filename, mode='rb') as fp:
+            vault_file = fp.read()
+    except FileNotFoundError:
+        # Old project, no ansible
+        vault_file = b""
 
     # clean up everything except for VCS directories and cookiecutter config
     for f in listdir(tmp_path):
@@ -270,9 +274,10 @@ def update_template(path, template_path, tmp_dir, update_params=False):
     # but repo name should also be a valid Python identifier!
     assert generated_dir == tmp_path, "Your .cookiecutterrc repo_name should not differ from the actual repo name"
 
-    # Write the original vault file
-    with open(vault_filename, mode='wb') as fp:
-        fp.write(vault_file)
+    if vault_file:
+        # Write the original vault file
+        with open(vault_filename, mode='wb') as fp:
+            fp.write(vault_file)
 
     vcs.add_all(tmp_path)
 
