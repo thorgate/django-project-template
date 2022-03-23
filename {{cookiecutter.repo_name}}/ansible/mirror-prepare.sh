@@ -23,7 +23,7 @@ DATA_DIR_NAME=".data"
 
 checkDirectory() {
     if [[ "$1" != *"/${DATA_DIR_NAME}/"* ]]; then
-        echo "Data directory does not end with ${DATA_DIR_NAME}"
+        echo "Data directory does not include ${DATA_DIR_NAME} in the path"
         exit 1
     fi
 }
