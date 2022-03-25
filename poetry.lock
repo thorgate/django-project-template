@@ -1,4 +1,60 @@
 [[package]]
+name = "ansible"
+version = "4.10.0"
+description = "Radically simple IT automation"
+category = "main"
+optional = false
+python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*"
+
+[package.dependencies]
+ansible-core = ">=2.11.7,<2.12.0"
+
+[package.source]
+type = "legacy"
+url = "https://pypi.org/simple"
+reference = "the_pypi"
+
+[[package]]
+name = "ansible-core"
+version = "2.11.11"
+description = "Radically simple IT automation"
+category = "main"
+optional = false
+python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*"
+
+[package.dependencies]
+cryptography = "*"
+jinja2 = "*"
+packaging = "*"
+PyYAML = "*"
+resolvelib = ">=0.5.3,<0.6.0"
+
+[package.source]
+type = "legacy"
+url = "https://pypi.org/simple"
+reference = "the_pypi"
+
+[[package]]
+name = "ansible-vault"
+version = "2.1.0"
+description = "R/W an ansible-vault yaml file"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+ansible = "*"
+
+[package.extras]
+dev = ["pytest", "black", "flake8", "isort"]
+release = ["twine"]
+
+[package.source]
+type = "legacy"
+url = "https://pypi.org/simple"
+reference = "the_pypi"
+
+[[package]]
 name = "arrow"
 version = "1.2.2"
 description = "Better dates & times for Python"
@@ -141,7 +197,7 @@ reference = "the_pypi"
 name = "cffi"
 version = "1.15.0"
 description = "Foreign Function Interface for Python calling C code."
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -252,7 +308,7 @@ reference = "the_pypi"
 name = "cryptography"
 version = "37.0.2"
 description = "cryptography is a package which provides cryptographic recipes and primitives to Python developers."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -507,7 +563,7 @@ reference = "the_pypi"
 name = "packaging"
 version = "21.3"
 description = "Core utilities for Python packages"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -624,7 +680,7 @@ reference = "the_pypi"
 name = "pycparser"
 version = "2.21"
 description = "C parser in Python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
@@ -657,7 +713,7 @@ reference = "the_pypi"
 name = "pyparsing"
 version = "3.0.8"
 description = "pyparsing module - Classes and methods to define and execute parsing grammars"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6.8"
 
@@ -794,7 +850,7 @@ reference = "the_pypi"
 name = "pyyaml"
 version = "5.3.1"
 description = "YAML parser and emitter for Python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
@@ -820,6 +876,25 @@ urllib3 = ">=1.21.1,<1.27"
 [package.extras]
 socks = ["PySocks (>=1.5.6,!=1.5.7)", "win-inet-pton"]
 use_chardet_on_py3 = ["chardet (>=3.0.2,<5)"]
+
+[package.source]
+type = "legacy"
+url = "https://pypi.org/simple"
+reference = "the_pypi"
+
+[[package]]
+name = "resolvelib"
+version = "0.5.5"
+description = "Resolve abstract dependencies into concrete ones"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.extras]
+examples = ["html5lib", "packaging", "pygraphviz", "requests"]
+lint = ["black", "flake8"]
+release = ["setl", "towncrier"]
+test = ["commentjson", "packaging", "pytest"]
 
 [package.source]
 type = "legacy"
@@ -971,9 +1046,18 @@ reference = "the_pypi"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.0"
-content-hash = "4188a18d704d1ae481d7075b81071791eda3dd10242fe624205507c85c8204ad"
+content-hash = "5b0de1db0cbc29617b4e759fa806ac9dfec0aaf6fcf9499f483a3198c5657378"
 
 [metadata.files]
+ansible = [
+    {file = "ansible-4.10.0.tar.gz", hash = "sha256:88af9479e81a3931bb3a1b8c4eeb252cd4f38c03daafd6a5aa120d6b0d70d45c"},
+]
+ansible-core = [
+    {file = "ansible-core-2.11.11.tar.gz", hash = "sha256:79f248ed55011b348322706e812e1f1ee3ffcfdeeac18e6172224d6a0d7e80e1"},
+]
+ansible-vault = [
+    {file = "ansible-vault-2.1.0.tar.gz", hash = "sha256:5ce8fdb5470f1449b76bf07ae2abc56480dad48356ae405c85b686efb64dbd5e"},
+]
 arrow = [
     {file = "arrow-1.2.2-py3-none-any.whl", hash = "sha256:d622c46ca681b5b3e3574fcb60a04e5cc81b9625112d5fb2b44220c36c892177"},
     {file = "arrow-1.2.2.tar.gz", hash = "sha256:05caf1fd3d9a11a1135b2b6f09887421153b94558e5ef4d090b567b47173ac2b"},
@@ -1346,6 +1430,10 @@ pyyaml = [
 requests = [
     {file = "requests-2.27.1-py2.py3-none-any.whl", hash = "sha256:f22fa1e554c9ddfd16e6e41ac79759e17be9e492b3587efa038054674760e72d"},
     {file = "requests-2.27.1.tar.gz", hash = "sha256:68d7c56fd5a8999887728ef304a6d12edc7be74f1cfa47714fc8b414525c9a61"},
+]
+resolvelib = [
+    {file = "resolvelib-0.5.5-py2.py3-none-any.whl", hash = "sha256:b0143b9d074550a6c5163a0f587e49c49017434e3cdfe853941725f5455dd29c"},
+    {file = "resolvelib-0.5.5.tar.gz", hash = "sha256:123de56548c90df85137425a3f51eb93df89e2ba719aeb6a8023c032758be950"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
