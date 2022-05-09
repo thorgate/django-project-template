@@ -8,4 +8,5 @@ RUN apk add --no-cache alpine-sdk python3 bash
 WORKDIR /app
 
 # Set the default command to execute when creating a new container
+ENTRYPOINT ["/bin/bash", "-c"]
 CMD bash
