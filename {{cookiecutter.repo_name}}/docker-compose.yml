@@ -119,7 +119,7 @@ services:
 
   redis:
     <<: *common-spec
-    image: redis:4.0.10-alpine
+    image: redis:7-alpine
     sysctls:
       # To allow maintaining TCP backlog setting that defaults to 511
       net.core.somaxconn: 512
