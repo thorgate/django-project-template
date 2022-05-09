@@ -8,11 +8,12 @@ variables:
   DOCKER_DRIVER: overlay2
   DOCKER_BUILDKIT: "1"
   COMPOSE_DOCKER_CLI_BUILD: "1"
-  POETRY_VIRTUALENVS_CREATE: "0"
+  POETRY_VIRTUALENVS_CREATE: "1"
+  ENV_FOLDER: "django-project-template-xCC97D3--py3.9"
+  VIRTUAL_ENV: "${CI_PROJECT_DIR}/.cache/pypoetry/virtualenvs/${ENV_FOLDER}"
 
 before_script:
-  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-  - poetry install
+  - poetry config cache-dir ${CI_PROJECT_DIR}/.cache
   - git config --global user.email "foo@bar.baz"
   - git config --global user.name "Foo Bar"
   - git config --global init.defaultBranch master
@@ -33,82 +34,75 @@ stages:
   # - you might need to run publish_ci_image for all branches
   - publish_ci_image
 
+.test_tag:
+  stage: test
+  except:
+    - schedules
+  script:
+    - export PATH="${VIRTUAL_ENV}/bin:${PATH}"
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - poetry install
+    - pytest -E ${TEST_TAG} --maxfail=1 -v
+  cache:
+    key: ci-python-cache
+    paths:
+      - ${CI_PROJECT_DIR}/.cache/pypoetry/virtualenvs
+
+
 test_main:
-  stage: test
-  except:
-    - schedules
-  script:
-    - pytest -E main --maxfail=1 -v
+  extends: .test_tag
+  variables:
+    TEST_TAG: main
 
-test_CELERY:
-  stage: test
-  except:
-    - schedules
-  script:
-    - pytest -E CELERY --maxfail=1 -v
-
-test_STORYBOOK:
-  stage: test
-  except:
-    - schedules
-  script:
-    - pytest -E STORYBOOK --maxfail=1 -v
-
-test_SPA:
-  stage: test
-  except:
-    - schedules
-  script:
-    - pytest -E SPA --maxfail=1 -v
-
-test_debian_SPA:
-  stage: test
-  except:
-    - schedules
-  script:
-    - pytest -E DEBIAN_SPA --maxfail=1 -v
-
-test_debian_WEBAPP:
-  stage: test
-  except:
-    - schedules
-  script:
-    - pytest -E DEBIAN_WEBAPP --maxfail=1 -v
-
-test_mypy_WEBAPP:
-  stage: test
-  except:
-    - schedules
-  script:
-    - pytest -E MYPY_WEBAPP --maxfail=1 -v
-
-test_mypy_SPA:
-  stage: test
-  except:
-    - schedules
-  script:
-    - pytest -E MYPY_SPA --maxfail=1 -v
-
-test_cypress_spa:
-  stage: test
-  except:
-    - schedules
-  script:
-    - pytest -E CYPRESS_SPA --maxfail=1 -v
-
-test_cypress_webapp:
-  stage: test
-  except:
-    - schedules
-  script:
-    - pytest -E CYPRESS_WEBAPP --maxfail=1 -v
-
-test_auto_deploy_generation:
-  stage: test
-  except:
-    - schedules
-  script:
-    - pytest -E AUTO_DEPLOY --maxfail=1 -v
+#test_CELERY:
+#  extends: .test_tag
+#  variables:
+#    TEST_TAG: CELERY
+#
+#test_STORYBOOK:
+#  extends: .test_tag
+#  variables:
+#    TEST_TAG: STORYBOOK
+#
+#test_SPA:
+#  extends: .test_tag
+#  variables:
+#    TEST_TAG: SPA
+#
+#test_debian_SPA:
+#  extends: .test_tag
+#  variables:
+#    TEST_TAG: DEBIAN_SPA
+#
+#test_debian_WEBAPP:
+#  extends: .test_tag
+#  variables:
+#    TEST_TAG: DEBIAN_WEBAPP
+#
+#test_mypy_WEBAPP:
+#  extends: .test_tag
+#  variables:
+#    TEST_TAG: MYPY_WEBAPP
+#
+#test_mypy_SPA:
+#  extends: .test_tag
+#  variables:
+#    TEST_TAG: MYPY_SPA
+#
+#test_cypress_spa:
+#  extends: .test_tag
+#  variables:
+#    TEST_TAG: CYPRESS_SPA
+#
+#test_cypress_webapp:
+#  extends: .test_tag
+#  variables:
+#    TEST_TAG: CYPRESS_WEBAPP
+#
+#test_auto_deploy_generation:
+#  extends: .test_tag
+#  variables:
+#    TEST_TAG: AUTO_DEPLOY
 
 test_frontend_codemods:
   stage: test
