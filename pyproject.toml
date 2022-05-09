@@ -17,15 +17,15 @@ python = "^3.7.0"
 
 cookiecutter = "==1.7.*"
 cookiecutter_repo_extensions = "==0.2.*"
-docker = "==4.*"
+docker = "==5.*"
 fqdn = "==1.*"
 stringcase = "==1.2.*"
 ansible-vault = "^2.1.0"
 
 [tool.poetry.dev-dependencies]
 black = "==22.3.0"
-docker-compose = "==1.25.*"
-pyyaml = "==5.3.*"
+docker-compose = "==1.29.*"
+pyyaml = "*"
 pytest = "==7.*"
 pytest-env = "*"
 pytest-cookies = "==0.6.1"
