@@ -308,7 +308,7 @@ ansible-playbook -v --limit test --tags media mirror.yml  # restores only the me
 
 We have a playbook to help user to create superuser to remote server hosting the project.
 
-The role will ask for superuser email and password to use for creating it.
+The role will ask for superuser email to use for creating it. Random password will be generated for you.
 You can run the role with:
 
 
