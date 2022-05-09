@@ -67,7 +67,7 @@ INSTALLED_APPS = [
     PROJECT_NAME,
     # Third-party apps
     # - {% if cookiecutter.frontend_style == WEBAPP %}
-    "django_js_reverse",
+    "django_reverse_js",
     "webpack_loader",
     "crispy_forms",
     # - {%- else %}
@@ -420,9 +420,9 @@ SETTINGS_EXPORT = [
 ]
 
 # django-js-reverse
-JS_REVERSE_JS_VAR_NAME = "reverse"
-JS_REVERSE_JS_GLOBAL_OBJECT_NAME = "DJ_CONST"
-JS_REVERSE_EXCLUDE_NAMESPACES = ["admin", "djdt"]
+REVERSEJS_VAR_NAME = "reverse"
+REVERSEJS_GLOBAL_OBJECT_NAME = "DJ_CONST"
+REVERSEJS_EXCLUDE_NAMESPACES = ["admin", "djdt"]
 # - {%- else %}
 
 SIMPLE_JWT = {
