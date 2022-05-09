@@ -42,7 +42,9 @@ test-django:
   coverage: '/^TOTAL.*\s+(\d+\%)$/'
   artifacts:
     reports:
-      cobertura: "{{ cookiecutter.repo_name }}/coverage.xml"
+      coverage_report:
+        coverage_format: cobertura
+        path: app/coverage/cobertura-coverage.xml
       junit: "{{ cookiecutter.repo_name }}/report.xml"
   cache:
     key: django-cache
