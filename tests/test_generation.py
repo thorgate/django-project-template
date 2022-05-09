@@ -12,6 +12,8 @@ from .constants import YES, NO, WEBAPP, SPA, ALPINE, DEBIAN
 
 
 def generate_project(cookies, config):
+    os.environ.setdefault("DISABLE_PROJECT_TEMPLATE_VAULT_ENCRYPT", '1')
+
     cookies._config_file = USER_CONFIG_PATH
     result = cookies.bake(extra_context=config)
 
