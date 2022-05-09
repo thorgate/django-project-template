@@ -261,7 +261,11 @@ $(SITE_ROOT)/settings/local_test.py:
 
 
 .PHONY:
+{%- if cookiecutter.frontend_style == 'webapp' %}
+coverage-py: webapp/webapp/build  ## Runs python/django test coverage calculation
+{%- else %}
 coverage-py: ## Runs python/django test coverage calculation
+{%- endif %}
 	@echo -e "$(CYAN)Running automatic code coverage check$(COFF)"
 	@docker-compose run --rm django pytest --cov=. --cov-report html --cov-report xml --cov-report term-missing $(cmd)
 
@@ -308,10 +312,14 @@ test-js: clean
 
 
 .PHONY:
-test-py: clean
+test-py: clean{% if cookiecutter.frontend_style == 'webapp' %} webapp/webapp/build{% endif %}
 	@echo -e "$(CYAN)Running automatic django tests$(COFF)"
 	@docker-compose run --rm django py.test $(cmd)
+{%- if cookiecutter.frontend_style == 'webapp' %}
 
+webapp/webapp/build:
+	mkdir -p webapp/webapp/build
+{%- endif %}
 
 .PHONY:
 test-django: test-py
