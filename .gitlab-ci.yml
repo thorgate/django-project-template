@@ -42,70 +42,67 @@ stages:
     - export ENV_FOLDER=`poetry env list | cut -f 1 -d ' '`
     - export VIRTUAL_ENV="${CI_PROJECT_DIR}/.cache/virtualenvs/${ENV_FOLDER}"
     - export PATH="${VIRTUAL_ENV}/bin:${PATH}"
-    - echo $PATH
-    - echo $VIRTUAL_ENV
-    - ls -la $VIRTUAL_ENV
     - pytest -E ${TEST_TAG} --maxfail=1 -v
   cache:
     key: ci-python-cache
     paths:
-      - ${CI_PROJECT_DIR}/.cache/pypoetry/virtualenvs
+      - ${CI_PROJECT_DIR}/.cache/virtualenvs
 
 
-#test_main:
-#  extends: .test_tag
-#  variables:
-#    TEST_TAG: main
+test_main:
+  extends: .test_tag
+  variables:
+    TEST_TAG: main
 
 test_CELERY:
   extends: .test_tag
   variables:
     TEST_TAG: CELERY
-#
-#test_STORYBOOK:
-#  extends: .test_tag
-#  variables:
-#    TEST_TAG: STORYBOOK
-#
-#test_SPA:
-#  extends: .test_tag
-#  variables:
-#    TEST_TAG: SPA
-#
-#test_debian_SPA:
-#  extends: .test_tag
-#  variables:
-#    TEST_TAG: DEBIAN_SPA
-#
-#test_debian_WEBAPP:
-#  extends: .test_tag
-#  variables:
-#    TEST_TAG: DEBIAN_WEBAPP
-#
-#test_mypy_WEBAPP:
-#  extends: .test_tag
-#  variables:
-#    TEST_TAG: MYPY_WEBAPP
-#
-#test_mypy_SPA:
-#  extends: .test_tag
-#  variables:
-#    TEST_TAG: MYPY_SPA
-#
-#test_cypress_spa:
-#  extends: .test_tag
-#  variables:
-#    TEST_TAG: CYPRESS_SPA
-#
-#test_cypress_webapp:
-#  extends: .test_tag
-#  variables:
-#    TEST_TAG: CYPRESS_WEBAPP
-#
-#test_auto_deploy_generation:
-#  extends: .test_tag
-#  variables:
-#    TEST_TAG: AUTO_DEPLOY
+
+test_STORYBOOK:
+  extends: .test_tag
+  variables:
+    TEST_TAG: STORYBOOK
+
+test_SPA:
+  extends: .test_tag
+  variables:
+    TEST_TAG: SPA
+
+test_debian_SPA:
+  extends: .test_tag
+  variables:
+    TEST_TAG: DEBIAN_SPA
+
+test_debian_WEBAPP:
+  extends: .test_tag
+  variables:
+    TEST_TAG: DEBIAN_WEBAPP
+
+test_mypy_WEBAPP:
+  extends: .test_tag
+  variables:
+    TEST_TAG: MYPY_WEBAPP
+
+test_mypy_SPA:
+  extends: .test_tag
+  variables:
+    TEST_TAG: MYPY_SPA
+
+test_cypress_spa:
+  extends: .test_tag
+  variables:
+    TEST_TAG: CYPRESS_SPA
+
+test_cypress_webapp:
+  extends: .test_tag
+  variables:
+    TEST_TAG: CYPRESS_WEBAPP
+
+test_auto_deploy_generation:
+  extends: .test_tag
+  variables:
+    TEST_TAG: AUTO_DEPLOY
 
 test_frontend_codemods:
   stage: test
