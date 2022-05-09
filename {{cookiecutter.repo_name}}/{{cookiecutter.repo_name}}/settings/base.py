@@ -282,7 +282,12 @@ DJANGO_SITE_URL = env.str("RAZZLE_BACKEND_SITE_URL", default="http://127.0.0.1:3
 ALLOWED_HOSTS = env.list(
     "DJANGO_ALLOWED_HOSTS", default=["django", "localhost", "127.0.0.1"]
 )
-CSRF_TRUSTED_ORIGINS = env.list("DJANGO_CSRF_TRUSTED_ORIGINS", default=ALLOWED_HOSTS)
+
+CSRF_TRUSTED_ORIGINS = [
+    f"http://{host}"
+    for host in env.list("DJANGO_CSRF_TRUSTED_ORIGINS", default=ALLOWED_HOSTS)
+]
+
 CORS_ORIGIN_WHITELIST = [
     f"http://{host}"
     for host in env.list("DJANGO_CORS_ORIGIN_WHITELIST", default=ALLOWED_HOSTS)
