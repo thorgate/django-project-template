@@ -5,16 +5,16 @@ description = "Ansible scripts for {{ cookiecutter.project_title }} deployment"
 authors = ["Thorgate <hi@thorgate.eu>"]
 
 [tool.poetry.dependencies]
-python = "^3.6"
-ansible = "^2.9"
-jinja2 = "^2.10"
-docker-compose = "^1.25"
-cryptography = "^2.8"
-yq = "^2.12.2"
-jq = "^1.2.1"
+python = "^3.8"
+ansible = "^5.7"
+jinja2 = "^3.1"
+docker-compose = "^1.29"
+cryptography = "^37.0.2"
+yq = "^2.14.0"
+jq = "^1.2.2"
 
 [tool.poetry.dev-dependencies]
-PyYAML = "^5.3"
+PyYAML = "^5.4"
 
 [build-system]
 requires = ["poetry>=1.0"]

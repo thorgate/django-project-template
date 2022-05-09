@@ -2,7 +2,7 @@
 # Note: -cypress suffixes were added to the container names so that
 #  Cypress tests could be run while the project is up.
 
-version: '2.1'
+version: '3.8'
 
 services:
   django-cypress:

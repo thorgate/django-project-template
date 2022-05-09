@@ -40,7 +40,7 @@ services:
   django:
     <<: *django-container-spec
     ports:
-      - "${DJANGO_PORT-8000}:80"
+      - "${DJANGO_PORT:-8000}:80"
     # Add -Wall option to see the (deprecation) warnings
     # command: python -Wall manage.py runserver 0.0.0.0:80
     command: python manage.py runserver 0.0.0.0:80
@@ -102,6 +102,7 @@ services:
 # - {%- endif %}
 
   postgres:
+    <<: *common-spec
     image: postgres:{{cookiecutter.postgres_version}}
     # Comment in the following lines to connect to your Dockerized instance of Postgres from your host machine.
     # Change the host port (before colon) if you have a local instance of Postgres running on that port.
@@ -113,10 +114,11 @@ services:
       - "./scripts/create-citext-extension.sql:/docker-entrypoint-initdb.d/create-citext-extension.sql"
     environment:
       # credentials taken from .env file
-      POSTGRES_USER: "${DJANGO_DATABASE_USER-'{{ cookiecutter.repo_name }}'}"
-      POSTGRES_PASSWORD: "${DJANGO_DATABASE_PASSWORD-'{{ cookiecutter.repo_name }}'}"
+      POSTGRES_USER: "${DJANGO_DATABASE_USER:-{{ cookiecutter.repo_name }}}"
+      POSTGRES_PASSWORD: "${DJANGO_DATABASE_PASSWORD:-{{ cookiecutter.repo_name }}}"
 
   redis:
+    <<: *common-spec
     image: redis:4.0.10-alpine
     sysctls:
       # To allow maintaining TCP backlog setting that defaults to 511
@@ -125,8 +127,9 @@ services:
       - ".data/redis:/data"
 
   mailhog:
+    <<: *common-spec
     image: mailhog/mailhog:v1.0.0
     ports:
-      - "${MAILHOG_PORT-8025}:8025"
+      - "${MAILHOG_PORT:-8025}:8025"
     logging:
       driver: "none"
