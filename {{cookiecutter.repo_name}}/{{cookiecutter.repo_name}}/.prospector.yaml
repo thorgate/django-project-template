@@ -10,7 +10,7 @@ ignore-patterns:
     - migrations/
     - htmlcov/
 
-pep8:
+pycodestyle:
     enable:
         # This is the current list of error and warning codes from:
         # https://github.com/PyCQA/pep8-naming

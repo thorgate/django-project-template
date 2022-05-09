@@ -152,6 +152,9 @@
     "webpack": "5.31.2",
     "webpack-dev-server": "3.11.2"
   },
+  "resolutions": {
+    "tg-named-routes": "^1.0.0"
+  },
   "jest": {
     "collectCoverageFrom": [
       "src/**/*.{js,jsx,ts,tsx}"

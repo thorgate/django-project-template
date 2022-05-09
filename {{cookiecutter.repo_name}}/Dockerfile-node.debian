@@ -13,4 +13,6 @@ RUN apt-get update && \
 WORKDIR /app
 
 # Set the default command to execute when creating a new container
+COPY scripts/node-dev-entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh", "--"]
 CMD bash

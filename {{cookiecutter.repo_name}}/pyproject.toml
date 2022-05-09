@@ -55,7 +55,7 @@ tg-react = "*"
 tg-utils = {version = "*", extras = ["model-hash", "health_check"]}
 
 [tool.poetry.dev-dependencies]
-black = "==21.10b0"
+black = "==22.3.0"
 django-debug-toolbar = "*"
 # Testing & quality tools
 coverage = "==5.4.*"  # 5.5 is missing install candidate for Alpine
@@ -65,8 +65,8 @@ isort = "==5.*"
 # Note prospector is very picky about its dependencies,
 # avoid specifying versions for pylint/pylint-django/astroid
 # and let prospector determine which versions work together
-prospector = {version = "==1.5.*", extras=["with_bandit"]}
-pytest = "==6.*"
+prospector = {version = "==1.*", extras=["with_bandit"]}
+pytest = "==7.*"
 pytest-django = "*"
 pytest-cov = "*"
 pytest-mock = "*"
@@ -117,6 +117,9 @@ line_length = '88'
 atomic = 'true'
 multi_line_output = '3'
 include_trailing_comma = 'true'
+force_grid_wrap = '0'
+use_parentheses = 'true'
+ensure_newline_before_comments = 'true'
 known_django = "django"
 known_pytest = "pytest"
 overwrite_in_place = 'true'

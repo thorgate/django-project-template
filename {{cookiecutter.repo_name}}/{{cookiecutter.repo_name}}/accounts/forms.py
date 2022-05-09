@@ -87,7 +87,8 @@ class ChangePasswordForm(forms.ModelForm):
     )
 
     def clean(self):
-        cleaned_data = super().clean()
+        cleaned_data = super().clean() or {}
+
         password_old = cleaned_data.get("password_old", "")
         self.password_new = cleaned_data.get("password_new", "")
 
