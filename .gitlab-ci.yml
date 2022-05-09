@@ -9,8 +9,6 @@ variables:
   DOCKER_BUILDKIT: "1"
   COMPOSE_DOCKER_CLI_BUILD: "1"
   POETRY_VIRTUALENVS_CREATE: "1"
-  ENV_FOLDER: "django-project-template-xCC97D3--py3.9"
-  VIRTUAL_ENV: "${CI_PROJECT_DIR}/.cache/pypoetry/virtualenvs/${ENV_FOLDER}"
 
 before_script:
   - poetry config cache-dir ${CI_PROJECT_DIR}/.cache
@@ -39,9 +37,14 @@ stages:
   except:
     - schedules
   script:
-    - export PATH="${VIRTUAL_ENV}/bin:${PATH}"
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
     - poetry install
+    - export ENV_FOLDER=`poetry env list | cut -f 1 -d ' '`
+    - export VIRTUAL_ENV="${CI_PROJECT_DIR}/.cache/virtualenvs/${ENV_FOLDER}"
+    - export PATH="${VIRTUAL_ENV}/bin:${PATH}"
+    - echo $PATH
+    - echo $VIRTUAL_ENV
+    - ls -la $VIRTUAL_ENV
     - pytest -E ${TEST_TAG} --maxfail=1 -v
   cache:
     key: ci-python-cache
@@ -49,15 +52,15 @@ stages:
       - ${CI_PROJECT_DIR}/.cache/pypoetry/virtualenvs
 
 
-test_main:
-  extends: .test_tag
-  variables:
-    TEST_TAG: main
-
-#test_CELERY:
+#test_main:
 #  extends: .test_tag
 #  variables:
-#    TEST_TAG: CELERY
+#    TEST_TAG: main
+
+test_CELERY:
+  extends: .test_tag
+  variables:
+    TEST_TAG: CELERY
 #
 #test_STORYBOOK:
 #  extends: .test_tag
