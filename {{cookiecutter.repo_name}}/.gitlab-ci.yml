@@ -44,7 +44,7 @@ test-django:
     reports:
       coverage_report:
         coverage_format: cobertura
-        path: app/coverage/cobertura-coverage.xml
+        path: "{{ cookiecutter.repo_name }}/coverage.xml"
       junit: "{{ cookiecutter.repo_name }}/report.xml"
   cache:
     key: django-cache
@@ -83,10 +83,14 @@ test-node:
   artifacts:
     reports:
       # - {% if cookiecutter.frontend_style == SPA %}
-      cobertura: app/coverage/cobertura-coverage.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: app/coverage/cobertura-coverage.xml
       junit: app/coverage/junit.xml
       # - {% elif cookiecutter.frontend_style == WEBAPP %}
-      cobertura: webapp/coverage/cobertura-coverage.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: webapp/coverage/cobertura-coverage.xml
       junit: webapp/coverage/junit.xml
       # - {% endif %}
   except:
