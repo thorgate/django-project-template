@@ -169,7 +169,10 @@ run-python:
 	docker run -t --rm \
 	 -v $(DPT_POETRY_CACHE_DIR):/root/.cache/pypoetry \
 	 -v $(DPT_PIP_CACHE_DIR):/root/.cache/pip \
-	 -v $(SITE_ROOT):/app $(DJANGO_IMAGE_NAME) $(cmd)
+	 -v $(SITE_ROOT):/app \
+	 -v $(PROJECT_ROOT)/pyproject.toml:/pyproject.toml \
+	 -v $(PROJECT_ROOT)/poetry.lock:/poetry.lock \
+	  $(DJANGO_IMAGE_NAME) $(cmd)
 
 
 .PHONY:

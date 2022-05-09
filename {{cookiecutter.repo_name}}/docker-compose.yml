@@ -23,6 +23,8 @@ x-django-container-spec: &django-container-spec
     - ".data/media:/files/media"
     - &poetry-volume "${DPT_POETRY_CACHE_DIR:-.data/pycache/pypoetry}:/root/.cache/pypoetry"
     - &pip-volume "${DPT_PIP_CACHE_DIR:-.data/pycache/pip}:/root/.cache/pip"
+    - &pyproject-volume "./pyproject.toml:/pyproject.toml"
+    - &poetrylock-volume "./poetry.lock:/poetry.lock"
   depends_on:
     - postgres
     - redis
@@ -88,6 +90,8 @@ services:
       - *py-code-volume
       - *poetry-volume
       - *pip-volume
+      - *pyproject-volume
+      - *poetrylock-volume
     depends_on:
       - redis
     entrypoint: entrypoint.sh --
