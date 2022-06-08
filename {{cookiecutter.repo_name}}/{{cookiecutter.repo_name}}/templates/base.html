@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load render_bundle from webpack_loader %}{% endraw %}
 {% if cookiecutter.frontend_style == WEBAPP %}
-{% raw %}{% load js_reverse %}{% endraw %}
+{% raw %}{% load reversejs %}{% endraw %}
 {% endif %}{% raw %}
 
 <!DOCTYPE html>
@@ -30,7 +30,7 @@
             {% endif %}
         };
         {% endraw %}{% if cookiecutter.frontend_style == WEBAPP %}{% raw %}
-        {% js_reverse_inline %}
+        {% reverse_js %}
         {% endraw %}{% endif %}{% raw %}
     </script>
 

@@ -169,7 +169,10 @@ run-python:
 	docker run -t --rm \
 	 -v $(DPT_POETRY_CACHE_DIR):/root/.cache/pypoetry \
 	 -v $(DPT_PIP_CACHE_DIR):/root/.cache/pip \
-	 -v $(SITE_ROOT):/app $(DJANGO_IMAGE_NAME) $(cmd)
+	 -v $(SITE_ROOT):/app \
+	 -v $(PROJECT_ROOT)/pyproject.toml:/pyproject.toml \
+	 -v $(PROJECT_ROOT)/poetry.lock:/poetry.lock \
+	  $(DJANGO_IMAGE_NAME) $(cmd)
 
 
 .PHONY:
@@ -258,7 +261,11 @@ $(SITE_ROOT)/settings/local_test.py:
 
 
 .PHONY:
+{%- if cookiecutter.frontend_style == 'webapp' %}
+coverage-py: webapp/webapp/build  ## Runs python/django test coverage calculation
+{%- else %}
 coverage-py: ## Runs python/django test coverage calculation
+{%- endif %}
 	@echo -e "$(CYAN)Running automatic code coverage check$(COFF)"
 	@docker-compose run --rm django pytest --cov=. --cov-report html --cov-report xml --cov-report term-missing $(cmd)
 
@@ -305,10 +312,14 @@ test-js: clean
 
 
 .PHONY:
-test-py: clean
+test-py: clean{% if cookiecutter.frontend_style == 'webapp' %} webapp/webapp/build{% endif %}
 	@echo -e "$(CYAN)Running automatic django tests$(COFF)"
 	@docker-compose run --rm django py.test $(cmd)
+{%- if cookiecutter.frontend_style == 'webapp' %}
 
+webapp/webapp/build:
+	mkdir -p webapp/webapp/build
+{%- endif %}
 
 .PHONY:
 test-django: test-py

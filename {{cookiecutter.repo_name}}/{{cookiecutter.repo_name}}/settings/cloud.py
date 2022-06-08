@@ -16,6 +16,11 @@ if not IS_DOCKER_BUILD:
     DJANGO_SITE_URL = env.str("RAZZLE_BACKEND_SITE_URL")
     CSRF_COOKIE_DOMAIN = env.str("DJANGO_CSRF_COOKIE_DOMAIN")
 
+CSRF_TRUSTED_ORIGINS = [
+    f"https://{host}"
+    for host in env.list("DJANGO_CSRF_TRUSTED_ORIGINS", default=ALLOWED_HOSTS)
+]
+
 # CORS overrides
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_EXPOSE_HEADERS = default_headers

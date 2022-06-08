@@ -16,13 +16,13 @@
 
 - set_fact:
     media_backend: "S3"
-  when: "settings.AWS_ACCESS_KEY_ID and settings.AWS_ACCESS_KEY_ID != '<unset>'"
+  when: "'AWS_ACCESS_KEY_ID' in settings and settings.AWS_ACCESS_KEY_ID != '<unset>'"
   ignore_errors: yes
 
 
 - set_fact:
     media_backend: "GCS"
-  when: "settings.GS_PROJECT_ID and settings.GS_PROJECT_ID != '<unset>'"
+  when: "'GS_PROJECT_ID' in settings and settings.GS_PROJECT_ID != '<unset>'"
   ignore_errors: yes
 
 
