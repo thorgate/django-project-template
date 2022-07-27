@@ -59,7 +59,8 @@ fi
 if [[ "${DPT_VENV_CACHING}" -eq "1" ]]; then
     reported_path=$(poetry env list | cut -f 1 -d ' ')
 
-    if [[ "${reported_path}" != "${ENV_FOLDER}" ]]; then
+    # Bail out if ENV_FOLDER does not matc reported_path or if it does not exists in the poetry env list (when multiple are available).
+    if [[ "${reported_path}" != "${ENV_FOLDER}" ]] && [[ $reported_path != *"${ENV_FOLDER}"* ]]; then
         echo "The env folder path does not match ENV_FOLDER setting. Please update ENV_FOLDER"
         echo " in Dockerfile-django."
         echo ""
