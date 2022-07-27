@@ -104,6 +104,7 @@ exclude = '''
     | build
     | dist
     | docs
+    | cover
   )/
   | local.py
   | local_test.py
