@@ -97,22 +97,18 @@
       - "{{ "{{ project }}" }}_postgres"
 
 
-- name: "Add nginx to {{ "{{ project }}" }}_nginx network"
-  docker_container:
-      name: nginx
-      networks:
-          - name: "{{ "{{ project }}" }}_nginx"
-      purge_networks: no
-      networks_cli_compatible: yes
-
-
-- name: "Add postgres-{{ "{{ postgres_version }}" }} to {{ "{{ project }}" }}_postgres network"
-  docker_container:
-      name: "postgres-{{ "{{ postgres_version }}" }}"
-      networks:
-          - name: "{{ "{{ project }}" }}_postgres"
-      purge_networks: no
-      networks_cli_compatible: yes
+- name: "Attach shared containers to project specific networks"
+  shell:
+      cmd: >-
+        docker inspect {{ "{{ item.container }}" }}
+        {{ "{% raw %}--format='{{range $k,$v := .NetworkSettings.Networks}}{{println $k}}{{end}}'{% endraw %}" }}
+        | grep {{ "{{ item.name }}" }}
+        || docker network connect {{ "{{ item.name }} {{ item.container }}" }}
+  loop:
+      - name: "{{ "{{ project }}" }}_nginx"
+        container: nginx
+      - name: "{{ "{{ project }}" }}_postgres"
+        container: "postgres-{{ "{{ postgres_version }}" }}"
 
 
 # - {% if cookiecutter.build_in_ci == YES %}
