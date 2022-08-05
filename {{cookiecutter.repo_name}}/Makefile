@@ -19,8 +19,8 @@ PROJECT_ROOT ?= $(CURDIR)
 SITE_ROOT ?= $(PROJECT_ROOT)/$(PROJECT_NAME)
 
 CUR_DIR_NAME ?= $(shell basename `pwd`)
-DJANGO_IMAGE_NAME ?= $(CUR_DIR_NAME)_django
-POETRY_WRAPPER_IMAGE_NAME ?= $(PROJECT_NAME)_poetry_wrapper
+DJANGO_IMAGE_NAME ?= $(CUR_DIR_NAME)-django
+POETRY_WRAPPER_IMAGE_NAME ?= $(PROJECT_NAME)-poetry-wrapper
 
 # - {%- if cookiecutter.frontend_style == SPA %}
 JS_COBERTURA="app/coverage/cobertura-coverage.xml"
