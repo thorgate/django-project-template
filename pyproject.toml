@@ -24,7 +24,6 @@ ansible-vault = "^2.1.0"
 
 [tool.poetry.dev-dependencies]
 black = "==22.3.0"
-docker-compose = "==1.29.*"
 pyyaml = "*"
 pytest = "==7.*"
 pytest-env = "*"

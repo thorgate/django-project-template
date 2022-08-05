@@ -38,7 +38,6 @@ def validate_project_works(result, config):
     django_commands = gitlab_ci['test-django']['script']
     node_commands = gitlab_ci['test-node']['script']
     commands = django_commands + node_commands
-    commands = ["docker-compose --version"] + commands
 
     if not commands:
         raise ValueError(
