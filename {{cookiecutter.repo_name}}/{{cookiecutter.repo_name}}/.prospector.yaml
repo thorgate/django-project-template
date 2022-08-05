@@ -9,6 +9,7 @@ ignore-paths:
 ignore-patterns:
     - migrations/
     - htmlcov/
+    - cover/
 
 pycodestyle:
     enable:
