@@ -286,12 +286,12 @@ ALLOWED_HOSTS = env.list(
 CSRF_TRUSTED_ORIGINS = [
     f"http://{host}"
     for host in env.list("DJANGO_CSRF_TRUSTED_ORIGINS", default=ALLOWED_HOSTS)
-]
+] + [SITE_URL]
 
 CORS_ORIGIN_WHITELIST = [
     f"http://{host}"
     for host in env.list("DJANGO_CORS_ORIGIN_WHITELIST", default=ALLOWED_HOSTS)
-]
+] + [SITE_URL]
 # - {%- endif %}
 
 # Don't allow site's content to be included in frames/iframes.

@@ -12,6 +12,54 @@ Note: Try to add categories to changes and link to MRs/Issues
 
 ## Development
 
+## 2022-08-08
+
+- [NEW] Add [safety](https://github.com/pyupio/safety) checks to the project via [pyup.io](https://pyup.io/). This enables vulnerability scanning in CI for DPT. - !240
+- [ENH] Update black, isort and prospector to the latest stable version - !240
+- [ENH] [SPA] Report network errors to sentry from server-side - !245
+- [ENH] DEVOPS-33: Cleanup cookiecutter options and take advantage of choice options - !246
+- [ENH] DEVOPS-32: DRY compose files. Take advantage of YAML node references(anchors) and reduce duplication in the compose files. This
+   makes them less error-prone and easier to maintain. - !244
+- [ENH] DEVOPS-41: Add built-in tests for error pages and accounts app - !248
+- [NEW] DEVOPS-49: Add separate node type-check - !252
+- [BUG] DEVOPS-42: Fix webapp password reset link - !251
+- [ENH] Migrate to environs package instead of django-environ - !234
+- [ENH] DEVOPS-51: Terraform does not output sensitive-but-necessary keys anymore - !247
+- [ENH] Remove unnecessary commands from Dockerfiles in preparation for user-1000 (#19). - !253
+  - Removed unnecessary COPY commands in Dockerfile-node. (COPY below just copies everything anyway, including dot-files.)
+  - Moved CMD commands to docker-compose.yml and replaced by bash. Rationale: prevent accidental run of services by incomplete shell command such as `docker-compose run node` and also remove duplicate declarations.
+  - Removed EXPOSE commands as redundant, because it only serves as documentation, but the actual port is defined by .env and thus EXPOSE is misleading.
+- [NEW] DEVOPS-44: Add role for creating superuser with ansible - !250 and !258
+- [NEW] DEVOPS-33: Add automatic ansible test vault encryption during project generation - !249 and !255
+- [BUG] DEVOPS-38: Improve local-mirror role and add safeguards to prevent issues with chmod/chown being run on the root folder - !254 and !256
+- [BUG] Fix issue with spa production router url cache - !260
+- [ENH] Update pytest - !260
+- [ENH] Add ci caching to work DPT tests - !260
+- [ENH] Add custom entrypoint to node dev container - !260
+- [ENH] Update to latest cobertura syntax for Gitlab - !259
+- [ENH] Update DPT root dependencies - !262
+- [ENH] [WEBAPP] Migrate from `django_js_reverse` to `django_reverse_js` - !262
+- [ENH] Update python dependencies - !262
+- [ENH] Update ansible deployment dependencies - !262
+- [ENH] Update redis - !262
+- [ENH] Development with venv caching. Mount pyproject.toml and poetry.lock into the container to remove the need 
+- for container rebuilds to update dependencies. - !262
+- [NEW] Support multiple local envs with venv caching - !263
+- [ENH] Update production poetry install command based on poetry docs - !263
+- [ENH] MYPY: Exclude tests and local.py files - !263
+- [ENH] Update `DJANGO_IMAGE_NAME` to use dash instead of underscore - !265
+- [ENH] Remove pypi docker compose in ci image (docker-compose now comes from inside docker image anyway) - !265
+- [ENH] Fix issue with deploy causing shared nginx/postgres container to be re-created in some cases - !264
+- [ENH] Ensure SITE_URL is added to local CSRF_TRUSTED_ORIGINS and CORS_ORIGIN_WHITELIST - !266
+
+> Note: If you are having issues with `DJANGO_IMAGE_NAME` then you are not at the latest available docker compose version.
+>  As a workaround you can just override the builtin value via `DJANGO_IMAGE_NAME` environment variable.
+>
+> Additionally, if you have docker-compose 1.29 or below installed in your system or inside a virtualenv
+>  you can just uninstall it and use the docker compose command 2.9.0 built into docker directly.
+
+## 2021-09-27
+
 - [NEW] Enable [Gitlab inline code coverage](https://docs.gitlab.com/ee/user/project/merge_requests/test_coverage_visualization.html) for merge requests (cobertura) - !232
 - [NEW] Add gitlab test reports to pipelines - !232
 - [BUG] Ensure pyproject.toml symlink is created correctly inside the backed project folder
