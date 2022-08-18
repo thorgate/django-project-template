@@ -125,7 +125,7 @@
     cmd: >-
       docker-compose
 # - {% if cookiecutter.build_in_ci == NO %}
-           -f {{ "{{ compose_file "}} }}
+           -f {{ "{{ compose_file }}" }}
 # - {% endif %}
       up --build --detach --no-color --force-recreate --remove-orphans
     chdir: "{{ "{{ code_dir }}" }}"
