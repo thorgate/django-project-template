@@ -22,7 +22,7 @@ Contents:
 The command to deploy the project (change the `limit` arg to `live` if you want to deploy to live servers):
 
 ```bash
-ansible-playbook --limit test deploy.yml
+poetry run ansible-playbook --limit test deploy.yml
 ```
 
 see more details in [Incremental deploy](#incremental-deploy).
@@ -136,7 +136,7 @@ you can deploy the project to the server by running `deploy.yml` stack with Ansi
 Run the stack with (against test server):
 
 ```bash
-ansible-playbook --limit test deploy.yml
+poetry run ansible-playbook --limit test deploy.yml
 ```
 
 #### Deploying a different version
@@ -145,7 +145,7 @@ To deploy a specific version of code to the server you can use the `force_deploy
  ansibles `-e` CLI parameter.
 
 ```bash
-ansible-playbook --limit test -e "force_deploy=stable" deploy.yml
+poetry run ansible-playbook --limit test -e "force_deploy=stable" deploy.yml
 ```
 
 ### The first deployment
@@ -253,7 +253,7 @@ Now that the prerequisites are done you can deploy the code with the following c
 > Replace `ENV` with either `test` or `live` (or the actual hostname of the target server).
 
 ```bash
-ansible-playbook --limit ENV deploy.yml
+poetry run ansible-playbook --limit ENV deploy.yml
 ```
 
 If it worked, you're all done, congrats!
@@ -272,7 +272,7 @@ All docker containers and `docker-compose` itself use environment variables from
 
 There is a special ansible target (tag) to update the `.env` file on the server: `env`, e.g.
 ```shell
-ansible-playbook --limit HOST -t env deploy.yml
+poetry run ansible-playbook --limit HOST -t env deploy.yml
 ```
 
 ## Download server state
@@ -291,14 +291,14 @@ This ensures the permissions of local paths are correct to allow the mirror role
 can run the restore role with:
 
 ```bash
-ansible-playbook -v --limit test mirror.yml
+poetry run ansible-playbook -v --limit test mirror.yml
 ```
 
 To restore only database or media files ansible tags can be used:
 
 ```bash
-ansible-playbook -v --limit test --tags db mirror.yml  # restores only the database
-ansible-playbook -v --limit test --tags media mirror.yml  # restores only the media files
+poetry run ansible-playbook -v --limit test --tags db mirror.yml  # restores only the database
+poetry run ansible-playbook -v --limit test --tags media mirror.yml  # restores only the media files
 ```
 
 
@@ -313,5 +313,5 @@ You can run the role with:
 
 
 ```shell
-ansible-playbook --limit test superuser.yml
+poetry run ansible-playbook --limit test superuser.yml
 ```

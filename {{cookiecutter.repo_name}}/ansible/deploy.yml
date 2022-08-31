@@ -10,8 +10,21 @@
       name: aptitude
 
 
-- name: "Deploy {% raw %}{{ project }}{% endraw %}"
+- name: "Deploy {{ "{{ project }}" }}"
   hosts: all
+  pre_tasks:
+    - delegate_to: localhost
+      debug:
+        msg: "Ansible version is  {{ "{{ ansible_version.full }}" }}"
+    - name: Verify Ansible used meets requirements
+      delegate_to: localhost
+      assert:
+        success_msg: "Ansible matches expected version"
+        # This matches `ansible-base` or `ansible-core` version
+        #  Version 2.11+ means ansible-core is used which was started after v3
+        #  By default we try to match ansible==5.*
+        that: "ansible_version.full is version_compare('2.12.0', 'gt')"
+        msg: "Expecting to use ansible v5 or newer"
 
   roles:
     - { role: deploy }
