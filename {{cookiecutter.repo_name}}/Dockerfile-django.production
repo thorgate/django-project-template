@@ -78,7 +78,7 @@ WORKDIR /app
 # Install node build dependencies
 # Not removing them as not to break fabfile logic for exporting assets
 # These can be removed with: "RUN apk del .build-deps"
-RUN apk add --no-cache --virtual .build-deps build-base python
+RUN apk add --no-cache --virtual .build-deps build-base python3
 
 # Copy some utility files
 COPY ./webapp/.babelrc .

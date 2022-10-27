@@ -51,14 +51,14 @@ Choice variable. Valid variables: `alpine`, `debian`. Defaults to `alpine`.
 
 Python version to use.
 
-Choice variable. Valid variables: `3.9`, `3.8`, `3.7`, `3.6`. Defaults to `3.9`.
+Choice variable. Valid variables: `3.11`, `3.10`, `3.9`, `3.8`, `3.7`, `3.6`. Defaults to `3.10`.
 
 
 ## `node_version`
 
 Node.js version to use.
 
-Choice variable. Valid variables: `14`, `12`, `10`. Defaults to `14`.
+Choice variable. Valid variables: `18`, `16`, `14`, `12`, `10`. Defaults to `14`.
 
 
 ## `postgres_version`
