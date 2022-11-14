@@ -40,16 +40,16 @@ This command:
 - creates local settings file from local.py.example
 - builds Docker images
 - sets up database and runs Django migrations
-- runs `docker-compose up`
+- runs `docker compose up`
 
 Refer to `Makefile` to see what actually happens. You can then use the same commands to set everything up manually.
 
 
 ## Running development server
 
-Both docker and docker-compose are used to run this project, so the run command is quite straightforward.
+Both docker and docker compose are used to run this project, so the run command is quite straightforward.
 
-    docker-compose up
+    docker compose up
 
 This builds, (re)creates and starts containers for Django, Node, PostgreSQL and Redis. Refer to `docker-compose.yml` for
 more insight.
@@ -59,35 +59,35 @@ For more information see [SPA docs](app/README.md).
 {%- endif %}
 
 Logs from all running containers are shown in the terminal. To run in "detached mode", pass the `-d` flag to
-docker-compose. To see running containers, use `docker-compose ps`. To see logs from these containers, run
-`docker-compose logs`.
+docker compose. To see running containers, use `docker compose ps`. To see logs from these containers, run
+`docker compose logs`.
 
 To _stop_ all running containers, use
 
-    docker-compose stop
+    docker compose stop
 
 This stops running containers without removing them. The same containers can be started again with
-`docker-compose start`. To stop a single container, pass the name as an extra argument, e.g.
-`docker-compose stop django`.
+`docker compose start`. To stop a single container, pass the name as an extra argument, e.g.
+`docker compose stop django`.
 
 To _stop and remove_ containers, run
 
-    docker-compose down
+    docker compose down
 
 This stops all running containers and removes containers, networks, volumes and images created by `up`.
 
 ### Using a different configuration file
 
-By default docker-compose uses the `docker-compose.yml` file in the current directory. To use other configuration files,
+By default docker compose uses the `docker-compose.yml` file in the current directory. To use other configuration files,
 e.g. production configuration, specify the file to use with the `-f` flag.
 
-    docker-compose -f docker-compose.production.yml up
+    docker compose -f docker compose.production.yml up
 
 Note that the production configuration lacks PostgreSQL, since it runs on a separate container on our servers.
 
 ## Running Django commands in Docker
 
-    docker-compose run django python manage.py <command>
+    docker compose run django python manage.py <command>
 
 ### Command shortcuts in the Makefile
 
@@ -95,22 +95,22 @@ Note that the production configuration lacks PostgreSQL, since it runs on a sepa
 |:-------------------------------------|:--------------------------------------|:---------------------------------------------------------------------------|
 |Installing Python packages            |`make poetry-add cmd=<package>`        |Runs `poetry add $(cmd)` in its own container                               |
 |(Re)Generate poetry.lock              |`make poetry-lock`                     |Runs `poetry lock -v` in its own container                                  |
-|Check Python package security warnings|`make poetry-check`                    |`docker-compose run --rm --workdir / django poetry check`                   |
-|make migrations                       |`make makemigrations cmd=<command>`    |`docker-compose run --rm django ./manage.py makemigrations $(cmd)`          |
-|migrating                             |`make migrate cmd=<command>`           |`docker-compose run --rm django ./manage.py migrate $(cmd)`                 |
-|manage.py commands                    |`make docker-manage cmd=<command>`     |`docker-compose run --rm django ./manage.py $(cmd)`                         |
-|any command in Django container       |`make docker-django cmd=<command>`     |`docker-compose run --rm django $(cmd)`                                     |
-|run tests                             |`make test`                            |`docker-compose run --rm django py.test`                                    |
+|Check Python package security warnings|`make poetry-check`                    |`docker compose run --rm --workdir / django poetry check`                   |
+|make migrations                       |`make makemigrations cmd=<command>`    |`docker compose run --rm django ./manage.py makemigrations $(cmd)`          |
+|migrating                             |`make migrate cmd=<command>`           |`docker compose run --rm django ./manage.py migrate $(cmd)`                 |
+|manage.py commands                    |`make docker-manage cmd=<command>`     |`docker compose run --rm django ./manage.py $(cmd)`                         |
+|any command in Django container       |`make docker-django cmd=<command>`     |`docker compose run --rm django $(cmd)`                                     |
+|run tests                             |`make test`                            |`docker compose run --rm django py.test`                                    |
 |run linters                           |`make quality`                         |                                                                            |
-|run StyleLint                         |`make stylelint`                       |`docker-compose run --rm node yarn stylelint`                               |
-|run ESLint                            |`make eslint`                          |`docker-compose run --rm node yarn lint`                                    |
-|run Prospector                        |`make prospector`                      |`docker-compose run --rm django prospector`                                 |
-|run isort                             |`make isort`                           |`docker-compose run --rm django isort --recursive --check-only -p . --diff` |
-|run psql                              |`make psql`                            |`docker-compose exec postgres psql --user {{cookiecutter.repo_name}} --dbname {{cookiecutter.repo_name}}` |
+|run StyleLint                         |`make stylelint`                       |`docker compose run --rm node yarn stylelint`                               |
+|run ESLint                            |`make eslint`                          |`docker compose run --rm node yarn lint`                                    |
+|run Prospector                        |`make prospector`                      |`docker compose run --rm django prospector`                                 |
+|run isort                             |`make isort`                           |`docker compose run --rm django isort --recursive --check-only -p . --diff` |
+|run psql                              |`make psql`                            |`docker compose exec postgres psql --user {{cookiecutter.repo_name}} --dbname {{cookiecutter.repo_name}}` |
 
 ## Running commands on the server
 
-    docker-compose -f docker-compose.production.yml run --rm --name {{ cookiecutter.repo_name }}_tmp django python manage.py <command>
+    docker compose -f docker-compose.production.yml run --rm --name {{ cookiecutter.repo_name }}_tmp django python manage.py <command>
 
 ## Installing new python or npm packages
 
@@ -146,14 +146,14 @@ PyCharm, as of 2020.3, does not yet support locating Poetry virtualenvs out of t
 
 ## Rebuilding Docker images
 
-To rebuild the images run `docker-compose build`. This builds images for all containers specified in the configuration
+To rebuild the images run `docker compose build`. This builds images for all containers specified in the configuration
 file.
 
-To rebuild a single image, add the container name as extra argument, e.g. `docker-compose build node`.
+To rebuild a single image, add the container name as extra argument, e.g. `docker compose build node`.
 
 ## Swapping between branches
 
-After changing to a different branch, run `docker-compose up --build`. This builds the images before starting
+After changing to a different branch, run `docker compose up --build`. This builds the images before starting
 containers.
 
 If you switch between multiple branches that you have already built once, but haven't actually changed any configuration

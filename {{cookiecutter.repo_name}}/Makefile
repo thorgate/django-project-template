@@ -123,10 +123,10 @@ dev-venv-path:
 
 # NOTE:
 # As node doesn't depend on any service, we can run prettier
-#  directly from the node container with docker-compose
+#  directly from the node container with docker compose
 .PHONY:
 run-prettier:
-	@docker-compose run --rm node $(cmd)
+	@docker compose run --rm node $(cmd)
 
 
 .PHONY:
@@ -159,12 +159,12 @@ prettier-format-all: ## Format JavaScript code with Prettier
 
 
 # NOTE:
-# Do not use `docker-compose run` to avoid spawning services by the django container
+# Do not use `docker compose run` to avoid spawning services by the django container
 .PHONY:
 run-python:
 	@set -e ;\
 	if [ "`docker images|grep $(DJANGO_IMAGE_NAME)`" = '' ]; then \
-	    docker-compose build django || exit $$?; \
+	    docker compose build django || exit $$?; \
 	fi; \
 	docker run -t --rm \
 	 -v $(DPT_POETRY_CACHE_DIR):/root/.cache/pypoetry \
@@ -197,16 +197,16 @@ black-format-all: ## Format Python code with Black
 
 .PHONY:
 docker: settings
-	@docker-compose down
-	@docker-compose build
-	@docker-compose up -d
-	@docker-compose logs -f
+	@docker compose down
+	@docker compose build
+	@docker compose up -d
+	@docker compose logs -f
 
 
 .PHONY:
 setup: pycharm settings ## Sets up the project in your local machine. This includes copying PyCharm files, creating local settings file, and setting up Docker
 	@echo -e "$(CYAN)Creating Docker images$(COFF)"
-	@docker-compose build
+	@docker compose build
 	@echo -e "$(CYAN)Running django migrations$(COFF)"
 	@make migrate
 	@echo -e "$(CYAN)Installing node modules$(COFF)"
@@ -267,7 +267,7 @@ coverage-py: webapp/webapp/build  ## Runs python/django test coverage calculatio
 coverage-py: ## Runs python/django test coverage calculation
 {%- endif %}
 	@echo -e "$(CYAN)Running automatic code coverage check$(COFF)"
-	@docker-compose run --rm django pytest --cov=. --cov-report html --cov-report xml --cov-report term-missing $(cmd)
+	@docker compose run --rm django pytest --cov=. --cov-report html --cov-report xml --cov-report term-missing $(cmd)
 
 
 .PHONY:
@@ -278,7 +278,7 @@ patch-coverage-py-paths:  ## Updates the paths in python cobertura report to mak
 .PHONY:
 coverage-js:
 	@echo -e "$(CYAN)Running automatic code coverage check$(COFF)"
-	@docker-compose run --rm node yarn test --coverage $(cmd)
+	@docker compose run --rm node yarn test --coverage $(cmd)
 
 
 .PHONY:
@@ -297,24 +297,24 @@ coverage: coverage-py coverage-js  ## Runs all tests with coverage
 
 .PHONY:
 node-install:
-	@docker-compose run --rm node yarn
+	@docker compose run --rm node yarn
 
 
 .PHONY:
 test-node-watch: clean
-	@docker-compose run --rm node yarn test -- --watchAll
+	@docker compose run --rm node yarn test -- --watchAll
 
 
 .PHONY:
 test-js: clean
 	@echo -e "$(CYAN)Running automatic node.js tests$(COFF)"
-	@docker-compose run --rm node yarn test $(cmd)
+	@docker compose run --rm node yarn test $(cmd)
 
 
 .PHONY:
 test-py: clean{% if cookiecutter.frontend_style == 'webapp' %} webapp/webapp/build{% endif %}
 	@echo -e "$(CYAN)Running automatic django tests$(COFF)"
-	@docker-compose run --rm django py.test $(cmd)
+	@docker compose run --rm django py.test $(cmd)
 {%- if cookiecutter.frontend_style == 'webapp' %}
 
 webapp/webapp/build:
@@ -369,18 +369,18 @@ format: fmt
 .PHONY:
 eslint:
 	@echo -e "$(CYAN)Running ESLint$(COFF)"
-	@docker-compose run --rm node yarn lint:eslint
+	@docker compose run --rm node yarn lint:eslint
 
 .PHONY:
 node-typecheck:
 	@echo "$(CYAN)Running Node Typecheck(COFF)"
-	@docker-compose run --rm node yarn lint:tsc $(cmd)
+	@docker compose run --rm node yarn lint:tsc $(cmd)
 
 
 .PHONY:
 eslint-fix:
 	@echo -e "$(CYAN)Running ESLint$(COFF)"
-	@docker-compose run --rm node yarn lint:eslint --fix
+	@docker compose run --rm node yarn lint:eslint --fix
 
 
 .PHONY:
@@ -402,7 +402,7 @@ mypy:
 .PHONY:
 stylelint:
 	@echo -e "$(CYAN)Running StyleLint$(COFF)"
-	@docker-compose run --rm node yarn stylelint
+	@docker compose run --rm node yarn stylelint
 
 
 .PHONY:
@@ -419,31 +419,31 @@ isort-fix: ## Fix imports automatically with isort
 
 .PHONY:
 docker-django:
-	docker-compose run --rm django $(cmd)
+	docker compose run --rm django $(cmd)
 
 
 .PHONY:
 django-shell:
-	docker-compose run --rm django bash
+	docker compose run --rm django bash
 
 
 .PHONY:
 node-shell:
-	docker-compose run --rm node bash
+	docker compose run --rm node bash
 
 
 .PHONY:
 django-fix-ownership:
-	@docker-compose run --rm django chown -R `id -u`:`id -g` ./
+	@docker compose run --rm django chown -R `id -u`:`id -g` ./
 
 .PHONY:
 node-fix-ownership:
-	@docker-compose run --rm node chown -R `id -u`:`id -g` ./
+	@docker compose run --rm node chown -R `id -u`:`id -g` ./
 
 
 .PHONY:
 django-manage:
-	docker-compose run --rm django ./manage.py $(cmd)
+	docker compose run --rm django ./manage.py $(cmd)
 
 .PHONY:
 docker-manage: django-manage
@@ -451,12 +451,12 @@ docker-manage: django-manage
 
 .PHONY:
 shell:
-	docker-compose run --rm django ./manage.py shell
+	docker compose run --rm django ./manage.py shell
 
 
 .PHONY:
 makemigrations:
-	docker-compose run --rm django ./manage.py makemigrations $(cmd)
+	docker compose run --rm django ./manage.py makemigrations $(cmd)
 	@make django-fix-ownership
 	@make fmt-py
 
@@ -464,30 +464,30 @@ makemigrations:
 
 .PHONY:
 migrate:
-	docker-compose run --rm django ./manage.py migrate $(cmd)
+	docker compose run --rm django ./manage.py migrate $(cmd)
 
 
 .PHONY:
 docker-logs:
-	docker-compose logs -f
+	docker compose logs -f
 
 
 .PHONY:
 makemessages:
-	docker-compose run --rm django ./manage.py makemessages -a
+	docker compose run --rm django ./manage.py makemessages -a
 {%- if cookiecutter.frontend_style == WEBAPP %}
-	docker-compose run --rm django ./manage.py makemessages -a -d djangojs
+	docker compose run --rm django ./manage.py makemessages -a -d djangojs
 {%- endif %}
 
 .PHONY:
 compilemessages:
-	docker-compose run --rm django ./manage.py compilemessages
+	docker compose run --rm django ./manage.py compilemessages
 
 
 {% if cookiecutter.frontend_style == SPA -%}
 .PHONY:
 extract-i18n:
-	docker-compose run --rm node yarn extract-i18n
+	docker compose run --rm node yarn extract-i18n
 {%- endif %}
 
 
@@ -499,10 +499,10 @@ $(SITE_ROOT)/locale:
 add-locale: $(SITE_ROOT)/locale
 ifdef LOCALE
 	@echo -e "Adding new locale $(LOCALE)"
-	docker-compose run --rm django ./manage.py makemessages -l $(LOCALE)
-	docker-compose run --rm django ./manage.py makemessages -d djangojs -i node_modules -l $(LOCALE)
+	docker compose run --rm django ./manage.py makemessages -l $(LOCALE)
+	docker compose run --rm django ./manage.py makemessages -d djangojs -i node_modules -l $(LOCALE)
 	@echo -e "Restoring file permissions"
-	@docker-compose run --rm django sh -c "chown -R `id -u`:`id -g` ./locale/"
+	@docker compose run --rm django sh -c "chown -R `id -u`:`id -g` ./locale/"
 else
 	@echo -e "$(RED)Please specify the locale you would like to add via LOCALE (e.g. make add-locale LOCALE='et')$(COFF)"
 endif
@@ -510,13 +510,13 @@ endif
 
 .PHONY:
 psql:
-	docker-compose exec postgres psql --user $(PROJECT_NAME) --dbname $(PROJECT_NAME)
+	docker compose exec postgres psql --user $(PROJECT_NAME) --dbname $(PROJECT_NAME)
 
 {%- if cookiecutter.webapp_include_storybook == YES %}
 .PHONY:
 storybook:
 	@echo -e "$(CYAN)Open http://127.0.0.1:6006 to view after storybook starts$(COFF)"
-	docker-compose run --rm -p 6006:6006 node yarn storybook
+	docker compose run --rm -p 6006:6006 node yarn storybook
 {%- endif %}
 
 {%- if cookiecutter.use_cypress == YES %}

@@ -123,7 +123,7 @@
 - name: "Build the project"
   shell:
     cmd: >-
-      docker-compose
+      docker compose
 # - {% if cookiecutter.build_in_ci == NO %}
            -f {{ "{{ compose_file }}" }}
 # - {% endif %}
@@ -151,9 +151,9 @@
 
 - name: "Run export assets"
 # -   {%- if cookiecutter.build_in_ci == YES %}
-  command: "docker-compose run --rm node yarn export-assets"
+  command: "docker compose run --rm node yarn export-assets"
 # -   {%- else %}
-  command: "docker-compose -f {{ "{{ compose_file }}" }} run --rm node yarn export-assets"
+  command: "docker compose -f {{ "{{ compose_file }}" }} run --rm node yarn export-assets"
 # -   {%- endif %}
   args:
       chdir: "{{ "{{ code_dir }}" }}"
