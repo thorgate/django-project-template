@@ -6,7 +6,7 @@
 
 - name: "Create Django superuser"
   command: >-
-    docker-compose
+    docker compose
     run
     -e DJANGO_SUPERUSER_EMAIL
     -e DJANGO_SUPERUSER_PASSWORD

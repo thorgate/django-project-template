@@ -1,4 +1,4 @@
-# Docker-compose configuration for Cypress testing
+# Docker compose configuration for Cypress testing
 # Note: -cypress suffixes were added to the container names so that
 #  Cypress tests could be run while the project is up.
 
