@@ -26,7 +26,7 @@ After installing Docker you need to install [Docker Compose](https://docs.docker
  multi-container Docker applications (such as ours). The `curl` method is preferred for installation.
 
 To run Docker commands without `sudo`, you also need to
-[create a Docker group and add your user to it](https://docs.docker.com/engine/installation/linux/ubuntulinux/#/create-a-docker-group).
+[create a Docker group and add your user to it](https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user).
 
 ### Setting up {{cookiecutter.project_title}}
 
