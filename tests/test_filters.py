@@ -82,3 +82,20 @@ def test_get_url_path():
         get_url_path("github.com/thorgate/django-project-template.git")
         == "thorgate/django-project-template"
     )
+
+    # this test is commented out since `git-url-parse` returns unexpected result when the url has a subgroup.
+    #
+    # We expect it to return `group/subgroup/project` but it returns `/gitlab.com/group/subgroup/project` since
+    #  the regex in `git-url-parse` does not expect owner to allow multi-level items.
+    #
+    #  https://github.com/coala/git-url-parse/pull/40 is the fix for the issue
+    #
+    # assert (
+    #     get_url_path("https://gitlab.com/group/subgroup/project.git")
+    #     == "group/subgroup/project"
+    # )
+
+    assert (
+        get_url_path("git@gitlab.com:group/subgroup/project.git")
+        == "group/subgroup/project"
+    )
