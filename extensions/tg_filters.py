@@ -58,7 +58,6 @@ def get_url_path(value):
             return "/".join(
                 x
                 for x in [
-                    # parts.pathname,
                     parts.owner,
                     parts.name,
                 ]
