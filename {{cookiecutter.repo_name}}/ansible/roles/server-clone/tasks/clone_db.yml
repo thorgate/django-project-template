@@ -1,0 +1,107 @@
+- name: "Generate an unique filename for dump"
+  set_fact:
+    dump_filename: "/tmp/clone-{{ "{{ project | mandatory }}" }}.pg_dump"
+
+
+- name: "Generate an unique filename for dump"
+  set_fact:
+    dump_filename_local: "./clone-{{ "{{ project | mandatory }}" }}.pg_dump"
+
+
+- name: "Create a fresh DB dump on the server"
+  shell: >
+    docker exec -i postgres-{{ "{{ postgres_version | mandatory }}" }} pg_dump -U {{ "{{ project }}" }} \
+      --format=custom --compress=0 {{ "{{ project | mandatory }}" }} > {{ "{{ dump_filename }}" }}
+  no_log: true
+  delegate_to: "{{ "{{ source_host | mandatory }}" }}"
+
+
+- name: "Get the file from source host"
+  shell: >
+    rsync --delay-updates -F --compress --archive \
+      --no-recursive {{ "{{ source_host }}" }}:{{ "{{ dump_filename }}" }} {{ "{{ dump_filename_local }}" }}
+  delegate_to: localhost
+  vars:
+    ansible_become: no
+
+
+- name: Upload the tile to target host"
+  synchronize:
+    src: "{{ "{{ dump_filename_local }}" }}"
+    dest: "{{ "{{ dump_filename }}" }}"
+    mode: push
+    set_remote_user: no
+    recursive: no
+  delegate_to: localhost
+  vars:
+    ansible_become: no
+
+
+- name: "Stop the project"
+  command: >-
+      docker-compose
+# - {% if cookiecutter.build_in_ci == NO %}
+        -f {{ "{{ compose_file "}} }}
+# - {% endif %}
+        stop
+  args:
+    chdir: "{{ "{{ code_dir }}" }}"
+
+
+- name: "Check if database has been created previously"
+  stat:
+      path: "{{ "{{ code_dir }}" }}/database.lock"
+  register: db_created
+
+
+- name: "Drop database if it existed"
+  shell: >
+      echo "
+        DROP DATABASE {{ "{{ project }}" }};
+        DROP USER {{ "{{ project }}" }};
+      " | docker exec -i postgres-{{ "{{ postgres_version | mandatory }}" }} psql -U postgres
+  when: db_created.stat.exists
+
+
+- name: "Create database"
+  shell: >
+      echo "
+        CREATE DATABASE {{ "{{ project }}" }};
+        CREATE USER {{ "{{ project }}" }} WITH password '{{ "{{ django_database_password | mandatory }}" }}';
+        GRANT ALL PRIVILEGES ON DATABASE {{ "{{ project }}" }} to {{ "{{ project }}" }};
+      " | docker exec -i postgres-{{ "{{ postgres_version | mandatory }}" }} psql -U postgres
+
+- name: "Load the dump file"
+  shell: >
+    cat {{ "{{ dump_filename }}" }} | docker exec -i postgres-{{ "{{ postgres_version | mandatory }}" }} pg_restore \
+      -U {{ "{{ project }}" }} -d {{ "{{ project }}" }}
+  no_log: true
+
+
+- name: "Start the project"
+  command: >-
+      docker-compose
+# - {% if cookiecutter.build_in_ci == NO %}
+        -f {{ "{{ compose_file }}" }}
+# - {% endif %}
+        up --build --detach --no-color --force-recreate --remove-orphans
+  args:
+    chdir: "{{ "{{ code_dir }}" }}"
+
+
+- name: "Delete the dump file from source host"
+  file:
+    path: "{{ "{{ dump_filename }}" }}"
+    state: absent
+  delegate_to: "{{ "{{ source_host }}" }}"
+
+- name: "Delete the dump file locally"
+  file:
+    path: "{{ "{{ dump_filename_local }}" }}"
+    state: absent
+  delegate_to: localhost
+
+- name: "Delete the dump file from target host"
+  file:
+    path: "{{ "{{ dump_filename }}" }}"
+    state: absent

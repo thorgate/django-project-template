@@ -1,0 +1,33 @@
+- name: 'Check mandatory variables are defined'
+  assert:
+    that:
+      - project is defined
+      - code_dir is defined
+      - source_host is defined
+      - postgres_version is defined
+      - django_database_password is defined
+
+
+- set_fact:
+    local_media_path: "./clone-{{ "{{ project | mandatory }}" }}-files/"
+
+
+- name: "Download media files"
+  import_tasks: clone_media_source.yml
+  tags:
+    - media
+    - files
+
+
+- name: "Upload media files"
+  import_tasks: clone_media_target.yml
+  tags:
+    - media
+    - files
+
+
+- name: "Clone the DB"
+  import_tasks: clone_db.yml
+  tags:
+    - db
+    - database

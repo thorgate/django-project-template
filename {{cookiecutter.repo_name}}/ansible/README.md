@@ -315,3 +315,27 @@ You can run the role with:
 ```shell
 poetry run ansible-playbook --limit test superuser.yml
 ```
+
+
+## Clone server
+
+> **Warning:** Using this playbook deletes and overwrites the database on target server
+
+We have a playbook to copy over one server to another. This is a dangerous operation, do not
+try it if you don't know what you're doing, and never target a server that is already used 
+with it.
+
+```bash
+ansible-playbook -v --limit target.thorgate.eu -e source_host=source.thorgate.eu clone.yml
+```
+
+This will:
+* Download database from source server to local dump file
+* Download media and private files from source server
+* Upload database dump from target server
+* Drop database on target server
+* Restore database dump on target server
+* Upload media files to s3 configured on target server
+
+This operation doesn't require to stop project on source host, however it may still be useful
+to stop it when performing live migration to ensure that the DB and media are in consistent state.
