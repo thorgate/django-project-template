@@ -13,5 +13,8 @@ class {{cookiecutter.repo_name|snake_to_pascal_case}}Config(AppConfig):
         checks.register(check_production_settings)
         checks.register(check_sentry_config)
 
+        # - {%- if cookiecutter.include_celery == YES %}
         # Ensure default celery app is configured all the time
-        from .celery import app  # NOQA
+        from .celery import app  # NOQA  # pylint: disable-all
+        assert app  # silence pyflakes F401 (app being imported but unused)  # nosec B101
+        # - {%- endif %}
