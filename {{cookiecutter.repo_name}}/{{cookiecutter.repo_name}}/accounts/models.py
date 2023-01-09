@@ -30,7 +30,7 @@ class UserManager(BaseUserManager):
             date_joined=now,
             **extra_fields
         )
-        user.set_password(password)
+        user.set_password(password)  # type: ignore[attr-defined]
         user.save(using=self._db)
         return user
 
