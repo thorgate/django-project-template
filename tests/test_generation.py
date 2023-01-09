@@ -62,12 +62,16 @@ def validate_project_works(result, config):
             cmd_env = {}
             cmd_env.update(env)
 
+            print(f"Running command: {cmd}")
+
             # If the command includes a cmd='anything' then extract it out into an
             #  env variable. This is not the most elegant way but should work well enough.
             mat = re.search(r"cmd='([^']+)'", cmd)
             if mat is not None:
                 cmd = re.sub(r"cmd='([^']+)'", '', cmd).strip()
                 cmd_env["cmd"] = mat.group(1)
+
+                print(f"detected that cmd should be set to {cmd_env['cmd']}")
 
             subprocess.run(
                 cmd.split(' '),
