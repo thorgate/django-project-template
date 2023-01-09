@@ -12,3 +12,6 @@ class {{cookiecutter.repo_name|snake_to_pascal_case}}Config(AppConfig):
         # Import and register the system checks
         checks.register(check_production_settings)
         checks.register(check_sentry_config)
+
+        # Ensure default celery app is configured all the time
+        from .celery import app  # NOQA

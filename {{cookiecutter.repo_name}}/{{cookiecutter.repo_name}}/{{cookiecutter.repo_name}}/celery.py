@@ -15,3 +15,6 @@ app.config_from_object("{{cookiecutter.repo_name}}.celery_settings")
 
 # Load task modules from all registered Django app configs.
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
+
+# make @shared_task work
+app.set_default()
