@@ -31,7 +31,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         settings_as_dict = (
-            settings._wrapped.__dict__  # pylint: disable=protected-access
+            settings._wrapped.__dict__  # type: ignore  # pylint: disable=protected-access
         )
         if options["keys"]:
             settings_as_dict = {
