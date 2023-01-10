@@ -68,7 +68,10 @@ After that, you should:
     ```
 
 
-It will ask you a few questions, e.g. project's name.
+It will ask you a few questions, e.g. project's name, python version and so on. **For a reference of all the configuration options** see [CookiecutterVariables.md](./CookiecutterVariables.md) file.
+
+
+
 To create isomorphic single-page application set `frontend_style == spa`. Then separate node application will be created supported by [Razzle](https://razzlejs.org/)
 
 After generation completes, **you should deactivate virtual environment for cookiecutter**,
