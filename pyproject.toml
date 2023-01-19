@@ -15,7 +15,7 @@ default = true
 [tool.poetry.dependencies]
 python = "^3.7.0"
 
-cookiecutter = "==1.7.*"
+cookiecutter = "==2.1.*"
 cookiecutter_repo_extensions = "==0.2.*"
 docker = "==5.*"
 fqdn = "==1.*"
