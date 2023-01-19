@@ -93,10 +93,18 @@ Choice variable. Valid variables: `S3`, `GCS`. Defaults to `S3`.
 
 ## `gitlab_repo_url`
 
-**[Optional]** Gitlab repo url (in format: https://gitlab.com/your-group/project-name, used for CI badges).
+**[Optional]** Gitlab repo url in format: https://gitlab.com/your-group/project-name.
+
+This is used for deriving the Gitlab repository url to use when deploying or the default
+Docker registry url used for the project. Additionally the CI badges in the README file
+are created based on this value.
 
 Defaults to `''`.
 
+> Note: If this is not defined during the project creation/upgrade then one needs to manually update the
+>  repository variable inside `ansible/group_vars/all/vars.yml` file of the resulting project to the correct
+>  git repository url (SSH). Additionally, when `build_in_ci` is set to `yes` then the image urls in `environemnt`
+>  file need to be updated to correct values too.
 
 ## `frontend_style`
 
