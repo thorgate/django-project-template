@@ -74,11 +74,12 @@
 
 - name: "Ensure server has access to the container registry"
   shell:
-    cmd: echo "$REGISTRY_TOKEN" | docker login -u {{ "{{ project }}" }} --password-stdin registry.gitlab.com
+    cmd: echo "$REGISTRY_TOKEN" | /usr/bin/docker login -u {{ "{{ project }}" }} --password-stdin registry.gitlab.com
     chdir: "{{ "{{ code_dir }}" }}"
   environment:
     DOCKER_CONFIG: "{{ "{{ code_dir }}" }}/.docker-cfg"
     REGISTRY_TOKEN: "{{ "{{ registry_token }}" }}"
+    PATH: ""
 
 
 # - {%- endif %}
