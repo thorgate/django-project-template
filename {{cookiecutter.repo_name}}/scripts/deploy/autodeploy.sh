@@ -75,7 +75,7 @@ deploy() {
     poetry run ansible-playbook \
         --vault-password-file /tmp/vault.pw \
         --user ${DEPLOY_USERNAME} -e "ansible_become_pass=${DEPLOY_PASSWORD}" \
-        -l ${DEPLOY_HOSTNAME} -e "force_deploy=${DEPLOY_BRANCH}" -v deploy.yml
+        -l ${DEPLOY_HOSTNAME} -e "force_deploy=${DEPLOY_COMMIT}" -v deploy.yml
 }
 
 install_deps

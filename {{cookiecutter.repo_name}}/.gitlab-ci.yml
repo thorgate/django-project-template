@@ -184,7 +184,7 @@ publish_node:
     PIP_CACHE_DIR: "${CI_PROJECT_DIR}/.pip"
     POETRY_CACHE_DIR: "${CI_PROJECT_DIR}/.pypoetry"
     # Workaround for https://docs.ansible.com/ansible/devel/reference_appendices/config.html#cfg-in-world-writable-dir
-    ANSIBLE_CONFIG: "ansible.cfg"
+    ANSIBLE_CONFIG: "ansible-ci.cfg"
   cache:
     paths:
       - .pip/
