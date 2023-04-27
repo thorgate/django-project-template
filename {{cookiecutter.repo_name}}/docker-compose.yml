@@ -75,15 +75,17 @@ services:
 
 # - {%- if cookiecutter.include_celery == YES %}
   celery:
-    <<: *django-container-spec
-    <<: *celery-environment
+    <<:
+      - *django-container-spec
+      - *celery-environment
     restart: unless-stopped
     entrypoint: /usr/bin/wait-for-it.sh postgres:5432 -t 60 -- entrypoint.sh --
     command: celery --app {{cookiecutter.repo_name}} worker --autoscale 6,2 --loglevel INFO
 
   celery_beat:
-    <<: *django-container-spec
-    <<: *celery-environment
+    <<:
+      - *django-container-spec
+      - *celery-environment
     container_name: {{cookiecutter.repo_name}}_celery_beat
     volumes:
       - ".data/celery:/celery"
