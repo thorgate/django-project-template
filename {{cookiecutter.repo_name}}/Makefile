@@ -106,9 +106,13 @@ $(SITE_ROOT)/pyproject.toml:
 
 .PHONY:
 poetry-check:
+	@echo -e "$(CYAN)Checking lockfile is up to date$(COFF)"
 	@make run-poetry-helper cmd="sh /poetry-check-lock.sh"
+	@echo -e "$(CYAN)Running poetry check$(COFF)"
 	@make run-poetry-helper cmd="poetry check"
-	@make run-python cmd="poetry run safety check"
+	@echo -e "$(CYAN)Checking dependencies with pip-audit$(COFF)"
+	@make run-python cmd="bash -c \"cat /ignored-vulnerabilities.txt | grep -v '^[#;]' | grep -v -x '\s*' | sed 's/^/--ignore-vuln /' | tr '\n' ' ' | xargs poetry run pip-audit --fix --dry-run --desc\""
+	@cat ignored-vulnerabilities.txt | grep -v '^;'
 
 
 .PHONY:

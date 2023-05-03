@@ -60,7 +60,7 @@ django-debug-toolbar = "*"
 # Testing & quality tools
 coverage = "==7.*"
 ipdb = "*"
-safety = "*"
+pip-audit = "*"
 isort = "==5.*"
 # Note prospector is very picky about its dependencies,
 # avoid specifying versions for pylint/pylint-django/astroid
