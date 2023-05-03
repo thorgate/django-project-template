@@ -1,0 +1,11 @@
+# Note: `aws-cli` must be installed locally to make this role work. E.g. `sudo pip install awscli`.
+
+- name: "Use aws s3 command to upload media files"
+  delegate_to: localhost
+  delegate_facts: true
+  vars:
+    ansible_become: no
+  command: "aws s3 cp {{ "{{ local_media_path }}" }} s3://{{ "{{ settings.AWS_STORAGE_BUCKET_NAME }}" }}/media --recursive"
+  environment:
+    AWS_ACCESS_KEY_ID: "{{ "{{ settings.AWS_ACCESS_KEY_ID }}" }}"
+    AWS_SECRET_ACCESS_KEY: "{{ "{{ settings.AWS_SECRET_ACCESS_KEY }}" }}"

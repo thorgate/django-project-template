@@ -1,0 +1,47 @@
+- name: "Extract settings from container"
+  import_tasks: ../../helpers/run-management-command.yml
+  vars:
+    command_params: "settings --keys AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_STORAGE_BUCKET_NAME GS_BUCKET_NAME GS_PROJECT_ID GS_CREDENTIALS"
+
+
+- name: "Store settings as json {{ "{{ result.stdout }}" }}"
+  set_fact:
+    settings: "{{ "{{ result.stdout | from_json }}" }}"
+
+
+- set_fact:
+    target_media_backend: "FS"
+
+
+- set_fact:
+    target_media_backend: "S3"
+  when: "settings.AWS_ACCESS_KEY_ID and settings.AWS_ACCESS_KEY_ID != '<unset>'"
+  ignore_errors: yes
+
+
+- set_fact:
+    target_media_backend: "GCS"
+  when: "settings.GS_PROJECT_ID and settings.GS_PROJECT_ID != '<unset>'"
+  ignore_errors: yes
+
+
+- name: "Fail if media mirroring is not supported for backend"
+  fail:
+    msg: "Media backend {{ "{{ target_media_backend }}" }} does not have logic for mirroring"
+  when: "target_media_backend == 'GCS'"
+
+
+- name: "Fail if media mirroring is not supported for backend"
+  fail:
+    msg: "Media backend {{ "{{ target_media_backend }}" }} does not have logic for mirroring"
+  when: "target_media_backend == 'FS'"
+
+
+- name: "Install yq on the server"
+  pip:
+    name: "yq"
+
+
+- name: "Mirror S3 media files"
+  import_tasks: clone_media_target_S3.yml
+  when: "target_media_backend == 'S3'"
