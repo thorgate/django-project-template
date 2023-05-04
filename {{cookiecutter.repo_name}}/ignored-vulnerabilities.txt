@@ -1,0 +1,5 @@
+## Ignored vulnerabilities
+; Add one per line, comments must be on separate lines and start with `#` or `;`, comments
+; starting with `;` are not printed out in summary when quality check is ran
+;
+; See inline script in poetry-check for details on how this works

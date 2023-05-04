@@ -12,6 +12,8 @@ Note: Try to add categories to changes and link to MRs/Issues
 
 ## Development
 
+- [ENH] Replace safety with [pip-audit](https://pypi.org/project/pip-audit/). See [ignored-vulnerabilities.txt](./{{cookiecutter.repo_name}}/ignored-vulnerabilities.txt) for reference.
+
 ## 2022-08-08
 
 - [NEW] Add [safety](https://github.com/pyupio/safety) checks to the project via [pyup.io](https://pyup.io/). This enables vulnerability scanning in CI for DPT. - !240
