@@ -7,7 +7,7 @@
     "predev": "yarn clean",
     "clean": "rimraf build",
     {%- if cookiecutter.use_cypress == YES %}
-    "cy:run-ci": "wait-on http://node-cypress.{{cookiecutter.domain_name}}.docker.local:9990 && cypress run --browser chrome --headless",
+    "cy:run-ci": "wait-on http://node-cypress.{{cookiecutter.live_domain_name}}.docker.local:9990 && cypress run --browser chrome --headless",
     "cy:run": "cypress run --browser chrome",
     "cy:open": "cypress open",
     {%- endif %}

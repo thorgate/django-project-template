@@ -318,8 +318,8 @@ CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 
 # Email config
-DEFAULT_FROM_EMAIL = f"{PROJECT_TITLE} <info@{{ cookiecutter.domain_name }}>"
-SERVER_EMAIL = f"{PROJECT_TITLE} server <server@{{ cookiecutter.domain_name }}>"
+DEFAULT_FROM_EMAIL = f"{PROJECT_TITLE} <info@{{ cookiecutter.live_domain_name }}>"
+SERVER_EMAIL = f"{PROJECT_TITLE} server <server@{{ cookiecutter.live_domain_name }}>"
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 

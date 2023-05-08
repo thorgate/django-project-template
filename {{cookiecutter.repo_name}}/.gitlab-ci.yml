@@ -223,7 +223,7 @@ deploy_to_live:
     <<: *auto_deploy_base_env_variables
     DPT_AUTO_DEPLOY_ENVIRONMENT: live
     # TODO: Fill in correct value when live host is added
-    DPT_AUTO_DEPLOY_HOSTNAME: "production.{{ cookiecutter.domain_name }}"
+    DPT_AUTO_DEPLOY_HOSTNAME: "production.{{ cookiecutter.live_domain_name }}"
   script:
     # Create a new release in sentry
     - ./scripts/deploy/create-sentry-release.sh

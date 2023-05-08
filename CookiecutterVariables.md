@@ -12,7 +12,7 @@ Preferably lowercase codename, used for the directory structure and Python modul
 Default value is `project_title` slugified.
 
 
-## `domain_name`
+## `live_domain_name`
 
 Production domain name of the site (e.g. example.com). NOTE: should be lowercase and valid FQDN.
 
@@ -23,14 +23,14 @@ Defaults to `TODO.com`.
 
 Hostname for test server.
 
-Defaults to `test.{{cookiecutter.domain_name}}`.
+Defaults to `test.{{cookiecutter.live_domain_name}}`.
 
 
 ## `admin_email`
 
 Project email. Used for any data requiring email.
 
-Defaults to `info@{{cookiecutter.domain_name}}`.
+Defaults to `info@{{cookiecutter.live_domain_name}}`.
 
 
 ## `include_celery`

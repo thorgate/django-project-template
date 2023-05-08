@@ -31,7 +31,7 @@ services:
     networks:
       default:
         aliases:
-          - django-cypress.{{cookiecutter.domain_name}}.docker.local
+          - django-cypress.{{cookiecutter.live_domain_name}}.docker.local
 
   node-cypress:
 # - {%- if cookiecutter.node_version|int < 14 %}
@@ -62,7 +62,7 @@ services:
     networks:
       default:
         aliases:
-          - node-cypress.{{cookiecutter.domain_name}}.docker.local
+          - node-cypress.{{cookiecutter.live_domain_name}}.docker.local
 
   postgres-cypress:
     # We want to always start with a fresh db, so don't mount any local volumes.

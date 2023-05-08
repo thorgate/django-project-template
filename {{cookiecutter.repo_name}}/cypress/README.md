@@ -36,8 +36,8 @@ The corresponding `package.json` command is `cy:run-ci`.
 To run in browser, the tests need access to the screen, which is tricky with docker, so the easy way is 
 to use the `node.js` environment installed on host.
 
-* First, you would need to set the `django-cypress.{{ cookiecutter.domain_name }}.docker.local` 
-  and `node-cypress.{{ cookiecutter.domain_name }}.docker.local` hosts to point to localhost in `/etc/hosts`.
+* First, you would need to set the `django-cypress.{{ cookiecutter.live_domain_name }}.docker.local` 
+  and `node-cypress.{{ cookiecutter.live_domain_name }}.docker.local` hosts to point to localhost in `/etc/hosts`.
 * From the project root run: `make cypress-prepare`. This will create and start the containers necessary
   to perform browser tests.
 * Make sure your current `node.js` version on host matches that of the [Dockerfile-node](../Dockerfile-node), 
