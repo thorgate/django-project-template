@@ -4,7 +4,7 @@ from django.core import checks
 from tg_utils.checks import check_production_settings, check_sentry_config
 
 
-class {{cookiecutter.project_backend_path|snake_to_pascal_case}}Config(AppConfig):
+class {{cookiecutter.default_django_app|snake_to_pascal_case}}Config(AppConfig):
     name = "{{cookiecutter.repo_name}}"
     verbose_name = "{{cookiecutter.project_title}}"
 

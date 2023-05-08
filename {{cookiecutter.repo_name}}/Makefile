@@ -14,9 +14,12 @@ EDIT_SETTINGS ?= yes
 # Project name
 PROJECT_NAME ?= {{cookiecutter.repo_name}}
 
+# Django folder name
+DJANGO_FOLDER_NAME ?= {{cookiecutter.django_folder_name}}
+
 # Get root dir and project dir
 PROJECT_ROOT ?= $(CURDIR)
-SITE_ROOT ?= $(PROJECT_ROOT)/$(PROJECT_NAME)
+SITE_ROOT ?= $(PROJECT_ROOT)/$(DJANGO_FOLDER_NAME)
 
 CUR_DIR_NAME ?= $(shell basename `pwd`)
 DJANGO_IMAGE_NAME ?= $(CUR_DIR_NAME)-django
@@ -276,7 +279,7 @@ coverage-py: ## Runs python/django test coverage calculation
 
 .PHONY:
 patch-coverage-py-paths:  ## Updates the paths in python cobertura report to make it work with Gitlab
-	sed -i -e "s|<source>.|<source>${CI_PROJECT_DIR}/${PROJECT_NAME}/|" ${PROJECT_NAME}/coverage.xml
+	sed -i -e "s|<source>.|<source>${CI_PROJECT_DIR}/${DJANGO_FOLDER_NAME}/|" ${DJANGO_FOLDER_NAME}/coverage.xml
 
 
 .PHONY:

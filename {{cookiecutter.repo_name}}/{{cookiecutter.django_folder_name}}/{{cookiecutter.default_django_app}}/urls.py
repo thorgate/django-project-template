@@ -20,7 +20,7 @@ urlpatterns = [
     path("", TemplateView.as_view(template_name="home.html"), name="home"),
     path("jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"),
     # - {% elif  cookiecutter.frontend_style == SPA %}
-    path("api/", include("{{cookiecutter.project_backend_path}}.rest.urls")),
+    path("api/", include("{{cookiecutter.default_django_app}}.rest.urls")),
     # - {% endif %}
     path("{{cookiecutter.django_admin_path}}/", admin.site.urls),
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
@@ -34,8 +34,8 @@ urlpatterns = [
 ]
 
 if not settings.DEBUG:
-    handler500 = "{{cookiecutter.project_backend_path}}.views.server_error"
-    handler404 = "{{cookiecutter.project_backend_path}}.views.page_not_found"
+    handler500 = "{{cookiecutter.default_django_app}}.views.server_error"
+    handler404 = "{{cookiecutter.default_django_app}}.views.page_not_found"
 
 if settings.DEBUG:
     try:

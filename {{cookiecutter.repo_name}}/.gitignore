@@ -14,24 +14,19 @@ venv/
 
 .data*/
 
-{{cookiecutter.project_backend_path}}/settings/local.py
-{{cookiecutter.project_backend_path}}/settings/local_test.py
-{{cookiecutter.project_backend_path}}/db.sqlite3
-{{cookiecutter.project_backend_path}}/assets/
-{%- if cookiecutter.frontend_style == WEBAPP %}
-webapp/webapp/build/
-webapp/coverage/
-webapp/webapp/webpack-stats.json
-{% endif %}
+{{cookiecutter.django_folder_name}}/settings/local.py
+{{cookiecutter.django_folder_name}}/settings/local_test.py
+{{cookiecutter.django_folder_name}}/db.sqlite3
+{{cookiecutter.django_folder_name}}/assets/
 
-{{cookiecutter.project_backend_path}}/.cache
-{{cookiecutter.project_backend_path}}/.pytest_cache
-{{cookiecutter.project_backend_path}}/.coverage
-{{cookiecutter.project_backend_path}}/coverage
-{{cookiecutter.project_backend_path}}/coverage.xml
-{{cookiecutter.project_backend_path}}/report.xml
-{{cookiecutter.project_backend_path}}/htmlcov/
-{{cookiecutter.project_backend_path}}/cover/
+{{cookiecutter.django_folder_name}}/.cache
+{{cookiecutter.django_folder_name}}/.pytest_cache
+{{cookiecutter.django_folder_name}}/.coverage
+{{cookiecutter.django_folder_name}}/coverage
+{{cookiecutter.django_folder_name}}/coverage.xml
+{{cookiecutter.django_folder_name}}/report.xml
+{{cookiecutter.django_folder_name}}/htmlcov/
+{{cookiecutter.django_folder_name}}/cover/
 
 {%- if cookiecutter.frontend_style == SPA %}
 # Node Project files
@@ -41,4 +36,10 @@ app/coverage/
 
 # Missing translations file
 **/locales/**/*.missing.json
-{%- endif %}
+{%- elif cookiecutter.frontend_style == WEBAPP %}
+# Node Project files
+webapp/webapp/build/
+webapp/coverage/
+webapp/webapp/webpack-stats.json
+
+{% endif %}

@@ -59,7 +59,7 @@ RUN find /usr/local \
 RUN apk del .build-deps
 
 # Copy code
-COPY ./{{cookiecutter.project_backend_path}} /app
+COPY ./{{cookiecutter.django_folder_name}} /app
 
 # Set the default directory where CMD will execute
 WORKDIR /app
