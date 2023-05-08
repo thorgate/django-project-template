@@ -1,6 +1,6 @@
-{% raw %}{% load i18n %}<p>{% trans "Hi there," %}</p>
+{% raw %}{% load i18n %}<p>{% block greeting %}{% trans "Hi there," %}{% endblock greeting %}</p>
 
 {% block content %}{% endblock content %}
 
-<p>{% endraw %}{{cookiecutter.project_title}}{% raw %}</p>
+<p>{{project_title}}</p>
 {% endraw %}

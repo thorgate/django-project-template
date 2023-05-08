@@ -21,7 +21,8 @@ msgstr ""
 msgid "Important dates"
 msgstr ""
 
-msgid "{{ cookiecutter.project_title }} password reset"
+#, python-brace-format
+msgid "{project_title} password reset"
 msgstr ""
 
 msgid "Username"
@@ -88,15 +89,11 @@ msgstr ""
 
 #, python-format
 msgid ""
-"\n"
-"<p>\n"
-"    You're receiving this email because you requested a password reset for "
-"your user account at {{ cookiecutter.project_title }}.\n"
-"</p>\n"
-"<p>\n"
-"    Please go to the following page and choose a new password:<br>\n"
-"    <a href=\"%(confirm_reset_url)s\">%(confirm_reset_url)s</a><br>\n"
-"</p>\n"
+"You're receiving this email because you requested a password reset for your "
+"user account at %(project_title)s."
+msgstr ""
+
+msgid "Please go to the following page and choose a new password:"
 msgstr ""
 
 msgid "Password reset complete"
@@ -119,12 +116,9 @@ msgstr ""
 
 #, python-format
 msgid ""
-"\n"
-"            The password reset link was invalid, possibly because it has "
-"already been used.\n"
-"            Please request a <a href=\"%(password_reset_url)s\">new password "
-"reset</a>.\n"
-"            "
+"The password reset link was invalid, possibly because it has already been "
+"used. Please request a <a href=\"%(password_reset_url)s\">new password "
+"reset</a>."
 msgstr ""
 
 msgid "Password reset successful"
