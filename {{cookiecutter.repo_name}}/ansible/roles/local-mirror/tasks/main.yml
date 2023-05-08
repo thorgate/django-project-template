@@ -1,5 +1,5 @@
 - name: "Run preparation script"
-  shell: "bash mirror-prepare.sh"
+  shell: "bash local-mirror/mirror-prepare.sh"
   delegate_to: localhost
   vars:
     ansible_become: no

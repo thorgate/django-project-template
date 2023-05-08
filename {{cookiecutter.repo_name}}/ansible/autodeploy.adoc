@@ -1,8 +1,9 @@
 = Automated deployments
+:toc:
 
 This project supports automatic deploys :fire: to the test server from master branch and from tags to live server (via CI). The CI
 job runs ansible with credentials retrieved from CI variables. For this to work make sure the auto deployment users have
-been set up. See <<set-up-autodeploy-users,steps here>>.
+been set up. See <<Set up autodeploy users,steps here>>.
 
 == Notes about security
 
@@ -64,6 +65,10 @@ ssh-keygen -t ed25519 -C {{ cookiecutter.repo_name }}-autodeploy-${ENVIRONMENT}@
 
 Now you should create a new vault file for the environment from link:./vault-template.yml[vault-template.yml]
 and save it as `&lt;project_root&gt;/ansible/autodeploy_vault.${ENVIRONMENT}.yml`.
+
+----
+include::roles/autodeploy/vault-template.yml[]
+----
 
 Then you can replace `autodeploy_public_key` and `autodeploy_private_key` with the previously generated
 ssh keys. Once you do that you should delete the private and public key file as you won't need the original

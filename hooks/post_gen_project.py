@@ -148,6 +148,7 @@ def cleanup():
             "ansible/roles/autodeploy",
             "ansible/ansible-ci.cfg",
             "ansible/autodeploy.yml",
+            "ansible/autodeploy.adoc",
             "scripts/deploy",
         ]
 

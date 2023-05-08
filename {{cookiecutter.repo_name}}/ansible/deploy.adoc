@@ -1,0 +1,63 @@
+:toc:
+=== Manual Deployment
+WARNING: If the code has *not been deployed* to the server already follow the instructions in xref:docs/the_first_deploy.adoc[The first deployment].
+
+The deployment process works as follows:
+
+. Clone & checkout the project into test server specified in `deployment_version` variable)
+. Add some configuration files (nginx, env, etc)
+{%- if cookiecutter.build_in_ci == YES %}
+. Pull docker images for the project from the registry and restart containers if needed
+{%- else -%}
+. Build docker images for the project
+{%- endif %}
+. Run migrations and collectstatic
+
+TIP: Before deploying code ensure that whatever you want deployed is committed and pushed to the server.
+
+{% if cookiecutter.build_in_ci == YES -%}
+
+NOTE: Note that the `publish_` pipes need to finish before the code can be deployed.
+{% endif %}
+
+==== Tags
+
+[#env-tag]
+env::
+    Only update the environment file on the server
+
+[source,bash]
+----
+poetry run ansible-playbook --limit HOST -t env deploy.yml
+----
+
+
+==== Special environment variables
+
+force_deploy::
+    To deploy a specific version of code to the server you can use the `force_deploy` variable. To set it use
+ ansibles `-e` CLI parameter.
+
+[source,bash]
+----
+poetry run ansible-playbook --limit test -e "force_deploy=stable" deploy.yml
+----
+
+
+==== Usage examples
+
+[source,bash]
+----
+# Run the deploy against the test server
+poetry run ansible-playbook --limit test deploy.yml
+
+# Run the deploy against the production server
+poetry run ansible-playbook --limit live deploy.yml
+
+# Update the environment file on the production server
+poetry run ansible-playbook --limit live -t env deploy.yml
+
+# Deploy a testing branch to test server
+poetry run ansible-playbook --limit test -e "force_deploy=testing-deploy" deploy.yml
+----
+

@@ -1,0 +1,18 @@
+== Server Environment Variables ==
+
+The `.env` file on the server is generated from the link:../roles/deploy/templates/environment[environment] template file.
+
+The template context variables are defined in the `group_vars` and `host_vars` directory's, as well as the vault.
+
+.Start of the environment template
+----
+include::../roles/deploy/templates/environment[environment, lines=6..16]
+----
+
+Ansible creates a backup with every change. The backup is located in the same directory.
+
+This environment file is used by link:../../docker-compose.production.yml[docker-compose.production] as well as by the containers themselves.
+
+See xref:../deploy.adoc#env-tag[Here] for more information on how to deploy just an update to the environment file.
+
+Environment variables which are used inside a container service should be prefixed. Such as `DJANGO_` or `RAZZLE_`
