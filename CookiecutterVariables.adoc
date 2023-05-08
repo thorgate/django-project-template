@@ -1,155 +1,153 @@
-# Generation parameter reference
+= CookieCutter variables reference
+:toc:
 
-## `project_title`
+== project_title
 
 User-visible title of the project. This is used in the readme and default project settings.
 
-
-## `repo_name`
+== repo_name
 
 Preferably lowercase codename, used for the directory structure and Python modules.
 
 Default value is `project_title` slugified.
 
-
-## `live_domain_name`
+== live_domain_name
 
 Production domain name of the site (e.g. example.com). NOTE: should be lowercase and valid FQDN.
 
-Defaults to `"{{ cookiecutter.repo_name | as_hostname }}.com"`.
+Defaults to `&quot;{{ cookiecutter.repo_name | as_hostname }}.com&quot;`.
 
-
-## `test_host`
+== test_host
 
 Hostname for test server.
 
 Defaults to `test.{{cookiecutter.live_domain_name}}`.
 
-
-## `admin_email`
+== admin_email
 
 Project email. Used for any data requiring email.
 
 Defaults to `info@{{cookiecutter.live_domain_name}}`.
 
-
-## `include_celery`
+== include_celery
 
 Include Celery with Redis as the broker.
 
 Choice variable. Valid variables: `yes`, `no`. Defaults to `no`.
 
-
-## `docker_base_image`
+== docker_base_image
 
 Base Docker images to use.
 
 Choice variable. Valid variables: `alpine`, `debian`. Defaults to `alpine`.
 
-
-## `python_version`
+== python_version
 
 Python version to use.
 
 Choice variable. Valid variables: `3.11`, `3.10`, `3.9`, `3.8`, `3.7`, `3.6`. Defaults to `3.10`.
 
-
-## `node_version`
+== node_version
 
 Node.js version to use.
 
 Choice variable. Valid variables: `18`, `16`, `14`, `12`, `10`. Defaults to `14`.
 
-
-## `postgres_version`
+== postgres_version
 
 Postgres version to use.
 
 Choice variable. Valid variables: `12`, `11`, `10`, `9`. Defaults to `12`.
 
-
-## `django_admin_path`
+== django_admin_path
 
 Django Admin panel URL path.
-**NOTE:** Should not start or end with `/`.
+*NOTE:* Should not start or end with `/`.
 
 Defaults to `adminpanel`.
 
-
-## `django_health_check_path`
+== django_health_check_path
 
 Django health check URL path.
-**NOTE:** Should not start or end with `/`.
+*NOTE:* Should not start or end with `/`.
 
 Defaults to `health`.
 
+== django_folder_name
 
-## `django_media_engine`
+Django directory path for backend code.
+
+Defaults to `repo_name`
+
+== default_django_app
+
+Django app name for the core app, options
+
+Defaults to `repo_name`
+
+== django_media_engine
 
 Django remote media storage engine to use.
 
 Choice variable. Valid variables: `S3`, `GCS`. Defaults to `S3`.
 
+== gitlab_repo_url
 
-## `gitlab_repo_url`
-
-**[Optional]** Gitlab repo url in format: https://gitlab.com/your-group/project-name.
+*[Optional]* Gitlab repo url in format: https://gitlab.com/your-group/project-name.
 
 This is used for deriving the Gitlab repository url to use when deploying or the default
 Docker registry url used for the project. Additionally the CI badges in the README file
 are created based on this value.
 
-Defaults to `''`.
+Defaults to `&#39;&#39;`.
 
-> Note: If this is not defined during the project creation/upgrade then one needs to manually update the
->  repository variable inside `ansible/group_vars/all/vars.yml` file of the resulting project to the correct
->  git repository url (SSH). Additionally, when `build_in_ci` is set to `yes` then the image urls in `environemnt`
->  file need to be updated to correct values too.
+____
 
-## `frontend_style`
+Note: If this is not defined during the project creation/upgrade then one needs to manually update the
+ repository variable inside `ansible/group_vars/all/vars.yml` file of the resulting project to the correct
+ git repository url (SSH). Additionally, when `build_in_ci` is set to `yes` then the image urls in `environemnt`
+ file need to be updated to correct values too.
+
+____
+
+== frontend_style
 
 Set the type of frontend to use.
 
 Choice variable. Valid variables: `webapp`, `spa`. Defaults to `webapp`.
 
-
-## `webapp_include_storybook`
+== webapp_include_storybook
 
 Webapp only: Include storybook configuration?
 
 Choice variable. Valid variables: `yes`, `no`. Defaults to `no`.
 
-
-## `use_mypy`
+== use_mypy
 
 Use MyPy static types checker?
 
 Choice variable. Valid variables: `yes`, `no`. Defaults to `no`.
 
-
-## `use_cypress`
+== use_cypress
 
 Use Cypress autotests?
 
 Choice variable. Valid variables: `yes`, `no`. Defaults to `no`.
 
-
-## `thorgate`
+== thorgate
 
 Are you from thorgate? Exclude common config present for Thorgate.
 
 Choice variable. Valid variables: `yes`, `no`. Defaults to `no`.
 
-
-## `build_in_ci`
+== build_in_ci
 
 Do you want to build docker images in CI for deployment?
-**NOTE:** Requires a docker registry.
+*NOTE:* Requires a docker registry.
 
 Choice variable. Valid variables: `yes`, `no`. Defaults to `no`.
 
-
-## `use_auto_deploy`
+== use_auto_deploy
 
 Do you want to use automatic deployments?
 
