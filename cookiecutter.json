@@ -12,7 +12,7 @@
     "thorgate": ["yes", "no"],
     "include_celery": ["no", "yes"],
     "django_folder_name": ["{{ cookiecutter.repo_name }}","backend", "django"],
-    "default_django_app": ["{{ cookiecutter.repo_name }}","backend","core", "django"],
+    "default_django_app": ["{{ cookiecutter.repo_name }}","backend","core"],
     "live_domain_name": "{% if cookiecutter.thorgate == 'yes' %}{{ cookiecutter.repo_name|as_hostname }}.com{% else %}TODO.com{% endif %}",
     "test_host": "{% if cookiecutter.thorgate == 'yes' %}{{cookiecutter._tg_recommended_test_server }}{% else %}test.{{cookiecutter.domain_name}}{% endif %}",
     "admin_email": "{% if cookiecutter.thorgate == 'yes' %}{{cookiecutter._tg_webmaster_email }}{% else %}info@{{cookiecutter.domain_name}}{% endif %}",

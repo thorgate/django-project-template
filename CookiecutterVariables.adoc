@@ -3,13 +3,22 @@
 
 project_title::
 
-User-visible title of the project. This is used in the readme and default project settings.
+Public title of the project. +
+This is used in docs, emails navbars, etc. Anywhere the project name is shown to the public this is used.
 
 repo_name::
 
 Preferably lowercase codename, used for the directory structure and Python modules.
 
+Used as the root for a lot of things. Including folder names and the core project name on servers.
+
 Default value is `project_title` slugified.
+
+thorgate::
+
+Are you from thorgate? Exclude common config present for Thorgate.
+
+Choice variable. Valid variables: `yes`, `no`. Defaults to `yes`.
 
 live_domain_name::
 
@@ -19,15 +28,15 @@ Defaults to `&quot;{{ cookiecutter.repo_name | as_hostname }}.com&quot;`.
 
 test_host::
 
-Hostname for test server.
+Hostname for test server. Used to generate the first ansible host.
 
-Defaults to `test.{{cookiecutter.live_domain_name}}`.
+Defaults to `test.{{cookiecutter.live_domain_name}}` or `{{cookiecutter._tg_recommended_test_server}}` if `is_thorgate`
 
 admin_email::
 
-Project email. Used for any data requiring email.
+Project email. Used for any data requiring email, django admin and certbot expiration notifications.
 
-Defaults to `info@{{cookiecutter.live_domain_name}}`.
+Defaults to `info@{{cookiecutter.live_domain_name}}` or `{{cookiecutter._tg_webmaster_email}}` if `is_thorgate`
 
 include_celery::
 
@@ -45,19 +54,13 @@ python_version::
 
 Python version to use.
 
-Choice variable. Valid variables: `3.11`, `3.10`, `3.9`, `3.8`, `3.7`, `3.6`. Defaults to `3.10`.
-
 node_version::
 
 Node.js version to use.
 
-Choice variable. Valid variables: `18`, `16`, `14`, `12`, `10`. Defaults to `14`.
-
 postgres_version::
 
 Postgres version to use.
-
-Choice variable. Valid variables: `12`, `11`, `10`, `9`. Defaults to `12`.
 
 django_admin_path::
 
@@ -71,19 +74,19 @@ django_health_check_path::
 Django health check URL path.
 *NOTE:* Should not start or end with `/`.
 
-Defaults to `health`.
+Defaults to `_health`.
 
 django_folder_name::
 
-Django directory path for backend code.
+Directory name for the Django codebase.
 
-Defaults to `repo_name`
+Defaults to `{{ cookiecutter.repo_name }}`, other options are `backend` or `django`.
 
 default_django_app::
 
-Django app name for the core app, options
+Name of the core Django app for the project
 
-Defaults to `repo_name`
+Defaults to `{{ cookiecutter.repo_name }}`, other options are `backend` or `core`.
 
 django_media_engine::
 
@@ -99,16 +102,12 @@ This is used for deriving the Gitlab repository url to use when deploying or the
 Docker registry url used for the project. Additionally the CI badges in the README file
 are created based on this value.
 
-Defaults to `&#39;&#39;`.
+Defaults to `git@gitlab.com/{% if cookiecutter.thorgate == 'yes' %}thorgate{% else %}your-group{% endif %}/{{cookiecutter.repo_name}}.git`.
 
-____
-
-Note: If this is not defined during the project creation/upgrade then one needs to manually update the
+NOTE:  If this is not defined during the project creation/upgrade then one needs to manually update the
  repository variable inside `ansible/group_vars/all/vars.yml` file of the resulting project to the correct
  git repository url (SSH). Additionally, when `build_in_ci` is set to `yes` then the image urls in `environemnt`
  file need to be updated to correct values too.
-
-____
 
 frontend_style::
 
@@ -131,12 +130,6 @@ Choice variable. Valid variables: `yes`, `no`. Defaults to `no`.
 use_cypress::
 
 Use Cypress autotests?
-
-Choice variable. Valid variables: `yes`, `no`. Defaults to `no`.
-
-thorgate::
-
-Are you from thorgate? Exclude common config present for Thorgate.
 
 Choice variable. Valid variables: `yes`, `no`. Defaults to `no`.
 
