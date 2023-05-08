@@ -80,7 +80,7 @@ services:
       - *celery-environment
     restart: unless-stopped
     entrypoint: /usr/bin/wait-for-it.sh postgres:5432 -t 60 -- entrypoint.sh --
-    command: celery --app {{cookiecutter.repo_name}} worker --autoscale 6,2 --loglevel INFO
+    command: celery --app {{cookiecutter.default_django_app}} worker --autoscale 6,2 --loglevel INFO
 
   celery_beat:
     <<:
@@ -100,7 +100,7 @@ services:
     # Disable pidfile by specifying an empty one. We used fixed container_name which provides single-running-process
     #  guarantee and the lack of pidfile ensures that Celery Beat starts even if the Docker container was killed and
     #  then restarted (in which case the pidfile would still be present).
-    command: celery --app {{cookiecutter.repo_name}} beat --loglevel INFO --pidfile= --schedule /celery/celerybeat-schedule
+    command: celery --app {{cookiecutter.default_django_app}} beat --loglevel INFO --pidfile= --schedule /celery/celerybeat-schedule
 # - {%- endif %}
 
   postgres:

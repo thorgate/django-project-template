@@ -35,6 +35,7 @@ IS_DOCKER_BUILD = env.bool("DJANGO_DOCKER_BUILD", default=False)
 IS_UNITTEST = False
 
 PROJECT_NAME = "{{ cookiecutter.repo_name }}"
+DEFAULT_DJANGO_APP = "{{cookiecutter.default_django_app}}"
 # Shown in error pages and some other places
 PROJECT_TITLE = "{{ cookiecutter.project_title }}"
 
@@ -64,7 +65,7 @@ TGR_PASSWORD_RECOVERY_URL = "/auth/reset-password/%s"
 INSTALLED_APPS = [
     # Local apps
     "accounts",
-    PROJECT_NAME,
+    DEFAULT_DJANGO_APP,
     # Third-party apps
     # - {% if cookiecutter.frontend_style == WEBAPP %}
     "django_reverse_js",
@@ -298,9 +299,9 @@ CORS_ORIGIN_WHITELIST = [
 X_FRAME_OPTIONS = "DENY"
 
 
-ROOT_URLCONF = f"{PROJECT_NAME}.urls"
+ROOT_URLCONF = f"{DEFAULT_DJANGO_APP}.urls"
 
-WSGI_APPLICATION = f"{PROJECT_NAME}.wsgi.application"
+WSGI_APPLICATION = f"{DEFAULT_DJANGO_APP}.wsgi.application"
 
 
 LOGIN_REDIRECT_URL = "/"
@@ -450,7 +451,7 @@ HEALTH_CHECK_ACCESS_TOKEN = env.str(
 # - {%- if cookiecutter.include_celery == YES %}
 HEALTH_CHECK = {
     # For 'tg_utils.health_check.checks.celery_beat'
-    "CELERY_APP": f"{PROJECT_NAME}.celery.app",
+    "CELERY_APP": f"{DEFAULT_DJANGO_APP}.celery.app",
     # Schedule timestamping task every minute
     "CELERY_BEAT_CHECK_INTERVAL": 60,
     # It is okay if the task is delayed no more than 5 minutes

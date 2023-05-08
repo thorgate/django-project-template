@@ -3,7 +3,7 @@ import logging
 from django.contrib.sessions.management.commands import clearsessions
 from django.db import connection
 
-from {{cookiecutter.repo_name}}.celery import app
+from {{cookiecutter.default_django_app}}.celery import app
 
 
 logger = logging.getLogger(__name__)
