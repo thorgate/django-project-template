@@ -1,9 +1,9 @@
 # Hostnames for the site
 # - {%- if cookiecutter.frontend_style == SPA %}
-django_site_host: "{{ cookiecutter.spa_django_host_prefix | as_hostname }}.todo.example.com"
-node_site_host: "todo.example.com"
+django_site_host: "{{ cookiecutter.spa_django_host_prefix | as_hostname }}.{{ cookiecutter.live_domain_name }}"
+node_site_host: "{{ cookiecutter.live_domain_name }}"
 # - {%- else %}
-django_site_host: "todo.example.com"
+django_site_host: "{{ cookiecutter.live_domain_name }}"
 # - {%- endif %}
 
 # Sentry config

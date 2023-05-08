@@ -16,7 +16,7 @@ Default value is `project_title` slugified.
 
 Production domain name of the site (e.g. example.com). NOTE: should be lowercase and valid FQDN.
 
-Defaults to `TODO.com`.
+Defaults to `"{{ cookiecutter.repo_name | as_hostname }}.com"`.
 
 
 ## `test_host`

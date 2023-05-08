@@ -102,14 +102,14 @@ def validate_config():
         sys.exit(1)
 
     live_domain_name = "{{ cookiecutter.live_domain_name }}"
-    if 'todo' not in live_domain_name.lower():
-        if live_domain_name != live_domain_name.lower():
-            print("Domain name should be lowercase")
-            sys.exit(1)
 
-        if not FQDN(live_domain_name).is_valid:
-            print("Domain name is not valid")
-            sys.exit(1)
+    if live_domain_name != live_domain_name.lower():
+        print("Domain name should be lowercase")
+        sys.exit(1)
+
+    if not FQDN(live_domain_name).is_valid:
+        print("Domain name is not valid")
+        sys.exit(1)
 
 
 def copy_cookiecutter_config(local_filename='.cookiecutterrc'):

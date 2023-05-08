@@ -8,7 +8,7 @@
     "project_title": "User-visible title of the project.",
     "repo_name": "{{cookiecutter.project_title|slugify(separator='_')}}",
     "include_celery": ["no", "yes"],
-    "live_domain_name": "TODO.com",
+    "live_domain_name": "{{ cookiecutter.repo_name | as_hostname }}.com",
     "test_host": "test.{{cookiecutter.live_domain_name}}",
     "admin_email": "info@{{cookiecutter.live_domain_name}}",
     "docker_base_image": ["alpine", "debian"],
