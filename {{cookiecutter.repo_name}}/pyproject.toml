@@ -114,7 +114,7 @@ exclude = '''
 '''
 
 [tool.isort]
-skip = "settings/local.py,settings/local_test.py,{{cookiecutter.repo_name}}/wsgi.py"
+skip = "settings/local.py,settings/local_test.py,{{cookiecutter.project_backend_path}}/wsgi.py"
 skip_glob = "node_modules"
 line_length = '88'
 atomic = 'true'
@@ -126,7 +126,7 @@ ensure_newline_before_comments = 'true'
 known_django = "django"
 known_pytest = "pytest"
 overwrite_in_place = 'true'
-known_first_party = "accounts,{{cookiecutter.repo_name}},settings"
+known_first_party = "accounts,{{cookiecutter.project_backend_path}},settings"
 lines_between_types = '0'
 sections = "FUTURE,STDLIB,DJANGO,PYTEST,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"
 lines_after_imports = '2'
@@ -139,11 +139,11 @@ omit = [
     "*test*",
     "*migrations*",
     "manage.py",
-    "{{cookiecutter.repo_name}}/urls.py",
-    "{{cookiecutter.repo_name}}/celery.py",
-    "{{cookiecutter.repo_name}}/celery_settings.py",
-    "{{cookiecutter.repo_name}}/storages.py",
-    "{{cookiecutter.repo_name}}/wsgi.py",
+    "{{cookiecutter.project_backend_path}}/urls.py",
+    "{{cookiecutter.project_backend_path}}/celery.py",
+    "{{cookiecutter.project_backend_path}}/celery_settings.py",
+    "{{cookiecutter.project_backend_path}}/storages.py",
+    "{{cookiecutter.project_backend_path}}/wsgi.py",
     "settings/*",
 ]
 

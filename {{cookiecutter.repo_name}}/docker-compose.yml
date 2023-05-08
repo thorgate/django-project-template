@@ -15,7 +15,7 @@ x-django-container-spec: &django-container-spec
   environment:
     PYTHONUNBUFFERED: "0"
   volumes:
-    - &py-code-volume "./{{cookiecutter.repo_name}}:/app"
+    - &py-code-volume "./{{cookiecutter.project_backend_path}}:/app"
 # -   {%- if cookiecutter.frontend_style == WEBAPP %}
     - "./webapp/static:/app/static"
     - "./webapp/webapp:/app/webapp"

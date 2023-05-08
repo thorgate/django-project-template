@@ -172,11 +172,11 @@ REDIS_CELERY_URL = env.str("DJANGO_REDIS_CELERY_URL", default=REDIS_URL)
 CELERYBEAT_SCHEDULE = {
     "default-task": {
         # TODO: Remove the default task after confirming that Celery works.
-        "task": "{{cookiecutter.repo_name}}.tasks.default_task",
+        "task": "{{cookiecutter.project_backend_path}}.tasks.default_task",
         "schedule": 5 * 60,
     },
     "cleanup-old-sessions": {
-        "task": "{{cookiecutter.repo_name}}.tasks.cleanup_old_sessions",
+        "task": "{{cookiecutter.project_backend_path}}.tasks.cleanup_old_sessions",
         # TODO define the best time suitable for the cleanup.
         "schedule": crontab(minute=45, hour=2),
     },

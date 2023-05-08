@@ -14,7 +14,7 @@ services:
       # use the same ports to be able to access it from host and from docker at the same time
       - "${DJANGO_PORT}:${DJANGO_PORT}"
     volumes:
-      - "./{{cookiecutter.repo_name}}:/app"
+      - "./{{cookiecutter.project_backend_path}}:/app"
 # -   {%- if cookiecutter.frontend_style == WEBAPP %}
       - "./webapp/static:/app/static"
       - "./webapp/webapp:/app/webapp"

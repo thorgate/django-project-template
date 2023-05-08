@@ -37,7 +37,7 @@ COPY poetry.lock /
 RUN poetry install --no-dev
 
 # Copy code
-COPY ./{{cookiecutter.repo_name}} /app
+COPY ./{{cookiecutter.project_backend_path}} /app
 
 # Set the default directory where CMD will execute
 WORKDIR /app

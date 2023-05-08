@@ -1,7 +1,7 @@
 .git
 .idea
 
-{{cookiecutter.repo_name}}/node_modules/
+{{cookiecutter.project_backend_path}}/node_modules/
 {% if cookiecutter.frontend_style == WEBAPP %}web{% endif %}app/node_modules/
 venv/
 
@@ -11,8 +11,8 @@ venv/
 *.pyo
 *.pyc
 
-{{cookiecutter.repo_name}}/.cache
-{{cookiecutter.repo_name}}/.pytest_cache
-{{cookiecutter.repo_name}}/.coverage
-{{cookiecutter.repo_name}}/coverage
-{{cookiecutter.repo_name}}/cover/
+{{cookiecutter.project_backend_path}}/.cache
+{{cookiecutter.project_backend_path}}/.pytest_cache
+{{cookiecutter.project_backend_path}}/.coverage
+{{cookiecutter.project_backend_path}}/coverage
+{{cookiecutter.project_backend_path}}/cover/
