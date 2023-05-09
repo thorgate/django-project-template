@@ -11,7 +11,14 @@ Note: Try to add categories to changes and link to MRs/Issues
 -->
 
 ## Development
+ 
+**Breaking:** Rename CookieCutter variable `domain_name` to `live_domain_name`. You must manually update this 
+variable in your project's cookiecutter rc file. 
 
+- [ENH] Modify password reset emails so they're easier to maintain and are not different between generated projects. 
+- [ENH] Have vault template be close to a live vault file
+- [ENH] Updated ansible docs and converted to a-doc 
+- [ENH] Add new variables to make project re-use eaiser and less code differences between generated projects. 
 - [ENH] Replace safety with [pip-audit](https://pypi.org/project/pip-audit/). See [ignored-vulnerabilities.txt](./{{cookiecutter.repo_name}}/ignored-vulnerabilities.txt) for reference.
 
 ## 2022-08-08
