@@ -8,8 +8,8 @@ been set up. See <<Set up autodeploy users,steps here>>.
 == Notes about security
 
 * CI Will execute code on the server
-* In default branch against test server
-* For protected tags or branches against live server
+** In default branch against test server
+** For protected tags or branches against live server
 * Code will run with root privileges
 ** Needs research to secure and remove need for root privileges
 * Any person with Maintainer or higher permissions can access CI variables and run it locally
@@ -64,7 +64,7 @@ ssh-keygen -t ed25519 -C {{ cookiecutter.repo_name }}-autodeploy-${ENVIRONMENT}@
 ----
 
 Now you should create a new vault file for the environment from link:./vault-template.yml[vault-template.yml]
-and save it as `&lt;project_root&gt;/ansible/autodeploy_vault.${ENVIRONMENT}.yml`.
+and save it as `project_root/ansible/autodeploy_vault.${ENVIRONMENT}.yml`.
 
 ----
 include::roles/autodeploy/vault-template.yml[]

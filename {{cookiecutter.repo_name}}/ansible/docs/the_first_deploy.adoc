@@ -51,7 +51,7 @@ https://github.com/moby/moby/issues/37569[issue in docker].
 * Add (or update) the `vars.yml` and `vault.yml` files for the server in the link:./host_vars[host_vars] directory.
 * When creating the files use link:./host_vars/vars-template.yml[vars-template.yml] and
  link:./host_vars/vault-template.yml[vault-template.yml] as an example.
-* If you created the vault file make sure to encrypt it: `ansible-vault encrypt host_vars/&lt;hostname&gt;/vault.yml`
+* If you created the vault file make sure to encrypt it: `ansible-vault encrypt host_vars/<hostname>/vault.yml`
 * NB: Vault for production and test should have different password.
 * Check django settings (`settings/cloud.py`)
 * Add the server's SSH key (`/root/.ssh/id_rsa.pub`) to the project repo settings as deployment key.

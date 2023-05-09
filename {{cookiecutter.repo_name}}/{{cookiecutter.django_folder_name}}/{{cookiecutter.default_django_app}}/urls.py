@@ -20,22 +20,22 @@ urlpatterns = [
     path("", TemplateView.as_view(template_name="home.html"), name="home"),
     path("jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"),
     # - {% elif  cookiecutter.frontend_style == SPA %}
-    path("api/", include("{{cookiecutter.default_django_app}}.rest.urls")),
+    path("api/", include(f"{settings.DEFAULT_DJANGO_APP}.rest.urls")),
     # - {% endif %}
-    path("{{cookiecutter.django_admin_path}}/", admin.site.urls),
+    path(f"{settings.DJANGO_ADMIN_PATH}/", admin.site.urls),
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
     *static(settings.STATIC_URL, document_root=settings.STATIC_ROOT),
-    path("{{ cookiecutter.django_health_check_path }}", HealthCheckViewMinimal.as_view(), name="health-check"),
+    path(f"{settings.DJANGO_HEALTH_CHECK_PATH}", HealthCheckViewMinimal.as_view(), name="health-check"),
     path(
-        "{{ cookiecutter.django_health_check_path }}/details",
+        f"{settings.DJANGO_HEALTH_CHECK_PATH}/details",
         HealthCheckViewProtected.as_view(),
         name="health-check-details",
     ),
 ]
 
 if not settings.DEBUG:
-    handler500 = "{{cookiecutter.default_django_app}}.views.server_error"
-    handler404 = "{{cookiecutter.default_django_app}}.views.page_not_found"
+    handler500 = f"{settings.DEFAULT_DJANGO_APP}.views.server_error"
+    handler404 = f"{settings.DEFAULT_DJANGO_APP}.views.page_not_found"
 
 if settings.DEBUG:
     try:

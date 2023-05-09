@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 from django.test import Client
+from django.conf import settings
 
 import pytest
 
@@ -29,7 +30,7 @@ def test_404_view_unit(rf):
 
 
 def test_server_error(err_client):
-    with patch("{{ cookiecutter.default_django_app }}.views.last_event_id", return_value=40):
+    with patch(f"{ settings.DEFAULT_DJANGO_APP }.views.last_event_id", return_value=40):
         response = err_client.get("/test500")
 
         assert response.status_code == 500
@@ -45,7 +46,7 @@ def test_server_error_fallback_template(rf):
     assert response.content == b"<h1>Server Error (500)</h1>"
     assert response["Content-type"] == "text/html"
 
-    with patch("{{ cookiecutter.default_django_app }}.views.last_event_id", return_value=40):
+    with patch(f"{ settings.DEFAULT_DJANGO_APP }.views.last_event_id", return_value=40):
         response = server_error(request, "non-existing-template.html")
 
         assert response.status_code == 500
@@ -56,7 +57,7 @@ def test_server_error_fallback_template(rf):
 
 
 def test_server_error_json(err_client):
-    with patch("{{ cookiecutter.default_django_app }}.views.last_event_id", return_value=40):
+    with patch(f"{ settings.DEFAULT_DJANGO_APP }.views.last_event_id", return_value=40):
         response = err_client.get("/test500", HTTP_ACCEPT="application/json")
 
         assert response.status_code == 500

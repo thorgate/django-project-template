@@ -6,7 +6,7 @@ IS_UNITTEST = True
 SEND_EMAILS = False
 
 DATABASES["default"]["TEST"] = {
-    "NAME": "{{ cookiecutter.repo_name }}_test",
+    "NAME": f"{PROJECT_NAME}_test",
 }
 
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

@@ -13,7 +13,7 @@ class PrivateMediaStorage(S3Boto3Storage):
 # - {%- if cookiecutter.thorgate == YES %}
 
     You can do this by changing the `s3_media_bucket_is_public` variable
-    in Terraform to false in the file {{cookiecutter.repo_name}}/utils/terraform/variables.tf
+    in Terraform to false in the file utils/terraform/variables.tf
 # - {%- endif %}
     """
 

@@ -34,18 +34,22 @@ env = environs.Env()
 IS_DOCKER_BUILD = env.bool("DJANGO_DOCKER_BUILD", default=False)
 IS_UNITTEST = False
 
+# Constants from cookiecutter
 PROJECT_NAME = "{{ cookiecutter.repo_name }}"
-DEFAULT_DJANGO_APP = "{{cookiecutter.default_django_app}}"
-# Shown in error pages and some other places
+DEFAULT_DJANGO_APP = "{{ cookiecutter.default_django_app }}"
+DJANGO_ADMIN_PATH = "{{ cookiecutter.django_admin_path }}"
+DJANGO_HEALTH_CHECK_PATH = "{{ cookiecutter.django_health_check_path }}"
 PROJECT_TITLE = "{{ cookiecutter.project_title }}"
+ADMIN_EMAIL = "{{ cookiecutter.admin_email }}"
+LIVE_DOMAIN_NAME = "{{ cookiecutter.live_domain_name }}"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DJANGO_DEBUG", default=True)
 
-ADMINS = (("Admins", "{{ cookiecutter.admin_email }}"),)
+ADMINS = (("Admins", ADMIN_EMAIL),)
 MANAGERS = ADMINS
 EMAIL_SUBJECT_PREFIX = (
-    "[{{cookiecutter.project_title}}] "  # subject prefix for managers & admins
+    f"[{PROJECT_TITLE}] "  # subject prefix for managers & admins
 )
 
 SESSION_COOKIE_NAME = f"{PROJECT_NAME}_ssid"
@@ -144,14 +148,14 @@ DATABASES = {
             host=env.str("DJANGO_DATABASE_HOST", default="postgres"),
             port=env.int("DJANGO_DATABASE_PORT", default=5432),
             name=quote(
-                env.str("DJANGO_DATABASE_NAME", default="{{cookiecutter.repo_name}}")
+                env.str("DJANGO_DATABASE_NAME", default=PROJECT_NAME)
             ),
             user=quote(
-                env.str("DJANGO_DATABASE_USER", default="{{cookiecutter.repo_name}}")
+                env.str("DJANGO_DATABASE_USER", default=PROJECT_NAME)
             ),
             password=quote(
                 env.str(
-                    "DJANGO_DATABASE_PASSWORD", default="{{cookiecutter.repo_name}}"
+                    "DJANGO_DATABASE_PASSWORD", default=PROJECT_NAME
                 ),
             ),
             sslmode=env.str("DJANGO_DATABASE_SSLMODE", default="disable"),
@@ -173,11 +177,11 @@ REDIS_CELERY_URL = env.str("DJANGO_REDIS_CELERY_URL", default=REDIS_URL)
 CELERYBEAT_SCHEDULE = {
     "default-task": {
         # TODO: Remove the default task after confirming that Celery works.
-        "task": "{{cookiecutter.default_django_app}}.tasks.default_task",
+        "task": f"{DEFAULT_DJANGO_APP}.tasks.default_task",
         "schedule": 5 * 60,
     },
     "cleanup-old-sessions": {
-        "task": "{{cookiecutter.default_django_app}}.tasks.cleanup_old_sessions",
+        "task": f"{DEFAULT_DJANGO_APP}.tasks.cleanup_old_sessions",
         # TODO define the best time suitable for the cleanup.
         "schedule": crontab(minute=45, hour=2),
     },
@@ -319,8 +323,8 @@ CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 
 # Email config
-DEFAULT_FROM_EMAIL = f"{PROJECT_TITLE} <info@{{ cookiecutter.live_domain_name }}>"
-SERVER_EMAIL = f"{PROJECT_TITLE} server <server@{{ cookiecutter.live_domain_name }}>"
+DEFAULT_FROM_EMAIL = f"{PROJECT_TITLE} <info@{LIVE_DOMAIN_NAME}>"
+SERVER_EMAIL = f"{PROJECT_TITLE} server <server@{LIVE_DOMAIN_NAME}>"
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 

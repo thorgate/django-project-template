@@ -26,25 +26,23 @@ def patch_celery(mocker: MockerFixture):
 
 @pytest.mark.django_db
 def test_health_url(django_client: Client):
-    response = django_client.get("/{{ cookiecutter.django_health_check_path }}")
+    response = django_client.get(f"/{ settings.DJANGO_HEALTH_CHECK_PAT }")
     assert response.status_code == 200
     assert response.json() == {"error": False}
 
 
 @pytest.mark.django_db
 def test_health_detail_no_token(django_client: Client):
-    response = django_client.get("/{{ cookiecutter.django_health_check_path }}/details")
+    response = django_client.get(f"/{ settings.DJANGO_HEALTH_CHECK_PATH }/details")
     assert response.status_code == 403
 
-    response = django_client.get("/{{ cookiecutter.django_health_check_path }}/details?healthtoken=fake")
+    response = django_client.get(f"/{ settings.DJANGO_HEALTH_CHECK_PATH }/details?healthtoken=fake")
     assert response.status_code == 403
 
 
 @pytest.mark.django_db
 def test_health_detail(django_client: Client):
     response = django_client.get(
-        "/{{ cookiecutter.django_health_check_path }}/details?healthtoken={healthtoken}".format(
-            healthtoken=settings.HEALTH_CHECK_ACCESS_TOKEN,
-        )
+        f"/{ settings.DJANGO_HEALTH_CHECK_PATH }/details?healthtoken={settings.HEALTH_CHECK_ACCESS_TOKEN}"
     )
     assert response.status_code == 200
