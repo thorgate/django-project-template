@@ -1,100 +1,260 @@
 = CookieCutter variables reference
 :toc:
 
-project_title::
+== How to read the variables definition
+
+In link:cookiecutter.json[] we use define all the variables used in the project.
+
+[id=hidden_variables]
+If the value stars with `_`::
+it is not shown to the user.
+
+If the value is an array::
+It limits the the value to one of the values in the array. +
+The first value in the array is the default value.
+
+If the value is an just a string::
+It is the default value. and the user can change it to any input.
+
+[id=values_based_on_previous_values]
+== Values based on previous values
+
+Values in cookiecutter.json are rendered using jinja2 templates. This means that you can use previous values in the definition of the next one.
+
+For example:
+[source,json]
+----
+{
+    "project_title": "My Project",
+    "repo_name": "{{ cookiecutter.project_title | slugify }}",
+}
+----
+
+== Adding new variables
+
+When adding new variables to the project tempalte `cookiecutter.json` also add them to  `cookiecutter_variables_reference.adoc` file.
+
+Include them in a `tag::my_cool_variable[]` blocks, so you can include the variable in the docs. +
+Making the default value visible in teh documentation without having to update the docs manually.
+
+
+TIP: Don't be afraid to add new variables, even if you're using an existing variable in the project, just <<values_based_on_previous_values, define a new variable based on the same value>> with a <<hidden_variables, _ prefix>> and use it. This will allow future dev to re-define just that use much easier.
+
+[id=variables]
+== CookieCutter variables
+
+=== project_title
 
 Public title of the project. +
 This is used in docs, emails navbars, etc. Anywhere the project name is shown to the public this is used.
 
-repo_name::
+.definition
+[source,json]
+----
+{
+include::cookiecutter.json[tags=project_title]
+}
+----
+
+=== repo_name
+
+TIP: If you're using `repo_name` or `project_title` in a new place in the projects where you're using it as a string and have the ability to import django.conf.settings, import the value from there instead of using this variable, so the code is the same for all generated projects.
 
 Preferably lowercase codename, used for the directory structure and Python modules.
 
 Used as the root for a lot of things. Including folder names and the core project name on servers.
 
-Default value is `project_title` slugified.
+.definition
+[source,json]
+----
+{
+include::cookiecutter.json[tags=repo_name]
+}
+----
 
-thorgate::
+=== thorgate
 
 Are you from thorgate? Exclude common config present for Thorgate.
 
-Choice variable. Valid variables: `yes`, `no`. Defaults to `yes`.
+.definition
+[source,json]
+----
+{
+include::cookiecutter.json[tags=thorgate]
+}
+----
 
-live_domain_name::
+=== live_domain_name
 
 Production domain name of the site (e.g. example.com). NOTE: should be lowercase and valid FQDN.
 
-Defaults to `&quot;{{ cookiecutter.repo_name | as_hostname }}.com&quot;`.
+.definition
+[source,json]
+----
+{
+include::cookiecutter.json[tags=live_domain_name]
+}
+----
 
-test_host::
+
+=== test_host
 
 Hostname for test server. Used to generate the first ansible host.
 
-Defaults to `test.{{cookiecutter.live_domain_name}}` or `{{cookiecutter._tg_recommended_test_server}}` if `is_thorgate`
+.definition
+[source,json]
+----
+{
+include::cookiecutter.json[tags=test_host]
+}
+----
 
-admin_email::
+=== admin_email
 
 Project email. Used for any data requiring email, django admin and certbot expiration notifications.
 
-Defaults to `info@{{cookiecutter.live_domain_name}}` or `{{cookiecutter._tg_webmaster_email}}` if `is_thorgate`
+.definition
+[source,json]
+----
+{
+include::cookiecutter.json[tags=admin_email]
+}
+----
 
-include_celery::
+
+=== include_celery
 
 Include Celery with Redis as the broker.
 
-Choice variable. Valid variables: `yes`, `no`. Defaults to `no`.
+.definition
+[source,json]
+----
+{
+include::cookiecutter.json[tags=include_celery]
+}
+----
 
-docker_base_image::
+=== docker_base_image
 
 Base Docker images to use.
 
-Choice variable. Valid variables: `alpine`, `debian`. Defaults to `alpine`.
+.definition
+[source,json]
+----
+{
+include::cookiecutter.json[tags=docker_base_image]
+}
+----
 
-python_version::
+=== python_version
 
 Python version to use.
 
-node_version::
+.definition
+[source,json]
+----
+{
+include::cookiecutter.json[tags=python_version]
+}
+----
+
+=== node_version
 
 Node.js version to use.
 
-postgres_version::
+.definition
+[source,json]
+----
+{
+include::cookiecutter.json[tags=node_version]
+}
+----
+
+=== postgres_version
 
 Postgres version to use.
 
-django_admin_path::
+.definition
+[source,json]
+----
+{
+include::cookiecutter.json[tags=postgres_version]
+}
+----
+
+=== django_admin_path
+
 
 Django Admin panel URL path.
 *NOTE:* Should not start or end with `/`.
 
 Defaults to `adminpanel`.
 
-django_health_check_path::
+.definition
+[source,json]
+----
+{
+include::cookiecutter.json[tags=django_admin_path]
+}
+----
+
+=== django_health_check_path
 
 Django health check URL path.
 *NOTE:* Should not start or end with `/`.
 
 Defaults to `_health`.
 
-django_folder_name::
+.definition
+[source,json]
+----
+{
+include::cookiecutter.json[tags=django_health_check_path]
+}
+----
+
+=== django_folder_name
+
 
 Directory name for the Django codebase.
 
-Defaults to `{{ cookiecutter.repo_name }}`, other options are `backend` or `django`.
+.definition
+[source,json]
+----
+{
+include::cookiecutter.json[tags=django_folder_name]
+}
+----
 
-default_django_app::
+=== default_django_app
+
 
 Name of the core Django app for the project
 
-Defaults to `{{ cookiecutter.repo_name }}`, other options are `backend` or `core`.
+.definition
+[source,json]
+----
+{
+include::cookiecutter.json[tags=default_django_app]
+}
+----
 
-django_media_engine::
+=== django_media_engine
+
 
 Django remote media storage engine to use.
 
-Choice variable. Valid variables: `S3`, `GCS`. Defaults to `S3`.
+.definition
+[source,json]
+----
+{
+include::cookiecutter.json[tags=django_media_engine]
+}
+----
 
-gitlab_repo_url::
+=== gitlab_repo_url
+
+
 
 *[Optional]* Gitlab repo url in format: https://gitlab.com/your-group/project-name.
 
@@ -102,46 +262,93 @@ This is used for deriving the Gitlab repository url to use when deploying or the
 Docker registry url used for the project. Additionally the CI badges in the README file
 are created based on this value.
 
-Defaults to `git@gitlab.com/{% if cookiecutter.thorgate == 'yes' %}thorgate{% else %}your-group{% endif %}/{{cookiecutter.repo_name}}.git`.
-
 NOTE:  If this is not defined during the project creation/upgrade then one needs to manually update the
  repository variable inside `ansible/group_vars/all/vars.yml` file of the resulting project to the correct
  git repository url (SSH). Additionally, when `build_in_ci` is set to `yes` then the image urls in `environemnt`
  file need to be updated to correct values too.
 
-frontend_style::
+WARNING: If you're using a nested group, then you should use the git@ format for the repo url. see link:https://gitlab.com/thorgate-public/django-project-template/-/blob/master/tests/test_filters.py#L86-L101[this test case].
+
+.definition
+[source,json]
+----
+{
+include::cookiecutter.json[tags=gitlab_repo_url]
+}
+----
+
+=== frontend_style
 
 Set the type of frontend to use.
 
-Choice variable. Valid variables: `webapp`, `spa`. Defaults to `webapp`.
+.definition
+[source,json]
+----
+{
+include::cookiecutter.json[tags=frontend_style]
+}
+----
 
-webapp_include_storybook::
+
+=== webapp_include_storybook
 
 Webapp only: Include storybook configuration?
 
-Choice variable. Valid variables: `yes`, `no`. Defaults to `no`.
+.definition
+[source,json]
+----
+{
+include::cookiecutter.json[tags=webapp_include_storybook]
+}
+----
 
-use_mypy::
+=== use_mypy
 
 Use MyPy static types checker?
 
-Choice variable. Valid variables: `yes`, `no`. Defaults to `no`.
+.definition
+[source,json]
+----
+{
+include::cookiecutter.json[tags=use_mypy]
+}
+----
 
-use_cypress::
+=== use_cypress
 
 Use Cypress autotests?
 
-Choice variable. Valid variables: `yes`, `no`. Defaults to `no`.
+.definition
+[source,json]
+----
+{
+include::cookiecutter.json[tags=use_cypress]
+}
+----
 
-build_in_ci::
+=== build_in_ci
+
+.definition
 
 Do you want to build docker images in CI for deployment?
-*NOTE:* Requires a docker registry.
 
-Choice variable. Valid variables: `yes`, `no`. Defaults to `no`.
+NOTE: Requires a docker registry.
 
-use_auto_deploy::
+[source,json]
+----
+{
+include::cookiecutter.json[tags=build_in_ci]
+}
+----
+
+=== use_auto_deploy
 
 Do you want to use automatic deployments?
 
-Choice variable. Valid variables: `yes`, `no`. Defaults to `no`.
+.definition
+[source,json]
+----
+{
+include::cookiecutter.json[tags=use_auto_deploy]
+}
+----
