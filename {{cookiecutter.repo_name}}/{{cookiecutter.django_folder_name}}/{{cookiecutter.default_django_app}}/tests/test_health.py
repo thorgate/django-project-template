@@ -26,7 +26,7 @@ def patch_celery(mocker: MockerFixture):
 
 @pytest.mark.django_db
 def test_health_url(django_client: Client):
-    response = django_client.get(f"/{ settings.DJANGO_HEALTH_CHECK_PAT }")
+    response = django_client.get(f"/{ settings.DJANGO_HEALTH_CHECK_PATH }")
     assert response.status_code == 200
     assert response.json() == {"error": False}
 
