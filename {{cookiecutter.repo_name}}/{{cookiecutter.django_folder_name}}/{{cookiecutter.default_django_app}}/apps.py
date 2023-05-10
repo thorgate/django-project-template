@@ -1,6 +1,7 @@
 from django.apps import AppConfig
-from django.core import checks
 from django.conf import settings
+from django.core import checks
+
 from tg_utils.checks import check_production_settings, check_sentry_config
 
 

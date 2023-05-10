@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
-from django.test import Client
 from django.conf import settings
+from django.test import Client
 
 import pytest
 
