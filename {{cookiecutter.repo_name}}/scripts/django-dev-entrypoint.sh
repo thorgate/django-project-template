@@ -53,7 +53,7 @@ done
 if [[ "${DPT_VENV_CACHING}" -eq "1"  ]] && [[ -z $SKIP_INSTALL ]]; then
     # Install dependencies
     echo "Installing dependencies and then running original command"
-    poetry install
+    poetry install --no-ansi
 fi
 
 if [[ "${DPT_VENV_CACHING}" -eq "1" ]]; then

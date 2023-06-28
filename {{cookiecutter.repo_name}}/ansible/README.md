@@ -268,7 +268,8 @@ All the environment variables necessary on the server are located in the
 in the project root. Variables in this file can be
 (and some should be) populated from Ansible variables, including vault variables. 
 
-All docker containers and `docker compose` itself use environment variables from the `.env` file. 
+All docker containers and `docker compose` (compose v1) or `docker-compose` (compose v2) itself use environment
+variables from the `.env` file. 
 
 There is a special ansible target (tag) to update the `.env` file on the server: `env`, e.g.
 ```shell
