@@ -112,6 +112,17 @@ Set the type of frontend to use.
 
 Choice variable. Valid variables: `webapp`, `spa`. Defaults to `webapp`.
 
+## `x_frame_options`
+
+**NOTE:**  This variable affects Content Security Policy (CSP) (https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
+settings.
+
+Set X-Frame-Options header for nginx config.
+
+Choice variable. Valid variables: `DENY`, `SAMEORIGIN`. Defaults to `DENY`.
+
+You should choose `SAMEORIGIN` when you want to display current page in a frame on another page, but only within the 
+current domain.
 
 ## `webapp_include_storybook`
 

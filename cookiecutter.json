@@ -20,6 +20,7 @@
     "django_media_engine": ["S3", "GCS"],
     "gitlab_repo_url": "",
     "frontend_style": ["webapp", "spa"],
+    "x_frame_options": ["DENY", "SAMEORIGIN"],
     "webapp_include_storybook": ["no", "yes"],
     "spa_django_host_prefix": "office",
     "use_mypy": ["no", "yes"],
