@@ -1,7 +1,7 @@
 
 - name: "Run manage.py {{ "{{ command_params | mandatory }}" }}"
   command: >-
-            {{ compose_command }}
+            {{ "{{ compose_command }}" }}
 # - {% if cookiecutter.build_in_ci == NO %}
             -f {{ "{{ compose_file "}} }}
 # - {% endif %}

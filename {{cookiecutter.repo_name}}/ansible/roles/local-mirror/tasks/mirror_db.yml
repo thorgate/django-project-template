@@ -1,6 +1,6 @@
 {%- raw -%}
 - name: "Figure out the local postgres data directory"
-  shell: "{{ compose_command }} config | yq -r '.services.postgres.volumes[]' | grep '/var/lib/postgresql/data' | cut -d: -f1"
+  shell: "{{ "{{ compose_command }}" }} config | yq -r '.services.postgres.volumes[]' | grep '/var/lib/postgresql/data' | cut -d: -f1"
   delegate_to: localhost
   vars:
     ansible_become: no
@@ -8,7 +8,7 @@
 
 
 - name: "Figure out the local postgres mirror directory"
-  shell: "{{ compose_command }} config | yq -r '.services.postgres.volumes[]' | grep 'db-mirror' | cut -d: -f1"
+  shell: "{{ "{{ compose_command }}" }} config | yq -r '.services.postgres.volumes[]' | grep 'db-mirror' | cut -d: -f1"
   delegate_to: localhost
   vars:
     ansible_become: no
@@ -21,7 +21,7 @@
 
 
 - name: "Ensure local site is turned off"
-  shell: "{{ compose_command }} down"
+  shell: "{{ "{{ compose_command }}" }} down"
   delegate_to: localhost
   vars:
     ansible_become: no
@@ -61,7 +61,7 @@
 
 
 - name: "Turn postgres on again"
-  shell: "{{ compose_command }} up -d --build postgres"
+  shell: "{{ "{{ compose_command }}" }} up -d --build postgres"
   delegate_to: localhost
   vars:
     ansible_become: no
@@ -80,7 +80,7 @@
 
 - name: "Load the dump file locally"
   shell: >
-    {{ compose_command }} exec -T postgres pg_restore --user {{ project }} -d {{ project }} \
+    {{ "{{ compose_command }}" }} exec -T postgres pg_restore --user {{ project }} -d {{ project }} \
       /db-mirror/mirror-db-dump.pg_dump
   delegate_to: localhost
   vars:
@@ -97,7 +97,7 @@
 
 
 - name: "Turn everything off again"
-  shell: "{{ compose_command }} down"
+  shell: "{{ "{{ compose_command }}" }} down"
   delegate_to: localhost
   vars:
     ansible_become: no
