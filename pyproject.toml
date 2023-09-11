@@ -25,7 +25,7 @@ git-url-parse = "==1.2.*"
 
 [tool.poetry.dev-dependencies]
 black = "==22.3.0"
-pyyaml = "*"
+pyyaml = "^6"
 pytest = "==7.*"
 pytest-env = "*"
 pytest-cookies = "==0.6.1"
