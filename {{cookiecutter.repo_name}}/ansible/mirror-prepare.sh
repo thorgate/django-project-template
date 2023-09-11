@@ -29,7 +29,6 @@ checkDirectory() {
 }
 
 echo "Turning off the site"
-# set to `docker compose` if you are using compose v2
 if docker compose version >/dev/null 2>/dev/null; then
   compose_command="docker compose"
 else
