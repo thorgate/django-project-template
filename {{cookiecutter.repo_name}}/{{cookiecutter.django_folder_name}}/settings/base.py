@@ -38,6 +38,12 @@ IS_UNITTEST = False
 PROJECT_NAME = "{{ cookiecutter.repo_name }}"
 DEFAULT_DJANGO_APP = "{{ cookiecutter.default_django_app }}"
 DJANGO_ADMIN_PATH = "{{ cookiecutter.django_admin_path }}"
+# - {%- if cookiecutter.include_wagtail == YES %}
+
+WAGTAIL_SITE_NAME = PROJECT_NAME
+WAGTAIL_ADMIN_PATH = "{{ cookiecutter.wagtail_admin_path }}"
+# - {%- endif %}
+
 DJANGO_HEALTH_CHECK_PATH = "{{ cookiecutter.django_health_check_path }}"
 PROJECT_TITLE = "{{ cookiecutter.project_title }}"
 ADMIN_EMAIL = "{{ cookiecutter.admin_email }}"
@@ -75,7 +81,7 @@ INSTALLED_APPS = [
     "django_reverse_js",
     "webpack_loader",
     "crispy_forms",
-    # - {%- else %}
+    # - {%- elif cookiecutter.frontend_style == SPA %}
     "rest_framework",
     "django_filters",
     "tg_react",
@@ -89,6 +95,23 @@ INSTALLED_APPS = [
     "health_check.contrib.celery",
     "tg_utils.health_check.checks.celery_beat",
     # - {%- endif %}
+    # - {%- if cookiecutter.include_wagtail == YES %}
+    # Wagtail apps
+    "wagtail.contrib.forms",
+    "wagtail.contrib.redirects",
+    "wagtail.embeds",
+    "wagtail.sites",
+    "wagtail.users",
+    "wagtail.snippets",
+    "wagtail.documents",
+    "wagtail.images",
+    "wagtail.search",
+    "wagtail.admin",
+    "wagtail",
+    "modelcluster",
+    "taggit",
+    # - {%- endif %}
+
     # Django apps
     "django.contrib.admin",
     "django.contrib.auth",
@@ -114,6 +137,10 @@ MIDDLEWARE = [
     # - {%- if cookiecutter.x_frame_options == "DENY" %}
     "csp.middleware.CSPMiddleware",
     # - {%- endif %}
+    # - {%- if cookiecutter.include_wagtail == YES %}
+    "wagtail.contrib.redirects.middleware.RedirectMiddleware",
+    # - {%- endif %}
+
 ]
 
 # - {%- if cookiecutter.x_frame_options == "DENY" %}

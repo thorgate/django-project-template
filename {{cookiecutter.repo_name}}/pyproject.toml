@@ -57,6 +57,10 @@ tg-react = "==3.*"
 # - {% endif %}
 tg-utils = {version = "^1.0.1 ", extras = ["model-hash", "health_check"]}
 
+# - {% if cookiecutter.include_wagtail == YES %}
+wagtail = "^5.1.1"
+# - {% endif %}
+
 [tool.poetry.dev-dependencies]
 black = "==22.12.0"
 django-debug-toolbar = "^4.2"

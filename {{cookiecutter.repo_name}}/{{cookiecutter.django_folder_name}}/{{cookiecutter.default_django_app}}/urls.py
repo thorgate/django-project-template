@@ -17,7 +17,6 @@ admin.autodiscover()
 urlpatterns = [
     # - {%- if cookiecutter.frontend_style == WEBAPP %}
     path("", include("accounts.urls")),
-    path("", TemplateView.as_view(template_name="home.html"), name="home"),
     path("jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"),
     # - {% elif  cookiecutter.frontend_style == SPA %}
     path("api/", include(f"{settings.DEFAULT_DJANGO_APP}.rest.urls")),
@@ -31,6 +30,13 @@ urlpatterns = [
         HealthCheckViewProtected.as_view(),
         name="health-check-details",
     ),
+    # - {%- if cookiecutter.include_wagtail == YES %}
+    path(f"{settings.WAGTAIL_ADMIN_PATH}/", include("wagtail.admin.urls")),
+    path("documents/", include("wagtail.documents.urls")),
+    path("", include("wagtail.urls")),
+    # - {% else  %}
+    path("", TemplateView.as_view(template_name="home.html"), name="home"),
+    # - {% endif %}
 ]
 
 if not settings.DEBUG:
@@ -41,7 +47,7 @@ if settings.DEBUG:
     try:
         import debug_toolbar
 
-        urlpatterns += [path("__debug__/", include(debug_toolbar.urls))]
+        urlpatterns.insert(1, path("__debug__/", include(debug_toolbar.urls)))
     except ImportError:
         pass
 
@@ -54,9 +60,10 @@ if settings.IS_UNITTEST:  # pragma: no branch
         """
         raise Exception("Example error")
 
-    urlpatterns += [
+    urlpatterns.insert(
+        1,
         path("test500", failing_view),
-    ]
+    )
 
 # - {%- if cookiecutter.frontend_style == SPA %}
 

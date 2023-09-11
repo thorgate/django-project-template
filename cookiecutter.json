@@ -30,6 +30,10 @@
     "include_celery": ["no", "yes"],
     "_ end::include_celery[] ": "",
 
+    "_ tag::include_wagtail[] ":"",
+    "include_wagtail": ["no", "yes"],
+    "_ end::include_wagtail[] ": "",
+
     "_ tag::django_folder_name[] ":"",
     "django_folder_name": ["{{ cookiecutter.repo_name }}","backend", "django"],
     "_ end::django_folder_name[] ": "",
@@ -69,6 +73,10 @@
     "_ tag::django_admin_path[] ":"",
     "django_admin_path": "adminpanel",
     "_ end::django_admin_path[] ": "",
+
+    "_ tag::wagtail_admin_path[] ":"",
+    "wagtail_admin_path": "wagtail_admin",
+    "_ end::wagtail_admin_path[] ": "",
 
     "_ tag::django_health_check_path[] ":"",
     "django_health_check_path": "_health",

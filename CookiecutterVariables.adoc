@@ -141,6 +141,20 @@ include::cookiecutter.json[tags=include_celery]
 }
 ----
 
+[id=include_wagtail]
+=== include_wagtail
+
+Include wagtail, using the latest version.
+
+.definition
+[source,json]
+----
+{
+include::cookiecutter.json[tags=include_wagtail]
+}
+----
+
+
 [id=docker_base_image]
 === docker_base_image
 
