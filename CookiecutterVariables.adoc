@@ -3,18 +3,18 @@
 
 == How to read the variables definition
 
-In link:cookiecutter.json[] we use define all the variables used in the project.
+In link:cookiecutter.json[] we define all the variables used in the project.
 
 [id=hidden_variables]
-If the value stars with `_`::
+If the value starts with `_`::
 it is not shown to the user.
 
 If the value is an array::
-It limits the the value to one of the values in the array. +
-The first value in the array is the default value.
+It limits the the value to one of the choices in the array. +
+The first item in the array is used as the default choice.
 
-If the value is an just a string::
-It is the default value. and the user can change it to any input.
+If the value is just a string::
+It is the default value. The user can change it to any input.
 
 [id=values_based_on_previous_values]
 == Values based on previous values
@@ -32,13 +32,13 @@ For example:
 
 == Adding new variables
 
-When adding new variables to the project tempalte `cookiecutter.json` also add them to  `cookiecutter_variables_reference.adoc` file.
+When adding new variables to the project template `cookiecutter.json` make sure to also add them to  `CookiecutterVariables.adoc` file.
 
-Include them in a `tag::my_cool_variable[]` blocks, so you can include the variable in the docs. +
-Making the default value visible in teh documentation without having to update the docs manually.
+Wrap them in a `_ tag::my_cool_variable[]` blocks, so you can automatically include the variable definition in the reference documentation. +
+This allows to show the default value thh documentation without having to hard-code it there.
 
 
-TIP: Don't be afraid to add new variables, even if you're using an existing variable in the project, just <<values_based_on_previous_values, define a new variable based on the same value>> with a <<hidden_variables, _ prefix>> and use it. This will allow future dev to re-define just that use much easier.
+TIP: Don't be afraid to add new variables, even if you're using an existing variable in the project, just <<values_based_on_previous_values, define a new variable based on the same value>> with a <<hidden_variables, _ prefix>> and use it. This will allow future developers to extend the logic based on that value that use much easier.
 
 [id=variables]
 == CookieCutter variables

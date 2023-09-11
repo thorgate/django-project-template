@@ -12,12 +12,11 @@ Note: Try to add categories to changes and link to MRs/Issues
 
 ## Development
  
-**Breaking:** Rename CookieCutter variable `domain_name` to `live_domain_name`. You must manually update this 
-variable in your project's cookiecutter rc file. 
+**Breaking:** CookieCutter variable `domain_name` has been renamed to `live_domain_name` for extra clarity. Before updating your project to this template version you need to manually change `domain_name` to `live_domain_name` in the `.cookiecutterrc` file inside your project.
 
-- [ENH] Allow changing of email settings to be done via vars.yml or env
+- [ENH] Modify password reset emails and ensure dynamic parts (like the project name) are loaded from template variables. This makes them easier to maintain and allows for easier re-use of code between generated projects. 
 - [Changed] Live domain name is now validated to be a valid domain name (FQDN) even when it contains todo. Previously we skipped domain name validation in that case.
-- [ENH] Modify password reset emails so they're easier to maintain and are not different between generated projects. 
+- [ENH] Allow changing of email settings to be done via vars.yml or env
 - [ENH] Have vault template be close to a live vault file
 - [ENH] Updated ansible docs and converted to a-doc 
 - [ENH] Add new variables to make project re-use eaiser and less code differences between generated projects. 
