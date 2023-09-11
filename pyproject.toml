@@ -10,7 +10,7 @@ repository = "https://gitlab.com/thorgate-public/django-project-template"
 [[tool.poetry.source]]
 name = "the_pypi"
 url = "https://pypi.org/simple"
-default = true
+priority = "primary"
 
 [tool.poetry.dependencies]
 python = "^3.7.0"
