@@ -1,4 +1,4 @@
-# Docker-compose configuration for production
+# Docker compose configuration for production
 
 version: '3.8'
 

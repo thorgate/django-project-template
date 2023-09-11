@@ -1,6 +1,6 @@
-# In CI, we don't have a TTY so need to pass the -T option to docker-compose exec.
+# In CI, we don't have a TTY so need to pass the -T option to docker compose exec.
 NOTTY := $(shell test -n "${GITLAB_CI}" && echo -n '-T')
-DC_CMD := docker-compose -f docker-compose.yml -f docker-compose.cypress.yml --env-file .env.cypress
+DC_CMD := docker compose -f docker-compose.yml -f docker-compose.cypress.yml --env-file .env.cypress
 CYPRESS_DEFAULT_COMMAND_TIMEOUT := 10000
 
 .PHONY:

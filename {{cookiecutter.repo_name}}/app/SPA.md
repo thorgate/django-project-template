@@ -4,7 +4,7 @@
 - In development SPA is running on port `8000` (mapped to `8000`) by default.
     - Webpack dev server is running on `8001`, assets are loaded from there
     - This can be changed by creating `.env.development.local` and adding `PORT=4000` (assets server is then `4001`),
-      don't forget to change docker-compose mappings as well
+      don't forget to change docker compose mappings as well
 - Running behind different host name: Add `SESSION_COOKIE_DOMAIN = 'THE_DOMAIN'` to local django env file
 
 

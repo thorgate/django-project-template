@@ -29,10 +29,14 @@ checkDirectory() {
 }
 
 echo "Turning off the site"
-docker-compose down
+if docker compose version >/dev/null 2>/dev/null; then
+  compose_command="docker compose"
+else
+  compose_command="docker-compose"
+fi
 
 echo "Detecting media dir"
-media_dir=`docker-compose config | yq -r '.services.django.volumes[]' | grep '/files/media' | cut -d: -f1`
+media_dir=`${compose_command} config | yq -r '.services.django.volumes[]' | grep '/files/media' | cut -d: -f1`
 checkDirectory $media_dir
 
 data_dir=`dirname ${media_dir}`
@@ -46,7 +50,7 @@ echo "Changing media dir ownership to ${USER}"
 sudo chown -R ${USER}: ${media_dir}
 
 echo "Detecting postgres data dir"
-postgres_dir=`docker-compose config | yq -r '.services.postgres.volumes[]' | grep '/var/lib/postgresql/data' | cut -d: -f1`
+postgres_dir=`${compose_command} config | yq -r '.services.postgres.volumes[]' | grep '/var/lib/postgresql/data' | cut -d: -f1`
 checkDirectory $postgres_dir
 echo "Postgres dir is ${postgres_dir}"
 
@@ -54,7 +58,7 @@ echo "Changing postgres dir ownership to ${USER}"
 sudo chown -R ${USER}: ${postgres_dir}
 
 echo "Detecting postgres mirror dir"
-postgres_dir=`docker-compose config | yq -r '.services.postgres.volumes[]' | grep 'db-mirror' | cut -d: -f1`
+postgres_dir=`${compose_command} config | yq -r '.services.postgres.volumes[]' | grep 'db-mirror' | cut -d: -f1`
 checkDirectory $postgres_dir
 echo "Postgres mirror dir is ${postgres_dir}"
 

@@ -1,4 +1,4 @@
-# Docker-compose configuration for development
+# Docker compose configuration for development
 
 version: '3.8'
 

@@ -83,12 +83,12 @@ def validate_project_works(result, config):
         # teardown
         try:
             subprocess.run(
-                ['docker-compose', 'down'],
+                ['docker compose', 'down'],
                 cwd=project_dir,
                 env=env,
             )
         except:
-            print("Failed to call docker-compose down")
+            print("Failed to call docker compose down")
 
 
 @pytest.mark.parametrize('docker_base_image', [ALPINE, DEBIAN])

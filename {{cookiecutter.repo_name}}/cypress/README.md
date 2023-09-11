@@ -56,18 +56,18 @@ Depending on the tests, it might be necessary to run cleanup between them - use 
 
 ## Notes
 
-* The `docker-compose.cypress.yml` file is meant to run together with the `.env.cypress` env file, so docker-compose
+* The `docker-compose.cypress.yml` file is meant to run together with the `.env.cypress` env file, so docker compose
   **must** be run with the `--env-file .env.cypress` argument, despite `env_file` options in the yaml. 
   Otherwise, it would use `.env` to build the containers
   and then some env variables would be somehow taken from `.env` or be absent altogether.
   Also, we can not reuse env variables (i.e. set values in the `environment` section based on the variables in `.env*`)
-  because docker-compose doesn't substitute the values from `.env*` into the `environment` section - 
+  because docker compose doesn't substitute the values from `.env*` into the `environment` section - 
   issuing warnings like 
 ```
 WARNING: The POSTGRES_DB variable is not set. Defaulting to a blank string.
 ```
   even though `POSTGRES_DB` is set in the `.env.cypress`.
-  It appears to be a feature of docker-compose.   
+  It appears to be a feature of docker compose.   
 * To simplify the environment preparation and ensure reproducibility,
   we do not mount the postgres data directory, so the database is fresh after each recreation of the postgres
   container, and the current development database is never affected. To populate the database with data, 
