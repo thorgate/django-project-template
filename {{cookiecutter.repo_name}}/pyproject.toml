@@ -26,7 +26,7 @@ django-redis = "==5.2.*"
 # - {%- if cookiecutter.django_media_engine == GCS %}
 django-storages = { version = "==1.*", extras = ["google"] }
 # - {% elif cookiecutter.django_media_engine == S3 %}
-boto3 = "==1.*"
+boto3 = "^1.9.201"
 django-storages = { version = "==1.*" }
 # - {%- endif %}
 gunicorn = "==20.*"
