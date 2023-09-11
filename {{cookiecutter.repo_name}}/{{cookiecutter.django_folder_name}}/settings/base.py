@@ -41,7 +41,7 @@ DJANGO_ADMIN_PATH = "{{ cookiecutter.django_admin_path }}"
 DJANGO_HEALTH_CHECK_PATH = "{{ cookiecutter.django_health_check_path }}"
 PROJECT_TITLE = "{{ cookiecutter.project_title }}"
 ADMIN_EMAIL = "{{ cookiecutter.admin_email }}"
-LIVE_DOMAIN_NAME = "{{ cookiecutter.live_domain_name }}"
+EMAIL_DOMAIN = "{{ cookiecutter.live_domain_name }}"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DJANGO_DEBUG", default=True)
@@ -323,8 +323,8 @@ CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 
 # Email config
-DEFAULT_FROM_EMAIL = f"{PROJECT_TITLE} <info@{LIVE_DOMAIN_NAME}>"
-SERVER_EMAIL = f"{PROJECT_TITLE} server <server@{LIVE_DOMAIN_NAME}>"
+DEFAULT_FROM_EMAIL = env.str("DJANGO_DEFAULT_FROM_EMAIL", default=f"{PROJECT_TITLE} <info@{EMAIL_DOMAIN}>")
+SERVER_EMAIL = env.str("DJANGO_SERVER_EMAIL", default=f"{PROJECT_TITLE} server <server@{EMAIL_DOMAIN}>")
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 

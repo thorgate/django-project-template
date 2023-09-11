@@ -6,6 +6,10 @@ node_site_host: "{{ cookiecutter.live_domain_name }}"
 django_site_host: "{{ cookiecutter.live_domain_name }}"
 # - {%- endif %}
 
+# Email settings
+django_default_from_email: ""
+django_server_email: ""
+
 # Sentry config
 django_sentry_environment: "todo"
 django_sentry_dsn: ""  # TODO: Set to correct value or remove the TODO

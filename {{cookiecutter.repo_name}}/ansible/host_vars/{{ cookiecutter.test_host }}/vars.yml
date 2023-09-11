@@ -8,6 +8,10 @@ node_site_host: "{{ BASE_HOSTNAME }}"
 django_site_host: "{{ BASE_HOSTNAME }}"
 # - {%- endif %}
 
+# Email settings
+django_default_from_email: ""
+django_server_email: ""
+
 # Sentry config
 django_sentry_environment: "test"
 django_sentry_dsn: ""  # TODO: Set to correct value or remove the TODO

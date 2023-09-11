@@ -51,6 +51,8 @@ DJANGO_SECRET_KEY={{ "{{ django_secret_key }}" }}
 DJANGO_SENTRY_ENVIRONMENT={{ "{{ django_sentry_environment }}" }}
 DJANGO_SENTRY_DSN={{ "{{ django_sentry_dsn }}" }}
 
+DJANGO_DEFAULT_FROM_EMAIL={{ "{{ django_default_from_email }}" }}
+DJANGO_SERVER_EMAIL={{ "{{ django_server_email }}" }}
 DJANGO_EMAIL_HOST_PASSWORD={{ "{{ django_email_host_password }}" }}
 
 {% if cookiecutter.django_media_engine == GCS -%}
