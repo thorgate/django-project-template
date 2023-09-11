@@ -17,17 +17,19 @@ python = "^3.7.0"
 
 cookiecutter = "==1.7.*"
 cookiecutter_repo_extensions = "==0.2.*"
-docker = "==5.*"
+docker = "^5.0.3"
 fqdn = "==1.*"
 stringcase = "==1.2.*"
+# It s dep for ansible-vault, but adding it here, makes locking a lot faster
+ansible = "^4.10.0"
 ansible-vault = "^2.1.0"
 git-url-parse = "==1.2.*"
 
 [tool.poetry.dev-dependencies]
 black = "==22.3.0"
-pyyaml = "*"
-pytest = "==7.*"
-pytest-env = "*"
+pyyaml = "^6"
+pytest = "^7"
+pytest-env = "^0.8.1"
 pytest-cookies = "==0.6.1"
 
 [build-system]

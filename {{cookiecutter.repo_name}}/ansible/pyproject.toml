@@ -14,7 +14,7 @@ yq = "^2.14.0"
 jq = "^1.2.2"
 
 [tool.poetry.dev-dependencies]
-PyYAML = "^5.4"
+pyyaml = "^6"
 
 [build-system]
 requires = ["poetry>=1.0"]
