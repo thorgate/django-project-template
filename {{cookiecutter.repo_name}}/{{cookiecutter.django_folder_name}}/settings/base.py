@@ -108,12 +108,32 @@ MIDDLEWARE = [
     "django.middleware.locale.LocaleMiddleware",
     # - {%- endif %}
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # - {%- if cookiecutter.x_frame_options == "DENY" %}
+    "csp.middleware.CSPMiddleware",
+    # - {%- endif %}
 ]
 
+# - {%- if cookiecutter.x_frame_options == "DENY" %}
+CSP_INCLUDE_NONCE_IN = (
+    "script-src",
+    "style-src",
+)
+CSP_BASE_URI = ("'self'",)
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_CONNECT_SRC = ("'self'",)
+CSP_FONT_SRC = ("'self'",)
+CSP_IMG_SRC = ("'self'", "data:",)
+CSP_SCRIPT_SRC = ("'self'",)
+CSP_STYLE_SRC = ("'self'",)
+CSP_FORM_ACTION = ("'self'",)
+CSP_FRAME_ANCESTORS = ("'self'",)
+CSP_OBJECT_SRC = ("'none'",)
+CSP_FRAME_SRC = ("'none'",)
+CSP_WORKER_SRC = ("'none'",)
+# - {%- endif %}
 
 TEMPLATES = [
     {
@@ -300,7 +320,7 @@ CORS_ORIGIN_WHITELIST = [
 # - {%- endif %}
 
 # Don't allow site's content to be included in frames/iframes.
-X_FRAME_OPTIONS = "DENY"
+X_FRAME_OPTIONS = "{{ cookiecutter.x_frame_options }}"
 
 
 ROOT_URLCONF = f"{DEFAULT_DJANGO_APP}.urls"

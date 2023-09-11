@@ -86,6 +86,8 @@
     "frontend_style": ["webapp", "spa"],
     "_ end::frontend_style[] ": "",
 
+    "x_frame_options": ["DENY", "SAMEORIGIN"],
+    
     "_ tag::webapp_include_storybook[] ":"",
     "webapp_include_storybook": ["no", "yes"],
     "_ end::webapp_include_storybook[] ": "",

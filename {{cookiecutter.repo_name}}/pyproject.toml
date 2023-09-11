@@ -11,7 +11,7 @@ repository = "{{ cookiecutter.gitlab_repo_url }}"
 [[tool.poetry.source]]
 name = "the_pypi"
 url = "https://pypi.org/simple"
-default = true
+priority = "default"
 
 [tool.poetry.dependencies]
 python = "^{{ cookiecutter.python_version }}"
@@ -20,6 +20,9 @@ python = "^{{ cookiecutter.python_version }}"
 celery = {version = "==5.2.*", extras = ["redis"]}
 # - {% endif %}
 Django = "==4.0.*"
+# - {%- if cookiecutter.x_frame_options == "DENY" %}
+django-csp = "^3.7"
+# - {% endif %}
 environs = "*"
 dj-database-url = "*"
 django-redis = "==5.2.*"
