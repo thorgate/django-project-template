@@ -313,9 +313,9 @@ def test_invalid_test_hostname_is_error(cookies, default_project):
     assert isinstance(result.exception, FailedHookException)
 
 
-def test_invalid_domain_name_is_error(cookies, default_project):
+def test_invalid_live_domain_name_is_error(cookies, default_project):
     default_project.update({
-        'domain_name': '-foo.com',
+        'live_domain_name': '-foo.com',
     })
 
     result = cookies.bake(extra_context=default_project)

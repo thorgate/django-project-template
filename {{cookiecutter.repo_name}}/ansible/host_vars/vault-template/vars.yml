@@ -1,10 +1,14 @@
 # Hostnames for the site
 # - {%- if cookiecutter.frontend_style == SPA %}
-django_site_host: "{{ cookiecutter.spa_django_host_prefix | as_hostname }}.todo.example.com"
-node_site_host: "todo.example.com"
+django_site_host: "{{ cookiecutter.spa_django_host_prefix | as_hostname }}.{{ cookiecutter.live_domain_name }}"
+node_site_host: "{{ cookiecutter.live_domain_name }}"
 # - {%- else %}
-django_site_host: "todo.example.com"
+django_site_host: "{{ cookiecutter.live_domain_name }}"
 # - {%- endif %}
+
+# Email settings
+django_default_from_email: ""
+django_server_email: ""
 
 # Sentry config
 django_sentry_environment: "todo"
@@ -18,11 +22,11 @@ razzle_sentry_dsn: ""  # TODO: Set to correct value or remove the TODO
 django_health_check_access_token: "TODO"
 
 # - {% if cookiecutter.django_media_engine == GCS %}
-django_gs_bucket_name: "TODO-ENV"
-django_gs_project_id: "TODO-ENV"
+django_gs_bucket_name: "{{ cookiecutter.repo_name }}-production"
+django_gs_project_id: "TODO"
 # - {%- endif %}{% if cookiecutter.django_media_engine == S3 %}
 # S3 bucket name to use
-django_aws_storage_bucket_name: "TODO-ENV"
+django_aws_storage_bucket_name: "{{ cookiecutter.repo_name }}-production"
 # - {%- endif %}
 
 # Which compose file to use in the server
@@ -33,9 +37,9 @@ compose_file: "docker-compose.production.yml"
 deployment_version: "master"
 
 # Reminder email for letsencrypt certificates
-letsencrypt_reminder_email: "todo@example.com"
+letsencrypt_reminder_email: "{{ cookiecutter.admin_email }}"
 
 # Allow/Block indexing via `X-Robots-Tag` header
 #
 # Set to true in test servers
-disable_indexing: true
+disable_indexing: false

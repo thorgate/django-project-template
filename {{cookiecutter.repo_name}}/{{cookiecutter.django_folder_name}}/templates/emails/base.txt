@@ -1,0 +1,6 @@
+{% raw %}{% load i18n %}{% block greeting %}{% trans "Hi there," %}
+
+{% block content %}{% endblock content %}
+
+{{project_title}}
+{% endraw %}

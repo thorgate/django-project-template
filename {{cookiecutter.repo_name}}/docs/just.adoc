@@ -1,0 +1,41 @@
+=== Install Just
+
+:just-url: https://github.com/casey/just
+:local-dev-url: https://thorgate.gitlab.io/wagtail-stack/wagtail-stack-docs/wagtail-stack-docs/0.1.0/development/local-development.html
+:rust-url: https://www.rust-lang.org/
+:just-install-url: https://github.com/casey/just#installation
+
+
+
+////
+// NOTE: This file is to be included in the main README.adoc file when it gets converted, but this is a handy reference for now.
+////
+
+
+== Overview
+:just-url: https://github.com/casey/just
+:local-dev-url: https://thorgate.gitlab.io/wagtail-stack/wagtail-stack-docs/wagtail-stack-docs/0.1.0/development/local-development.html
+
+For best developer experience this project adopts `Makefile` alternative rewritten in Rust called {just-url}[Just].
+This is basically usual Makefile but without the "historical baggage" of early software engineers.
+
+TIP: To list all available commands _just_ run `just`
+
+You are able to run most of the commonly used commands with `just` commands.
+See the link:Justfile[Justfile] for the source.
+
+Follow {just-install-url}[instructions in official repo] for installation instructions.
+
+*TLDR* for Ubuntu users
+[source,bash]
+----
+snap install --edge --classic just
+----
+
+Or if you have {rust-url}[Rust] installed
+[source,bash]
+----
+cargo install just
+----
+
+TIP: link:https://cheatography.com/linux-china/cheat-sheets/justfile/[Justfile cheat sheet]
