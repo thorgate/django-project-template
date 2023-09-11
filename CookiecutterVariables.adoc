@@ -321,6 +321,29 @@ include::cookiecutter.json[tags=webapp_include_storybook]
 }
 ----
 
+
+
+[id=x_frame_options]
+=== x_frame_options
+
+Note::  This variable affects Content Security Policy (CSP) (https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
+settings.
+
+Set X-Frame-Options header for nginx config.
+
+You should choose `SAMEORIGIN` when you want to display current page in a frame on another page, but only within the
+current domain.
+
+
+.definition
+[source,json]
+----
+{
+include::cookiecutter.json[tags=x_frame_options]
+}
+----
+
+
 [id=use_mypy]
 === use_mypy
 
