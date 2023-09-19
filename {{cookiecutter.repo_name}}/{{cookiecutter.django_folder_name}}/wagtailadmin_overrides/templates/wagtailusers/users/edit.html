@@ -1,0 +1,15 @@
+{% raw %}
+{% extends "wagtailusers/users/edit.html" %}
+{% load wagtailimages_tags wagtailadmin_tags i18n %}
+{% block content %}{{ block.super }}{% endblock %}
+
+{% block extra_css %}
+    {{ block.super }}
+    {{ form.media.css }}
+{% endblock %}
+{% block extra_js %}
+    {{ block.super }}
+    {% include "wagtailadmin/pages/_editor_js.html" %}
+    {{ form.media.js }}
+{% endblock %}
+{% endraw %}

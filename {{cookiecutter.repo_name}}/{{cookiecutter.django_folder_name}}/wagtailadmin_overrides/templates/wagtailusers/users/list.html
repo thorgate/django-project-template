@@ -1,0 +1,73 @@
+{% raw %}<!---
+IMPORTANT! Make sure that you update this file with new contents
+after wagtail upgrade. Original template is located here:
+https://github.com/wagtail/wagtail/blob/main/wagtail/users/templates/wagtailusers/users/list.html
+--->
+{% load i18n l10n wagtailusers_tags wagtailadmin_tags hijack %}
+<table class="listing">
+    <thead>
+        <tr>
+            {% include 'wagtailadmin/bulk_actions/select_all_checkbox_cell.html' %}
+            <th class="name">
+                {% if ordering == "name" %}
+                    <a href="{% url 'wagtailusers_users:index' %}" class="icon icon-arrow-down-after teal">
+                        {% translate "Name" %}
+                    </a>
+                {% else %}
+                    <a href="{% url 'wagtailusers_users:index' %}?ordering=name" class="icon icon-arrow-down-after">
+                        {% translate "Name" %}
+                    </a>
+                {% endif %}
+            </th>
+            <th class="username">
+                {% if ordering == "username" %}
+                    <a href="{% url 'wagtailusers_users:index' %}" class="icon icon-arrow-down-after teal">
+                        {% translate "Username" %}
+                    </a>
+                {% else %}
+                    <a href="{% url 'wagtailusers_users:index' %}?ordering=username" class="icon icon-arrow-down-after">
+                        {% translate "Username" %}
+                    </a>
+                {% endif %}
+            </th>
+            <th class="level">{% translate "Level" %}</th>
+            <th class="status">{% translate "Status" %}</th>
+            <th class="last-login">{% translate "Last Login" %}</th>
+            {% if request.user|can_hijack:request.user %}
+              <th>{% translate "Log in as" %}</th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+            <tr>
+                {% include "wagtailadmin/bulk_actions/listing_checkbox_cell.html" with obj_type="user" obj=user aria_labelledby_prefix="user_" aria_labelledby=user.pk|unlocalize aria_labelledby_suffix="_title" %}
+                <td id="user_{{ user.pk|unlocalize }}_title" class="title" valign="top">
+                    <div class="title-wrapper">
+                        <span class="avatar small"><img src="{% avatar_url user size=25 %}" alt="" /></span>
+                        <a href="{% url 'wagtailusers_users:edit' user.pk %}">{{ user|user_display_name }}</a>
+                    </div>
+                    <ul class="actions">
+                        {% user_listing_buttons user %}
+                    </ul>
+                </td>
+                <td class="username" valign="top">{{ user.get_username }}</td>
+                <td class="level" valign="top">{% if user.is_superuser %}{% trans "Admin" %}{% endif %}</td>
+                <td class="status" valign="top"><div class="status-tag {% if user.is_active %}primary{% endif %}">{% if user.is_active %}{% trans "Active" %}{% else %}{% trans "Inactive" %}{% endif %}</div></td>
+                <td {% if user.last_login %} class="human-readable-date" title="{{ user.last_login|date:"DATETIME_FORMAT" }}"{% endif %}>{% if user.last_login %}{% blocktrans with time_period=user.last_login|timesince %}{{ time_period }} ago{% endblocktrans %}{% endif %}</td>
+                {% if request.user|can_hijack:user %}
+                <td>
+                    <form action="{% url 'hijack:acquire' %}" method="POST">
+                      {% csrf_token %}
+                      <input type="hidden" name="user_pk" value="{{ user.pk }}">
+                      <button data-testid="hijack-btn" class="button" type="submit">hijack {{ user }}</button>
+                      {% comment %}Here's how to mark what page is the next page to load after hijack{% endcomment %}
+                      {# <input type="hidden" name="next" value="{% url 'base' %}"> #}
+                    </form>
+                </td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endraw %}

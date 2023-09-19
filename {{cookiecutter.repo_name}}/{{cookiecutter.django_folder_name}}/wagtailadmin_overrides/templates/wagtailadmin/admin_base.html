@@ -1,0 +1,11 @@
+{% raw %}
+{% extends "wagtailadmin/admin_base.html" %}
+
+{% load static %}
+
+{% block branding_favicon %}
+  <link rel="shortcut icon" type="image/svg+xml" href="{% url 'favicon' %}"/>
+{% endblock %}
+
+{% block branding_title %}{{ site_name }}{% endblock %}
+{% endraw %}

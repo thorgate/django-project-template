@@ -2,6 +2,7 @@
 
 from django.db import migrations, models
 
+
 # Wagtail admin wants to have the typical django user fields of first and last name
 
 class Migration(migrations.Migration):

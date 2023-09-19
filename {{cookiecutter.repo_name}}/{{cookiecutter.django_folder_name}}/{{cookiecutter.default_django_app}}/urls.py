@@ -8,7 +8,9 @@ from django.views.i18n import JavaScriptCatalog
 # - {% elif  cookiecutter.frontend_style == SPA %}
 from django.views.generic.base import RedirectView
 # - {% endif %}
-
+# - {%- if cookiecutter.include_wagtail == YES %}
+from .views import favicon
+# - {% endif %}
 from tg_utils.health_check.views import HealthCheckViewMinimal, HealthCheckViewProtected
 
 
@@ -33,6 +35,8 @@ urlpatterns = [
     # - {%- if cookiecutter.include_wagtail == YES %}
     path(f"{settings.WAGTAIL_ADMIN_PATH}/", include("wagtail.admin.urls")),
     path("documents/", include("wagtail.documents.urls")),
+    path("favicon.ico",favicon, name="favicon"),
+    path("hijack/", include("hijack.urls")),
     path("", include("wagtail.urls")),
     # - {% else  %}
     path("", TemplateView.as_view(template_name="home.html"), name="home"),

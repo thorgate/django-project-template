@@ -1,0 +1,10 @@
+{% raw %}
+{% extends "wagtailadmin/base.html" %}
+{% load static i18n wagtailimages_tags %}
+
+{% block branding_logo %}{% spaceless %}
+    {% if settings.backend.BrandSettings.wagtail_admin_logo %}
+    {% image settings.backend.BrandSettings.wagtail_admin_logo max-320x200 preserve-svg alt=site_name %}
+  {% endif %}
+{% endspaceless %}{% endblock %}
+{% endraw %}

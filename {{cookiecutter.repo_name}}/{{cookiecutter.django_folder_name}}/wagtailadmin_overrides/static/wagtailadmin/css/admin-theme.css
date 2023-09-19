@@ -1,0 +1,15 @@
+{% raw %}
+:root {
+	--w-font-sans: 'Neue Helvetica W06';
+	--w-color-black: #222221;
+	--w-color-white: #FFFFFF;
+	--w-color-primary: #4A4E5A;
+	--w-color-primary-200: #202C3B;
+	--w-color-secondary: #52757F;
+	--w-color-secondary-600: #4A4E5A;
+	--w-color-secondary-400: #706B73;
+	--w-color-secondary-100: #B6D6CB;
+	--w-color-secondary-75: #CEE3DE;
+	--w-color-warning-100: #EDC9B2;
+}
+{% endraw %}

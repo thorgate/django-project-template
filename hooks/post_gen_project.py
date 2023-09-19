@@ -155,6 +155,11 @@ def cleanup():
     if '{{ cookiecutter.include_wagtail }}' == NO:
         cleanup_paths += [
             '{{cookiecutter.django_folder_name}}/accounts/migrations/0004_remove_user_name_user_first_name_user_last_name.py',
+            '{{cookiecutter.django_folder_name}}/generic',
+            '{{cookiecutter.django_folder_name}}/templates/base.html',
+            '{{cookiecutter.django_folder_name}}/templates/home.html',
+            '{{cookiecutter.django_folder_name}}/wagtailadmin_overrides/',
+            '{{cookiecutter.django_folder_name}}/static/wagtail/',
             'justfile', # just in order to keep new scary ideas contained in with this setting
         ]
 

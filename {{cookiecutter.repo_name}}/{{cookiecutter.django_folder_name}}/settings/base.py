@@ -40,7 +40,7 @@ DEFAULT_DJANGO_APP = "{{ cookiecutter.default_django_app }}"
 DJANGO_ADMIN_PATH = "{{ cookiecutter.django_admin_path }}"
 # - {%- if cookiecutter.include_wagtail == YES %}
 
-WAGTAIL_SITE_NAME = PROJECT_NAME
+WAGTAIL_SITE_NAME =  "{{ cookiecutter.project_title }}"
 WAGTAIL_ADMIN_PATH = "{{ cookiecutter.wagtail_admin_path }}"
 # - {%- endif %}
 
@@ -97,20 +97,25 @@ INSTALLED_APPS = [
     # - {%- endif %}
     # - {%- if cookiecutter.include_wagtail == YES %}
     # Wagtail apps
+    "wagtailadmin_overrides",
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
+    "wagtail.contrib.modeladmin",
+    "wagtail.contrib.settings",
     "wagtail.embeds",
     "wagtail.sites",
-    "wagtail.users",
     "wagtail.snippets",
     "wagtail.documents",
     "wagtail.images",
     "wagtail.search",
-    "wagtail.admin",
-    "wagtail",
     "modelcluster",
     "taggit",
     "hijack",
+    # Important to keep them as a last apps,
+    # because we are overwriting some of the templates
+    "wagtail.users",
+    "wagtail",
+    "wagtail.admin",
     # - {%- endif %}
 
     # Django apps
@@ -178,6 +183,9 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
+                # - {%- if cookiecutter.include_wagtail == YES %}
+                "wagtail.contrib.settings.context_processors.settings",
+                # - {%- endif %}
                 "django.contrib.messages.context_processors.messages",
                 # - {%- if cookiecutter.frontend_style == WEBAPP %}
                 "django_settings_export.settings_export",
@@ -477,7 +485,7 @@ SETTINGS_EXPORT = [
 REVERSEJS_VAR_NAME = "reverse"
 REVERSEJS_GLOBAL_OBJECT_NAME = "DJ_CONST"
 REVERSEJS_EXCLUDE_NAMESPACES = ["admin", "djdt"]
-# - {%- else %}
+# - {%- elif cookiecutter.frontend_style == SPA %}
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
@@ -496,10 +504,47 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 # - {%- endif %}
 
+# - {%- if cookiecutter.include_wagtail == YES %}
+
+WAGTAILSEARCH_BACKENDS = {
+    "default": {
+        "BACKEND": "wagtail.search.backends.database",
+    }
+}
+
+WAGTAIL_WORKFLOW_ENABLED = False
+WAGTAIL_MODERATION_ENABLED = False
+WAGTAILADMIN_COMMENTS_ENABLED = False
+
+WAGTAILIMAGES_EXTENSIONS = ["gif", "jpg", "jpeg", "png", "webp", "svg"]
+WAGTAILIMAGES_MAX_UPLOAD_SIZE = 2 * 1024 * 1024  # i.e. 2MB
+
+# https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html
+# Mainly used for og_image links, so that preview images don't expire.
+AWS_QUERYSTRING_AUTH = False
+
+# From other projects
+WAGTAIL_SLIM_SIDEBAR = True
+WAGTAIL_ENABLE_UPDATE_CHECK = False
+WAGTAIL_AGING_PAGES_ENABLED = False
+
+# We want to create a user without setting a password as we are using ID to auth
+WAGTAILUSERS_PASSWORD_REQUIRED = False
+
+SETTINGS_EXPORT_VARIABLE_NAME = "django_settings"
+
+HIJACK_DISABLED = env.bool("DJANGO_HIJACK_DISABLED", False)
+
+PASSWORD_RESET_DISABLED = env.bool("DJANGO_PASSWORD_RESET_DISABLED", HIJACK_DISABLED)
+
 HIJACK_PERMISSION_CHECK = "wagtailadmin_overrides.hijack.can_hijack"
 if HIJACK_DISABLED:
     if (to_remove := "hijack.middleware.HijackUserMiddleware") in MIDDLEWARE:
         MIDDLEWARE.remove(to_remove)
+
+# - {%- endif %}
+
+
 # Health-check related
 HEALTH_CHECK_ACCESS_TOKEN = env.str(
     "DJANGO_HEALTH_CHECK_ACCESS_TOKEN", default=PROJECT_NAME,

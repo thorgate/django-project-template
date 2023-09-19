@@ -1,0 +1,20 @@
+{% raw %}# The idea here is that we have a nested sub-module, where the .git folder is `.nested_git`.
+# This allows the files in the nested repo to be tracked by the parent repo,
+# But also allows us to quickly pull changes in from the parent repo.
+# This avoies some of the git isseus with submodules,
+
+git +cmd:
+    git --git-dir .nested_git {{cmd}}
+
+setup:
+    git clone -b template git@gitlab.com:thorgate/wagtail-stack/wagtail-common.git temp_repo
+    mv temp_repo/.git .nested_git
+    rm -rf temp
+
+# In order to use gitkraken, you need to have the git folder be .git
+enable:
+    mv .nested_git .git
+disable:
+    mv .git .nested_git
+
+{% endraw %}
