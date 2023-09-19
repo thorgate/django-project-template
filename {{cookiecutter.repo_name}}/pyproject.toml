@@ -59,6 +59,8 @@ tg-utils = {version = "^1.0.1 ", extras = ["model-hash", "health_check"]}
 
 # - {% if cookiecutter.include_wagtail == YES %}
 wagtail = "^5.1.1"
+django-model-utils = "^4.3.1"
+django-hijack = "^3.2.1"
 # - {% endif %}
 
 [tool.poetry.dev-dependencies]

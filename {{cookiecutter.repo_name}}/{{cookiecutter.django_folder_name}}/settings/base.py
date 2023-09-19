@@ -110,6 +110,7 @@ INSTALLED_APPS = [
     "wagtail",
     "modelcluster",
     "taggit",
+    "hijack",
     # - {%- endif %}
 
     # Django apps
@@ -138,6 +139,7 @@ MIDDLEWARE = [
     "csp.middleware.CSPMiddleware",
     # - {%- endif %}
     # - {%- if cookiecutter.include_wagtail == YES %}
+    "hijack.middleware.HijackUserMiddleware",
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
     # - {%- endif %}
 
@@ -494,6 +496,10 @@ CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 # - {%- endif %}
 
+HIJACK_PERMISSION_CHECK = "wagtailadmin_overrides.hijack.can_hijack"
+if HIJACK_DISABLED:
+    if (to_remove := "hijack.middleware.HijackUserMiddleware") in MIDDLEWARE:
+        MIDDLEWARE.remove(to_remove)
 # Health-check related
 HEALTH_CHECK_ACCESS_TOKEN = env.str(
     "DJANGO_HEALTH_CHECK_ACCESS_TOKEN", default=PROJECT_NAME,
