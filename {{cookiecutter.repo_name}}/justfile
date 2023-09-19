@@ -1,0 +1,115 @@
+set dotenv-load
+
+PROJECT_NAME := "{{ cookiecutter.repo_name }}"
+BACKEND_ROOT_DIR := absolute_path("{{ cookiecutter.django_folder_name }}")
+# - {% if cookiecutter.frontend_style == WEBAPP %}
+FRONTEND_ROOT_DIR := absolute_path("webapp")
+# - {% elif cookiecutter.frontend_style == SPA %}
+FRONTEND_ROOT_DIR := absolute_path("app")
+# - {% endif %}
+
+DATA_DIR := absolute_path(".data")
+DPT_PIP_CACHE_DIR := env_var_or_default("DPT_PIP_CACHE_DIR", absolute_path(".data/pycache/pip"))
+DPT_POETRY_CACHE_DIR := env_var_or_default("DPT_POETRY_CACHE_DIR", absolute_path(".data/pycache/pypoetry"))
+DJANGO_IMAGE_NAME := env_var_or_default("DJANGO_IMAGE_NAME", lowercase(PROJECT_NAME + "-django"))
+NODE_IMAGE_NAME := env_var_or_default("NODE_IMAGE_NAME", lowercase(PROJECT_NAME + "-node"))
+
+# - {% raw %}
+
+alias quality := lint
+
+@_default:
+	just --list
+
+_compose +cmd:
+	if command -v docker-compose; then docker-compose {{cmd}}; else docker compose {{cmd}}; fi
+
+# Run this as a first command when cloned this project
+setup:
+	cp --no-clobber .env.example .env
+	cp --no-clobber backend/settings/local.py.example backend/settings/local.py
+	cp --no-clobber backend/settings/local_test.py.example backend/settings/local_test.py
+	git submodule update --init --recursive
+	just _compose build
+	just django migrate
+	@just yarn
+
+# Shortcut for yarn command, i.e "just yarn add --dev prettier"
+yarn *cmd:
+	just _compose run --rm node yarn {{cmd}}
+
+# Shortcut for python manage.py command, i.e "just django shell"
+django *cmd:
+	just _compose run --rm django python manage.py {{cmd}}
+
+# Bring the project up
+up:
+	just _compose up
+
+build:
+	just _compose build
+
+# Run any command in Python container, i.e "just run-python black ."
+run-python +cmd:
+	#!/usr/bin/env bash
+	set -e
+	if [ "`docker images|grep {{DJANGO_IMAGE_NAME}}`" = '' ];
+	then if command -v docker-compose;
+	then docker-compose build django || exit 1
+	else docker compose build django || exit 1
+	fi
+	fi
+	docker run --tty --rm \
+	-v {{BACKEND_ROOT_DIR}}:/app \
+	-v {{DATA_DIR}}/pylint:/root/.cache/pylint \
+	-v {{DPT_PIP_CACHE_DIR}}:/root/.cache/pip \
+	-v {{DPT_POETRY_CACHE_DIR}}:/root/.cache/pypoetry \
+	{{DJANGO_IMAGE_NAME}} {{cmd}}
+
+# Interact with Python dependencies, i.e "just poetry add --dev mypy"
+poetry +cmd:
+	@just run-python poetry {{cmd}}
+	@just _compose build django
+
+# Reformat codebase
+fmt:
+	@just run-python black .
+	@just run-python isort .
+	@just run-python djlint --reformat --warn .
+	@just yarn stylelint-fix
+
+# - {% endraw %}
+# - {% if cookiecutter.use_mypy == YES %}
+# Check Python static types
+mypy:
+	@just run-python mypy --show-error-codes --namespace-packages --explicit-package-bases --show-error-codes --implicit-reexport .
+# - {% endif %}
+# - {% raw %}
+
+# Lint python codebase prospector
+prospector:
+	@just run-python prospector --without-tool pep257 -X
+
+pylint:
+	@just run-python pylint --recursive=y .
+
+lint-css:
+    @just yarn stylelint
+fmt-css:
+    @just yarn stylelint-fix
+# Lint codebase
+lint:
+    @just run-python black --check --diff .
+    @just run-python isort . --check --diff
+    @just lint-css
+    @just run-python djlint .
+    @just prospector
+    {% endraw %}{% if cookiecutter.use_mypy == YES %}@just mypy{% endif %}{% raw %}
+
+# Run python tests, i.e "just test" or "just test /app/tests/test_smth.py"
+test +cmd="":
+    just _compose run --rm django py.test {{cmd}}
+
+psql:
+    just _compose exec postgres psql --user dbuser --dbname projectdb
+{% endraw %}
