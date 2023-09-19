@@ -152,6 +152,12 @@ def cleanup():
             "scripts/deploy",
         ]
 
+    if '{{ cookiecutter.include_wagtail }}' == NO:
+        cleanup_paths += [
+            '{{cookiecutter.django_folder_name}}/accounts/migrations/0004_remove_user_name_user_first_name_user_last_name.py',
+        ]
+
+
     # remove CC leftovers
     kill_lines(cwd)
 

@@ -2,6 +2,7 @@
 .idea/
 # pyenv local python version
 .python-version
+.nested_git/
 
 *.mo
 *.pyo

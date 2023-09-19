@@ -49,8 +49,15 @@ class CustomUserAdmin(UserAdmin):
     add_fieldsets = (
         (None, {"classes": ("wide",), "fields": ("email", "password1", "password2")}),
     )
+    # - {%- if cookiecutter.include_wagtail == YES %}
+    list_display = ("id", "email", "first_name", "last_name", "is_staff")
+    search_fields = ("email", "first_name", "last_name")
+    # - {% else %}
     list_display = ("id", "email", "name", "is_staff")
     search_fields = ("email", "name")
+
+    # - {% endif %}
+
     ordering = ("email",)
 
     form = UserChangeForm

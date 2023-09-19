@@ -28,7 +28,7 @@ class UserManager(BaseUserManager):
             is_superuser=is_superuser,
             last_login=now,
             date_joined=now,
-            **extra_fields
+            **extra_fields,
         )
         user.set_password(password)  # type: ignore[attr-defined]
         user.save(using=self._db)
@@ -43,7 +43,12 @@ class UserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = CIEmailField(verbose_name=_("email address"), max_length=254, unique=True)
+    # - {%- if cookiecutter.include_wagtail == YES %}
+    first_name = models.CharField(_("first name"), max_length=150, blank=True)
+    last_name = models.CharField(_("last name"), max_length=150, blank=True)
+    # - {% else %}
     name = models.CharField(max_length=255)
+    # - {% endif %}
 
     is_staff = models.BooleanField(_("staff status"), default=False)
     is_active = models.BooleanField(_("active"), default=True)
@@ -53,8 +58,23 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
+    # - {%- if cookiecutter.include_wagtail == YES %}
+    def get_full_name(self):
+        """
+        Return the first_name plus the last_name, with a space in between.
+        """
+        full_name = f"{self.first_name} {self.last_name}"
+        return full_name.strip()
+
+    def get_short_name(self):
+        """Return the short name for the user."""
+        return self.first_name
+    # - {% else %}
+
     def get_full_name(self):
         return self.name
 
     def get_short_name(self):
         return self.name
+
+    # - {% endif %}
