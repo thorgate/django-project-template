@@ -71,7 +71,7 @@ else:
     )
 
 # Enable {{ cookiecutter.django_media_engine }} storage
-DEFAULT_FILE_STORAGE = f"{PROJECT_NAME}.storages.MediaStorage"
+DEFAULT_FILE_STORAGE = f"{DEFAULT_DJANGO_APP}.storages.MediaStorage"
 MEDIA_ROOT = env.str("DJANGO_MEDIA_ROOT", default="")
 # - {% if cookiecutter.django_media_engine == S3 %}
 AWS_STORAGE_BUCKET_NAME = env.str(
