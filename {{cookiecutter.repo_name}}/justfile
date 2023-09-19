@@ -75,7 +75,6 @@ poetry +cmd:
 fmt:
 	@just run-python black .
 	@just run-python isort .
-	@just run-python djlint --reformat --warn .
 	@just yarn stylelint-fix
 
 # - {% endraw %}
@@ -102,7 +101,6 @@ lint:
     @just run-python black --check --diff .
     @just run-python isort . --check --diff
     @just lint-css
-    @just run-python djlint .
     @just prospector
     {% endraw %}{% if cookiecutter.use_mypy == YES %}@just mypy{% endif %}{% raw %}
 

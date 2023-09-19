@@ -13,6 +13,8 @@ from django.template.response import SimpleTemplateResponse
 from django.views.decorators.cache import cache_control
 from django.views.decorators.http import require_GET
 from django.conf import settings
+from wagtail.models import Site
+
 # - {%- endif %}
 
 def page_not_found(request, exception, template_name="404.html"):
