@@ -48,23 +48,23 @@ def cleanup():
 
     if '{{ cookiecutter.include_celery}}' == NO:
         cleanup_paths += [
-            '{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}/celery.py',
-            '{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}/celery_settings.py',
-            '{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}/tasks.py',
+            '{{ cookiecutter.django_folder_name }}/{{ cookiecutter.default_django_app }}/celery.py',
+            '{{ cookiecutter.django_folder_name }}/{{ cookiecutter.default_django_app }}/celery_settings.py',
+            '{{ cookiecutter.django_folder_name }}/{{ cookiecutter.default_django_app }}/tasks.py',
         ]
 
     if '{{ cookiecutter.frontend_style }}' == WEBAPP:
         cleanup_paths += [
             'app',
             'Dockerfile-node.production',
-            '{{cookiecutter.repo_name}}/accounts/api_urls.py',
-            '{{cookiecutter.repo_name}}/accounts/jwt',
-            '{{cookiecutter.repo_name}}/accounts/rest',
-            '{{cookiecutter.repo_name}}/templates/emails/base.txt',
-            '{{cookiecutter.repo_name}}/templates/emails/password_reset.txt',
-            '{{cookiecutter.repo_name}}/{{cookiecutter.repo_name}}/rest/',
-            '{{cookiecutter.repo_name}}/static/502.html',
-            '{{cookiecutter.repo_name}}/static/robots.txt',
+            '{{cookiecutter.django_folder_name}}/accounts/api_urls.py',
+            '{{cookiecutter.django_folder_name}}/accounts/jwt',
+            '{{cookiecutter.django_folder_name}}/accounts/rest',
+            '{{cookiecutter.django_folder_name}}/templates/emails/base.txt',
+            '{{cookiecutter.django_folder_name}}/templates/emails/password_reset.txt',
+            '{{cookiecutter.django_folder_name}}/{{cookiecutter.default_django_app}}/rest/',
+            '{{cookiecutter.django_folder_name}}/static/502.html',
+            '{{cookiecutter.django_folder_name}}/static/robots.txt',
             'ansible/roles/deploy/templates/razzle.env',
             'ansible/roles/deploy/templates/nginx/conf.d/common.node.include',
             'ansible/roles/deploy/templates/nginx/conf.d/app.proxy_node.include',
@@ -74,14 +74,14 @@ def cleanup():
     elif '{{ cookiecutter.frontend_style }}' == SPA:
         cleanup_paths += [
             'webapp',
-            '{{cookiecutter.repo_name}}/accounts/emails.py',
-            '{{cookiecutter.repo_name}}/accounts/forms.py',
-            '{{cookiecutter.repo_name}}/accounts/urls.py',
-            '{{cookiecutter.repo_name}}/accounts/views.py',
-            '{{cookiecutter.repo_name}}/templates/accounts/',
-            '{{cookiecutter.repo_name}}/templates/base.html',
-            '{{cookiecutter.repo_name}}/templates/home.html',
-            '{{cookiecutter.repo_name}}/templates/registration/',
+            '{{cookiecutter.django_folder_name}}/accounts/emails.py',
+            '{{cookiecutter.django_folder_name}}/accounts/forms.py',
+            '{{cookiecutter.django_folder_name}}/accounts/urls.py',
+            '{{cookiecutter.django_folder_name}}/accounts/views.py',
+            '{{cookiecutter.django_folder_name}}/templates/accounts/',
+            '{{cookiecutter.django_folder_name}}/templates/base.html',
+            '{{cookiecutter.django_folder_name}}/templates/home.html',
+            '{{cookiecutter.django_folder_name}}/templates/registration/',
         ]
 
     if '{{ cookiecutter.webapp_include_storybook }}' == NO and '{{ cookiecutter.frontend_style }}' == WEBAPP:
@@ -99,8 +99,8 @@ def cleanup():
             'docker-compose.cypress.yml',
             'Makefile-cypress',
             'cypress/',
-            '{{cookiecutter.repo_name}}/cypress/',
-            '{{cookiecutter.repo_name}}/settings/test_cypress.py',
+            '{{cookiecutter.django_folder_name}}/cypress/',
+            '{{cookiecutter.django_folder_name}}/settings/test_cypress.py',
         ]
     else:
         if '{{ cookiecutter.frontend_style }}' == SPA:
@@ -140,7 +140,7 @@ def cleanup():
 
     if '{{ cookiecutter.use_mypy }}' == NO:
         cleanup_paths += [
-            '{{cookiecutter.repo_name}}/mypy.ini',
+            '{{cookiecutter.django_folder_name}}/mypy.ini',
         ]
 
     if '{{ cookiecutter.use_auto_deploy }}' == NO:
