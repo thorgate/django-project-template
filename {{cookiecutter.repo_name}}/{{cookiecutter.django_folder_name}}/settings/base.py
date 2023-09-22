@@ -123,7 +123,7 @@ CSP_INCLUDE_NONCE_IN = (
 )
 CSP_BASE_URI = ("'self'",)
 CSP_DEFAULT_SRC = ("'self'",)
-CSP_CONNECT_SRC = ("'self'", "jsonplaceholder.typicode.com",)
+CSP_CONNECT_SRC = ("'self'",)
 CSP_FONT_SRC = ("'self'",)
 CSP_IMG_SRC = ("*", )
 CSP_SCRIPT_SRC = (
