@@ -1,4 +1,4 @@
-# - {%- raw -%}
+# - {%- raw %}
 - name: "Figure out the local postgres data directory"
   shell: "{{ compose_command }} config | yq -r '.services.postgres.volumes[]' | grep '/var/lib/postgresql/data' | cut -d: -f1"
   delegate_to: localhost

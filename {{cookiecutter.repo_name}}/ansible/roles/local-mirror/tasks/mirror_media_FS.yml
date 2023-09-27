@@ -1,4 +1,4 @@
-# - {%- raw -%}
+# - {%- raw %}
 - name: "Figure out the remote media directory"
   shell: "{{ compose_command }} -f {{ compose_file }} config | yq -r '.services.django.volumes[]' | grep '/files/media' | cut -d: -f1"
   args:

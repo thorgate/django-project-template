@@ -1,4 +1,4 @@
-# - {%- raw -%}
+# - {%- raw %}
 - name: "Extract settings from container"
   import_tasks: ../../helpers/run-management-command.yml
   vars:

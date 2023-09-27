@@ -1,4 +1,4 @@
-# - {%- raw -%}
+# - {%- raw %}
 # Note: `aws-cli` must be installed locally to make this role work. E.g. `sudo pip install awscli`.
 
 - name: "Use aws s3 command to download media files"
