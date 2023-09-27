@@ -1,15 +1,29 @@
 {% raw %}
 :root {
-	--w-font-sans: 'Neue Helvetica W06';
-	--w-color-black: #222221;
-	--w-color-white: #FFFFFF;
-	--w-color-primary: #4A4E5A;
-	--w-color-primary-200: #202C3B;
-	--w-color-secondary: #52757F;
-	--w-color-secondary-600: #4A4E5A;
-	--w-color-secondary-400: #706B73;
-	--w-color-secondary-100: #B6D6CB;
-	--w-color-secondary-75: #CEE3DE;
-	--w-color-warning-100: #EDC9B2;
+	/* Defaults */
+    /* https://docs.wagtail.org/en/stable/advanced_topics/customisation/admin_templates.html#custom-user-interface-colours */
+
+    /*--w-font-sans: 'Neue Helvetica W06';*/
+	/*--w-color-black: #000000;*/
+	/*--w-color-white: #FFFFFF;*/
+
+    /*--w-color-primary-hue: 253.8;*/
+    /*--w-color-primary-saturation: 50%;*/
+    /*--w-color-primary-lightness: 20.4%;*/
+
+
+    /*--w-color-secondary-hue: 180.5;*/
+    /*--w-color-secondary-saturation: 100%;*/
+    /*--w-color-secondary-lightness: 24.7%;*/
+
+    /*--w-color-primary: #2e1f5e;*/
+    /*--w-color-primary-200: #261a4e;*/
+
+    /*--w-color-secondary:#007d7e;*/
+    /*--w-color-secondary-600:#004345;*/
+    /*--w-color-secondary-400:#005b5e;*/
+    /*--w-color-secondary-100:#00b0b1;*/
+    /*--w-color-secondary-75:#80d7d8;*/
+    /*--w-color-secondary-50:#f2fcfc;*/
 }
 {% endraw %}
