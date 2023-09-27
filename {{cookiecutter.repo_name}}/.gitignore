@@ -22,9 +22,9 @@ venv/
 
 {{cookiecutter.django_folder_name}}/.cache
 {{cookiecutter.django_folder_name}}/.pytest_cache
-{{cookiecutter.django_folder_name}}/.coverage
-{{cookiecutter.django_folder_name}}/coverage
-{{cookiecutter.django_folder_name}}/coverage.xml
+.coverage
+coverage
+coverage.xml
 {{cookiecutter.django_folder_name}}/report.xml
 {{cookiecutter.django_folder_name}}/htmlcov/
 {{cookiecutter.django_folder_name}}/cover/
