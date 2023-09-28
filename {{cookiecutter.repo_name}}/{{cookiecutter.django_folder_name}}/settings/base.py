@@ -77,6 +77,11 @@ INSTALLED_APPS = [
     "accounts",
     DEFAULT_DJANGO_APP,
     # Third-party apps
+    # - {% if cookiecutter.include_websockets == YES %}
+    "daphne",
+    "channels",
+    "web_sockets",
+    # - {%- endif %}
     # - {% if cookiecutter.frontend_style == WEBAPP %}
     "django_reverse_js",
     "webpack_loader",
@@ -242,6 +247,12 @@ CELERYBEAT_SCHEDULE = {
         # TODO define the best time suitable for the cleanup.
         "schedule": crontab(minute=45, hour=2),
     },
+    # - {% if cookiecutter.include_websockets == YES %}
+    "heartbeat-task": {
+        "task": f"web_sockets.tasks.heartbeat",
+        "schedule": 30,
+    },
+    # - {% endif %}
 }
 # - {%- endif %}
 
@@ -363,7 +374,22 @@ X_FRAME_OPTIONS = "{{ cookiecutter.x_frame_options }}"
 ROOT_URLCONF = f"{DEFAULT_DJANGO_APP}.urls"
 
 WSGI_APPLICATION = f"{DEFAULT_DJANGO_APP}.wsgi.application"
+# - {% if cookiecutter.include_websockets == YES %}
+ASGI_APPLICATION = f"{DEFAULT_DJANGO_APP}.asgi.application"
 
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.pubsub.RedisPubSubChannelLayer",
+        "CONFIG": {
+            "hosts": [
+                REDIS_URL,
+            ],
+        },
+    },
+}
+
+# - {%- endif %}
 
 LOGIN_REDIRECT_URL = "/"
 # - {%- if cookiecutter.frontend_style == SPA %}

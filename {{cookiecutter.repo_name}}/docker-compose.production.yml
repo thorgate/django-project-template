@@ -35,9 +35,15 @@ services:
     # For some reason the command also has to be specified here, otherwise the entrypoint+command combination won't
     #  work.
     entrypoint: /usr/bin/wait-for-it.sh postgres:5432 -t 60 --
-    command: gunicorn {{cookiecutter.default_django_app}}.wsgi:application --workers 2 --bind :80
+    command: gunicorn {{cookiecutter.default_django_app}}.
+      {%- if cookiecutter.include_websockets == YES -%}
+      asgi:application
+      {%- elif cookiecutter.include_websockets == NO -%}
+      wsgi:application
+      {%- endif %} --workers 2 --bind :80
+      {%- if cookiecutter.include_websockets == YES %} -k uvicorn.workers.UvicornWorker --timeout ${WORKER_TIMEOUT:-300}
+      {%- endif %}
 # - {%  if cookiecutter.frontend_style == SPA %}
-
   node:
     <<: *common-spec
 # -   {%  if cookiecutter.build_in_ci == YES %}

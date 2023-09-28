@@ -34,6 +34,10 @@
     "include_wagtail": ["no", "yes"],
     "_ end::include_wagtail[] ": "",
 
+    "_ tag::include_websockets[] ":"",
+    "include_websockets": ["no", "yes"],
+    "_ end::include_websockets[] ": "",
+
     "_ tag::django_folder_name[] ":"",
     "django_folder_name": ["{{ cookiecutter.repo_name }}","backend", "django"],
     "_ end::django_folder_name[] ": "",

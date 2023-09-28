@@ -163,6 +163,13 @@ def cleanup():
             'justfile', # just in order to keep new scary ideas contained in with this setting
         ]
 
+    if '{{ cookiecutter.include_websockets }}' == NO:
+        cleanup_paths += [
+            '{{ cookiecutter.django_folder_name }}/{{ cookiecutter.default_django_app }}/routing.py',
+            '{{ cookiecutter.django_folder_name }}/{{ cookiecutter.default_django_app }}/asgi.py',
+            '{{ cookiecutter.django_folder_name }}/web_sockets/',
+        ]
+
 
     # remove CC leftovers
     kill_lines(cwd)

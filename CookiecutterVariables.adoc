@@ -155,6 +155,21 @@ include::cookiecutter.json[tags=include_wagtail]
 ----
 
 
+[id=include_websockets]
+=== include_websockets
+
+Include websockets, using django-channels
+
+
+.definition
+[source,json]
+----
+{
+include::cookiecutter.json[tags=include_websockets]
+}
+----
+
+
 [id=docker_base_image]
 === docker_base_image
 

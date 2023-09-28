@@ -8,6 +8,13 @@
     - { src: "app.map_files.include", dest: "app.{{ project }}.map_files.include" }
     - { src: "app.proxy.include", dest: "app.{{ project }}.proxy.include" }
     - { src: "app.proxy_django.include", dest: "app.{{ project }}.proxy_django.include" }
+# - {%- endraw %}
+# - {%- if cookiecutter.include_websockets == YES %}
+# - {%- raw %}
+    - { src: "app.proxy_websocket.include", dest: "app.{{ project }}.proxy_websocket.include" }
+# - {%- endraw %}
+# - {%- endif %}
+# - {%- raw %}
     - { src: "common.django.include", dest: "common.{{ project }}.django.include" }
     - { src: "ssl.include", dest: "ssl.{{ project }}.include" }
 # - {%- endraw %}

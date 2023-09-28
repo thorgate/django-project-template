@@ -46,6 +46,18 @@ location ~ ^/(.*/)?login/ {
     include conf.d/app.{% raw %}{{ project }}{% endraw %}.proxy_django.include;
 }
 
+{%- if cookiecutter.include_websockets == YES %}
+
+location ^~ /ws/ {
+    include conf.d/app.{% raw %}{{ project }}{% endraw %}.proxy_websocket.include;
+}
+
+location ^~ /sse/ {
+    include conf.d/app.{% raw %}{{ project }}{% endraw %}.proxy_websocket.include;
+}
+
+{% endif -%}
+
 location / {
     include conf.d/app.{% raw %}{{ project }}{% endraw %}.proxy_django.include;
 }

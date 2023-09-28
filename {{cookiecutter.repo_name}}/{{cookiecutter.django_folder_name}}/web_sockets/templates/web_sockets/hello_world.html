@@ -1,0 +1,41 @@
+{% raw %}
+{% load static %}
+<script src="{% static 'web_sockets/js/eventsource.min.js' %}"></script>
+<script src="{% static 'web_sockets/js/reconnecting-eventsource.js' %}"></script>
+<script>
+
+var es = new ReconnectingEventSource('{% if django_settings.DEBUG %}http{% else %}https{% endif %}://{{ request.get_host }}/sse/events/');
+
+es.addEventListener('message', function (event) {
+    console.log(event.data);
+    document.getElementById("sse-target").innerHTML += event.data + "<br>";
+
+}, false);
+
+es.addEventListener('stream-reset', function (e) {
+    // ... client fell behind, reinitialize ...
+}, false);
+
+const socket = new WebSocket("{% if django_settings.DEBUG %}ws{% else %}wss{% endif %}://{{ request.get_host }}/ws/hello_world/");
+
+// Connection opened
+socket.addEventListener("open", (event) => {
+  socket.send(
+    JSON.stringify({message:"Hello Server echo!"})
+  );
+});
+
+// Listen for messages
+socket.addEventListener("message", (event) => {
+  console.log("Message from server ", event.data);
+  document.getElementById("ws-target").innerHTML += event.data + "<br>";
+
+});
+</script>
+<div id="sse-target">
+
+</div>
+<div id="ws-target">
+
+</div>
+{% endraw %}
