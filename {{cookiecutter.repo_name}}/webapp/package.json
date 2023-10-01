@@ -164,6 +164,7 @@
     "prettier-format-all": "yarn prettier-format 'webapp/src/**/*.{js,jsx,ts,tsx}'",
     "lint": "yarn lint:eslint && yarn lint:tsc",
     "lint:eslint": "eslint webapp/src",
+    "fmt:eslint": "eslint webapp/src --fix",
     "lint:tsc": "tsc --noEmit",
     {%- if cookiecutter.webapp_include_storybook == YES %}
     "storybook": "start-storybook -c webapp/src/.storybook -p 6006",
