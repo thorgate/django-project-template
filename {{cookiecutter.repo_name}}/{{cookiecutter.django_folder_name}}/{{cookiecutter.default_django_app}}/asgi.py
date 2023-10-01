@@ -30,7 +30,7 @@ application = ProtocolTypeRouter(
         "http": URLRouter(
             [
                 path("sse/events/", EventsNotifier.as_asgi()),
-                re_path(r"", django_asgi_app),
+                re_path(r"", django_asgi_app),  # type: ignore[arg-type]
             ]
         ),
         "websocket": AuthMiddlewareStack(URLRouter(websocket_urlpatterns)),
