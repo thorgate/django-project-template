@@ -79,9 +79,7 @@
 
 
 - name: "Load the dump file locally"
-  shell: >
-    "{{ compose_command }} exec -T postgres pg_restore --user {{ project }} -d {{ project }} \
-      /db-mirror/mirror-db-dump.pg_dump
+  shell: "{{ compose_command }} exec -T postgres pg_restore --user {{ project }} -d {{ project }} /db-mirror/mirror-db-dump.pg_dump"
   delegate_to: localhost
   vars:
     ansible_become: no
