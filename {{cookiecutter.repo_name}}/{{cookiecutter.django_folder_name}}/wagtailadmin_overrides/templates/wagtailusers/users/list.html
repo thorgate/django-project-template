@@ -61,8 +61,7 @@ https://github.com/wagtail/wagtail/blob/main/wagtail/users/templates/wagtailuser
                       {% csrf_token %}
                       <input type="hidden" name="user_pk" value="{{ user.pk }}">
                       <button data-testid="hijack-btn" class="button" type="submit">hijack {{ user }}</button>
-                      {% comment %}Here's how to mark what page is the next page to load after hijack{% endcomment %}
-                      {# <input type="hidden" name="next" value="{% url 'base' %}"> #}
+                      <input type="hidden" name="next" value="{% url 'wagtailadmin_home' %}">
                     </form>
                 </td>
                 {% endif %}
