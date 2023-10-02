@@ -142,6 +142,9 @@ MIDDLEWARE = [
     "django.middleware.locale.LocaleMiddleware",
     # - {%- endif %}
     "django.middleware.common.CommonMiddleware",
+    # - {%- if cookiecutter.frontend_style == WEBAPP or cookiecutter.include_wagtail == YES %}
+    "django.middleware.csrf.CsrfViewMiddleware",
+    # - {%- endif %}
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -395,7 +398,7 @@ LOGIN_REDIRECT_URL = "/"
 # - {%- if cookiecutter.frontend_style == SPA %}
 LOGIN_URL = "admin:login"
 LOGOUT_REDIRECT_URL = "admin:login"
-# - {%- else %}
+# - {%- elif cookiecutter.frontend_style == WEBAPP and cookiecutter.include_wagtail == NO %}
 LOGIN_URL = "login"
 LOGOUT_REDIRECT_URL = "login"
 # - {%- endif %}
