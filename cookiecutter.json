@@ -39,15 +39,15 @@
     "_ end::default_django_app[] ": "",
 
     "_ tag::live_domain_name[] ":"",
-    "live_domain_name": "{% if cookiecutter.thorgate == 'yes' %}{{ cookiecutter.repo_name|as_hostname }}.com{% else %}TODO.com{% endif %}",
+    "live_domain_name": "{% if cookiecutter.thorgate == 'yes' %}{{ cookiecutter.repo_name|as_hostname }}.com{% else %}todo.com{% endif %}",
     "_ end::live_domain_name[] ": "",
 
     "_ tag::test_host[] ":"",
-    "test_host": "{% if cookiecutter.thorgate == 'yes' %}{{cookiecutter._tg_recommended_test_server }}{% else %}test.{{cookiecutter.domain_name}}{% endif %}",
+    "test_host": "{% if cookiecutter.thorgate == 'yes' %}{{cookiecutter._tg_recommended_test_server }}{% else %}test.{{cookiecutter.live_domain_name}}{% endif %}",
     "_ end::test_host[] ": "",
 
     "_ tag::admin_email[] ":"",
-    "admin_email": "{% if cookiecutter.thorgate == 'yes' %}{{cookiecutter._tg_webmaster_email }}{% else %}info@{{cookiecutter.domain_name}}{% endif %}",
+    "admin_email": "{% if cookiecutter.thorgate == 'yes' %}{{cookiecutter._tg_webmaster_email }}{% else %}info@{{cookiecutter.live_domain_name}}{% endif %}",
     "_ end::admin_email[] ": "",
 
     "_ tag::docker_base_image[] ":"",

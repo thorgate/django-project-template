@@ -28,7 +28,7 @@ if [ ! -f "${ANSIBLE_DIR}/${VAULT_FILE}" ]; then
 fi
 
 
-set -x  # Echo commmands as they are executed
+set -x  # Echo commands as they are executed
 
 echo_cyan() {
     echo -e "\033[1;36m$1\033[0m"
