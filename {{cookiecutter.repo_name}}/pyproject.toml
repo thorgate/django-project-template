@@ -57,83 +57,67 @@ tg-react = "==3.*"
 # - {% endif %}
 tg-utils = {version = "^1.0.1 ", extras = ["model-hash", "health_check"]}
 
+
 [tool.poetry.dev-dependencies]
-black = "==22.12.0"
+bump-my-version = "^0.12.0"
+ipython = "==8.16.1"
+pysnooper = "^1.2.0"
 django-debug-toolbar = "^4.2"
-# Testing & quality tools
-coverage = "==7.*"
-ipdb = "^0.13.13"
-pip-audit = ">=2.6.1"
-isort = "^5"
-# Note prospector is very picky about its dependencies,
-# avoid specifying versions for pylint/pylint-django/astroid
-# and let prospector determine which versions work together
-prospector = {version = "^1.10.2", extras=["with_bandit"]}
-# Excplicit pylint dependency should be removed once https://github.com/PyCQA/prospector/pull/530 is released
-pylint = "<2.15.7"
-pytest = "==7.*"
-pytest-django = "*"
-pytest-cov = "*"
-pytest-mock = "*"
-pylint-django = "*"
-model-bakery = "*"
-freezegun = "*"
+
+
 # - {% if cookiecutter.use_mypy == YES %}
-# MyPy dependencies
-types-freezegun = "*"
-boto3-stubs = "*"
+[tool.poetry.group.mypy.dependencies]
+boto3-stubs = "^1.28.84"
 django-stubs = "*"
 djangorestframework-stubs = "*"
 mypy = "*"
+types-freezegun = "*"
+types-python-dateutil = "2.*"
+types-redis = "^4.4.0.0"
+types-requests = "*"
 # - {% endif %}
+
+[tool.poetry.group.lint.dependencies]
+# Note prospector is very picky about its dependencies,
+# and let prospector determine which versions work together
+# avoid specifying versions for pylint/pylint-django/astroid
+prospector = {version = "^1.10.0", extras=["with_bandit"]}
+pyenchant = "*"
+pylint = "*"
+pylint-django = "*"
+ruff = "^0.1.5"
+
+[tool.poetry.group.test.dependencies]
+# Can't read configuration from pyproject.toml without this dependency
+coverage = {version = "^7.3.2", extras = ["toml"]}
+factory-boy = "^3.2.0"
+freezegun = "^1.2.2"
+hypothesis = {extras = ["django"], version = "^6.61.0"}
+model-bakery = "^1.3.0"
+moto = { extras = ["sns"], version = "*" }
+
+pytest = "^6.2.4"
+# Let pytest determine which versions work together
+pytest-asyncio = "*"
+pytest-cov = "*"
+pytest-datadir = "*"
+pytest-django = "*"
+pytest-mock = "*"
+pytest-regressions = "*"
+pytest-translations = "*"
+
+flaky = "^3.7.0"
+responses = "^0.22.0"
+
+
+
+[tool.poetry.group.security.dependencies]
+pip-audit = ">=2.6.1"
+
 
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
-
-[tool.black]
-# Enable specific Python version if necessary:
-# target-version = ['py38']
-line-length = 88
-include = '\.pyi?$'
-exclude = '''
-
-(
-  /(
-      \.eggs         # exclude a few common directories in the
-    | \.git          # root of the project
-    | \.mypy_cache
-    | \.tox
-    | \.venv
-    | _build
-    | build
-    | dist
-    | docs
-    | cover
-  )/
-  | local.py
-  | local_test.py
-)
-'''
-
-[tool.isort]
-skip = "settings/local.py,settings/local_test.py,{{cookiecutter.default_django_app}}/wsgi.py"
-skip_glob = "node_modules"
-line_length = '88'
-atomic = 'true'
-multi_line_output = '3'
-include_trailing_comma = 'true'
-force_grid_wrap = '0'
-use_parentheses = 'true'
-ensure_newline_before_comments = 'true'
-known_django = "django"
-known_pytest = "pytest"
-overwrite_in_place = 'true'
-known_first_party = "accounts,{{cookiecutter.default_django_app}},settings"
-lines_between_types = '0'
-sections = "FUTURE,STDLIB,DJANGO,PYTEST,THIRDPARTY,FIRSTPARTY,LOCALFOLDER"
-lines_after_imports = '2'
-force_alphabetical_sort_within_sections = '1'
 
 [tool.coverage.run]
 branch = true
@@ -150,12 +134,38 @@ omit = [
     "settings/*",
 ]
 
+[tool.coverage.report]
+precision = 2
+skip_empty = true
+exclude_also = [
+    "@(abc\\.)?abstractmethod",
+    "if (typing\\.)?TYPE_CHECKING:",
+    "if settings.DEBUG:",
+    "raise NotImplementedError",
+    ]
+
 [tool.coverage.html]
-directory = "cover"
+directory = "coverage/python"
+show_contexts = true
+
+[tool.coverage.xml]
+output = "coverage/python/cobertura-coverage.xml"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "--junit-xml report.xml"
+cache_dir = "/root/.cache/pytest"
+addopts = [
+	"--strict-markers",
+	"--junit-xml=coverage/junit_pytest.xml",
+	"--reuse-db",
+	"--doctest-modules",
+	"--cov=.",
+	"--cov-report=term-missing:skip-covered",
+	"--cov-report=xml",
+	"--cov-report=html",
+#    "--translations", # Disabled untill project is ready for translations
+#	"--cov-fail-under=10" # Disabled untill project is ready for required coverage
+]
 DJANGO_SETTINGS_MODULE = "settings.local_test"
 markers = ["django_db", "parametrize", "unit"]
 norecursedirs = [
@@ -169,3 +179,230 @@ norecursedirs = [
     "node_modules",
 ]
 python_files = ["test_*.py", "tests/*.py", "tests.py"]
+doctest_optionflags = "NORMALIZE_WHITESPACE IGNORE_EXCEPTION_DETAIL"
+
+# - {% if cookiecutter.use_mypy == YES %}
+[tool.mypy]
+# The mypy configurations: https://mypy.readthedocs.io/en/latest/config_file.html
+python_version = "{{ cookiecutter.python_version }}"
+
+cache_dir = "/root/.cache/mypy"
+check_untyped_defs = true
+ignore_errors = false
+ignore_missing_imports = true
+strict_optional = true
+strict_equality = true
+no_implicit_optional = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_unused_configs = true
+warn_unreachable = true
+warn_no_return = true
+enable_error_code = "ignore-without-code"
+exclude = "(?x)(local.py$ | local_test.py$ | test_(.+) | tests.py | tests)"
+
+plugins = [
+	"mypy_django_plugin.main",
+    "mypy_drf_plugin.main",
+]
+
+[tool.django-stubs]
+django_settings_module = "settings"
+
+[[tool.mypy.overrides]]
+module = "celery.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["*.tests.*", "*.migrations.*", "*.settings.*"]
+ignore_errors = true
+
+# - {% endif %}
+
+
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+indent-width = 4
+
+show-fixes = true
+cache-dir = "/root/.cache/ruff"
+
+exclude = [
+	".git",
+    ".mypy_cache",
+    "_build",
+    "build",
+    "dist",
+    "docs",
+    "cover",
+    "fabfile.py",
+# - {% if cookiecutter.frontend_style == WEBAPP %}
+    "webapp",
+# - {% endif %}
+    "templates",
+    "settings",
+    "wsgi.py",
+    "asgi.py",
+]
+
+[tool.ruff.lint]
+
+select = ["ALL"] # See https://docs.astral.sh/ruff/rules/ for a complete list of available rules
+ignore = [
+    "ANN", # Missing type annotations
+    "ARG", # Unused arguments
+    "BLE", # Do not catch blind exception: `Exception`
+    "COM812", # Trailing comma missing
+    "D", # pydocstyle
+    "E501", # Line too long
+    "EM101", # Exception must not use a string literal, assign to variable first
+    "EM102", # Exception must not use an f-string literal, assign to variable first
+    "ERA", # Found commented-out code
+    "FBT002", # Boolean default value in function definition
+    "FBT003", # Boolean positional value in function call
+    "FIX002", # Line contains TODO
+    "FIX004", # Line contains HACK
+    "INT001", # f-string is resolved before function call; consider `_("string %s") % arg`
+    "ISC001", # Single line implicit string concatenation
+    "N818", # Exception name `ReadingParsingException` should be named with an Error suffix
+    "PLR2004", # Magic value used in comparison
+    "RUF001", # String contains ambiguous character
+    "RUF002", # Docstring contains ambiguous character
+    "RUF003", # Comment contains ambiguous character
+    "RUF010", # Use explicit conversion flag
+    "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
+    "S101", # Use of `assert` detected
+    "S105", # Possible hardcoded password assigned to variable
+    "S311", # Standard pseudo-random generators are not suitable for cryptographic purposes
+    "SIM102", # Use a single `if` statement instead of nested `if` statements
+    "SIM108", # Use ternary operator {contents} instead of if-else-block
+    "SLF001", # Private member accessed
+    "TCH001", # Move first-party import {} into a type-checking block
+    "TCH002", # Move third-party import {} into a type-checking block
+    "TCH003", # Move standard library import {} into a type-checking block
+    "TD002", # Missing author in TODO; try: # TODO(<author_name>): ...
+    "TD003", # Missing issue link on the line following this TODO
+    "TRY003", # Avoid specifying long messages outside the exception class
+    "TRY400", # Use `logging.exception` instead of `logging.error`
+]
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+# Allow fix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = [
+    # "F401", # Don't remove unused imports automatically
+    "RUF100", # Don't remove unused noqa comments automatically
+]
+
+[tool.ruff.per-file-ignores]
+"settings/*" = [
+    "F403", # `from x import *` used; unable to detect undefined names
+    "F405", # `name` may be undefined, or defined from star imports
+]
+"*/migrations/*" = [
+    "N806", # Variable `name` in function should be lowercase
+    "N805", # First argument of a method should be named `self`
+]
+"*/tests/*" = [
+    "B905", # `zip()` without an explicit `strict=` parameter
+    "FBT001", # Boolean positional arg in function definition
+    "PLR0915", # Too many statements (X > 15)
+    "S106", # Possible hardcoded password assigned to argument
+    "N802", # Function name `name` should be lowercase
+]
+
+# The following rules are native re-implementations in ruff.
+# The listed tools are not actually run, and configuration only affects ruff.
+# Some of the tools are already part of our pipeline, but will hopefully be replaced by ruff in the future.
+[tool.ruff.mccabe]
+max-complexity = 22
+
+[tool.ruff.isort]
+# This configuration is equivalent to our current isort configuration and `ruff --select I ." should be equivalent to `isort .`
+section-order = ["future", "standard-library", "django", "pytest", "third-party", "first-party", "local-folder"]
+lines-after-imports = 2
+order-by-type = false
+
+[tool.ruff.isort.sections]
+django = ["django"]
+pytest = ["pytest"]
+
+# Pylint parity can be seen in https://github.com/astral-sh/ruff/issues/970
+# Identical values to our prospector configuration can still be errors, as ruff only supports `noqa` and not `pylint: disable`
+[tool.ruff.pylint]
+max-branches = 20
+max-args = 6
+max-returns = 8
+
+[tool.ruff.flake8-builtins]
+builtins-ignorelist = [
+    "filter",
+    "help",
+    "id",
+    "list",
+    "object",
+    "type",
+]
+
+[tool.ruff.flake8-import-conventions]
+banned-from = ["typing"]
+
+[tool.ruff.flake8-import-conventions.aliases]
+"typing" = "t"
+
+[tool.ruff.flake8-import-conventions.banned-aliases]
+"django.utils.translation.gettext" = ["_"]
+"django.utils.translation.gettext_lazy" = ["_"]
+"django.utils.translation.pgettext" = ["_"]
+"django.utils.translation.pgettext_lazy" = ["_"]
+"django.utils.translation.ngettext" = ["_"]
+"django.utils.translation.ngettext_lazy" = ["_"]
+
+
+[tool.ruff.format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
+
+[tool.pylint.MASTER]
+py-version = "{{ cookiecutter.python_version }}"
+ignore = [
+    "node_modules",
+    "settings",
+    "migrations",
+    "templates",
+    "cover",
+    "storages.py",
+]
+ignore-patterns="test.*?py,conftest.py"
+# Use a conservative default here; 2 should speed up most setups and not hurt
+# any too bad. Override on command line as approprifate.
+jobs = 2
+load-plugins = ["pylint_django"]
+django-settings-module = "settings.local_test"
+[tool.pylint.'MESSAGES CONTROL']
+disable = [
+    "fixme",
+    "line-too-long",  # formatting done by ruff
+    "missing-class-docstring",
+    "missing-function-docstring",
+    "missing-module-docstring",
+    "too-few-public-methods",
+    "raise-missing-from",
+]
+[tool.pylint.FORMAT]
+max-line-length=140
+
+[tool.bumpversion]
+current_version = "1.0.0"

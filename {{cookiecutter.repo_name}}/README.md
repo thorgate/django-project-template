@@ -105,7 +105,6 @@ Note that the production configuration lacks PostgreSQL, since it runs on a sepa
 |run StyleLint                         |`make stylelint`                       |`docker compose run --rm node yarn stylelint`                               |
 |run ESLint                            |`make eslint`                          |`docker compose run --rm node yarn lint`                                    |
 |run Prospector                        |`make prospector`                      |`docker compose run --rm django prospector`                                 |
-|run isort                             |`make isort`                           |`docker compose run --rm django isort --recursive --check-only -p . --diff` |
 |run psql                              |`make psql`                            |`docker compose exec postgres psql --user {{cookiecutter.repo_name}} --dbname {{cookiecutter.repo_name}}` |
 
 ## Running commands on the server
@@ -191,25 +190,15 @@ make prettier-format-all
 make prettier-format cmd="app/src/index.js" # File path should be relative to project root
 ```
 
-For Python we use Black formatter.
+For Python formating and linting we use Ruff
 ```bash
-# To check Python code style use:
-make black-check-all
-
-# To check single Python file use:
-make black-check cmd="{{ cookiecutter.repo_name }}/accounts/admin.py" # File path should be relative to project root
-
-# To format Python code use:
-make black-format-all
-
-# To format single Python file use:
-make black-format cmd="app/src/index.js" # File path should be relative to project root
+make ruff-format
 ```
 
 There is also option to use file watchers.
 To use pre-built docker helpers for this, import `.idea_template/watchers.xml`.
 
-You can also use `prettier` and `black` directly if NodeJS and/or Python is available for you.
+You can also use `prettier` and `ruff` directly if NodeJS and/or Python is available for you.
 
 
 ## Running linters
@@ -229,7 +218,7 @@ To use them, run those commands in the Django app dir:
     # Check Python sources with Prospector:
     make prospector
     # Check Python imports with isort:
-    make isort
+    make ruff-format-check
     # Check Python package security vulnerabilities:
     make poetry-check
     # Run all of above:

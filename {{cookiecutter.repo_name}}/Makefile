@@ -182,25 +182,6 @@ run-python:
 	  $(DJANGO_IMAGE_NAME) $(cmd)
 
 
-.PHONY:
-black-check:
-	@make run-python cmd="black --check --diff $(cmd)"
-
-
-.PHONY:
-black-check-all:
-	@make run-python cmd="black --check --diff ."
-
-
-.PHONY:
-black-format:
-	@make run-python cmd="black $(cmd)"
-
-
-.PHONY:
-black-format-all: ## Format Python code with Black
-	@make run-python cmd="black ."
-
 
 .PHONY:
 docker: settings
@@ -345,7 +326,7 @@ clean:
 
 
 .PHONY:
-lint-py: black-check-all isort prospector{% if cookiecutter.use_mypy == YES %} mypy{% endif %}
+lint-py: ruff-format-check  prospector{% if cookiecutter.use_mypy == YES %} mypy{% endif %}
 
 .PHONY:
 lint-js: prettier-check-all eslint node-typecheck stylelint
@@ -357,7 +338,7 @@ lint: lint-py lint-js
 quality: lint poetry-check
 
 .PHONY:
-fmt-py: black-format-all isort-fix
+fmt-py: ruff-format
 
 .PHONY:
 fmt-js: eslint-fix prettier-format-all
@@ -413,16 +394,33 @@ stylelint:
 
 
 .PHONY:
-isort:
-	@echo -e "$(CYAN)Checking imports with isort$(COFF)"
-	@make run-python cmd='isort . --check --diff'
-
+ruff-format-check:
+	@echo -e "$(subst SECTION_NAME,ruff-format-check,$(GL_SECTION_START))$(CYAN)Running ruff format (check)$(COFF)"
+	@make run-python cmd="ruff format . --diff"
+	@make run-python cmd="ruff --select I . --diff"
+	@echo -e "$(subst SECTION_NAME,ruff-format-check,$(GL_SECTION_END))"
 
 .PHONY:
-isort-fix: ## Fix imports automatically with isort
-	@echo -e "$(CYAN)Fixing imports with isort$(COFF)"
-	@make run-python cmd='isort .'
+ruff-format:
+	@echo -e "$(CYAN)Running ruff format$(COFF)"
+	@make run-python cmd="ruff format ."
+	@make run-python cmd="ruff --select I . --fix"
 
+.PHONY:
+ruff-lint:
+	@make run-python cmd="ruff ."
+
+.PHONY:
+ruff-lint-fix:
+	@make run-python cmd="ruff --fix-only --exit-non-zero-on-fix ."
+
+.PHONY:
+ruff-lint-ci:
+	@echo -e "$(subst SECTION_NAME,ruff-linter,$(GL_SECTION_START))$(CYAN)Running The Ruff Linter$(COFF)"
+	@make run-python cmd="ruff --exit-zero --output-format gitlab --output-file coverage/python/ruff.json ."
+	# might be wrong here...
+	@make run-python cmd="sed -i 's|\"path\": \"|&${CI_PROJECT_DIR}/${DJANGO_FOLDER_NAME}/|g' coverage/python/ruff.json"
+	@echo -e "$(subst SECTION_NAME,ruff-linter,$(GL_SECTION_END))"
 
 .PHONY:
 docker-django:
