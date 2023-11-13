@@ -326,7 +326,7 @@ clean:
 
 
 .PHONY:
-lint-py: ruff-format-check  prospector{% if cookiecutter.use_mypy == YES %} mypy{% endif %}
+lint-py: ruff-format-check ruff-lint prospector
 
 .PHONY:
 lint-js: prettier-check-all eslint node-typecheck stylelint
@@ -338,7 +338,7 @@ lint: lint-py lint-js
 quality: lint poetry-check
 
 .PHONY:
-fmt-py: ruff-format
+fmt-py: ruff-format ruff-lint-fix
 
 .PHONY:
 fmt-js: eslint-fix prettier-format-all
@@ -412,7 +412,7 @@ ruff-lint:
 
 .PHONY:
 ruff-lint-fix:
-	@make run-python cmd="ruff --fix-only --exit-non-zero-on-fix ."
+	@make run-python cmd="ruff --fix --exit-non-zero-on-fix ."
 
 .PHONY:
 ruff-lint-ci:

@@ -52,7 +52,7 @@ if settings.IS_UNITTEST:  # pragma: no branch
         This view is used during unit tests to ensure correct error view is
         used by the application when another view fails.
         """
-        raise Exception("Example error")
+        raise Exception("Example error") # noqa: TRY002
 
     urlpatterns += [
         path("test500", failing_view),

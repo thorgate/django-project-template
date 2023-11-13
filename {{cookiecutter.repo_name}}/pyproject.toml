@@ -223,7 +223,6 @@ ignore_errors = true
 [tool.ruff]
 target-version = "py311"
 line-length = 120
-indent-width = 4
 
 show-fixes = true
 cache-dir = "/root/.cache/ruff"
@@ -312,6 +311,8 @@ unfixable = [
     "PLR0915", # Too many statements (X > 15)
     "S106", # Possible hardcoded password assigned to argument
     "N802", # Function name `name` should be lowercase
+    "TID252", # Relative imports from parent modules are banned
+    "PT011", # `pytest.raises(ValueError)` is too broad, set the `match` parameter or use a more specific exception
 ]
 
 # The following rules are native re-implementations in ruff.
@@ -354,13 +355,12 @@ banned-from = ["typing"]
 "typing" = "t"
 
 [tool.ruff.flake8-import-conventions.banned-aliases]
-"django.utils.translation.gettext" = ["_"]
-"django.utils.translation.gettext_lazy" = ["_"]
-"django.utils.translation.pgettext" = ["_"]
-"django.utils.translation.pgettext_lazy" = ["_"]
-"django.utils.translation.ngettext" = ["_"]
-"django.utils.translation.ngettext_lazy" = ["_"]
-
+#"django.utils.translation.gettext" = ["_"]
+#"django.utils.translation.gettext_lazy" = ["_"]
+#"django.utils.translation.pgettext" = ["_"]
+#"django.utils.translation.pgettext_lazy" = ["_"]
+#"django.utils.translation.ngettext" = ["_"]
+#"django.utils.translation.ngettext_lazy" = ["_"]
 
 [tool.ruff.format]
 # Like Black, use double quotes for strings.
