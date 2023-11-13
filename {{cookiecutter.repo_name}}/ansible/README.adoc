@@ -1,0 +1,42 @@
+= Ansible Deployments
+:toc:
+
+== Setup
+
+To use this template, first ensure that you have
+link:https://python-poetry.org/docs/[Poetry] available, and have generated an environment using `poetry install`
+
+With `Poetry` and `ansible` installed, all `ansible` commands can be executed like:
+
+[source,bash]
+----
+poetry run ansible-playbook --version
+----
+
+TIP: You can also start a subshell using `poetry shell`, and in that case can omit the `poetry run` prefix, and run `ansible-playbook` directly.
+
+include::docs/why_ansible.adoc[]
+
+include::docs/enviorment.adoc[]
+
+== Playbooks
+
+include::deploy.adoc[]
+
+=== Automated deployments
+{%- if cookiecutter.use_auto_deploy == YES %}
+
+xref:roles/autodeploy.adoc[AutoDeploy Readme]
+
+{%- else -%}
+
+TIP: This project isn't setup for automatic deploys, however it can be by updating the cookiecutter variable `use_auto_deploy`
+
+{%- endif %}
+
+
+include::superuser.adoc[]
+
+include::mirror.adoc[]
+
+include::clone.adoc[]

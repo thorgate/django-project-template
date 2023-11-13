@@ -83,12 +83,12 @@ def validate_project_works(result, config):
         # teardown
         try:
             subprocess.run(
-                ['docker-compose', 'down'],
+                ['docker compose', 'down'],
                 cwd=project_dir,
                 env=env,
             )
         except:
-            print("Failed to call docker-compose down")
+            print("Failed to call docker compose down")
 
 
 @pytest.mark.parametrize('docker_base_image', [ALPINE, DEBIAN])
@@ -313,9 +313,9 @@ def test_invalid_test_hostname_is_error(cookies, default_project):
     assert isinstance(result.exception, FailedHookException)
 
 
-def test_invalid_domain_name_is_error(cookies, default_project):
+def test_invalid_live_domain_name_is_error(cookies, default_project):
     default_project.update({
-        'domain_name': '-foo.com',
+        'live_domain_name': '-foo.com',
     })
 
     result = cookies.bake(extra_context=default_project)

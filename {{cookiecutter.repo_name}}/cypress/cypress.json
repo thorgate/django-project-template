@@ -1,8 +1,8 @@
 {
   {% if cookiecutter.frontend_style == SPA -%}
-  "baseUrl": "http://node-cypress.{{cookiecutter.domain_name}}.docker.local:9990",
+  "baseUrl": "http://node-cypress.{{cookiecutter.live_domain_name}}.docker.local:9990",
   {%- else -%}
-  "baseUrl": "http://django-cypress.{{cookiecutter.domain_name}}.docker.local:9999",
+  "baseUrl": "http://django-cypress.{{cookiecutter.live_domain_name}}.docker.local:9999",
   {%- endif %}
   "pageLoadTimeout": 60000,
   "defaultCommandTimeout": 10000,

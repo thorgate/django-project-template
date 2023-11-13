@@ -15,7 +15,7 @@ jiraProject: TODO
 #    fqdn: https://{{cookiecutter.repo_name|as_hostname}}.{{cookiecutter.test_host}}
 #  live:
 #    name: live
-#    fqdn: https://{{ cookiecutter.domain_name }}
+#    fqdn: https://{{ cookiecutter.live_domain_name }}
 tags:
   - django3
   - "postgres{{ cookiecutter.postgres_version }}"

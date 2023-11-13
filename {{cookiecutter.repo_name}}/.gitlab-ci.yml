@@ -61,7 +61,7 @@ test-django:
       - $CI_COMMIT_MESSAGE =~ /\[no tests?\]/
   script:
     - make settings
-    - docker-compose build django
+    - docker compose build django
     - make run-python cmd='entrypoint.sh -- echo "Installed dependencies"'
     - make lint-py
     - make coverage-py
@@ -102,7 +102,7 @@ test-node:
       - $CI_COMMIT_MESSAGE =~ /\[no tests?\]/
   script:
     - make settings
-    - docker-compose build node
+    - docker compose build node
     - make node-install
     - make lint-js
     - make coverage-js
@@ -138,7 +138,7 @@ build_compose_file:
     - ./scripts/images/prod-version-env.sh >> .env
 # - {%- endif %}
     # Ensure production images build also
-    - docker-compose -f docker-compose.production.yml build
+    - docker compose -f docker-compose.production.yml build
 
 # - {%- if cookiecutter.build_in_ci == YES %}
 .publish_image:
@@ -223,7 +223,7 @@ deploy_to_live:
     <<: *auto_deploy_base_env_variables
     DPT_AUTO_DEPLOY_ENVIRONMENT: live
     # TODO: Fill in correct value when live host is added
-    DPT_AUTO_DEPLOY_HOSTNAME: "production.{{ cookiecutter.domain_name }}"
+    DPT_AUTO_DEPLOY_HOSTNAME: "production.{{ cookiecutter.live_domain_name }}"
   script:
     # Create a new release in sentry
     - ./scripts/deploy/create-sentry-release.sh

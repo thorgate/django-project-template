@@ -1,4 +1,4 @@
-# Docker-compose configuration for Cypress testing
+# Docker compose configuration for Cypress testing
 # Note: -cypress suffixes were added to the container names so that
 #  Cypress tests could be run while the project is up.
 
@@ -14,7 +14,7 @@ services:
       # use the same ports to be able to access it from host and from docker at the same time
       - "${DJANGO_PORT}:${DJANGO_PORT}"
     volumes:
-      - "./{{cookiecutter.repo_name}}:/app"
+      - "./{{cookiecutter.django_folder_name}}:/app"
 # -   {%- if cookiecutter.frontend_style == WEBAPP %}
       - "./webapp/static:/app/static"
       - "./webapp/webapp:/app/webapp"
@@ -31,7 +31,7 @@ services:
     networks:
       default:
         aliases:
-          - django-cypress.{{cookiecutter.domain_name}}.docker.local
+          - django-cypress.{{cookiecutter.live_domain_name}}.docker.local
 
   node-cypress:
 # - {%- if cookiecutter.node_version|int < 14 %}
@@ -62,7 +62,7 @@ services:
     networks:
       default:
         aliases:
-          - node-cypress.{{cookiecutter.domain_name}}.docker.local
+          - node-cypress.{{cookiecutter.live_domain_name}}.docker.local
 
   postgres-cypress:
     # We want to always start with a fresh db, so don't mount any local volumes.

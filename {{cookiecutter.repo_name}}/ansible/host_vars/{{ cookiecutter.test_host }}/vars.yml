@@ -8,6 +8,10 @@ node_site_host: "{{ BASE_HOSTNAME }}"
 django_site_host: "{{ BASE_HOSTNAME }}"
 # - {%- endif %}
 
+# Email settings
+django_default_from_email: ""
+django_server_email: ""
+
 # Sentry config
 django_sentry_environment: "test"
 django_sentry_dsn: ""  # TODO: Set to correct value or remove the TODO
@@ -29,6 +33,9 @@ django_aws_storage_bucket_name: "{{ cookiecutter.repo_name }}-staging"
 
 # Which compose file to use in the server
 compose_file: "docker-compose.production.yml"
+
+# Which docker compose command to use. Compose v2 uses `docker compose` instead of `docker-compose`
+compose_command: "docker-compose"
 
 # What git branch to deploy to the server
 #  For temporary deployments see `Deploying a different version` section in the README in ansible directory.

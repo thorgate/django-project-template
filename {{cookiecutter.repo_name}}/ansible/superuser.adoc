@@ -1,0 +1,13 @@
+=== Create superuser to server
+
+WARNING: This feature only works with Django 3.0 or later.
+
+We have a playbook to help user to create superuser to remote server hosting the project.
+
+The role will ask for superuser email to use for creating it. Random password will be generated for you.
+You can run the role with:
+
+[source,shell]
+----
+poetry run ansible-playbook --limit test superuser.yml
+----

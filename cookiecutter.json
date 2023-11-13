@@ -1,30 +1,116 @@
 {
+
+    "_ tag::_tg_recommended_test_server[] ": "",
+    "_tg_recommended_test_server": "saturn.thorgate-digital.dev",
+    "_ end::_tg_recommended_test_server[] ": "",
+
+    "_tg_webmaster_email": "webmaster@thorgate.eu",
+
     "_extensions": [
         "cookiecutter_repo_extensions:Extension",
         "tg_filters:TGFiltersModule",
         "tg_dockerimage_lookup:TGDockerImageModule"
     ],
-    "*": "See variable reference: https://gitlab.com/thorgate-public/django-project-template/-/blob/master/README.md\n\t Press ENTER to continue.\n",
+
+    "*": "See variable reference: https://gitlab.com/thorgate-public/django-project-template/-/blob/master/CookiecutterVariables.adoc#variables\n\t Press ENTER to continue.\n",
+
+    "_ tag::project_title[] ": "",
     "project_title": "User-visible title of the project.",
+    "_ end::project_title[] ":"",
+
+    "_ tag::repo_name[] ": "",
     "repo_name": "{{cookiecutter.project_title|slugify(separator='_')}}",
+    "_ end::repo_name[] ": "",
+
+    "_ tag::thorgate[] ": "",
+    "thorgate": ["yes", "no"],
+    "_ end::thorgate[] ": "",
+
+    "_ tag::include_celery[] ":"",
     "include_celery": ["no", "yes"],
-    "domain_name": "TODO.com",
-    "test_host": "test.{{cookiecutter.domain_name}}",
-    "admin_email": "info@{{cookiecutter.domain_name}}",
+    "_ end::include_celery[] ": "",
+
+    "_ tag::django_folder_name[] ":"",
+    "django_folder_name": ["{{ cookiecutter.repo_name }}","backend", "django"],
+    "_ end::django_folder_name[] ": "",
+
+    "_ tag::default_django_app[] ":"",
+    "default_django_app": ["{{ cookiecutter.repo_name }}","backend","core"],
+    "_ end::default_django_app[] ": "",
+
+    "_ tag::live_domain_name[] ":"",
+    "live_domain_name": "{% if cookiecutter.thorgate == 'yes' %}{{ cookiecutter.repo_name|as_hostname }}.com{% else %}TODO.com{% endif %}",
+    "_ end::live_domain_name[] ": "",
+
+    "_ tag::test_host[] ":"",
+    "test_host": "{% if cookiecutter.thorgate == 'yes' %}{{cookiecutter._tg_recommended_test_server }}{% else %}test.{{cookiecutter.domain_name}}{% endif %}",
+    "_ end::test_host[] ": "",
+
+    "_ tag::admin_email[] ":"",
+    "admin_email": "{% if cookiecutter.thorgate == 'yes' %}{{cookiecutter._tg_webmaster_email }}{% else %}info@{{cookiecutter.domain_name}}{% endif %}",
+    "_ end::admin_email[] ": "",
+
+    "_ tag::docker_base_image[] ":"",
     "docker_base_image": ["alpine", "debian"],
+    "_ end::docker_base_image[] ": "",
+
+    "_ tag::python_version[] ":"",
     "python_version": ["3.10", "3.11", "3.9", "3.8", "3.7", "3.6"],
+    "_ end::python_version[] ": "",
+
+    "_ tag::node_version[] ":"",
     "node_version": ["14", "18", "16", "12", "10"],
+    "_ end::node_version[] ": "",
+
+    "_ tag::postgres_version[] ":"",
     "postgres_version": ["12", "11", "10", "9"],
+    "_ end::postgres_version[] ": "",
+
+    "_ tag::django_admin_path[] ":"",
     "django_admin_path": "adminpanel",
+    "_ end::django_admin_path[] ": "",
+
+    "_ tag::django_health_check_path[] ":"",
     "django_health_check_path": "_health",
+    "_ end::django_health_check_path[] ": "",
+
+    "_ tag::django_media_engine[] ":"",
     "django_media_engine": ["S3", "GCS"],
-    "gitlab_repo_url": "",
+    "_ end::django_media_engine[] ": "",
+
+    "_ tag::gitlab_repo_url[] ":"",
+    "gitlab_repo_url": "git@gitlab.com/{% if cookiecutter.thorgate == 'yes' %}thorgate{% else %}your-group{% endif %}/{{cookiecutter.repo_name}}.git",
+    "_ end::gitlab_repo_url[] ": "",
+
+    "_ tag::frontend_style[] ":"",
     "frontend_style": ["webapp", "spa"],
+    "_ end::frontend_style[] ": "",
+
+    "_ tag::x_frame_options[] ":"",
+    "x_frame_options": ["DENY", "SAMEORIGIN"],
+    "_ end::x_frame_options[] ":"",
+
+    "_ tag::webapp_include_storybook[] ":"",
     "webapp_include_storybook": ["no", "yes"],
+    "_ end::webapp_include_storybook[] ": "",
+
+    "_ tag::spa_django_host_prefix[] ":"",
     "spa_django_host_prefix": "office",
+    "_ end::spa_django_host_prefix[] ": "",
+
+    "_ tag::use_mypy[] ":"",
     "use_mypy": ["no", "yes"],
+    "_ end::use_mypy[] ": "",
+
+    "_ tag::use_cypress[] ":"",
     "use_cypress": ["no", "yes"],
-    "thorgate": ["no", "yes"],
+    "_ end::use_cypress[] ": "",
+
+    "_ tag::build_in_ci[] ":"",
     "build_in_ci": ["no", "yes"],
-    "use_auto_deploy": ["no", "yes"]
+    "_ end::build_in_ci[] ": "",
+
+    "_ tag::use_auto_deploy[] ":"",
+    "use_auto_deploy": ["no", "yes"],
+    "_ end::use_auto_deploy[] ": ""
 }

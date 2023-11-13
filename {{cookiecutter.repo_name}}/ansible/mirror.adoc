@@ -1,0 +1,35 @@
+=== Downloading server state to development environment
+
+We have a playbook to download the media and or database from a remote server hosting the project.
+
+WARNING: Using this playbook deletes the local database so back up `.data/postgresql` directory before if you
+ need to preserve your current database.
+
+TIP: If the project doesn't have s3 setup, be sure to use the <<db-tag>>, as otherwise the playbook will fail.
+
+==== Pre-requisites
+
+[#aws-cli]
+link:https://pypi.org/project/awscli/[AWS Commandline interface]::
+ If media storages is S3, then you must first install the aws-cli tool locally.
+ The easiest way to do it is via pip: `sudo pip install awscli`.
+
+
+==== tags
+
+[#db-tag]
+db::
+    Download only the database state.
+
+[#media-tag]
+media::
+    Download only the media files. Requires <<aws-cli>>
+
+==== Usage examples
+[source,bash]
+----
+poetry run ansible-playbook -v --limit test --tags db mirror.yml  # restores only the database
+poetry run ansible-playbook -v --limit test --tags media mirror.yml  # restores only the media files
+----
+
+
