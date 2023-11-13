@@ -68,7 +68,7 @@ isort = "^5"
 # Note prospector is very picky about its dependencies,
 # avoid specifying versions for pylint/pylint-django/astroid
 # and let prospector determine which versions work together
-prospector = {version = "^1.10.2", extras=["with_bandit"]}
+prospector = {version = "^1.10.3", extras=["with_bandit"]}
 # Excplicit pylint dependency should be removed once https://github.com/PyCQA/prospector/pull/530 is released
 pylint = "<2.15.7"
 pytest = "==7.*"
