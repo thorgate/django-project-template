@@ -20,7 +20,7 @@ python = "^{{ cookiecutter.python_version }}"
 celery = {version = "==5.2.*", extras = ["redis"]}
 # - {% endif %}
 Django = "==4.0.*"
-# - {%- if cookiecutter.x_frame_options == "DENY" %}
+# - {%- if cookiecutter.content_security_policy == YES %}
 django-csp = "^3.7"
 # - {% endif %}
 environs = "^9.5.0"

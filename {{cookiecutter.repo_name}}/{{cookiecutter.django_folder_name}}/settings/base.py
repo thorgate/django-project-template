@@ -111,12 +111,13 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # - {%- if cookiecutter.x_frame_options == "DENY" %}
+    # - {%- if cookiecutter.content_security_policy == YES %}
     "csp.middleware.CSPMiddleware",
     # - {%- endif %}
 ]
 
-# - {%- if cookiecutter.x_frame_options == "DENY" %}
+# - {%- if cookiecutter.content_security_policy == YES %}
+# Content Security Policy https://django-csp.readthedocs.io/en/latest/configuration.html
 CSP_INCLUDE_NONCE_IN = (
     "script-src",
     "style-src",
