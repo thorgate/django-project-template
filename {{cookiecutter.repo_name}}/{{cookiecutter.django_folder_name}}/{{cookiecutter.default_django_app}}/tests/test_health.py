@@ -17,7 +17,7 @@ from tg_utils.health_check.checks.celery_beat.backends import CACHE_KEY, TIMEOUT
 
 # - {%- if cookiecutter.include_celery == YES %}
 @pytest.fixture(autouse=True)
-def patch_celery(mocker: MockerFixture):
+def _patch_celery(mocker: MockerFixture):
     cache.set(CACHE_KEY, datetime.now(), timeout=TIMEOUT * 2)
     mocker.patch("health_check.contrib.celery.backends.CeleryHealthCheck.check_status")
     yield
