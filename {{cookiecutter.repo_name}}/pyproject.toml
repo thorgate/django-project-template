@@ -4,7 +4,7 @@ version = "1.0"
 description = "{{ cookiecutter.project_title }}"
 license = "Proprietary" # or "MIT"
 authors = ["{{ cookiecutter.live_domain_name }} <{{ cookiecutter.admin_email }}>"]
-repository = "{{ cookiecutter.gitlab_repo_url }}"
+repository = "ssh://{{ cookiecutter.gitlab_repo_url | as_git_path }}"
 
 # NOTE:
 # without this explicit reference to PyPI, poetry may raise exception "PackageNotFound".
