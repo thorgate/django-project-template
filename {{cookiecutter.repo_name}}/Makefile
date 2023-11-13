@@ -38,10 +38,11 @@ JS_COBERTURA="webapp/coverage/cobertura-coverage.xml"
 # export DPT_POETRY_CACHE_DIR=/path/to/cache/pypoetry
 # export DPT_PIP_CACHE_DIR=/path/to/cache/pip
 #
-# Note: We do not recommend to share the cache with your system pip/poetry cache as you
+# Note: We do not recommend to share the cache with your system pip/poetry/ruff cache as you
 #        will start getting PermissionError's when interfacing with pip/poetry on your machine.
 DPT_POETRY_CACHE_DIR ?= $(PROJECT_ROOT)/.data/pycache/pypoetry
 DPT_PIP_CACHE_DIR ?= $(PROJECT_ROOT)/.data/pycache/pip
+DPT_RUFF_CACHE_DIR ?= $(PROJECT_ROOT)/.data/pycache/ruff
 
 BLACK ?= \033[0;30m
 RED ?= \033[0;31m
@@ -66,6 +67,7 @@ help:
 	@echo -e "PROJECT_ROOT: $(PROJECT_ROOT)"
 	@echo -e "SITE_ROOT: $(SITE_ROOT)"
 	@echo -e "DPT_POETRY_CACHE_DIR: $(DPT_POETRY_CACHE_DIR)"
+	@echo -e "DPT_RUFF_CACHE_DIR: $(DPT_RUFF_CACHE_DIR)"
 	@echo -e "DPT_PIP_CACHE_DIR: $(DPT_PIP_CACHE_DIR)"
 	@echo -e ""
 	@echo -e "+------<<<<                                     Tasks                                    >>>>------+"
@@ -175,6 +177,7 @@ run-python:
 	fi; \
 	docker run -t --rm \
 	 -v $(DPT_POETRY_CACHE_DIR):/root/.cache/pypoetry \
+	 -v $(DPT_RUFF_CACHE_DIR):/root/.cache/ruff \
 	 -v $(DPT_PIP_CACHE_DIR):/root/.cache/pip \
 	 -v $(SITE_ROOT):/app \
 	 -v $(PROJECT_ROOT)/pyproject.toml:/pyproject.toml \
