@@ -26,7 +26,7 @@ ansible-vault = "^2.1.0"
 git-url-parse = "==1.2.*"
 
 [tool.poetry.dev-dependencies]
-black = "==22.3.0"
+ruff = "0.1.5"
 pyyaml = "^6"
 pytest = "^7"
 pytest-env = "^0.8.1"
@@ -35,26 +35,3 @@ pytest-cookies = "==0.6.1"
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
-
-[tool.black]
-line-length = 88
-include = '\.pyi?$'
-exclude = '''
-
-(
-  /(
-      \.eggs         # exclude a few common directories in the
-    | \.git          # root of the project
-    | \.mypy_cache
-    | \.tox
-    | \.venv
-    | _build
-    | build
-    | dist
-    | docs
-  )/
-  | fabfile.py
-  | local.py
-  | local_test.py
-)
-'''

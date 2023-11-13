@@ -21,6 +21,8 @@ x-django-container-spec: &django-container-spec
     - "./webapp/webapp:/app/webapp"
 # -   {%- endif %}
     - ".data/media:/files/media"
+    - ".data/.ipython:/root/.ipython"
+    - &ruff-volume "${DPT_POETRY_CACHE_DIR:-.data/pycache/pypoetry}:/root/.cache/pypoetry"
     - &poetry-volume "${DPT_POETRY_CACHE_DIR:-.data/pycache/pypoetry}:/root/.cache/pypoetry"
     - &pip-volume "${DPT_PIP_CACHE_DIR:-.data/pycache/pip}:/root/.cache/pip"
     - &pyproject-volume "./pyproject.toml:/pyproject.toml"
