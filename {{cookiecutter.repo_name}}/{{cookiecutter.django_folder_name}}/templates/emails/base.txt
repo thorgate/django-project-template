@@ -1,4 +1,4 @@
-{% raw %}{% load i18n %}{% block greeting %}{% trans "Hi there," %}
+{% raw %}{% load i18n %}{% block greeting %}{% trans "Hi there," %}{% endblock greeting %}
 
 {% block content %}{% endblock content %}
 
