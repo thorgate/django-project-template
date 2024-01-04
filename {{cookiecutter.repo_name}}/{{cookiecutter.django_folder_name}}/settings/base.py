@@ -111,12 +111,13 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # - {%- if cookiecutter.x_frame_options == "DENY" %}
+    # - {%- if cookiecutter.content_security_policy == YES %}
     "csp.middleware.CSPMiddleware",
     # - {%- endif %}
 ]
 
-# - {%- if cookiecutter.x_frame_options == "DENY" %}
+# - {%- if cookiecutter.content_security_policy == YES %}
+# Content Security Policy https://django-csp.readthedocs.io/en/latest/configuration.html
 CSP_INCLUDE_NONCE_IN = (
     "script-src",
     "style-src",
@@ -125,9 +126,16 @@ CSP_BASE_URI = ("'self'",)
 CSP_DEFAULT_SRC = ("'self'",)
 CSP_CONNECT_SRC = ("'self'",)
 CSP_FONT_SRC = ("'self'",)
-CSP_IMG_SRC = ("'self'", "data:",)
-CSP_SCRIPT_SRC = ("'self'",)
-CSP_STYLE_SRC = ("'self'",)
+CSP_IMG_SRC = ("*", )
+CSP_SCRIPT_SRC = (
+    "'self'",
+    "'unsafe-inline'",
+    "'unsafe-eval'"
+)
+CSP_STYLE_SRC = (
+    "'self'",
+    "'unsafe-inline'",
+)
 CSP_FORM_ACTION = ("'self'",)
 CSP_FRAME_ANCESTORS = ("'self'",)
 CSP_OBJECT_SRC = ("'none'",)

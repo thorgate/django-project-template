@@ -90,6 +90,10 @@
     "x_frame_options": ["DENY", "SAMEORIGIN"],
     "_ end::x_frame_options[] ":"",
 
+    "_ tag::content_security_policy[] ":"",
+    "content_security_policy": ["no", "yes"],
+    "_ end::content_security_policy[] ":"",
+
     "_ tag::webapp_include_storybook[] ":"",
     "webapp_include_storybook": ["no", "yes"],
     "_ end::webapp_include_storybook[] ": "",
