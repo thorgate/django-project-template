@@ -169,6 +169,7 @@ addopts = [
 DJANGO_SETTINGS_MODULE = "settings.local_test"
 markers = ["django_db", "parametrize", "unit"]
 norecursedirs = [
+    "settings",
     "migrations",
     ".data",
 # - {% if cookiecutter.frontend_style == SPA %}
