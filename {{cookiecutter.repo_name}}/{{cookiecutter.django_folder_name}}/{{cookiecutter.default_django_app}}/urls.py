@@ -33,7 +33,7 @@ urlpatterns = [
     ),
 ]
 
-if not settings.DEBUG:
+if not settings.DEBUG or settings.IS_UNITTEST:
     handler500 = f"{settings.DEFAULT_DJANGO_APP}.views.server_error"
     handler404 = f"{settings.DEFAULT_DJANGO_APP}.views.page_not_found"
 

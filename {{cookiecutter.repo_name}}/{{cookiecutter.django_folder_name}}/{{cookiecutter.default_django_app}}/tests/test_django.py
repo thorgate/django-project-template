@@ -6,7 +6,7 @@ from django.test import override_settings
 import pytest
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db()
 def test_for_missing_migrations():
     output = StringIO()
     try:
@@ -21,7 +21,7 @@ def test_for_missing_migrations():
 #   (tg_utils.W001) EMAIL_HOST_PASSWORD setting is not set to proper value
 # while locally we don't need a password because we use mailhog
 @override_settings(EMAIL_HOST_PASSWORD="propervalue")
-@pytest.mark.django_db
+@pytest.mark.django_db()
 def test_django_checks():
     try:
         call_command("check", fail_level="WARNING")

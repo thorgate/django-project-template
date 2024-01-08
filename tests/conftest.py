@@ -44,7 +44,7 @@ def pytest_runtest_setup(item):
         pytest.skip("test requires env in {!r}".format(test_envs))
 
 
-@pytest.fixture
+@pytest.fixture()
 def default_project():
     return {
         "project_title": "Test project",

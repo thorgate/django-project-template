@@ -329,7 +329,11 @@ clean:
 
 
 .PHONY:
+ifdef GITLAB_CI
+lint-py: ruff-format-check prospector
+else
 lint-py: ruff-format-check ruff-lint prospector
+endif
 
 .PHONY:
 lint-js: prettier-check-all eslint node-typecheck stylelint
@@ -411,6 +415,7 @@ ruff-format:
 
 .PHONY:
 ruff-lint:
+	@echo -e "$(CYAN)Running The Ruff Linter$(COFF)"
 	@make run-python cmd="ruff ."
 
 .PHONY:
@@ -419,7 +424,7 @@ ruff-lint-fix:
 
 .PHONY:
 ruff-lint-ci:
-	@echo -e "$(subst SECTION_NAME,ruff-linter,$(GL_SECTION_START))$(CYAN)Running The Ruff Linter$(COFF)"
+	@echo -e "$(subst SECTION_NAME,ruff-linter,$(GL_SECTION_START))$(CYAN)Running The Ruff Linter [ci]$(COFF)"
 	@make run-python cmd="ruff --exit-zero --output-format gitlab --output-file coverage/python/ruff.json ."
 	# might be wrong here...
 	@make run-python cmd="sed -i 's|\"path\": \"|&${CI_PROJECT_DIR}/${DJANGO_FOLDER_NAME}/|g' coverage/python/ruff.json"

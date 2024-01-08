@@ -24,14 +24,14 @@ def _patch_celery(mocker: MockerFixture):
 # - {%- endif %}
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db()
 def test_health_url(django_client: Client):
     response = django_client.get(f"/{ settings.DJANGO_HEALTH_CHECK_PATH }")
     assert response.status_code == 200
     assert response.json() == {"error": False}
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db()
 def test_health_detail_no_token(django_client: Client):
     response = django_client.get(f"/{ settings.DJANGO_HEALTH_CHECK_PATH }/details")
     assert response.status_code == 403
@@ -40,7 +40,7 @@ def test_health_detail_no_token(django_client: Client):
     assert response.status_code == 403
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db()
 def test_health_detail(django_client: Client):
     response = django_client.get(
         f"/{ settings.DJANGO_HEALTH_CHECK_PATH }/details?healthtoken={settings.HEALTH_CHECK_ACCESS_TOKEN}"
