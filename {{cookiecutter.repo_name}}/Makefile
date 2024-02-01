@@ -38,10 +38,11 @@ JS_COBERTURA="webapp/coverage/cobertura-coverage.xml"
 # export DPT_POETRY_CACHE_DIR=/path/to/cache/pypoetry
 # export DPT_PIP_CACHE_DIR=/path/to/cache/pip
 #
-# Note: We do not recommend to share the cache with your system pip/poetry cache as you
+# Note: We do not recommend to share the cache with your system pip/poetry/ruff cache as you
 #        will start getting PermissionError's when interfacing with pip/poetry on your machine.
 DPT_POETRY_CACHE_DIR ?= $(PROJECT_ROOT)/.data/pycache/pypoetry
 DPT_PIP_CACHE_DIR ?= $(PROJECT_ROOT)/.data/pycache/pip
+DPT_RUFF_CACHE_DIR ?= $(PROJECT_ROOT)/.data/pycache/ruff
 
 BLACK ?= \033[0;30m
 RED ?= \033[0;31m
@@ -66,6 +67,7 @@ help:
 	@echo -e "PROJECT_ROOT: $(PROJECT_ROOT)"
 	@echo -e "SITE_ROOT: $(SITE_ROOT)"
 	@echo -e "DPT_POETRY_CACHE_DIR: $(DPT_POETRY_CACHE_DIR)"
+	@echo -e "DPT_RUFF_CACHE_DIR: $(DPT_RUFF_CACHE_DIR)"
 	@echo -e "DPT_PIP_CACHE_DIR: $(DPT_PIP_CACHE_DIR)"
 	@echo -e ""
 	@echo -e "+------<<<<                                     Tasks                                    >>>>------+"
@@ -175,31 +177,13 @@ run-python:
 	fi; \
 	docker run -t --rm \
 	 -v $(DPT_POETRY_CACHE_DIR):/root/.cache/pypoetry \
+	 -v $(DPT_RUFF_CACHE_DIR):/root/.cache/ruff \
 	 -v $(DPT_PIP_CACHE_DIR):/root/.cache/pip \
 	 -v $(SITE_ROOT):/app \
 	 -v $(PROJECT_ROOT)/pyproject.toml:/pyproject.toml \
 	 -v $(PROJECT_ROOT)/poetry.lock:/poetry.lock \
 	  $(DJANGO_IMAGE_NAME) $(cmd)
 
-
-.PHONY:
-black-check:
-	@make run-python cmd="black --check --diff $(cmd)"
-
-
-.PHONY:
-black-check-all:
-	@make run-python cmd="black --check --diff ."
-
-
-.PHONY:
-black-format:
-	@make run-python cmd="black $(cmd)"
-
-
-.PHONY:
-black-format-all: ## Format Python code with Black
-	@make run-python cmd="black ."
 
 
 .PHONY:
@@ -345,7 +329,11 @@ clean:
 
 
 .PHONY:
-lint-py: black-check-all isort prospector{% if cookiecutter.use_mypy == YES %} mypy{% endif %}
+ifdef GITLAB_CI
+lint-py: ruff-format-check prospector
+else
+lint-py: ruff-format-check ruff-lint prospector
+endif
 
 .PHONY:
 lint-js: prettier-check-all eslint node-typecheck stylelint
@@ -357,7 +345,7 @@ lint: lint-py lint-js
 quality: lint poetry-check
 
 .PHONY:
-fmt-py: black-format-all isort-fix
+fmt-py: ruff-format ruff-lint-fix
 
 .PHONY:
 fmt-js: eslint-fix prettier-format-all
@@ -413,16 +401,34 @@ stylelint:
 
 
 .PHONY:
-isort:
-	@echo -e "$(CYAN)Checking imports with isort$(COFF)"
-	@make run-python cmd='isort . --check --diff'
-
+ruff-format-check:
+	@echo -e "$(subst SECTION_NAME,ruff-format-check,$(GL_SECTION_START))$(CYAN)Running ruff format (check)$(COFF)"
+	@make run-python cmd="ruff format . --diff"
+	@make run-python cmd="ruff --select I . --diff"
+	@echo -e "$(subst SECTION_NAME,ruff-format-check,$(GL_SECTION_END))"
 
 .PHONY:
-isort-fix: ## Fix imports automatically with isort
-	@echo -e "$(CYAN)Fixing imports with isort$(COFF)"
-	@make run-python cmd='isort .'
+ruff-format:
+	@echo -e "$(CYAN)Running ruff format$(COFF)"
+	@make run-python cmd="ruff format ."
+	@make run-python cmd="ruff --select I . --fix"
 
+.PHONY:
+ruff-lint:
+	@echo -e "$(CYAN)Running The Ruff Linter$(COFF)"
+	@make run-python cmd="ruff ."
+
+.PHONY:
+ruff-lint-fix:
+	@make run-python cmd="ruff --fix --exit-non-zero-on-fix ."
+
+.PHONY:
+ruff-lint-ci:
+	@echo -e "$(subst SECTION_NAME,ruff-linter,$(GL_SECTION_START))$(CYAN)Running The Ruff Linter [ci]$(COFF)"
+	@make run-python cmd="ruff --exit-zero --output-format gitlab --output-file coverage/python/ruff.json ."
+	# might be wrong here...
+	@make run-python cmd="sed -i 's|\"path\": \"|&${CI_PROJECT_DIR}/${DJANGO_FOLDER_NAME}/|g' coverage/python/ruff.json"
+	@echo -e "$(subst SECTION_NAME,ruff-linter,$(GL_SECTION_END))"
 
 .PHONY:
 docker-django:

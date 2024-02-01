@@ -33,7 +33,7 @@ urlpatterns = [
     ),
 ]
 
-if not settings.DEBUG:
+if not settings.DEBUG or settings.IS_UNITTEST:
     handler500 = f"{settings.DEFAULT_DJANGO_APP}.views.server_error"
     handler404 = f"{settings.DEFAULT_DJANGO_APP}.views.page_not_found"
 
@@ -52,7 +52,7 @@ if settings.IS_UNITTEST:  # pragma: no branch
         This view is used during unit tests to ensure correct error view is
         used by the application when another view fails.
         """
-        raise Exception("Example error")
+        raise Exception("Example error") # noqa: TRY002
 
     urlpatterns += [
         path("test500", failing_view),

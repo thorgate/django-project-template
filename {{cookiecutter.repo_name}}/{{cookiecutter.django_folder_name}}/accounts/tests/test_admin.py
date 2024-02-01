@@ -8,7 +8,7 @@ import pytest
 from ..models import User
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db()
 def test_admin_create_user(client, superuser):
     client.force_login(superuser)
 
@@ -31,7 +31,7 @@ def test_admin_create_user(client, superuser):
     assert User.objects.filter(email="t@t.sdf").exists()
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db()
 def test_admin_change_user(superuser):
     client = Client(enforce_csrf_checks=True)
     client.force_login(superuser)

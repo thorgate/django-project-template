@@ -8,7 +8,7 @@ import pytest
 from ..views import page_not_found, server_error
 
 
-@pytest.fixture
+@pytest.fixture()
 def err_client():
     return Client(raise_request_exception=False)
 

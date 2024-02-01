@@ -38,7 +38,7 @@ def page_not_found(request, exception, template_name="404.html"):
 @requires_csrf_token
 def server_error(request, template_name="500.html"):
     if (
-        request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+        request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest"
         or request.META.get("HTTP_ACCEPT", "text/plain") == "application/json"
     ):
         return JsonResponse(

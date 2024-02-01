@@ -44,10 +44,10 @@ def pytest_runtest_setup(item):
         pytest.skip("test requires env in {!r}".format(test_envs))
 
 
-@pytest.fixture
+@pytest.fixture()
 def default_project():
     return {
-        "project_title": "Test project",
+        "project_title": "CI project",
         "repo_name": "ci_project",
         "include_celery": NO,
         "webapp_include_storybook": NO,

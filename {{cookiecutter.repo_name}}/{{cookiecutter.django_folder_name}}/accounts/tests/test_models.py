@@ -12,21 +12,21 @@ def test_custom_user_model():
     assert settings.AUTH_USER_MODEL == "accounts.User"
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db()
 def test_get_full_name():
     user = User(name="Foo bar Buzz III")
 
     assert user.get_full_name() == "Foo bar Buzz III"
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db()
 def test_get_short_name():
     user = User(name="Foo bar Buzz III")
 
     assert user.get_short_name() == "Foo bar Buzz III"
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db()
 def test_create_user():
     now = timezone.now()
 
@@ -47,7 +47,7 @@ def test_create_user():
     assert User.objects.get(email="foo@bar.sdf").pk == user.pk
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db()
 def test_create_user_email_required():
     with pytest.raises(ValueError):
         User.objects.create_user(email="")
@@ -56,7 +56,7 @@ def test_create_user_email_required():
         User.objects.create_user()
 
 
-@pytest.mark.django_db
+@pytest.mark.django_db()
 def test_create_superuser():
     random_pass = User.objects.make_random_password(16)
 

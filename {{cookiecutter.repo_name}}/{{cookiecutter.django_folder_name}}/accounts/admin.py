@@ -1,3 +1,5 @@
+import contextlib
+
 from django.contrib import admin
 from django.contrib.auth import forms as auth_forms
 from django.contrib.auth.admin import UserAdmin
@@ -56,5 +58,8 @@ class CustomUserAdmin(UserAdmin):
     form = UserChangeForm
     add_form = UserCreationForm
 
+
+with contextlib.suppress(admin.sites.NotRegistered):
+    admin.site.unregister(User)
 
 admin.site.register(User, CustomUserAdmin)

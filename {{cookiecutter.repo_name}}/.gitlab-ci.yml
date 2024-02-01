@@ -65,6 +65,7 @@ test-django:
     - make run-python cmd='entrypoint.sh -- echo "Installed dependencies"'
     - make lint-py
     - make coverage-py
+    - make ruff-lint-ci
     - make patch-coverage-py-paths
 
 test-node:

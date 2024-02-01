@@ -205,15 +205,9 @@ def kill_lines(path):
 
 
 def run_lint_fix(path):
-    print("Running black")
-    subprocess.check_call(["black", path])
-
-    #  isort has issues.
-    #  Getting different results depending for local ipython isort,  make isort, in posthook.
-
-    # print("Running isort")
-    # print(subprocess.check_output(["isort", cwd, "-p", path, "-y"]))
-
+    subprocess.check_call(["ruff","--cache-dir=.ruff_cache", "--fix", path])
+    subprocess.check_call(["ruff","--cache-dir=.ruff_cache", "--select", "I", path])
+    subprocess.check_call(["ruff","format", "--cache-dir=.ruff_cache", path])
 
 def ask_input(prompt, default_response=None, allowed_responses=None):
     while True:
