@@ -4,7 +4,8 @@ version = "1.0"
 description = "The Django project template"
 authors = ["Thorgate <info@thorgate.eu>"]
 repository = "https://gitlab.com/thorgate-public/django-project-template"
-package-mode = false
+# When poetry is updated to 1.8+, uncomment the following line
+# package-mode = false
 
 # NOTE:
 # without this explicit reference to PyPI, poetry may raise exception "PackageNotFound".

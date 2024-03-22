@@ -42,7 +42,7 @@ stages:
     - export ENV_FOLDER=`poetry env list | cut -f 1 -d ' '`
     - export VIRTUAL_ENV="${CI_PROJECT_DIR}/.cache/virtualenvs/${ENV_FOLDER}"
     - export PATH="${VIRTUAL_ENV}/bin:${PATH}"
-    - pytest -E ${TEST_TAG} --maxfail=1 -v
+    - pytest -E ${TEST_TAG} --maxfail=1 -vvv
   cache:
     key: ci-python-cache
     paths:
