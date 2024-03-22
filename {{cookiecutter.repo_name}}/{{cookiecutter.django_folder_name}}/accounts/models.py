@@ -3,7 +3,6 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
-from django.contrib.postgres.fields import CIEmailField
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -41,7 +40,12 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    email = CIEmailField(verbose_name=_("email address"), max_length=254, unique=True)
+    email = models.EmailField(
+        verbose_name=_("email address"),
+        max_length=254,
+        unique=True,
+        db_collation="case_insensitive",
+    )
     name = models.CharField(max_length=255)
 
     is_staff = models.BooleanField(_("staff status"), default=False)
