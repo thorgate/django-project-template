@@ -5,13 +5,14 @@ description = "{{ cookiecutter.project_title }}"
 license = "Proprietary" # or "MIT"
 authors = ["{{ cookiecutter.live_domain_name }} <{{ cookiecutter.admin_email }}>"]
 repository = "ssh://{{ cookiecutter.gitlab_repo_url | as_git_path }}"
+package-mode = false
 
 # NOTE:
 # without this explicit reference to PyPI, poetry may raise exception "PackageNotFound".
 [[tool.poetry.source]]
 name = "the_pypi"
 url = "https://pypi.org/simple"
-priority = "default"
+priority = "primary"
 
 [tool.poetry.dependencies]
 python = "^{{ cookiecutter.python_version }}"
@@ -19,7 +20,7 @@ python = "^{{ cookiecutter.python_version }}"
 # - {% if cookiecutter.include_celery == YES %}
 celery = {version = "==5.2.*", extras = ["redis"]}
 # - {% endif %}
-Django = "==4.0.*"
+Django = "==4.2.*"
 # - {%- if cookiecutter.content_security_policy == YES %}
 django-csp = "^3.7"
 # - {% endif %}
