@@ -3,6 +3,7 @@
 FROM {{ python_image(cookiecutter.python_version, ALPINE) }}
 
 ENV PYTHONPYCACHEPREFIX /.pycache
+ENV PIP_BREAK_SYSTEM_PACKAGES 1
 
 # Let all *.pyc files stay within the container, for Python >= 3.8
 RUN mkdir -p $PYTHONPYCACHEPREFIX
