@@ -59,7 +59,7 @@
     "_ end::python_version[] ": "",
 
     "_ tag::node_version[] ":"",
-    "node_version": ["14", "18", "16", "12", "10"],
+    "node_version": ["16", "18"],
     "_ end::node_version[] ": "",
 
     "_ tag::postgres_version[] ":"",

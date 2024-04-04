@@ -80,6 +80,7 @@ INSTALLED_APPS = [
     "django_filters",
     "tg_react",
     "corsheaders",
+    "drf_spectacular",
     # - {%- endif %}
     # Health-checks
     "health_check",
@@ -111,6 +112,9 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # - {%- if cookiecutter.frontend_style == SPA %}
+    "djangorestframework_camel_case.middleware.CamelCaseMiddleWare",
+    # - {%- endif %}
     # - {%- if cookiecutter.content_security_policy == YES %}
     "csp.middleware.CSPMiddleware",
     # - {%- endif %}
@@ -310,8 +314,8 @@ AUTH_USER_MODEL = "accounts.User"
 SITE_URL = env.str("DJANGO_SITE_URL", default="http://127.0.0.1:8000")
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=[])
 # - {% elif  cookiecutter.frontend_style == SPA %}
-SITE_URL = env.str("RAZZLE_SITE_URL", default="http://127.0.0.1:8000")
-DJANGO_SITE_URL = env.str("RAZZLE_BACKEND_SITE_URL", default="http://127.0.0.1:3000")
+SITE_URL = env.str("APP_SITE_URL", default="http://127.0.0.1:3000")
+DJANGO_SITE_URL = env.str("APP_BACKEND_SITE_URL", default="http://127.0.0.1:8000")
 ALLOWED_HOSTS = env.list(
     "DJANGO_ALLOWED_HOSTS", default=["django", "localhost", "127.0.0.1"]
 )
@@ -403,6 +407,12 @@ REST_FRAMEWORK = {
         # By default api session authentication is not used
         # "rest_framework.authentication.SessionAuthentication",
     ),
+    "DEFAULT_RENDERER_CLASSES": (
+        "djangorestframework_camel_case.render.CamelCaseJSONRenderer",
+    ),
+    "DEFAULT_PARSER_CLASSES": (
+        "djangorestframework_camel_case.parser.CamelCaseJSONParser",
+    ),
     "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
     # Change default full-url media files to be only stored path, needs /media prepended in frontend
     "UPLOADED_FILES_USE_URL": False,
@@ -413,7 +423,26 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.IsAuthenticatedOrReadOnly",
     ),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": PROJECT_NAME,
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "POSTPROCESSING_HOOKS": [
+        "drf_spectacular.contrib.djangorestframework_camel_case.camelize_serializer_fields",
+    ],
+    "CAMELIZE_NAMES": True,
+    "SCHEMA_PATH_PREFIX": "/api/",
+    "SERVERS": [
+        {
+            "url": "http://127.0.0.1:8000/",
+            "description": "Local development environment",
+        },
+    ],
+}
+
 # - {%- endif %}
 
 # Default values for sentry
@@ -458,12 +487,28 @@ REVERSEJS_GLOBAL_OBJECT_NAME = "DJ_CONST"
 REVERSEJS_EXCLUDE_NAMESPACES = ["admin", "djdt"]
 # - {%- else %}
 
+# JWT authentication settings
+JWT_PRIVATE_KEY = env.str("DJANGO_JWT_PRIVATE_KEY", default=None)
+JWT_PUBLIC_KEY = env.str("DJANGO_JWT_PUBLIC_KEY", default=None)
+
+JWT_MAX_AGE = env.int("DJANGO_JWT_MAX_AGE", default=5 * 60)
+
+JWT_ALGORITHM = "HS256"
+JWT_SIGNING_KEY = SECRET_KEY
+JWT_VERIFYING_KEY = None
+
+if JWT_PRIVATE_KEY and JWT_PUBLIC_KEY:
+    JWT_ALGORITHM = "RS256"
+    JWT_SIGNING_KEY = JWT_PRIVATE_KEY
+    JWT_VERIFYING_KEY = JWT_PUBLIC_KEY
+
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=JWT_MAX_AGE),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": True,
-    "ALGORITHM": "HS256",
-    "SIGNING_KEY": SECRET_KEY,
+    "ALGORITHM": JWT_ALGORITHM,
+    "SIGNING_KEY": JWT_SIGNING_KEY,
+    "VERIFYING_KEY": JWT_VERIFYING_KEY,
     "AUTH_HEADER_TYPES": ("Bearer",),
     "USER_ID_FIELD": "pk",
     "USER_ID_CLAIM": "user_id",
