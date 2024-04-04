@@ -1,4 +1,4 @@
-import { permissionCheck } from '@thorgate/spa-permissions';
+import { permissionCheck } from "@thorgate/spa-permissions";
 
 /**
  * Check if user is authenticated, if not then user is returned to login screen.
@@ -8,9 +8,7 @@ import { permissionCheck } from '@thorgate/spa-permissions';
  * @returns {React.Component|Function} Wrapped component
  */
 export const loginRequired = (decoratorProps = {}) =>
-    permissionCheck(({ isAuthenticated }) => isAuthenticated, 'loginRequired', {
-        redirectRouteName: 'auth:login',
-        PermissionDeniedComponent: null, // Login works as redirect
+    permissionCheck(({ isAuthenticated }) => isAuthenticated, "loginRequired", {
         ...decoratorProps,
     });
 
@@ -25,8 +23,8 @@ export const superUserRequired = (decoratorProps = {}) =>
     permissionCheck(
         ({ user, isAuthenticated }) =>
             isAuthenticated && !!user && user.is_superuser,
-        'superUserRequired',
+        "superUserRequired",
         {
             ...decoratorProps,
-        },
+        }
     );

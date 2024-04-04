@@ -1,10 +1,10 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React from 'react';
-import { connect, getIn } from 'formik';
-import { useTranslation } from 'react-i18next';
-import { Col, FormGroup, Label, Input, InputGroup, FormText } from 'reactstrap';
+import React from "react";
+import { connect, getIn } from "formik";
+import { useTranslation } from "react-i18next";
+import { Col, FormGroup, Label, Input, InputGroup, FormText } from "reactstrap";
 
-import { FieldProps } from 'utils/types';
+import { FieldProps } from "@/src/utils/types";
 
 const MAX_GRID_SIZE = 12;
 

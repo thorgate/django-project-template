@@ -1,13 +1,13 @@
-import { userActions } from '@thorgate/spa-permissions';
-import { getLocalStorage } from '@thorgate/spa-view';
-import { getLocation, replace } from 'connected-react-router';
-import { call, select, put, retry, take } from 'redux-saga/effects';
-import qs from 'qs';
+import { userActions } from "@thorgate/spa-permissions";
+import { getLocalStorage } from "@thorgate/spa-view";
+import { getLocation, replace } from "connected-react-router";
+import { call, select, put, retry, take } from "redux-saga/effects";
+import qs from "qs";
 
-import { SETTINGS } from 'settings';
-import api from 'services/api';
-import { resolveToken, REQUEST_TOKEN } from 'sagas/auth/authMiddleware';
-import { getToken, saveToken } from 'sagas/helpers/token';
+import { SETTINGS } from "@/src/settings";
+import api from "@/src/services/api";
+import { resolveToken, REQUEST_TOKEN } from "@/src/sagas/auth/authMiddleware";
+import { getToken, saveToken } from "@/src/sagas/helpers/token";
 
 function* refreshToken() {
     const token = yield call(getToken);

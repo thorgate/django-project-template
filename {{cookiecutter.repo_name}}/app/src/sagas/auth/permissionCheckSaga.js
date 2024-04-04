@@ -1,6 +1,6 @@
-import { isAuthenticated } from '@thorgate/spa-permissions';
-import is from 'is_js';
-import { select } from 'redux-saga/effects';
+import { isAuthenticated } from "@thorgate/spa-permissions";
+import is from "is_js";
+import { select } from "redux-saga/effects";
 
 /**
  * Store state validation saga.
@@ -19,7 +19,7 @@ export default function* isLoggedIn(checkPermissions = null) {
     }
 
     if (!hasPermission) {
-        const error = new Error('Permission denied.');
+        const error = new Error("Permission denied.");
         error.statusCode = 403;
         throw error;
     }

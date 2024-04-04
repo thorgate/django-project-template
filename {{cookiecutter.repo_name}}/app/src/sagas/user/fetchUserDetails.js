@@ -1,7 +1,7 @@
-import { userActions } from '@thorgate/spa-permissions';
-import { put } from 'redux-saga/effects';
+import { userActions } from "@thorgate/spa-permissions";
+import { put } from "redux-saga/effects";
 
-import api from 'services/api';
+import api from "@/src/services/api";
 
 export default function* fetchUserDetails() {
     try {

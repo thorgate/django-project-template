@@ -1,9 +1,9 @@
-import { call, put, take } from 'redux-saga/effects';
+import { call, put, take } from "redux-saga/effects";
 
-import { getToken } from 'sagas/helpers/token';
+import { getToken } from "@/src/sagas/helpers/token";
 
-export const REQUEST_TOKEN = 'sagas/auth/middleware/REQUEST_TOKEN';
-export const RESOLVE_TOKEN = 'sagas/auth/middleware/RESOLVE_TOKEN';
+export const REQUEST_TOKEN = "sagas/auth/middleware/REQUEST_TOKEN";
+export const RESOLVE_TOKEN = "sagas/auth/middleware/RESOLVE_TOKEN";
 
 export const requestToken = () => ({ type: REQUEST_TOKEN });
 export const resolveToken = (token) => ({ type: RESOLVE_TOKEN, token });
@@ -15,7 +15,7 @@ export function* refreshToken() {
         return token;
     }
 
-    if (process.env.BUILD_TARGET === 'server') {
+    if (process.env.BUILD_TARGET === "server") {
         // Refresh is not used for server
         return null;
     }

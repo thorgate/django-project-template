@@ -1,7 +1,7 @@
-import * as Sentry from '@sentry/react';
+import * as Sentry from "@sentry/react";
 
 export const onComponentError = (error, errorInfo) => {
-    if (process.env.NODE_ENV === 'production') {
+    if (process.env.NODE_ENV === "production") {
         Sentry.captureException(error);
     } else {
         // eslint-disable-next-line no-console

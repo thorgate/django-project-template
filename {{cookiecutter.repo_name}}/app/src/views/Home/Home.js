@@ -1,13 +1,11 @@
-import React from 'react';
-import { Helmet } from 'react-helmet-async';
+import React from "react";
+import { Helmet } from "react-helmet-async";
+import Image from "next/image";
 
-import withView from 'decorators/withView';
-import LanguageSwitch from 'components/LanguageSwitch';
-import HelloWorld from 'components/HelloWorld';
-import logo from 'styles/images/react.svg';
-
-import styles from './Home.module.css';
-import './Home.css';
+import withView from "@/src/decorators/withView";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import HelloWorld from "@/src/components/HelloWorld";
+import logo from "@/src/styles/images/react.svg";
 
 const Home = () => (
     <div className="Home">
@@ -15,34 +13,26 @@ const Home = () => (
             <title>Welcome to Razzle</title>
         </Helmet>
         <div className="Home-header">
-            <img src={logo} className="Home-logo" alt="logo" />
+            <Image src={logo} className="Home-logo" alt="logo" />
             <h2>Welcome to Razzle</h2>
         </div>
         <p className="Home-intro">
-            To get started, add routes to{' '}
-            <code>src/configuration/routes.js</code> or edit{' '}
+            To get started, add routes to{" "}
+            <code>src/configuration/routes.js</code> or edit{" "}
             <code>src/views/Home/index.js</code> and save to reload.
         </p>
         <ul className="Home-resources">
             <li>
-                <a
-                    className={styles['special-link']}
-                    href="https://github.com/jaredpalmer/razzle"
-                >
-                    Docs
-                </a>
+                <a href="https://github.com/jaredpalmer/razzle">Docs</a>
             </li>
             <li>
-                <a
-                    className={styles['special-link']}
-                    href="https://github.com/jaredpalmer/razzle/issues"
-                >
+                <a href="https://github.com/jaredpalmer/razzle/issues">
                     Issues
                 </a>
             </li>
         </ul>
-        <ul className="Home-resources">
-            <LanguageSwitch />
+        <ul className="Home-resources mx-auto w-25">
+            <LanguageSwitcher />
             <HelloWorld name="TypeScript" />
         </ul>
     </div>
