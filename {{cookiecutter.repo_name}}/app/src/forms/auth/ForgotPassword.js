@@ -1,17 +1,17 @@
 // - {% raw %}
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Row, Col, Button, Alert } from 'reactstrap';
-import { Trans, useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
-import is from 'is_js';
-import { withFormik, Form } from 'formik';
-import * as Yup from 'yup';
-import { resolvePath } from 'tg-named-routes';
+import React from "react";
+import PropTypes from "prop-types";
+import { Row, Col, Button, Alert } from "reactstrap";
+import { Trans, useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import is from "is_js";
+import { withFormik, Form } from "formik";
+import * as Yup from "yup";
+import { resolvePath } from "tg-named-routes";
 
-import FormField from 'forms/fields/FormField';
-import { tNoop } from 'utils/text';
-import { getFormPropTypes } from 'utils/types';
+import FormField from "@/src/forms/fields/FormField";
+import { tNoop } from "@/src/utils/text";
+import { getFormPropTypes } from "@/src/utils/types";
 
 const ForgotPassword = ({ values, status, isSubmitting }) => {
     const { t } = useTranslation();
@@ -33,8 +33,8 @@ const ForgotPassword = ({ values, status, isSubmitting }) => {
                 id="email"
                 name="email"
                 type="text"
-                label={t('Email')}
-                placeholder={t('Enter email')}
+                label={t("Email")}
+                placeholder={t("Enter email")}
                 disabled={isSubmitting}
                 labelSize={3}
             />
@@ -46,7 +46,7 @@ const ForgotPassword = ({ values, status, isSubmitting }) => {
                         disabled={isSubmitting}
                         className="btn btn-lg btn-block btn-success"
                     >
-                        {t('Send link')}
+                        {t("Send link")}
                     </Button>
                 </Col>
             </Row>
@@ -61,13 +61,13 @@ const ForgotPassword = ({ values, status, isSubmitting }) => {
             <>
                 <Row>
                     <Col className="pb-4">
-                        <h5>{t('Reset link sent')}</h5>
+                        <h5>{t("Reset link sent")}</h5>
                     </Col>
                 </Row>
                 <Row>
                     <Col>
                         <Trans>
-                            We have sent you an email to{' '}
+                            We have sent you an email to{" "}
                             <strong>{{ email }}</strong> with a link to reset
                             your password
                         </Trans>
@@ -77,17 +77,17 @@ const ForgotPassword = ({ values, status, isSubmitting }) => {
                     <Col md={5} className="mt-3">
                         <Button
                             tag={Link}
-                            to={resolvePath('auth:forgot-password')}
+                            to={resolvePath("auth:forgot-password")}
                             className="btn btn-lg btn-block btn-success"
                         >
-                            {t('Resend link')}
+                            {t("Resend link")}
                         </Button>
                     </Col>
                 </Row>
                 <Row>
                     <Col sm={4} className="mt-3">
-                        <Link to={resolvePath('auth:login')} className="pt-2">
-                            {t('Back to login')}
+                        <Link to={resolvePath("auth:login")} className="pt-2">
+                            {t("Back to login")}
                         </Link>
                     </Col>
                 </Row>
@@ -105,23 +105,23 @@ const ForgotPassword = ({ values, status, isSubmitting }) => {
     );
 };
 
-ForgotPassword.propTypes = { ...getFormPropTypes(['email', 'password']) };
+ForgotPassword.propTypes = { ...getFormPropTypes(["email", "password"]) };
 
 const ForgotPasswordForm = withFormik({
     mapPropsToValues: () => ({
-        email: '',
+        email: "",
     }),
 
     validationSchema: Yup.object().shape({
         email: Yup.string()
-            .email(tNoop('Invalid email address'))
-            .required(tNoop('Email address is required')),
+            .email(tNoop("Invalid email address"))
+            .required(tNoop("Email address is required")),
     }),
 
     handleSubmit: (values, { props, ...formik }) =>
         props.onForgotPassword({ data: values }, formik),
 
-    displayName: 'ForgotPasswordForm', // helps with React DevTools
+    displayName: "ForgotPasswordForm", // helps with React DevTools
 })(ForgotPassword);
 
 ForgotPasswordForm.propTypes = {

@@ -1,0 +1,22 @@
+{
+    "pageTitles": {
+        "home": "Home",
+        "user-details": "Profill",
+        "about": "About",
+        "errorTestPage": "Erroriga vaade",
+        "notFound": "Ei leitud lehte",
+        "internalError": "Serveri viga",
+        "login": "Logi sisse"
+    },
+    "form": {
+        "field": {
+            "required": "See väli on kohustuslik."
+        }
+    },
+    "status": "Staatus",
+    "requestId": "Request ID",
+    "error": "Error",
+    "count": "Loendus",
+    "welcomeMessage": "Tere tulemast",
+    "restricted-view": ""
+}

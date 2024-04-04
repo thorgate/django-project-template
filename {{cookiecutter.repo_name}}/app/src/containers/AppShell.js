@@ -1,15 +1,14 @@
-import { ErrorBoundary } from '@thorgate/spa-errors';
-import { PendingDataManager } from '@thorgate/spa-pending-data';
-import React from 'react';
-import { RenderChildren } from 'tg-named-routes';
+import { ErrorBoundary } from "@thorgate/spa-errors";
+import { PendingDataManager } from "@thorgate/spa-pending-data";
+import React from "react";
+import { RenderChildren } from "tg-named-routes";
 
-import DefaultHeader from 'components/DefaultHeader';
-import NavigationBar from 'components/NavigationBar';
-import { onComponentError } from 'services/sentry';
-import { RouterMatchShape, RouterRouteShape } from 'utils/types';
+import DefaultHeader from "@/src/components/DefaultHeader";
+import NavigationBar from "@/src/components/NavigationBar";
+import { onComponentError } from "@/src/services/sentry";
+import { RouterMatchShape, RouterRouteShape } from "@/src/utils/types";
 
 // Load main styles
-import 'styles/main.scss';
 
 const App = ({ route, match }) => (
     <ErrorBoundary onComponentError={onComponentError}>

@@ -1,17 +1,17 @@
-import { SETTINGS } from 'settings';
+import { SETTINGS } from "@/src/settings";
 
 const resolveAsset = (
     url,
     basePath = null,
-    sitePath = SETTINGS.RAW_BACKEND_SITE_URL,
+    sitePath = SETTINGS.RAW_BACKEND_SITE_URL
 ) => {
-    let path = `${basePath || ''}${url}`;
+    let path = `${basePath || ""}${url}`;
 
-    if (!path.startsWith('/') && !/https?:\/\//.test(path)) {
+    if (!path.startsWith("/") && !/https?:\/\//.test(path)) {
         path = `/${path}`;
     }
 
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== "production") {
         return `${sitePath}${path}`;
     }
 

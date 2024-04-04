@@ -1,7 +1,7 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Helmet } from 'react-helmet-async';
-import { Container, Row, Col, Card } from 'reactstrap';
+import React from "react";
+import PropTypes from "prop-types";
+import { Helmet } from "react-helmet-async";
+import { Container, Row, Col, Card } from "reactstrap";
 
 const AuthLayout = ({ children }) => (
     <>

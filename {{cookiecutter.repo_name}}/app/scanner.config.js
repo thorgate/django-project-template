@@ -9,16 +9,17 @@ const VirtualFile = require('vinyl');
 const typescript = require("typescript");
 const merge = require('lodash.merge');
 
-const i18nSettings = require('./i18n.json');
+const i18n = require('./i18n.json');
 
 const appDir = path.resolve(__dirname);
 
 module.exports = {
     input: [
+        'components/**/*.{js,jsx,ts,tsx}',
+        'lib/**/*.{js,jsx,ts,tsx}',
+        'pages/**/*.{js,jsx,ts,tsx}',
         'src/**/*.{js,jsx,ts,tsx}',
         '!src/**/*.test.{js,jsx,ts,tsx}',
-        '!src/client/winston.js',
-        '!src/client/winston.ts',
     ],
     output: './public/locales',
     options: {
@@ -28,15 +29,16 @@ module.exports = {
         attr: { extensions: [] },
         func: { extensions: [] },
         trans: { extensions: [] },
-        lngs: i18nSettings.LANGUAGE_ORDER,
-        ns: i18nSettings.TRANSLATION_NAMESPACES,
-        defaultLng: i18nSettings.DEFAULT_LANGUAGE,
-        defaultNs: i18nSettings.DEFAULT_NAMESPACE,
+        lngs: i18n.LANGUAGES,
+        defaultLng: i18n.DEFAULT_LANGUAGE,
+        defaultNs: i18n.DEFAULT_NAMESPACE,
+        // Keep this in sync with the namespaces in types/i18next.d.ts
+        ns: i18n.TRANSLATION_NAMESPACES,
         defaultValue: '',
         resource: {
             loadPath: '{{lng}}/{{ns}}.json',
             savePath: '{{lng}}/{{ns}}.json',
-            jsonIndent: 2,
+            jsonIndent: 4,
             lineEnding: '\n',
         },
         nsSeparator: ':',

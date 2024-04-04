@@ -1,3 +1,3 @@
-import { getContext } from 'redux-saga/effects';
+import { getContext } from "redux-saga/effects";
 
-export const getTranslations = () => getContext('i18n');
+export const getTranslations = () => getContext("i18n");

@@ -1,15 +1,15 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { useTranslation } from 'react-i18next';
-import { Row, Col, Alert, Button } from 'reactstrap';
-import { Link } from 'react-router-dom';
-import { withFormik, Form } from 'formik';
-import * as Yup from 'yup';
-import { resolvePath } from 'tg-named-routes';
+import React from "react";
+import PropTypes from "prop-types";
+import { useTranslation } from "react-i18next";
+import { Row, Col, Alert, Button } from "reactstrap";
+import { Link } from "react-router-dom";
+import { withFormik, Form } from "formik";
+import * as Yup from "yup";
+import { resolvePath } from "tg-named-routes";
 
-import FormField from 'forms/fields/FormField';
-import { tNoop } from 'utils/text';
-import { getFormPropTypes } from 'utils/types';
+import FormField from "@/src/forms/fields/FormField";
+import { tNoop } from "@/src/utils/text";
+import { getFormPropTypes } from "@/src/utils/types";
 
 const Signup = ({ status, isSubmitting }) => {
     const { t } = useTranslation();
@@ -19,8 +19,8 @@ const Signup = ({ status, isSubmitting }) => {
                 id="name"
                 name="name"
                 type="text"
-                label={t('Name')}
-                placeholder={t('Enter name')}
+                label={t("Name")}
+                placeholder={t("Enter name")}
                 disabled={isSubmitting}
                 labelSize={4}
             />
@@ -28,8 +28,8 @@ const Signup = ({ status, isSubmitting }) => {
                 id="email"
                 name="email"
                 type="text"
-                label={t('Email')}
-                placeholder={t('Enter email')}
+                label={t("Email")}
+                placeholder={t("Enter email")}
                 disabled={isSubmitting}
                 labelSize={4}
             />
@@ -37,8 +37,8 @@ const Signup = ({ status, isSubmitting }) => {
                 id="password"
                 name="password"
                 type="password"
-                label={t('Password')}
-                placeholder={t('Password')}
+                label={t("Password")}
+                placeholder={t("Password")}
                 disabled={isSubmitting}
                 labelSize={4}
             />
@@ -46,15 +46,15 @@ const Signup = ({ status, isSubmitting }) => {
                 id="repeatPassword"
                 name="repeatPassword"
                 type="password"
-                label={t('Confirm password')}
-                placeholder={t('Password confirmation')}
+                label={t("Confirm password")}
+                placeholder={t("Password confirmation")}
                 disabled={isSubmitting}
                 labelSize={4}
             />
 
             {status !== undefined && (
                 <Alert
-                    color={status.color === undefined ? 'danger' : status.color}
+                    color={status.color === undefined ? "danger" : status.color}
                 >
                     {status.message}
                 </Alert>
@@ -67,17 +67,17 @@ const Signup = ({ status, isSubmitting }) => {
                         disabled={isSubmitting}
                         className="btn btn-lg btn-block btn-success"
                     >
-                        {t('Signup')}
+                        {t("Signup")}
                     </Button>
                 </Col>
             </Row>
             <Row>
                 <Col sm={4} className="mt-3 ml-auto mr-auto">
                     <Link
-                        to={resolvePath('auth:forgot-password')}
+                        to={resolvePath("auth:forgot-password")}
                         className="pt-2"
                     >
-                        {t('Forgot password?')}
+                        {t("Forgot password?")}
                     </Link>
                 </Col>
             </Row>
@@ -86,36 +86,36 @@ const Signup = ({ status, isSubmitting }) => {
 };
 
 Signup.propTypes = {
-    ...getFormPropTypes(['email', 'password']),
+    ...getFormPropTypes(["email", "password"]),
 };
 
 const SignupForm = withFormik({
     mapPropsToValues: () => ({
-        name: '',
-        email: '',
-        password: '',
-        repeatPassword: '',
+        name: "",
+        email: "",
+        password: "",
+        repeatPassword: "",
     }),
     validationSchema: Yup.object().shape({
-        name: Yup.string().required(tNoop('Name is required')),
+        name: Yup.string().required(tNoop("Name is required")),
         email: Yup.string()
-            .email(tNoop('Invalid email address'))
-            .required(tNoop('Email is required')),
-        password: Yup.string().required(tNoop('Password is required')),
+            .email(tNoop("Invalid email address"))
+            .required(tNoop("Email is required")),
+        password: Yup.string().required(tNoop("Password is required")),
         repeatPassword: Yup.string().test(
-            'password-match',
-            tNoop('Passwords do not match'),
+            "password-match",
+            tNoop("Passwords do not match"),
             function passwordTest(value) {
                 const { password } = this.parent;
                 return password === value;
-            },
+            }
         ),
     }),
 
     handleSubmit: (values, { props, ...formik }) =>
         props.onSignup({ data: values }, formik),
 
-    displayName: 'SignupForm', // helps with React DevTools
+    displayName: "SignupForm", // helps with React DevTools
 })(Signup);
 
 SignupForm.propTypes = {
