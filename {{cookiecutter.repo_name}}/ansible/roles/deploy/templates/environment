@@ -27,10 +27,10 @@ DJANGO_ALLOWED_HOSTS={{ "{{ django_site_host }}" }}
 DJANGO_CSRF_COOKIE_DOMAIN=.{{ "{{ node_site_host }}" }}
 
 # Site URL settings
-NEXTAUTH_URL=https://{{ node_site_host }}
-APP_SITE_URL=https://{{ node_site_host }}
-APP_BACKEND_SITE_URL=https://{{ django_site_host }}
-APP_PUBLIC_BACKEND_SITE_URL=https://{{ django_site_host }}
+NEXTAUTH_URL=https://{{ "{{ node_site_host }}" }}
+APP_SITE_URL=https://{{ "{{ node_site_host }}" }}
+APP_BACKEND_SITE_URL=https://{{ "{{ django_site_host }}" }}
+APP_PUBLIC_BACKEND_SITE_URL=https://{{ "{{ django_site_host }}" }}
 
 {%- endif %}
 
@@ -42,14 +42,14 @@ DJANGO_DATABASE_PASSWORD={{ "{{ django_database_password }}" }}
 
 {%- if cookiecutter.frontend_style == SPA %}
 # Secret keys
-NEXTAUTH_SECRET={{ next_secret_key }}
+NEXTAUTH_SECRET={{ "{{ next_secret_key }}" }}
 {%- endif %}
 DJANGO_SECRET_KEY={{ "{{ django_secret_key }}" }}
 
 {%- if cookiecutter.frontend_style == SPA %}
-DJANGO_JWT_PRIVATE_KEY="{{ django_jwt_private_key }}"
-DJANGO_JWT_PUBLIC_KEY="{{ django_jwt_public_key }}"
-APP_PUBLIC_JWT_PUBLIC_KEY="{{ django_jwt_public_key }}"
+DJANGO_JWT_PRIVATE_KEY="{{ "{{ django_jwt_private_key }}" }}"
+DJANGO_JWT_PUBLIC_KEY="{{ "{{ django_jwt_public_key }}" }}"
+APP_PUBLIC_JWT_PUBLIC_KEY="{{ "{{ django_jwt_public_key }}" }}"
 {%- endif %}
 
 DJANGO_SENTRY_ENVIRONMENT={{ "{{ django_sentry_environment }}" }}

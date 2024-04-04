@@ -26,6 +26,6 @@ export default withAuth({
  *
  *  ref: https://nextjs.org/docs/advanced-features/middleware
  *
- * @type {{matcher: string[]}}
+ * @type {%- raw -%}{{matcher: string[]}}{%- endraw -%}
  */
 export const config = { matcher: ["/user-details"] };

@@ -16,7 +16,7 @@ module.exports = defineConfig({
     viewportWidth: 1200,
     experimentalStudio: true,
     e2e: {
-        baseUrl: "http://node-cypress.TODO.com.docker.local:9990",
+        baseUrl: "http://node-cypress.{{cookiecutter.live_domain_name}}.com.docker.local:9990",
         specPattern: "./cypress/integration/**/*.spec.js",
         supportFile: "./cypress/support/index.js",
         setupNodeEvents(on, config) {
