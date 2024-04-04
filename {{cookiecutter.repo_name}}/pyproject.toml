@@ -54,6 +54,8 @@ djangorestframework = "==3.15.*"
 djangorestframework_simplejwt = "==5.1.*"
 django-cors-headers = "==3.11.*"
 django-filter = "==21.*"
+drf-spectacular = "^0.26.1"
+djangorestframework-camel-case = "^1.4.2"
 tg-react = "==3.*"
 # - {% endif %}
 tg-utils = {version = "^1.0.1 ", extras = ["model-hash", "health_check"]}
