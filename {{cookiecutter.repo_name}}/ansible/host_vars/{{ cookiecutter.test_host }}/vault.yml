@@ -20,3 +20,12 @@ django_aws_secret_access_key: "TODO"
 # - {%- if cookiecutter.build_in_ci == YES %}
 registry_token: "TODO"
 # - {%- endif %}
+
+# - {%- if cookiecutter.frontend_style == SPA %}
+next_secret_key: "TODO (generate it)"
+
+django_jwt_public_key: |
+
+django_jwt_private_key: |
+
+# - {%- endif %}

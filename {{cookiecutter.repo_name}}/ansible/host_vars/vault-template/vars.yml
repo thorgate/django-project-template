@@ -14,8 +14,8 @@ django_server_email: ""
 django_sentry_environment: "todo"
 django_sentry_dsn: ""  # TODO: Set to correct value or remove the TODO
 # - {%- if cookiecutter.frontend_style == SPA %}
-razzle_sentry_environment: "todo"
-razzle_sentry_dsn: ""  # TODO: Set to correct value or remove the TODO
+app_sentry_environment: "test"
+app_sentry_dsn: ""  # TODO: Set to correct value or remove the TODO
 # - {%- endif %}
 
 # Django health-check access token

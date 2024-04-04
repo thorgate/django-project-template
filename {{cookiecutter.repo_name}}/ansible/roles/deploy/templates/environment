@@ -26,18 +26,12 @@ DJANGO_ALLOWED_HOSTS={{ "{{ django_site_host }}" }}
 {%- if cookiecutter.frontend_style == SPA %}
 DJANGO_CSRF_COOKIE_DOMAIN=.{{ "{{ node_site_host }}" }}
 
-# Core Razzle settings
-PORT=80
-HOST=0.0.0.0
-
 # Site URL settings
-RAZZLE_MAX_WORKERS=4
-RAZZLE_SITE_URL=https://{{ "{{ node_site_host }}" }}
-RAZZLE_BACKEND_SITE_URL=https://{{ "{{ django_site_host }}" }}
-RAZZLE_SENTRY_ENVIRONMENT={{ "{{ razzle_sentry_environment }}" }}
-RAZZLE_SENTRY_DSN={{ "{{ razzle_sentry_dsn }}" }}
+NEXTAUTH_URL=https://{{ node_site_host }}
+APP_SITE_URL=https://{{ node_site_host }}
+APP_BACKEND_SITE_URL=https://{{ django_site_host }}
+APP_PUBLIC_BACKEND_SITE_URL=https://{{ django_site_host }}
 
-RAZZLE_FILE_LOGGING=true
 {%- endif %}
 
 DJANGO_DATABASE_HOST=postgres
@@ -46,7 +40,17 @@ DJANGO_DATABASE_NAME={{ "{{ project }}" }}
 DJANGO_DATABASE_USER={{ "{{ project }}" }}
 DJANGO_DATABASE_PASSWORD={{ "{{ django_database_password }}" }}
 
+{%- if cookiecutter.frontend_style == SPA %}
+# Secret keys
+NEXTAUTH_SECRET={{ next_secret_key }}
+{%- endif %}
 DJANGO_SECRET_KEY={{ "{{ django_secret_key }}" }}
+
+{%- if cookiecutter.frontend_style == SPA %}
+DJANGO_JWT_PRIVATE_KEY="{{ django_jwt_private_key }}"
+DJANGO_JWT_PUBLIC_KEY="{{ django_jwt_public_key }}"
+APP_PUBLIC_JWT_PUBLIC_KEY="{{ django_jwt_public_key }}"
+{%- endif %}
 
 DJANGO_SENTRY_ENVIRONMENT={{ "{{ django_sentry_environment }}" }}
 DJANGO_SENTRY_DSN={{ "{{ django_sentry_dsn }}" }}
