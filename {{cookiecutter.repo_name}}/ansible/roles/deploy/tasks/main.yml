@@ -147,19 +147,6 @@
   vars:
     command_params: "migrate --noinput"
 
-# - {%- if cookiecutter.frontend_style == SPA %}
-
-
-- name: "Run export assets"
-# -   {%- if cookiecutter.build_in_ci == YES %}
-  command: "{{ "{{ compose_command }}" }} run --rm node yarn export-assets"
-# -   {%- else %}
-  command: "{{ "{{ compose_command }}" }} -f {{ "{{ compose_file }}" }} run --rm node yarn export-assets"
-# -   {%- endif %}
-  args:
-      chdir: "{{ "{{ code_dir }}" }}"
-# - {%- endif %}
-
 
 - name: "Run collectstatic"
   import_tasks: ../../helpers/run-management-command.yml
