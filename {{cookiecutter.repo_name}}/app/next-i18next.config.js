@@ -1,3 +1,4 @@
+{%- raw -%}
 const HttpBackend = require('i18next-http-backend/cjs')
 const ChainedBackend= require('i18next-chained-backend').default
 const LocalStorageBackend = require('i18next-localstorage-backend').default
@@ -43,3 +44,4 @@ module.exports = {
 
     reloadOnPrerender: isDev,
 };
+{%- endraw %}
