@@ -17,23 +17,19 @@ VOLUME /files/assets
 COPY ./app/package.json ./
 COPY ./app/yarn.lock ./
 
-# Install system requirements
+# Install system requirements & node dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends git python && \
-    rm -rf /var/lib/apt/lists/*
-
-# Install node dependencies
-RUN yarn install --frozen-lockfile
+    rm -rf /var/lib/apt/lists/* && \
+    npm -g i pnpm sharp && \
+    pnpm config set store-dir /usr/local/share/.cache/.pnpm-store && \
+    pnpm install --frozen-lockfile
 
 # Copy code
 COPY ./app /app
 
-# Define the PORT environment var so that razzle can pick it up in the following `yarn build` command.
-# It may be overridden in the .env file when the container is run.
-ENV PORT 80
-
 # Build node app
-RUN yarn build
+RUN pnpm build
 
 # Set the default command to execute when creating a new container
-CMD yarn start
+CMD pnpm start

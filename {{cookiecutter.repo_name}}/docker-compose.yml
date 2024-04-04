@@ -59,8 +59,7 @@ services:
       - "6006:80"
 # - {%- endif %}
 # - {%- if cookiecutter.frontend_style == SPA %}
-      - "8000:8000"
-      - "8001:8001"
+      - "3000:3000"
 # - {%- endif %}
 # - {%- endif %}
     volumes:
@@ -68,11 +67,16 @@ services:
       - "./webapp:/app"
 # -   {%- elif cookiecutter.frontend_style == SPA %}
       - "./app:/app"
+      - ".data/pnpm:/usr/local/share/.cache/.pnpm-store"
 # -   {% endif %}
       - ".data/node_modules:/app/node_modules"
       - ".data/yarn:/usr/local/share/.cache/yarn"
     command:
+# -   {%- if cookiecutter.frontend_style == WEBAPP %}
       - "yarn && yarn dev"
+# -   {%- elif cookiecutter.frontend_style == SPA %}
+      - "pnpm install && pnpm dev"
+# -   {% endif %}
 
 
 # - {%- if cookiecutter.include_celery == YES %}
