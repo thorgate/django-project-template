@@ -1,24 +1,17 @@
 from django.conf import settings
-# - {%- if cookiecutter.include_celery == YES %}
-from django.core.cache import cache
-# - {%- endif %}
 from django.test import Client
-# - {%- if cookiecutter.include_celery == YES %}
-from django.utils.datetime_safe import datetime
-# - {%- endif %}
 
 import pytest
 
 # - {%- if cookiecutter.include_celery == YES %}
 from pytest_mock import MockerFixture
-from tg_utils.health_check.checks.celery_beat.backends import CACHE_KEY, TIMEOUT
 # - {%- endif %}
 
 
 # - {%- if cookiecutter.include_celery == YES %}
 @pytest.fixture(autouse=True)
 def _patch_celery(mocker: MockerFixture):
-    cache.set(CACHE_KEY, datetime.now(), timeout=TIMEOUT * 2)
+    mocker.patch("tg_utils.health_check.checks.celery_beat.backends.CeleryBeatHealthCheck.check_status")
     mocker.patch("health_check.contrib.celery.backends.CeleryHealthCheck.check_status")
     yield
 # - {%- endif %}
