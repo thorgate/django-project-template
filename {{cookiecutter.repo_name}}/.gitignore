@@ -19,6 +19,11 @@ venv/
 {{cookiecutter.django_folder_name}}/db.sqlite3
 {{cookiecutter.django_folder_name}}/assets/
 
+{%- if cookiecutter.frontend_style == SPA %}
+{{cookiecutter.django_folder_name}}/schema.json
+
+{% endif %}
+
 {{cookiecutter.django_folder_name}}/.cache
 {{cookiecutter.django_folder_name}}/.pytest_cache
 {{cookiecutter.django_folder_name}}/.coverage

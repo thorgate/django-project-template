@@ -12,8 +12,8 @@ if not IS_DOCKER_BUILD:
     # - {%- if cookiecutter.frontend_style == WEBAPP %}
     SITE_URL = env.str("DJANGO_SITE_URL")
     # - {%- elif cookiecutter.frontend_style == SPA %}
-    SITE_URL = env.str("RAZZLE_SITE_URL")
-    DJANGO_SITE_URL = env.str("RAZZLE_BACKEND_SITE_URL")
+    SITE_URL = env.str("APP_SITE_URL")
+    DJANGO_SITE_URL = env.str("APP_BACKEND_SITE_URL")
     CSRF_COOKIE_DOMAIN = env.str("DJANGO_CSRF_COOKIE_DOMAIN")
 
 CSRF_TRUSTED_ORIGINS = [
