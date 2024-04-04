@@ -48,7 +48,7 @@ services:
       dockerfile: Dockerfile-node.production
 # -   {%  endif %}
     container_name: {{cookiecutter.repo_name}}_node
-    command: yarn start
+    command: {% if cookiecutter.frontend_style == SPA %}pnpm{% else %}yarn{% endif %} start{% if cookiecutter.frontend_style == SPA %} -p 80{% endif %}
     volumes:
       - "/var/lib/docker-nginx/files/{{cookiecutter.repo_name}}/app/assets:/files/assets"
       - *logs-volume
