@@ -7,31 +7,25 @@ WORKDIR /app
 # Create a directory for the logs
 RUN mkdir -p /var/log/{{cookiecutter.repo_name}}
 
-# Mark assets directory as volume
-VOLUME /files/assets
+ENV NEXT_SHARP_PATH=/usr/local/lib/node_modules/sharp
 
 # Copy package files
 COPY ./app/package.json ./
-COPY ./app/yarn.lock ./
+COPY ./app/pnpm-lock.yaml ./
 
 # Install node build dependencies
-RUN apk add --no-cache --virtual .build-deps alpine-sdk python3 bash
-
-# Install node dependencies
-RUN yarn install --frozen-lockfile
-
-# Remove node build dependencies
-RUN apk del .build-deps
+RUN apk add --no-cache libc6-compat bash grep && \
+    apk add --no-cache --virtual .build-deps libc6-compat alpine-sdk python3 && \
+    npm -g i pnpm sharp && \
+    pnpm config set store-dir /usr/local/share/.cache/.pnpm-store && \
+    pnpm install --frozen-lockfile && \
+    apk del .build-deps
 
 # Copy code
 COPY ./app /app
 
-# Define the PORT environment var so that razzle can pick it up in the following `yarn build` command.
-# It may be overridden in the .env file when the container is run.
-ENV PORT 80
-
 # Build node app
-RUN yarn build
+RUN pnpm build
 
 # Set the default command to execute when creating a new container
-CMD yarn start
+CMD pnpm start -p 80

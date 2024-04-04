@@ -140,23 +140,23 @@ run-prettier:
 
 .PHONY:
 prettier-check:
-	@make run-prettier cmd="yarn prettier-check $(cmd)"
+	@make run-prettier cmd="{% if cookiecutter.frontend_style == SPA %}pnpm{% else %}yarn{% endif %} prettier-check $(cmd)"
 
 
 .PHONY:
 prettier-check-all:
-	@make run-prettier cmd="yarn prettier-check-all $(cmd)"
+	@make run-prettier cmd="{% if cookiecutter.frontend_style == SPA %}pnpm{% else %}yarn{% endif %} prettier-check-all $(cmd)"
 
 
 .PHONY:
 prettier-format:
-	@make run-prettier cmd="yarn prettier-format $(cmd)"
+	@make run-prettier cmd="{% if cookiecutter.frontend_style == SPA %}pnpm{% else %}yarn{% endif %} prettier-format $(cmd)"
 
 
 .PHONY:
 prettier-format-cut-prefix:
 {%- if cookiecutter.frontend_style == SPA %}
-	@make run-prettier cmd="yarn prettier-format $(subst app/src, src, $(cmd))"
+	@make run-prettier cmd="pnpm prettier-format $(subst app/src, src, $(cmd))"
 {%- else %}
 	@make run-prettier cmd="yarn prettier-format $(subst webapp/webapp, webapp, $(cmd))"
 {%- endif %}
@@ -164,7 +164,7 @@ prettier-format-cut-prefix:
 
 .PHONY:
 prettier-format-all: ## Format JavaScript code with Prettier
-	@make run-prettier cmd="yarn prettier-format-all $(cmd)"
+	@make run-prettier cmd="{% if cookiecutter.frontend_style == SPA %}pnpm{% else %}yarn{% endif %} prettier-format-all $(cmd)"
 
 
 # NOTE:
@@ -269,7 +269,11 @@ patch-coverage-py-paths:  ## Updates the paths in python cobertura report to mak
 .PHONY:
 coverage-js:
 	@echo -e "$(CYAN)Running automatic code coverage check$(COFF)"
+{%- if cookiecutter.frontend_style == SPA %}
+	@docker compose run --rm node pnpm test:coverage $(cmd)
+{%- else %}
 	@docker compose run --rm node yarn test --coverage $(cmd)
+{%- endif %}
 
 
 .PHONY:
@@ -288,18 +292,18 @@ coverage: coverage-py coverage-js  ## Runs all tests with coverage
 
 .PHONY:
 node-install:
-	@docker compose run --rm node yarn
+	@docker compose run --rm node {% if cookiecutter.frontend_style == SPA %}pnpm{% else %}yarn{% endif %}
 
 
 .PHONY:
 test-node-watch: clean
-	@docker compose run --rm node yarn test -- --watchAll
+	@docker compose run --rm node {% if cookiecutter.frontend_style == SPA %}pnpm{% else %}yarn{% endif %} test -- --watchAll
 
 
 .PHONY:
 test-js: clean
 	@echo -e "$(CYAN)Running automatic node.js tests$(COFF)"
-	@docker compose run --rm node yarn test $(cmd)
+	@docker compose run --rm node {% if cookiecutter.frontend_style == SPA %}pnpm{% else %}yarn{% endif %} test $(cmd)
 
 
 .PHONY:
@@ -336,7 +340,7 @@ lint-py: ruff-format-check ruff-lint prospector
 endif
 
 .PHONY:
-lint-js: prettier-check-all eslint node-typecheck stylelint
+lint-js: prettier-check-all eslint node-typecheck
 
 .PHONY:
 lint: lint-py lint-js
@@ -364,18 +368,22 @@ format: fmt
 .PHONY:
 eslint:
 	@echo -e "$(CYAN)Running ESLint$(COFF)"
-	@docker compose run --rm node yarn lint:eslint
+	@docker compose run --rm node {% if cookiecutter.frontend_style == SPA %}pnpm{% else %}yarn{% endif %} lint:eslint $(cmd)
 
 .PHONY:
 node-typecheck:
 	@echo "$(CYAN)Running Node Typecheck(COFF)"
-	@docker compose run --rm node yarn lint:tsc $(cmd)
+	@docker compose run --rm node {% if cookiecutter.frontend_style == SPA %}pnpm{% else %}yarn{% endif %} lint:tsc $(cmd)
 
 
 .PHONY:
 eslint-fix:
 	@echo -e "$(CYAN)Running ESLint$(COFF)"
+{% if cookiecutter.frontend_style == SPA -%}
+	@make eslint cmd="--fix"
+{% else %}
 	@docker compose run --rm node yarn lint:eslint --fix
+{% endif %}
 
 
 .PHONY:
@@ -392,12 +400,6 @@ mypy:
 	@echo -e "$(CYAN)Checking types$(COFF)"
 	@make run-python cmd="mypy --show-error-codes ."
 {%- endif %}
-
-
-.PHONY:
-stylelint:
-	@echo -e "$(CYAN)Running StyleLint$(COFF)"
-	@docker compose run --rm node yarn stylelint
 
 
 .PHONY:
@@ -501,6 +503,25 @@ compilemessages:
 .PHONY:
 extract-i18n:
 	docker compose run --rm node yarn extract-i18n
+
+.PHONY:
+export-schema:
+	docker-compose run --rm django ./manage.py spectacular --format openapi-json --file schema.json
+	@cp $(SITE_ROOT)/schema.json $(APP_ROOT)/lib/queries/schema.json
+
+.PHONY:
+generate-rtk-query-api: export-schema
+	docker-compose run --rm node pnpm generate-api
+	@make patch-rtk-queries-api
+
+.PHONY:
+patch-rtk-query-api:
+	@cp ./app/lib/queries/queriesApi.generated.ts ./app/lib/queries/queriesApi.generated.base.ts
+	@patch ./app/lib/queries/queriesApi.generated.ts < ./app/lib/queries/queriesApi.generated.patch
+
+.PHONY:
+create-rtk-query-api-patch:
+	@diff ./app/lib/queries/queriesApi.generated.base.ts ./app/lib/queries/queriesApi.generated.ts > ./app/lib/queries/queriesApi.generated.patch
 {%- endif %}
 
 

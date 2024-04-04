@@ -38,6 +38,8 @@ This command:
 
 - copies PyCharm project directory
 - creates local settings file from local.py.example
+- creates local .env file from .env.example
+- generates JWT key-pair
 - builds Docker images
 - sets up database and runs Django migrations
 - runs `docker compose up`
@@ -76,6 +78,18 @@ To _stop and remove_ containers, run
 
 This stops all running containers and removes containers, networks, volumes and images created by `up`.
 
+{% if cookiecutter.frontend_style == SPA %}
+### Generating API schema
+
+    make generate-rtk-query-api
+
+This will generate API schema for RTK Query. Schema will be placed in `app/lib/queries/schema.json` file.
+From the schema file, RTK Query will generate hooks for API calls.
+
+To make manual changes be sure that you do not edit `queriesApi.generated.base.ts` file, because this is used as base for generating the patch file.
+Only make changes to `queriesApi.generated.ts` file and after this run `create-rtk-query-api-patch` Make command.
+{% endif %}
+
 ### Using a different configuration file
 
 By default docker compose uses the `docker-compose.yml` file in the current directory. To use other configuration files,
@@ -102,8 +116,7 @@ Note that the production configuration lacks PostgreSQL, since it runs on a sepa
 |any command in Django container       |`make docker-django cmd=<command>`     |`docker compose run --rm django $(cmd)`                                     |
 |run tests                             |`make test`                            |`docker compose run --rm django py.test`                                    |
 |run linters                           |`make quality`                         |                                                                            |
-|run StyleLint                         |`make stylelint`                       |`docker compose run --rm node yarn stylelint`                               |
-|run ESLint                            |`make eslint`                          |`docker compose run --rm node yarn lint`                                    |
+|run ESLint                            |`make eslint`                          |`docker compose run --rm node {% if cookiecutter.frontend_style == SPA %}pnpm{% else %}yarn{% endif %} lint`                                    |
 |run Prospector                        |`make prospector`                      |`docker compose run --rm django prospector`                                 |
 |run psql                              |`make psql`                            |`docker compose exec postgres psql --user {{cookiecutter.repo_name}} --dbname {{cookiecutter.repo_name}}` |
 
@@ -114,7 +127,7 @@ Note that the production configuration lacks PostgreSQL, since it runs on a sepa
 ## Installing new python or npm packages
 
 ### Node
-Since `yarn` is inside the container, currently the easiest way to install new packages is to add them
+Since `{% if cookiecutter.frontend_style == SPA %}pnpm{% else %}yarn{% endif %}` is inside the container, currently the easiest way to install new packages is to add them
 to the `package.json` file and rebuild the container.
 
 #### Gotchas
