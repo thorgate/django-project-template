@@ -1,3 +1,4 @@
+// - {% raw %}
 import { takeLatest } from "redux-saga/effects";
 
 const SET_ACTIVE_LANGUAGE = "sagas/app/SET_ACTIVE_LANGUAGE";
@@ -17,3 +18,4 @@ function setActiveLanguageWorker({ language }) {}
 export default function* activeLanguageWatcher() {
     yield takeLatest(SET_ACTIVE_LANGUAGE, setActiveLanguageWorker);
 }
+// - {% endraw %}

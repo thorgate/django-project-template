@@ -1,3 +1,4 @@
+// - {% raw %}
 /* Client-side translation configuration */
 import i18next from "i18next";
 import { initReactI18next } from "react-i18next";
@@ -62,3 +63,4 @@ export const setupI18Next = async (language) => {
 };
 
 export default i18next;
+// - {% endraw %}
