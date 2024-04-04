@@ -14,19 +14,19 @@ const browser = {
 support.modifiedConsole =
     !browser.isIE &&
     support.console &&
-    console.log.toString().indexOf('apply') !== -1;
+    console.log.toString().indexOf("apply") !== -1;
 
 support.consoleStyles = !!(window.chrome || browser.isFirefox);
 support.timing =
     support.console && !!window.console.time && !!window.console.timeEnd;
 
 const availableColors = {
-    red: 'red',
-    green: 'green',
-    lightGreen: 'lightgreen',
-    yellow: '#dea92a',
-    ligthYellow: '#FFFBE6',
-    blue: '#1795de',
+    red: "red",
+    green: "green",
+    lightGreen: "lightgreen",
+    yellow: "#dea92a",
+    ligthYellow: "#FFFBE6",
+    blue: "#1795de",
 };
 
 const styles = {
@@ -44,14 +44,14 @@ class BrowserWinston {
     styled(str, { bold, color, background }) {
         if (support.consoleStyles) {
             const css = [
-                bold ? 'font-weight: bold' : '',
-                color ? `color: ${availableColors[color] || color};` : '',
+                bold ? "font-weight: bold" : "",
+                color ? `color: ${availableColors[color] || color};` : "",
                 background
                     ? `background: ${
                           availableColors[background] || background
                       };`
-                    : '',
-            ].join('; ');
+                    : "",
+            ].join("; ");
 
             return `<logger:styled="${css}">${str}</logger:styled>`;
         }
@@ -64,19 +64,19 @@ class BrowserWinston {
     }
 
     info(...args) {
-        return console.log(...this.withTag('info', ...args));
+        return console.log(...this.withTag("info", ...args));
     }
 
     debug(...args) {
-        return console.log(...this.withTag('debug', ...args));
+        return console.log(...this.withTag("debug", ...args));
     }
 
     warn(...args) {
-        return console.warn(...this.withTag('warn', ...args));
+        return console.warn(...this.withTag("warn", ...args));
     }
 
     error(...args) {
-        return console.error(...this.withTag('error', ...args));
+        return console.error(...this.withTag("error", ...args));
     }
 
     profile(timerName) {
@@ -90,7 +90,7 @@ class BrowserWinston {
             }
         } else {
             this.warn(
-                `Failed to start profiler ${timerName}. Console timing is not supported in this platform.`,
+                `Failed to start profiler ${timerName}. Console timing is not supported in this platform.`
             );
         }
     }
@@ -108,26 +108,27 @@ class BrowserWinston {
 
         if (support.consoleStyles) {
             // Only add inner styles if first arg is string
-            if (args.length === 1 && typeof args[0] === 'string') {
+            if (args.length === 1 && typeof args[0] === "string") {
                 const theMessage = args[0];
                 args = args.slice(1);
 
                 const argArr = [
                     `%c[${finalTag.toUpperCase()}]%c ${theMessage}`,
                     styles[finalTag] ?? styles.def,
-                    '',
+                    "",
                 ];
 
                 // Find if we have any inner styles
-                const tagRe = /<logger:styled="([^"]+)">(.+)<\/logger:styled>/gi;
+                const tagRe =
+                    /<logger:styled="([^"]+)">(.+)<\/logger:styled>/gi;
                 argArr[0] = argArr[0].replace(
                     tagRe,
                     (match, style, message) => {
                         argArr.push(style);
-                        argArr.push('');
+                        argArr.push("");
 
                         return `%c${message}%c`;
-                    },
+                    }
                 );
 
                 return argArr.concat(args);

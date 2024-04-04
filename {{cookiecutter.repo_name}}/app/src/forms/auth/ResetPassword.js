@@ -1,16 +1,16 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Trans, useTranslation } from 'react-i18next';
-import { Row, Col, Alert, Button } from 'reactstrap';
-import { Link } from 'react-router-dom';
-import { withFormik, Form } from 'formik';
-import * as Yup from 'yup';
-import is from 'is_js';
-import { resolvePath } from 'tg-named-routes';
+import React from "react";
+import PropTypes from "prop-types";
+import { Trans, useTranslation } from "react-i18next";
+import { Row, Col, Alert, Button } from "reactstrap";
+import { Link } from "react-router-dom";
+import { withFormik, Form } from "formik";
+import * as Yup from "yup";
+import is from "is_js";
+import { resolvePath } from "tg-named-routes";
 
-import FormField from 'forms/fields/FormField';
-import { tNoop } from 'utils/text';
-import { getFormPropTypes } from 'utils/types';
+import FormField from "@/src/forms/fields/FormField";
+import { tNoop } from "@/src/utils/text";
+import { getFormPropTypes } from "@/src/utils/types";
 
 const ResetPassword = ({ status, isSubmitting }) => {
     const { t } = useTranslation();
@@ -31,8 +31,8 @@ const ResetPassword = ({ status, isSubmitting }) => {
                 </Row>
                 <Row>
                     <Col sm={4} className="my-4">
-                        <Link to={resolvePath('auth:login')} className="pt-2">
-                            {t('Back to login')}
+                        <Link to={resolvePath("auth:login")} className="pt-2">
+                            {t("Back to login")}
                         </Link>
                     </Col>
                 </Row>
@@ -57,8 +57,8 @@ const ResetPassword = ({ status, isSubmitting }) => {
                     id="password"
                     name="password"
                     type="password"
-                    label={t('Password')}
-                    placeholder={t('Password')}
+                    label={t("Password")}
+                    placeholder={t("Password")}
                     disabled={isSubmitting}
                     labelSize={4}
                 />
@@ -66,8 +66,8 @@ const ResetPassword = ({ status, isSubmitting }) => {
                     id="password_confirm"
                     name="password_confirm"
                     type="password"
-                    label={t('Confirm password')}
-                    placeholder={t('Confirm password')}
+                    label={t("Confirm password")}
+                    placeholder={t("Confirm password")}
                     disabled={isSubmitting}
                     labelSize={4}
                 />
@@ -82,7 +82,7 @@ const ResetPassword = ({ status, isSubmitting }) => {
                             disabled={isSubmitting}
                             className="btn btn-lg btn-block btn-success"
                         >
-                            {t('Confirm')}
+                            {t("Confirm")}
                         </Button>
                     </Col>
                 </Row>
@@ -93,26 +93,26 @@ const ResetPassword = ({ status, isSubmitting }) => {
     return <Form>{formContent}</Form>;
 };
 
-ResetPassword.propTypes = { ...getFormPropTypes(['email', 'password']) };
+ResetPassword.propTypes = { ...getFormPropTypes(["email", "password"]) };
 
 const ResetPasswordForm = withFormik({
     mapPropsToValues: (props) => ({
-        password: '',
-        password_confirm: '',
+        password: "",
+        password_confirm: "",
         uid_and_token_b64: props.token,
     }),
 
     validationSchema: Yup.object().shape({
-        password: Yup.string().required(tNoop('Password is required')),
+        password: Yup.string().required(tNoop("Password is required")),
         password_confirm: Yup.string().required(
-            tNoop('Password confirmation is required'),
+            tNoop("Password confirmation is required")
         ),
     }),
 
     handleSubmit: (values, { props, ...formik }) =>
         props.onResetPassword({ data: values }, formik),
 
-    displayName: 'ResetPasswordForm', // helps with React DevTools
+    displayName: "ResetPasswordForm", // helps with React DevTools
 })(ResetPassword);
 
 ResetPasswordForm.propTypes = {

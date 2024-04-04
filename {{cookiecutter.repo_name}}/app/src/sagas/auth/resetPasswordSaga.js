@@ -2,17 +2,17 @@ import {
     createSaveAction,
     createFormSaveSaga,
     formErrorsHandler,
-} from '@thorgate/spa-forms';
-import { call, takeLatest } from 'redux-saga/effects';
+} from "@thorgate/spa-forms";
+import { call, takeLatest } from "redux-saga/effects";
 
-import api from 'services/api';
+import api from "@/src/services/api";
 
 /**
  * Trigger Reset password watcher saga.
  * @returns Created trigger action
  */
 export const resetPassword = createSaveAction(
-    '@@sagas/auth/forgotPassword/RESET_PASSWORD',
+    "@@sagas/auth/forgotPassword/RESET_PASSWORD"
 );
 
 function* errorHook(options) {

@@ -1,22 +1,21 @@
-// - {% raw %}
 /* Client-side translation configuration */
-import i18next from 'i18next';
-import { initReactI18next } from 'react-i18next';
-import i18nFetchBackend from 'i18next-fetch-backend';
-import BackendAdapter from 'i18next-multiload-backend-adapter';
+import i18next from "i18next";
+import { initReactI18next } from "react-i18next";
+import i18nFetchBackend from "i18next-fetch-backend";
+import BackendAdapter from "i18next-multiload-backend-adapter";
 
-import { SETTINGS } from 'settings';
+import { SETTINGS } from "@/src/settings";
 
-import '../server/rebuildOnLanguagesChanged';
+import "../server/rebuildOnLanguagesChanged";
 
 const defaultOptions = {
-    load: 'languageOnly', // No region-specific locales (en-US, de-DE, etc.)
+    load: "languageOnly", // No region-specific locales (en-US, de-DE, etc.)
     fallbackLng: SETTINGS.DEFAULT_LANGUAGE,
     ns: SETTINGS.TRANSLATION_NAMESPACES,
     defaultNS: SETTINGS.DEFAULT_NAMESPACE,
     returnEmptyString: false,
     saveMissing: true,
-    saveMissingTo: 'all',
+    saveMissingTo: "all",
     debug: SETTINGS.DEBUG,
     interpolation: {
         escapeValue: false, // Not needed for React
@@ -25,21 +24,21 @@ const defaultOptions = {
         useSuspense: true,
 
         // Re-bind I18n when the following events occur
-        bindI18n: 'languageChanged',
+        bindI18n: "languageChanged",
     },
     backend: {
         backend: i18nFetchBackend,
         backendOption: {
-            multiSeparator: '+',
+            multiSeparator: "+",
             allowMultiLoading: true,
-            loadPath: '/locales/resources.json?lng={{lng}}&ns={{ns}}',
+            loadPath: "/locales/resources.json?lng={{lng}}&ns={{ns}}",
 
             requestOptions: {
-                mode: 'cors',
-                credentials: 'same-origin',
-                cache: 'default',
+                mode: "cors",
+                credentials: "same-origin",
+                cache: "default",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
             },
         },
@@ -63,4 +62,3 @@ export const setupI18Next = async (language) => {
 };
 
 export default i18next;
-// - {% endraw %}

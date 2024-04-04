@@ -1,13 +1,13 @@
-import { userActions } from '@thorgate/spa-permissions';
-import { put, select } from 'redux-saga/effects';
-import qs from 'qs';
-import { getLocation, replace } from 'connected-react-router';
-import { resolvePath } from 'tg-named-routes';
+import { userActions } from "@thorgate/spa-permissions";
+import { put, select } from "redux-saga/effects";
+import qs from "qs";
+import { getLocation, replace } from "connected-react-router";
+import { resolvePath } from "tg-named-routes";
 
-import { saveToken } from 'sagas/helpers/token';
+import { saveToken } from "@/src/sagas/helpers/token";
 
 export default function* logoutWorker() {
-    let url = resolvePath('landing');
+    let url = resolvePath("landing");
 
     const location = yield select(getLocation);
 
@@ -18,9 +18,9 @@ export default function* logoutWorker() {
 
     saveToken();
 
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== "production") {
         // eslint-disable-next-line no-console
-        console.log('Logging out, next url:', url);
+        console.log("Logging out, next url:", url);
     }
 
     yield put(userActions.resetUser());

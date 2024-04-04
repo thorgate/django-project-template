@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
 /**
  * Generate type for each field defined
@@ -20,8 +20,8 @@ export const getFormPropTypes = (fields) => ({
                 PropTypes.string,
                 PropTypes.number,
                 PropTypes.bool,
-            ]),
-        ),
+            ])
+        )
     ).isRequired,
     status: PropTypes.shape({
         color: PropTypes.string,

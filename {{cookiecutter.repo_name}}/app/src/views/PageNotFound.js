@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 
-import NotFound from 'components/NotFound';
-import withView from 'decorators/withView';
+import NotFound from "@/src/components/NotFound";
+import withView from "@/src/decorators/withView";
 
 const PageNotFound = () => <NotFound />;
 

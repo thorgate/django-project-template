@@ -1,15 +1,15 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { useTranslation } from 'react-i18next';
-import { Row, Col, Alert, Button } from 'reactstrap';
-import { Link } from 'react-router-dom';
-import { withFormik, Form } from 'formik';
-import * as Yup from 'yup';
-import { resolvePath } from 'tg-named-routes';
+import React from "react";
+import PropTypes from "prop-types";
+import { useTranslation } from "react-i18next";
+import { Row, Col, Alert, Button } from "reactstrap";
+import { Link } from "react-router-dom";
+import { withFormik, Form } from "formik";
+import * as Yup from "yup";
+import { resolvePath } from "tg-named-routes";
 
-import FormField from 'forms/fields/FormField';
-import { tNoop } from 'utils/text';
-import { getFormPropTypes } from 'utils/types';
+import FormField from "@/src/forms/fields/FormField";
+import { tNoop } from "@/src/utils/text";
+import { getFormPropTypes } from "@/src/utils/types";
 
 const Login = ({ dirty, isValid, status, isSubmitting }) => {
     const { t } = useTranslation();
@@ -19,8 +19,8 @@ const Login = ({ dirty, isValid, status, isSubmitting }) => {
                 id="email"
                 name="email"
                 type="text"
-                label={t('Email')}
-                placeholder={t('Enter email')}
+                label={t("Email")}
+                placeholder={t("Enter email")}
                 disabled={isSubmitting}
                 labelSize={4}
             />
@@ -28,15 +28,15 @@ const Login = ({ dirty, isValid, status, isSubmitting }) => {
                 id="password"
                 name="password"
                 type="password"
-                label={t('Password')}
-                placeholder={t('Password')}
+                label={t("Password")}
+                placeholder={t("Password")}
                 disabled={isSubmitting}
                 labelSize={4}
             />
 
             {status !== undefined && (
                 <Alert
-                    color={status.color === undefined ? 'danger' : status.color}
+                    color={status.color === undefined ? "danger" : status.color}
                 >
                     {status.message}
                 </Alert>
@@ -49,17 +49,17 @@ const Login = ({ dirty, isValid, status, isSubmitting }) => {
                         disabled={isSubmitting || (dirty && !isValid)}
                         className="btn btn-lg btn-block btn-success"
                     >
-                        {t('Log in')}
+                        {t("Log in")}
                     </Button>
                 </Col>
             </Row>
             <Row>
                 <Col sm={4} className="mt-3 ml-auto mr-auto">
                     <Link
-                        to={resolvePath('auth:forgot-password')}
+                        to={resolvePath("auth:forgot-password")}
                         className="pt-2"
                     >
-                        {t('Forgot password?')}
+                        {t("Forgot password?")}
                     </Link>
                 </Col>
             </Row>
@@ -68,23 +68,23 @@ const Login = ({ dirty, isValid, status, isSubmitting }) => {
 };
 
 Login.propTypes = {
-    ...getFormPropTypes(['email', 'password']),
+    ...getFormPropTypes(["email", "password"]),
 };
 
 const LoginForm = withFormik({
     mapPropsToValues: () => ({
-        email: '',
-        password: '',
+        email: "",
+        password: "",
     }),
     validationSchema: Yup.object().shape({
-        email: Yup.string().email(tNoop('Invalid email address')),
+        email: Yup.string().email(tNoop("Invalid email address")),
         password: Yup.string(),
     }),
 
     handleSubmit: (values, { props, ...formik }) =>
         props.onLogin({ data: values }, formik),
 
-    displayName: 'LoginForm', // helps with React DevTools
+    displayName: "LoginForm", // helps with React DevTools
 })(Login);
 
 LoginForm.propTypes = {

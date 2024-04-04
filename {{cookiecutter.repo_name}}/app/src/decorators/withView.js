@@ -1,6 +1,7 @@
-import { connectView } from '@thorgate/spa-view';
+import { connectView } from "@thorgate/spa-view";
 
-import { onComponentError } from 'services/sentry';
+import { onComponentError } from "@/src/services/sentry";
 
-export default (props = {}) => (target) =>
-    connectView({ ...props, onComponentError })(target);
+export default (props = {}) =>
+    (target) =>
+        connectView({ ...props, onComponentError })(target);

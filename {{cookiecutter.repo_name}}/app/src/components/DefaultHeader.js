@@ -1,9 +1,9 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Helmet } from 'react-helmet-async';
-import { useTranslation } from 'react-i18next';
+import React from "react";
+import PropTypes from "prop-types";
+import { Helmet } from "react-helmet-async";
+import { useTranslation } from "react-i18next";
 
-import { SETTINGS } from 'settings';
+import { SETTINGS } from "@/src/settings";
 
 const DefaultHeader = ({ canonical }) => {
     const { i18n } = useTranslation();

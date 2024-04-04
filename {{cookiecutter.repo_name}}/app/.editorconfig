@@ -1,0 +1,13 @@
+# Prettier is picking this up
+# If you are using Prettier extension then style applied by that will differ from Prettiers default
+[*.js]
+indent_size = 4
+
+[*.jsx]
+indent_size = 4
+
+[*.ts]
+indent_size = 4
+
+[*.tsx]
+indent_size = 4
