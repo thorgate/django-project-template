@@ -74,7 +74,7 @@ module.exports = {
                 plugins: [
                     '@babel/plugin-syntax-jsx',
                     '@babel/plugin-syntax-dynamic-import',
-                    '@babel/plugin-proposal-optional-chaining',
+                    '@babel/plugin-transform-optional-chaining',
                 ],
             });
 

@@ -105,6 +105,12 @@ test-node:
     - make settings
     - docker compose build node
     - make node-install
+    # - {% if cookiecutter.frontend_style == SPA %}
+    # - CI_TEST_PROJECT_GENERATE
+    - make extract-i18n
+    # - CI_TEST_PROJECT_GENERATE
+    - make generate-rtk-query-api
+    # - {% endif %}
     - make lint-js
     - make coverage-js
     - make patch-coverage-js-paths
