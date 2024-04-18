@@ -13,7 +13,6 @@ from pytest_mock import MockerFixture
 def _patch_celery(mocker: MockerFixture):
     mocker.patch("tg_utils.health_check.checks.celery_beat.backends.CeleryBeatHealthCheck.check_status")
     mocker.patch("health_check.contrib.celery.backends.CeleryHealthCheck.check_status")
-    yield
 # - {%- endif %}
 
 
