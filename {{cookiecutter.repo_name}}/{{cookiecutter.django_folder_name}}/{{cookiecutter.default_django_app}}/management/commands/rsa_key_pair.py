@@ -1,4 +1,4 @@
-from typing import Any
+import typing as t
 
 from django.core.management.base import BaseCommand
 
@@ -12,7 +12,7 @@ class Command(BaseCommand):
     This management command generates a new RSA key-pair and prints the key-pair.
     """
 
-    def handle(self, *args: Any, **options: Any) -> None:
+    def handle(self, *args: t.Any, **options: t.Any) -> None:
         private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
 
         private_key_pem = private_key.private_bytes(
