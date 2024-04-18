@@ -16,7 +16,7 @@ COPY ./app/pnpm-lock.yaml ./
 # Install node build dependencies
 RUN apk add --no-cache libc6-compat bash grep && \
     apk add --no-cache --virtual .build-deps libc6-compat alpine-sdk python3 && \
-    npm -g i pnpm sharp && \
+    npm -g i pnpm@^8 sharp && \
     pnpm config set store-dir /usr/local/share/.cache/.pnpm-store && \
     pnpm install --frozen-lockfile && \
     apk del .build-deps

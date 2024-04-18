@@ -152,6 +152,9 @@ def cleanup():
             "scripts/deploy",
         ]
 
+    if os.getenv("DPT_CI_PROJECT_TEST") != "1":
+        remove_ci_project_generation_extra_commands(cwd)
+
     # remove CC leftovers
     kill_lines(cwd)
 
@@ -204,10 +207,20 @@ def kill_lines(path):
     return subprocess.check_call(["find", path, "-type", "f", "-exec", "sed", "-i", sed_command, "{}", "+"])
 
 
+def remove_ci_project_generation_extra_commands(path):
+    """
+    Will line containing CI_TEST_PROJECT_GENERATE and the following it.
+    """
+
+    sed_command = f"/CI_TEST_PROJECT_GENERATE/,+2d"
+    return subprocess.check_call(["find", path, "-type", "f", "-exec", "sed", "-i", sed_command, "{}", "+"])
+
+
 def run_lint_fix(path):
     subprocess.check_call(["ruff","--cache-dir=.ruff_cache", "--fix", path])
     subprocess.check_call(["ruff","--cache-dir=.ruff_cache", "--select", "I", path])
     subprocess.check_call(["ruff","format", "--cache-dir=.ruff_cache", path])
+
 
 def ask_input(prompt, default_response=None, allowed_responses=None):
     while True:

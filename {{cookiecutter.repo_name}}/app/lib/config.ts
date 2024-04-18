@@ -69,7 +69,7 @@ export default function config(
             source = process.env;
         }
 
-        const value = source[safeKey] ?? source[key];
+        const value = source[key] ?? source[safeKey];
 
         if (type === "number") {
             return Number(value);
