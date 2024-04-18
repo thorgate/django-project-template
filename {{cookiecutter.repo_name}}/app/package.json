@@ -15,7 +15,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "lint": "next lint",
+    "lint": "pnpm lint:eslint && pnpm lint:tsc",
+    "lint:eslint": "next lint",
     "lint:tsc": "tsc --noEmit",
     "prettier-check": "prettier --check",
     "prettier-check-all": "prettier --check '{lib,src}/**/*.{js,jsx,ts,tsx}'",
@@ -93,6 +94,10 @@
     "yup": "0.32.9"
   },
   "devDependencies": {
+    "@babel/core": "^7",
+    "@babel/plugin-syntax-dynamic-import": "^7",
+    "@babel/plugin-syntax-jsx": "^7",
+    "@babel/plugin-transform-optional-chaining": "^7",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
     "@types/classnames": "^2.2.11",

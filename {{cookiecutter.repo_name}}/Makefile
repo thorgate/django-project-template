@@ -21,6 +21,8 @@ DJANGO_FOLDER_NAME ?= {{cookiecutter.django_folder_name}}
 PROJECT_ROOT ?= $(CURDIR)
 SITE_ROOT ?= $(PROJECT_ROOT)/$(DJANGO_FOLDER_NAME)
 
+APP_ROOT ?= $(PROJECT_ROOT)/app
+
 CUR_DIR_NAME ?= $(shell basename `pwd`)
 DJANGO_IMAGE_NAME ?= $(CUR_DIR_NAME)-django
 POETRY_WRAPPER_IMAGE_NAME ?= $(PROJECT_NAME)-poetry-wrapper
@@ -292,7 +294,7 @@ coverage: coverage-py coverage-js  ## Runs all tests with coverage
 
 .PHONY:
 node-install:
-	@docker compose run --rm node {% if cookiecutter.frontend_style == SPA %}pnpm{% else %}yarn{% endif %}
+	@docker compose run --rm node {% if cookiecutter.frontend_style == SPA %}pnpm install{% else %}yarn{% endif %}
 
 
 .PHONY:
@@ -379,11 +381,7 @@ node-typecheck:
 .PHONY:
 eslint-fix:
 	@echo -e "$(CYAN)Running ESLint$(COFF)"
-{% if cookiecutter.frontend_style == SPA -%}
 	@make eslint cmd="--fix"
-{% else %}
-	@docker compose run --rm node yarn lint:eslint --fix
-{% endif %}
 
 
 .PHONY:
@@ -502,7 +500,7 @@ compilemessages:
 {% if cookiecutter.frontend_style == SPA -%}
 .PHONY:
 extract-i18n:
-	docker compose run --rm node yarn extract-i18n
+	docker compose run --rm node pnpm extract-i18n
 
 .PHONY:
 export-schema:
@@ -513,14 +511,15 @@ export-schema:
 generate-rtk-query-api: export-schema
 	docker-compose run --rm node pnpm generate-api
 	@make patch-rtk-queries-api
+	@make fmt-js
 
 .PHONY:
-patch-rtk-query-api:
+patch-rtk-queries-api:
 	@cp ./app/lib/queries/queriesApi.generated.ts ./app/lib/queries/queriesApi.generated.base.ts
 	@patch ./app/lib/queries/queriesApi.generated.ts < ./app/lib/queries/queriesApi.generated.patch
 
 .PHONY:
-create-rtk-query-api-patch:
+create-rtk-queries-api-patch:
 	@diff ./app/lib/queries/queriesApi.generated.base.ts ./app/lib/queries/queriesApi.generated.ts > ./app/lib/queries/queriesApi.generated.patch
 {%- endif %}
 
