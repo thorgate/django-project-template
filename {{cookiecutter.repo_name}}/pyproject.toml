@@ -318,6 +318,12 @@ unfixable = [
     "TID252", # Relative imports from parent modules are banned
     "PT011", # `pytest.raises(ValueError)` is too broad, set the `match` parameter or use a more specific exception
 ]
+"manage.py" = [
+    "INP001" # we can't have a top-level __init__.py file as this messes up sys.path during pytest run
+]
+"conftest.py" = [
+    "INP001" # we can't have a top-level __init__.py file as this messes up sys.path during pytest run
+]
 
 # The following rules are native re-implementations in ruff.
 # The listed tools are not actually run, and configuration only affects ruff.
