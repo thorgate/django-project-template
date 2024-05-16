@@ -29,7 +29,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
 );
 
 function Home() {
-    const { t } = useTranslation("common");
+    const { t } = useTranslation(["common"]);
 
     const accessToken = useSelector((state) => {
         return (state as RootState)[appUserSlice.name].accessToken;
@@ -47,7 +47,7 @@ function Home() {
             </Head>
             <div className="tw-flex tw-flex-col tw-space-between tw-items-center tw-min-h-100vh tw-p-10">
                 <div className="tw-p-2 md:tw-p-1">
-                    <h1 data-testid="welcome">{t("welcomeMessage")}</h1>
+                    <h1 data-testid="welcome">{t("common:welcomeMessage")}</h1>
                 </div>
 
                 <div className="tw-p-2 md:tw-p-1">
