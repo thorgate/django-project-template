@@ -40,12 +40,12 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 export default function Login({
     csrfToken,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-    const { t } = useTranslation("common");
+    const { t } = useTranslation(["common"]);
 
     return (
         <>
             <Head>
-                <title>{`${t("pageTitles.login")} - {{ cookiecutter.project_title }}`}</title>
+                <title>{`${t("common:pageTitles.login")} - {{ cookiecutter.project_title }}`}</title>
             </Head>
             <div className="tw-flex tw-flex-col tw-justify-center">
                 <div className="tw-p-10 tw-xs:p-0 tw-mx-auto md:tw-w-full md:tw-max-w-md">

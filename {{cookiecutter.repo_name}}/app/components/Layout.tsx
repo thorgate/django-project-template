@@ -14,31 +14,31 @@ interface LayoutProps {
 
 export function Layout({ children, authElements }: LayoutProps) {
     const router = useRouter();
-    const { t } = useTranslation("common");
+    const { t } = useTranslation(["common"]);
 
     return (
         <>
             <NavBar
                 navItems={[
                     {
-                        label: t("pageTitles.home"),
-                        href: "/",
+                        label: t("common:pageTitles.home"),
+                        href: "/new-index",
                     },
                     {
-                        label: t("pageTitles.user-details"),
+                        label: t("common:pageTitles.user-details"),
                         href: "/user-details",
                     },
                     {
-                        label: t("pageTitles.about"),
+                        label: t("common:pageTitles.about"),
                         href: "/about",
                     },
                     {
-                        label: t("pageTitles.errorTestPage"),
+                        label: t("common:pageTitles.errorTestPage"),
                         href: "/error-test-page",
                     },
                     {
-                        label: t("pageTitles.home") + " (old)",
-                        href: `/${router.locale}/old-index`,
+                        label: t("common:pageTitles.home") + " (old)",
+                        href: `/${router.locale}/`,
                         native: true,
                     },
                 ]}

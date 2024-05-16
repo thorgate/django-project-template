@@ -12,11 +12,11 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
 };
 
 const ServerErrorPage = () => {
-    const { t } = useTranslation("common");
+    const { t } = useTranslation(["common"]);
     return (
         <NextErrorComponent
             statusCode={500}
-            title={t("pageTitles.internalError")}
+            title={t("common:pageTitles.internalError")}
         />
     );
 };
