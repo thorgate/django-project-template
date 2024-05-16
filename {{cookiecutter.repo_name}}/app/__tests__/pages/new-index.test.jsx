@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { Provider } from "react-redux";
 
-import Home from "../../pages/index";
+import Home from "../../pages/new-index";
 
 import { wrapper } from "../../lib/store";
 
@@ -19,7 +19,7 @@ describe("Home", () => {
         render(<Home />, { wrapper: ProvidersWrapper });
 
         const heading = screen.getByTestId("welcome", {
-            name: /welcome to rainpaul/i,
+            name: /welcome/i,
         });
 
         expect(heading).toBeInTheDocument();

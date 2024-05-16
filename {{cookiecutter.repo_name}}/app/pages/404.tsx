@@ -12,9 +12,9 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
 };
 
 const NotFoundPage = () => {
-    const { t } = useTranslation("common");
+    const { t } = useTranslation(["common"]);
     return (
-        <NextErrorComponent statusCode={404} title={t("pageTitles.notFound")} />
+        <NextErrorComponent statusCode={404} title={t("common:pageTitles.notFound")} />
     );
 };
 

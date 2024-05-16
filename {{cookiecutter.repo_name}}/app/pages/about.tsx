@@ -33,17 +33,17 @@ export const getServerSideProps = async (
 export default function About({
     paragraphs,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
-    const { t } = useTranslation("common");
+    const { t } = useTranslation(["common"]);
 
     const [p1, p2] = paragraphs;
     return (
         <>
             <Head>
-                <title>{`${t("pageTitles.about")} - {{ cookiecutter.project_title }}`}</title>
+                <title>{`${t("common:pageTitles.about")} - {{ cookiecutter.project_title }}`}</title>
             </Head>
             <div className="tw-flex tw-flex-col tw-space-between tw-items-center tw-min-h-100vh tw-p-10">
                 <div className="tw-p-2 md:tw-p-1">
-                    <h1 data-testid="welcome">{t("pageTitles.about")}</h1>
+                    <h1 data-testid="welcome">{t("common:pageTitles.about")}</h1>
                 </div>
                 <div className="tw-p-2 md:tw-p-1">
                     <p>{p1}</p>
