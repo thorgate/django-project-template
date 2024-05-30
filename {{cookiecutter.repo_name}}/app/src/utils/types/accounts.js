@@ -8,7 +8,7 @@ export const UserShape = PropTypes.shape({
     is_staff: PropTypes.bool,
     is_active: PropTypes.bool,
     last_login: PropTypes.string,
-    date_joined: PropTypes.string,
+    created: PropTypes.string,
 });
 
 export const UsersShape = PropTypes.shape({

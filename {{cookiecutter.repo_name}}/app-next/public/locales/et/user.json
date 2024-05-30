@@ -1,0 +1,20 @@
+{
+    "active": "Lubatud?",
+    "created": "Kasutaja {{ name }} loomine õnnestus.",
+    "dateJoined": "Liitumiskuupäev",
+    "deactivate": "Deaktiveeri",
+    "deleteConfirmation": "Kas olete kindel, et soovite selle kasutaja deaktiveerida?",
+    "deleted": "Kasutaja {{ name }} deaktiveerimine õnnestus.",
+    "email": "E-post",
+    "error": {
+        "passwordsDoNotMatch": "Salasõnad ei kattu."
+    },
+    "name": "Nimi",
+    "password": "Salasõna",
+    "passwordConfirm": "Korda salasõna",
+    "titleCreate": "Uus kasutaja",
+    "titleUpdate": "Kasutaja {{ name }}",
+    "unnamed": "",
+    "updated": "Kasutaja {{ name }} muutmine õnnestus.",
+    "user": "Kasutaja"
+}

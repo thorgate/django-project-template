@@ -5,7 +5,7 @@ from django.urls import include, path
 # - {%- if cookiecutter.frontend_style == WEBAPP %}
 from django.views.generic.base import TemplateView
 from django.views.i18n import JavaScriptCatalog
-# - {% elif  cookiecutter.frontend_style == SPA %}
+# - {% elif  cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 from django.views.generic.base import RedirectView
 # - {% endif %}
 
@@ -19,7 +19,7 @@ urlpatterns = [
     path("", include("accounts.urls")),
     path("", TemplateView.as_view(template_name="home.html"), name="home"),
     path("jsi18n/", JavaScriptCatalog.as_view(), name="javascript-catalog"),
-    # - {% elif  cookiecutter.frontend_style == SPA %}
+    # - {% elif  cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
     path("api/", include(f"{settings.DEFAULT_DJANGO_APP}.rest.urls")),
     # - {% endif %}
     path(f"{settings.DJANGO_ADMIN_PATH}/", admin.site.urls),
@@ -59,7 +59,7 @@ if settings.IS_UNITTEST:  # pragma: no branch
         path("test500", failing_view),
     ]
 
-# - {%- if cookiecutter.frontend_style == SPA %}
+# - {%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 
 
 urlpatterns += [

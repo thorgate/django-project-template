@@ -1,6 +1,9 @@
 from django.contrib.auth import get_user_model
+from django.utils.translation import gettext
 
-from rest_framework import status
+from rest_framework import mixins, status
+from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -8,9 +11,19 @@ from tg_react.api.accounts.serializers import SignupSerializer
 from tg_react.api.accounts.views import SignUpView as TgReactSignUpView
 from tg_react.api.accounts.views import UserDetails as TgReactUserDetails
 
+from accounts.models import User
+from accounts.rest.filters import UserFilterSet
+from accounts.rest.serializers import (
+    UserCreateSerializer,
+    UserDetailMeSerializer,
+    UserDetailSerializer,
+)
+from {{cookiecutter.default_django_app}}.rest.core.viewsets import ActionBasedSerializerMixin, BaseViewSet
+
 
 class UserDetails(TgReactUserDetails):
     authentication_classes = api_settings.DEFAULT_AUTHENTICATION_CLASSES
+    serializer_class = UserDetailMeSerializer
 
 
 class SignUpView(TgReactSignUpView):
@@ -39,3 +52,35 @@ class SignUpView(TgReactSignUpView):
         return Response(
             {"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
         )
+
+
+class UserViewSet(
+    ActionBasedSerializerMixin,
+    mixins.RetrieveModelMixin,
+    mixins.ListModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
+    BaseViewSet,
+):
+    lookup_field = "email"
+    lookup_value_regex = "[^/]+"
+
+    serializer_class = UserDetailSerializer
+    action_based_serializer_classes = {
+        "create": UserCreateSerializer,
+    }
+
+    # TODO: NEWPROJECT - replace this permission check with relevant one
+    permission_classes = [IsAuthenticated]
+    filterset_class = UserFilterSet
+
+    def get_queryset(self):
+        return User.objects.all().with_deterministic_email()  # type: ignore[attr-defined]
+
+    def perform_destroy(self, instance) -> None:
+        if instance.id == self.request.user.id:
+            raise ValidationError(gettext("You can not deactivate your own user."))
+
+        instance.is_active = False
+        instance.save()

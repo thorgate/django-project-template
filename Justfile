@@ -9,4 +9,7 @@ set dotenv-load
 test tag +cmd="":
 	pytest -E {{tag}} --maxfail=1 -v {{cmd}}
 
+test-poetry tag +cmd="":
+	poetry run pytest -E {{tag}} --maxfail=1 -v {{cmd}}
+
 test-main +cmd="": (test "main" cmd)

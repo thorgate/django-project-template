@@ -1,0 +1,71 @@
+{
+    "calendar": {
+        "nextMonth": "Next month",
+        "previousMonth": "Previous month"
+    },
+    "count": "Count",
+    "error": "Error",
+    "errors": {
+        "loading": "Loading...",
+        "rateLimited": "Rate limited - try again later",
+        "unexpectedError": "Unexpected error",
+        "unexpectedErrorWithCode": "Unexpected error {{code}}",
+        "serverError": "Server error: {{code}}"
+    },
+    "filters": {
+        "nothingSelected": "Select",
+        "search": "Search",
+        "select": "Select",
+        "titles": {
+            "isActive": "Is active?",
+            "isStaff": "Is staff?"
+        },
+        "values": {
+            "active": "Active",
+            "all": "All",
+            "false": "No",
+            "inactive": "Inactive",
+            "true": "Yes"
+        },
+        "hidden": "Hidden",
+        "page-number": "Page number",
+        "multi-select": "Select multiple"
+    },
+    "form": {
+        "back": "Back",
+        "cancel": "Cancel",
+        "confirm": "Confirm",
+        "create": "Create",
+        "field": {
+            "required": "This field is required"
+        },
+        "save": "Save",
+        "edit": "Edit",
+        "delete": "Delete"
+    },
+    "navigation": {
+        "signIn": "Sign in",
+        "signOut": "Sign out"
+    },
+    "pageTitles": {
+        "about": "About",
+        "admin": "Admin panel",
+        "apiDocumentation": "API Documentation",
+        "errorTestPage": "Error triggering page",
+        "home": "Home",
+        "internalError": "Internal server error",
+        "login": "Login",
+        "notFound": "Not Found",
+        "userCreate": "New user",
+        "userDetails": "User {{name}}",
+        "userList": "Users"
+    },
+    "pagination": {
+        "nextPage": "Next",
+        "paginationShownItems": "Showing {{ firstItem }} to {{ lastItem }} of {{ totalCount }} results.",
+        "previousPage": "Previous"
+    },
+    "requestId": "Request ID",
+    "status": "Status",
+    "welcomeMessage": "Welcome to PROJECT NAME"
+}

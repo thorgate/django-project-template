@@ -1,0 +1,20 @@
+{
+    "active": "Active",
+    "created": "User {{ name }} was created successfully.",
+    "dateJoined": "Date joined",
+    "deactivate": "Deactivate",
+    "deleteConfirmation": "Are you sure you want to deactivate this user?",
+    "deleted": "User {{ name }} was deactivated successfully.",
+    "email": "Email",
+    "error": {
+        "passwordsDoNotMatch": "Passwords do not match."
+    },
+    "name": "Name",
+    "password": "Password",
+    "passwordConfirm": "Confirm password",
+    "titleCreate": "New user",
+    "titleUpdate": "User {{ name }}",
+    "unnamed": "Unnamed user",
+    "updated": "User {{ name }} was updated successfully.",
+    "user": "User"
+}

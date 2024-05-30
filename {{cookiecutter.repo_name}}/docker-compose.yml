@@ -58,14 +58,14 @@ services:
 # - {%- if cookiecutter.frontend_style == WEBAPP and cookiecutter.webapp_include_storybook == YES %}
       - "6006:80"
 # - {%- endif %}
-# - {%- if cookiecutter.frontend_style == SPA %}
+# - {%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
       - "3000:3000"
 # - {%- endif %}
 # - {%- endif %}
     volumes:
 # -   {%- if cookiecutter.frontend_style == WEBAPP %}
       - "./webapp:/app"
-# -   {%- elif cookiecutter.frontend_style == SPA %}
+# -   {%- elif cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
       - "./app:/app"
       - ".data/pnpm:/usr/local/share/.cache/.pnpm-store"
 # -   {% endif %}
@@ -74,7 +74,7 @@ services:
     command:
 # -   {%- if cookiecutter.frontend_style == WEBAPP %}
       - "yarn && yarn dev"
-# -   {%- elif cookiecutter.frontend_style == SPA %}
+# -   {%- elif cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
       - "pnpm install && pnpm dev"
 # -   {% endif %}
 

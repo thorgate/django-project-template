@@ -9,10 +9,10 @@ https://docs.djangoproject.com/en/dev/ref/settings/
 """
 
 import os
-# - {%- if cookiecutter.frontend_style == SPA %}
+# - {%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 from datetime import timedelta
 # - {%- endif %}
-from typing import Any, Dict
+from typing import Any
 from urllib.parse import quote
 
 import environs
@@ -57,7 +57,7 @@ SESSION_COOKIE_DOMAIN = env.str("DJANGO_SESSION_COOKIE_DOMAIN", default=None)
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-# - {%- if cookiecutter.frontend_style == SPA %}
+# - {%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 
 CSRF_COOKIE_DOMAIN = env.str("DJANGO_CSRF_COOKIE_DOMAIN", default=None)
 CSRF_COOKIE_HTTPONLY = False
@@ -101,18 +101,18 @@ INSTALLED_APPS = [
 
 
 MIDDLEWARE = [
-    # - {%- if cookiecutter.frontend_style == SPA %}
+    # - {%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
     "corsheaders.middleware.CorsMiddleware",
     # - {%- endif %}
     "django.contrib.sessions.middleware.SessionMiddleware",
-    # - {%- if cookiecutter.frontend_style == SPA %}
+    # - {%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
     "django.middleware.locale.LocaleMiddleware",
     # - {%- endif %}
     "django.middleware.common.CommonMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # - {%- if cookiecutter.frontend_style == SPA %}
+    # - {%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
     "djangorestframework_camel_case.middleware.CamelCaseMiddleWare",
     # - {%- endif %}
     # - {%- if cookiecutter.content_security_policy == YES %}
@@ -313,7 +313,7 @@ AUTH_USER_MODEL = "accounts.User"
 # - {%- if cookiecutter.frontend_style == WEBAPP %}
 SITE_URL = env.str("DJANGO_SITE_URL", default="http://127.0.0.1:8000")
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=[])
-# - {% elif  cookiecutter.frontend_style == SPA %}
+# - {% elif  cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 SITE_URL = env.str("APP_SITE_URL", default="http://127.0.0.1:3000")
 DJANGO_SITE_URL = env.str("APP_BACKEND_SITE_URL", default="http://127.0.0.1:8000")
 ALLOWED_HOSTS = env.list(
@@ -341,7 +341,7 @@ WSGI_APPLICATION = f"{DEFAULT_DJANGO_APP}.wsgi.application"
 
 
 LOGIN_REDIRECT_URL = "/"
-# - {%- if cookiecutter.frontend_style == SPA %}
+# - {%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 LOGIN_URL = "admin:login"
 LOGOUT_REDIRECT_URL = "admin:login"
 # - {%- else %}
@@ -370,7 +370,7 @@ EMAIL_HOST_PASSWORD = ""
 #  production.py.
 #  Notably we modify existing Django loggers to propagate and delegate their logging to the root handler, so that we
 #  only have to configure the root handler.
-LOGGING: Dict[str, Any] = {
+LOGGING: dict[str, Any] = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
@@ -397,7 +397,7 @@ SILENCED_SYSTEM_CHECKS = [
     "security.W001",  # we don't use SecurityMiddleware since security is better applied in nginx config
 ]
 
-# - {%- if cookiecutter.frontend_style == SPA %}
+# - {%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 
 # Rest framework configuration
 REST_FRAMEWORK = {

@@ -1,0 +1,71 @@
+{
+    "calendar": {
+        "nextMonth": "Järgmine kuu",
+        "previousMonth": "Eelmine kuu"
+    },
+    "count": "Loendus",
+    "error": "Viga",
+    "errors": {
+        "loading": "Laen...",
+        "rateLimited": "Proovi hiljem uuesti",
+        "unexpectedError": "Tundmatu viga",
+        "unexpectedErrorWithCode": "Ootamatu viga {{code}}",
+        "serverError": "Serveri viga: {{code}}"
+    },
+    "filters": {
+        "nothingSelected": "Vali",
+        "search": "Otsi",
+        "select": "Vali",
+        "titles": {
+            "isActive": "Lubatud?",
+            "isStaff": "Administraator?"
+        },
+        "values": {
+            "active": "Lubatud",
+            "all": "Kõik",
+            "false": "Ei",
+            "inactive": "Pole lubatud",
+            "true": "Jah"
+        },
+        "hidden": "Salajane",
+        "page-number": "Lehekülje number",
+        "multi-select": "Vali mitu"
+    },
+    "form": {
+        "back": "Tagasi",
+        "cancel": "Tühista",
+        "confirm": "Kinnita",
+        "create": "Lisa",
+        "field": {
+            "required": "See väli on kohustuslik."
+        },
+        "save": "Salvesta",
+        "edit": "Muuda",
+        "delete": "Kustuta"
+    },
+    "navigation": {
+        "signIn": "Logi sisse",
+        "signOut": "Logi välja"
+    },
+    "pageTitles": {
+        "about": "Meist",
+        "admin": "Administraatori paneel",
+        "apiDocumentation": "API dokumentatsioon",
+        "errorTestPage": "Erroriga vaade",
+        "home": "Kodu",
+        "internalError": "Serveri viga",
+        "login": "Logi sisse",
+        "notFound": "Ei leitud lehte",
+        "userCreate": "Uus kasutaja",
+        "userDetails": "Kasutaja {{ name }}",
+        "userList": "Kasutajad"
+    },
+    "pagination": {
+        "nextPage": "Järgmine",
+        "paginationShownItems": "{{ firstItem }} kuni {{ lastItem }} ({{ totalCount }} kokku)",
+        "previousPage": "Eelmine"
+    },
+    "requestId": "Päringu ID",
+    "status": "Staatus",
+    "welcomeMessage": "Tere tulemast"
+}

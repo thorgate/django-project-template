@@ -1,7 +1,7 @@
 export const URLS = {
     admin: '/adminpanel/',
     adminLogout: '/adminpanel/logout/',
-    // - {% if cookiecutter.frontend_style == SPA %}
+    // - {% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
     // -     {% set login_url="/auth/login" %}
     // -     {% set logout_url="/auth/logout" %}
     // - {% elif cookiecutter.frontend_style == WEBAPP %}

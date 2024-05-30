@@ -27,6 +27,7 @@ from copy import deepcopy
 
 WEBAPP = "webapp"
 SPA = "spa"
+SPA_NEXT = "spa-next"
 
 
 def get_codemods(context):

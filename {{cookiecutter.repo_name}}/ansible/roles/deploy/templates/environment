@@ -12,18 +12,18 @@
 {%- if cookiecutter.build_in_ci == YES %}
 SITE_VERSION={{ "{{ git_commit_sha.stdout }}" }}
 SITE_DJANGO_IMAGE=registry.gitlab.com/{{ cookiecutter.gitlab_repo_url | get_url_path }}/django
-{%- if cookiecutter.frontend_style == SPA %}
+{%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 SITE_NODE_IMAGE=registry.gitlab.com/{{ cookiecutter.gitlab_repo_url | get_url_path }}/node
 {%- endif %}
 {%- endif %}
 
 DJANGO_SITE_URL=https://{{ "{{ django_site_host }}" }}
 DJANGO_ALLOWED_HOSTS={{ "{{ django_site_host }}" }}
-                    {%- if cookiecutter.frontend_style == SPA -%}
+                    {%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT -%}
                         ,{{ "{{ node_site_host }}" }}
                     {%- endif %}
 
-{%- if cookiecutter.frontend_style == SPA %}
+{%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 DJANGO_CSRF_COOKIE_DOMAIN=.{{ "{{ node_site_host }}" }}
 
 # Site URL settings
@@ -40,13 +40,13 @@ DJANGO_DATABASE_NAME={{ "{{ project }}" }}
 DJANGO_DATABASE_USER={{ "{{ project }}" }}
 DJANGO_DATABASE_PASSWORD={{ "{{ django_database_password }}" }}
 
-{%- if cookiecutter.frontend_style == SPA %}
+{%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 # Secret keys
 NEXTAUTH_SECRET={{ "{{ next_secret_key }}" }}
 {%- endif %}
 DJANGO_SECRET_KEY={{ "{{ django_secret_key }}" }}
 
-{%- if cookiecutter.frontend_style == SPA %}
+{%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 DJANGO_JWT_PRIVATE_KEY="{{ "{{ django_jwt_private_key }}" }}"
 DJANGO_JWT_PUBLIC_KEY="{{ "{{ django_jwt_public_key }}" }}"
 APP_PUBLIC_JWT_PUBLIC_KEY="{{ "{{ django_jwt_public_key }}" }}"
