@@ -36,7 +36,7 @@ services:
     #  work.
     entrypoint: /usr/bin/wait-for-it.sh postgres:5432 -t 60 --
     command: gunicorn {{cookiecutter.default_django_app}}.wsgi:application --workers 2 --bind :80
-# - {%  if cookiecutter.frontend_style == SPA %}
+# - {%  if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 
   node:
     <<: *common-spec
@@ -48,7 +48,7 @@ services:
       dockerfile: Dockerfile-node.production
 # -   {%  endif %}
     container_name: {{cookiecutter.repo_name}}_node
-    command: {% if cookiecutter.frontend_style == SPA %}pnpm{% else %}yarn{% endif %} start{% if cookiecutter.frontend_style == SPA %} -p 80{% endif %}
+    command: {% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}pnpm{% else %}yarn{% endif %} start{% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %} -p 80{% endif %}
     volumes:
       - "/var/lib/docker-nginx/files/{{cookiecutter.repo_name}}/app/assets:/files/assets"
       - *logs-volume

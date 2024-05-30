@@ -41,7 +41,7 @@ def test_create_user():
         assert not user.is_superuser
 
         assert user.last_login == now
-        assert user.date_joined == now
+        assert user.created == now
 
     # Should be possible to get the same user regardless of casing of the email
     assert User.objects.get(email="foo@bar.sdf").pk == user.pk
@@ -72,4 +72,4 @@ def test_create_superuser():
         assert user.is_superuser
 
         assert user.last_login == now
-        assert user.date_joined == now
+        assert user.created == now

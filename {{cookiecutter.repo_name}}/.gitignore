@@ -19,7 +19,7 @@ venv/
 {{cookiecutter.django_folder_name}}/db.sqlite3
 {{cookiecutter.django_folder_name}}/assets/
 
-{%- if cookiecutter.frontend_style == SPA %}
+{%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 {{cookiecutter.django_folder_name}}/schema.json
 
 {% endif %}
@@ -33,7 +33,7 @@ venv/
 {{cookiecutter.django_folder_name}}/htmlcov/
 {{cookiecutter.django_folder_name}}/cover/
 
-{%- if cookiecutter.frontend_style == SPA %}
+{%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 # Node Project files
 app/build/
 app/cache/

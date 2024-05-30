@@ -1,0 +1,32 @@
+{
+  "extends": ["next/core-web-vitals", "next", "prettier", "plugin:@typescript-eslint/recommended"],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    "react/jsx-no-useless-fragment": "error",
+    "react/jsx-no-leaked-render": "error",
+    "import/no-default-export": "error",
+    "import/order": "error",
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "no-console": "error"
+  },
+  "overrides": [
+    // Next.js needs default exports for pages and API points
+    {
+      "files": ["pages/**/*", "lib/config.ts"],
+      "rules": {
+        "import/no-default-export": "off"
+      }
+    },
+    {
+      "files": [
+        "lib/queries/queriesApi.generated.ts",
+        "lib/queries/queriesApi.generated.base.ts"
+      ],
+      "rules": {
+        "@typescript-eslint/ban-types": "off"
+      }
+    }
+  ]
+}

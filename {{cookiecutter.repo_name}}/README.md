@@ -55,8 +55,8 @@ Both docker and docker compose are used to run this project, so the run command 
 
 This builds, (re)creates and starts containers for Django, Node, PostgreSQL and Redis. Refer to `docker-compose.yml` for
 more insight.
-{%- if cookiecutter.frontend_style == SPA %}
-Django app is running on `3000` port. Front-end server is running on `8000` port.
+{%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
+Django app is running on `8000` port. Front-end server is running on `3000` port.
 For more information see [SPA docs](app/README.md).
 {%- endif %}
 
@@ -78,7 +78,7 @@ To _stop and remove_ containers, run
 
 This stops all running containers and removes containers, networks, volumes and images created by `up`.
 
-{% if cookiecutter.frontend_style == SPA %}
+{% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 ### Generating API schema
 
     make generate-rtk-query-api
@@ -116,7 +116,7 @@ Note that the production configuration lacks PostgreSQL, since it runs on a sepa
 |any command in Django container       |`make docker-django cmd=<command>`     |`docker compose run --rm django $(cmd)`                                     |
 |run tests                             |`make test`                            |`docker compose run --rm django py.test`                                    |
 |run linters                           |`make quality`                         |                                                                            |
-|run ESLint                            |`make eslint`                          |`docker compose run --rm node {% if cookiecutter.frontend_style == SPA %}pnpm{% else %}yarn{% endif %} lint`                                    |
+|run ESLint                            |`make eslint`                          |`docker compose run --rm node {% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}pnpm{% else %}yarn{% endif %} lint`                                    |
 |run Prospector                        |`make prospector`                      |`docker compose run --rm django prospector`                                 |
 |run psql                              |`make psql`                            |`docker compose exec postgres psql --user {{cookiecutter.repo_name}} --dbname {{cookiecutter.repo_name}}` |
 
@@ -127,7 +127,7 @@ Note that the production configuration lacks PostgreSQL, since it runs on a sepa
 ## Installing new python or npm packages
 
 ### Node
-Since `{% if cookiecutter.frontend_style == SPA %}pnpm{% else %}yarn{% endif %}` is inside the container, currently the easiest way to install new packages is to add them
+Since `{% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}pnpm{% else %}yarn{% endif %}` is inside the container, currently the easiest way to install new packages is to add them
 to the `package.json` file and rebuild the container.
 
 #### Gotchas
@@ -251,7 +251,7 @@ Howewer if you are adding a new language or are creating translations for the fi
 different command to create the initial locale files. The command is `add-locale`. After you have used this command once per each
 new language you can safely use `makemessages` and `compilemessages`
 
-{% if cookiecutter.frontend_style == SPA %}
+{% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 ## SPA translations
 
 Frontend app uses [i18next](https://github.com/i18next/i18next) for translations and locale data is stored in `public/locale/**/translations.json`.

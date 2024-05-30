@@ -83,7 +83,7 @@ test-node:
     policy: pull-push
   artifacts:
     reports:
-      # - {% if cookiecutter.frontend_style == SPA %}
+      # - {% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
       coverage_report:
         coverage_format: cobertura
         path: app/coverage/cobertura-coverage.xml
@@ -105,7 +105,7 @@ test-node:
     - make settings
     - docker compose build node
     - make node-install
-    # - {% if cookiecutter.frontend_style == SPA %}
+    # - {% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
     # - CI_TEST_PROJECT_GENERATE
     - make extract-i18n
     # - CI_TEST_PROJECT_GENERATE
@@ -162,7 +162,7 @@ publish_django:
     PUBLISH_NAME: django
     PUBLISH_DOCKER_FILE: Dockerfile-django.production
 
-# - {%- if cookiecutter.frontend_style == SPA %}
+# - {%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 
 publish_node:
   extends: .publish_image

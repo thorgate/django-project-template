@@ -27,7 +27,7 @@ CUR_DIR_NAME ?= $(shell basename `pwd`)
 DJANGO_IMAGE_NAME ?= $(CUR_DIR_NAME)-django
 POETRY_WRAPPER_IMAGE_NAME ?= $(PROJECT_NAME)-poetry-wrapper
 
-# - {%- if cookiecutter.frontend_style == SPA %}
+# - {%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 JS_COBERTURA="app/coverage/cobertura-coverage.xml"
 # - {% elif cookiecutter.frontend_style == WEBAPP %}
 JS_COBERTURA="webapp/coverage/cobertura-coverage.xml"
@@ -142,22 +142,22 @@ run-prettier:
 
 .PHONY:
 prettier-check:
-	@make run-prettier cmd="{% if cookiecutter.frontend_style == SPA %}pnpm{% else %}yarn{% endif %} prettier-check $(cmd)"
+	@make run-prettier cmd="{% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}pnpm{% else %}yarn{% endif %} prettier-check $(cmd)"
 
 
 .PHONY:
 prettier-check-all:
-	@make run-prettier cmd="{% if cookiecutter.frontend_style == SPA %}pnpm{% else %}yarn{% endif %} prettier-check-all $(cmd)"
+	@make run-prettier cmd="{% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}pnpm{% else %}yarn{% endif %} prettier-check-all $(cmd)"
 
 
 .PHONY:
 prettier-format:
-	@make run-prettier cmd="{% if cookiecutter.frontend_style == SPA %}pnpm{% else %}yarn{% endif %} prettier-format $(cmd)"
+	@make run-prettier cmd="{% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}pnpm{% else %}yarn{% endif %} prettier-format $(cmd)"
 
 
 .PHONY:
 prettier-format-cut-prefix:
-{%- if cookiecutter.frontend_style == SPA %}
+{%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 	@make run-prettier cmd="pnpm prettier-format $(subst app/src, src, $(cmd))"
 {%- else %}
 	@make run-prettier cmd="yarn prettier-format $(subst webapp/webapp, webapp, $(cmd))"
@@ -166,7 +166,7 @@ prettier-format-cut-prefix:
 
 .PHONY:
 prettier-format-all: ## Format JavaScript code with Prettier
-	@make run-prettier cmd="{% if cookiecutter.frontend_style == SPA %}pnpm{% else %}yarn{% endif %} prettier-format-all $(cmd)"
+	@make run-prettier cmd="{% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}pnpm{% else %}yarn{% endif %} prettier-format-all $(cmd)"
 
 
 # NOTE:
@@ -204,7 +204,7 @@ setup: pycharm settings ## Sets up the project in your local machine. This inclu
 	@make migrate
 	@echo -e "$(CYAN)Installing node modules$(COFF)"
 	@make node-install
-{% if cookiecutter.frontend_style == SPA %}
+{% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 	@echo -e "$(CYAN)Extracting JS translations$(COFF)"
 	@make extract-i18n
 {% endif %}
@@ -271,7 +271,7 @@ patch-coverage-py-paths:  ## Updates the paths in python cobertura report to mak
 .PHONY:
 coverage-js:
 	@echo -e "$(CYAN)Running automatic code coverage check$(COFF)"
-{%- if cookiecutter.frontend_style == SPA %}
+{%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 	@docker compose run --rm node pnpm test:coverage $(cmd)
 {%- else %}
 	@docker compose run --rm node yarn test --coverage $(cmd)
@@ -294,18 +294,18 @@ coverage: coverage-py coverage-js  ## Runs all tests with coverage
 
 .PHONY:
 node-install:
-	@docker compose run --rm node {% if cookiecutter.frontend_style == SPA %}pnpm install{% else %}yarn{% endif %}
+	@docker compose run --rm node {% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}pnpm install{% else %}yarn{% endif %}
 
 
 .PHONY:
 test-node-watch: clean
-	@docker compose run --rm node {% if cookiecutter.frontend_style == SPA %}pnpm{% else %}yarn{% endif %} test -- --watchAll
+	@docker compose run --rm node {% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}pnpm{% else %}yarn{% endif %} test -- --watchAll
 
 
 .PHONY:
 test-js: clean
 	@echo -e "$(CYAN)Running automatic node.js tests$(COFF)"
-	@docker compose run --rm node {% if cookiecutter.frontend_style == SPA %}pnpm{% else %}yarn{% endif %} test $(cmd)
+	@docker compose run --rm node {% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}pnpm{% else %}yarn{% endif %} test $(cmd)
 
 
 .PHONY:
@@ -370,12 +370,12 @@ format: fmt
 .PHONY:
 eslint:
 	@echo -e "$(CYAN)Running ESLint$(COFF)"
-	@docker compose run --rm node {% if cookiecutter.frontend_style == SPA %}pnpm{% else %}yarn{% endif %} lint:eslint $(cmd)
+	@docker compose run --rm node {% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}pnpm{% else %}yarn{% endif %} lint:eslint $(cmd)
 
 .PHONY:
 node-typecheck:
 	@echo "$(CYAN)Running Node Typecheck(COFF)"
-	@docker compose run --rm node {% if cookiecutter.frontend_style == SPA %}pnpm{% else %}yarn{% endif %} lint:tsc $(cmd)
+	@docker compose run --rm node {% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}pnpm{% else %}yarn{% endif %} lint:tsc $(cmd)
 
 
 .PHONY:
@@ -387,7 +387,7 @@ eslint-fix:
 .PHONY:
 prospector:
 	@echo -e "$(CYAN)Running Prospector$(COFF)"
-	@make run-python cmd='prospector --with-tool bandit --without-tool pep257'
+	@make run-python cmd='prospector --with-tool bandit --without-tool pep257 -X'
 
 
 {%- if cookiecutter.use_mypy == YES %}
@@ -403,15 +403,15 @@ mypy:
 .PHONY:
 ruff-format-check:
 	@echo -e "$(subst SECTION_NAME,ruff-format-check,$(GL_SECTION_START))$(CYAN)Running ruff format (check)$(COFF)"
-	@make run-python cmd="ruff format . --diff"
-	@make run-python cmd="ruff --select I . --diff"
+	make run-python cmd="ruff check . --diff"
+	make run-python cmd="ruff check --select I . --diff"
 	@echo -e "$(subst SECTION_NAME,ruff-format-check,$(GL_SECTION_END))"
 
 .PHONY:
 ruff-format:
 	@echo -e "$(CYAN)Running ruff format$(COFF)"
 	@make run-python cmd="ruff format ."
-	@make run-python cmd="ruff --select I . --fix"
+	@make run-python cmd="ruff format --select I . --fix"
 
 .PHONY:
 ruff-lint:
@@ -497,7 +497,7 @@ compilemessages:
 	docker compose run --rm django ./manage.py compilemessages
 
 
-{% if cookiecutter.frontend_style == SPA -%}
+{% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT -%}
 .PHONY:
 extract-i18n:
 	docker compose run --rm node pnpm extract-i18n

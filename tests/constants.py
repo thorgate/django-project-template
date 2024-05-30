@@ -1,6 +1,7 @@
 # Exact copy of global values in extensions.tg_filters
 
 SPA = "spa"
+SPA_NEXT = "spa-next"
 WEBAPP = "webapp"
 ALPINE = "alpine"
 DEBIAN = "debian"

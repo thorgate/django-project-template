@@ -6,6 +6,17 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
 )
 
+from accounts.rest.views import UserViewSet
+from {{cookiecutter.default_django_app}}.rest.core.routers import BaseRouter
+
+
+router = BaseRouter()
+router.register(
+    r"user",
+    UserViewSet,
+    basename="user",
+)
+
 
 # Adding extra urls
 #
@@ -37,4 +48,5 @@ urlpatterns = [
     path(
         "schema/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"
     ),
+    path("", include(router.urls)),
 ]

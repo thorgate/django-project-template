@@ -86,6 +86,7 @@ class TGFiltersModule(Extension):
 
         environment.globals.update(
             SPA="spa",
+            SPA_NEXT="spa-next",
             WEBAPP="webapp",
             ALPINE="alpine",
             DEBIAN="debian",

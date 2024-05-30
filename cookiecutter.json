@@ -11,6 +11,11 @@
         "tg_filters:TGFiltersModule",
         "tg_dockerimage_lookup:TGDockerImageModule"
     ],
+    "_copy_without_render": [
+        "app-next/public/locales/**/*.json",
+        "app-next/next-i18next.config.js",
+        "app-next/scanner.config.js"
+    ],
 
     "*": "See variable reference: https://gitlab.com/thorgate-public/django-project-template/-/blob/master/CookiecutterVariables.adoc#variables\n\t Press ENTER to continue.\n",
 
@@ -83,7 +88,7 @@
     "_ end::gitlab_repo_url[] ": "",
 
     "_ tag::frontend_style[] ":"",
-    "frontend_style": ["webapp", "spa"],
+    "frontend_style": ["webapp", "spa", "spa-next"],
     "_ end::frontend_style[] ": "",
 
     "_ tag::x_frame_options[] ":"",
