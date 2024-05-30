@@ -1,5 +1,5 @@
 # Hostnames for the site
-# - {%- if cookiecutter.frontend_style == SPA %}
+# - {%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 django_site_host: "{{ cookiecutter.spa_django_host_prefix | as_hostname }}.{{ cookiecutter.live_domain_name }}"
 node_site_host: "{{ cookiecutter.live_domain_name }}"
 # - {%- else %}
@@ -13,7 +13,7 @@ django_server_email: ""
 # Sentry config
 django_sentry_environment: "todo"
 django_sentry_dsn: ""  # TODO: Set to correct value or remove the TODO
-# - {%- if cookiecutter.frontend_style == SPA %}
+# - {%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 app_sentry_environment: "test"
 app_sentry_dsn: ""  # TODO: Set to correct value or remove the TODO
 # - {%- endif %}

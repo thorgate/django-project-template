@@ -69,10 +69,20 @@ test_SPA:
   variables:
     TEST_TAG: SPA
 
+test_SPA_NEXT:
+  extends: .test_tag
+  variables:
+    TEST_TAG: SPA_NEXT
+
 test_debian_SPA:
   extends: .test_tag
   variables:
     TEST_TAG: DEBIAN_SPA
+
+test_debian_SPA_NEXT:
+  extends: .test_tag
+  variables:
+    TEST_TAG: DEBIAN_SPA_NEXT
 
 test_debian_WEBAPP:
   extends: .test_tag
@@ -89,10 +99,20 @@ test_mypy_SPA:
   variables:
     TEST_TAG: MYPY_SPA
 
+test_mypy_SPA_NEXT:
+  extends: .test_tag
+  variables:
+    TEST_TAG: MYPY_SPA_NEXT
+
 test_cypress_spa:
   extends: .test_tag
   variables:
     TEST_TAG: CYPRESS_SPA
+
+test_cypress_spa_next:
+  extends: .test_tag
+  variables:
+    TEST_TAG: CYPRESS_SPA_NEXT
 
 test_cypress_webapp:
   extends: .test_tag

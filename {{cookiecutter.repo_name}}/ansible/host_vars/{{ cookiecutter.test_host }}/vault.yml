@@ -21,7 +21,7 @@ django_aws_secret_access_key: "TODO"
 registry_token: "TODO"
 # - {%- endif %}
 
-# - {%- if cookiecutter.frontend_style == SPA %}
+# - {%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 next_secret_key: "TODO (generate it)"
 
 django_jwt_public_key: |

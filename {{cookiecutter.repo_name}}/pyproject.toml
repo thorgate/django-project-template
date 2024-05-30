@@ -20,7 +20,7 @@ python = "^{{ cookiecutter.python_version }}"
 # - {% if cookiecutter.include_celery == YES %}
 celery = {version = "==5.2.*", extras = ["redis"]}
 # - {% endif %}
-Django = "==4.2.*"
+Django = "==5.0.*"
 # - {%- if cookiecutter.content_security_policy == YES %}
 django-csp = "^3.7"
 # - {% endif %}
@@ -49,9 +49,9 @@ django-crispy-forms = "==1.11.*"
 django-reverse-js = "==0.1.3"
 django-settings-export = "==1.2.*"
 django-webpack-loader = "==1.4.*"
-# - {% elif cookiecutter.frontend_style == SPA %}
+# - {% elif cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 djangorestframework = "==3.15.*"
-djangorestframework_simplejwt = "==5.1.*"
+djangorestframework_simplejwt = "==5.3.*"
 django-cors-headers = "==3.11.*"
 django-filter = "==21.*"
 drf-spectacular = "^0.26.1"
@@ -86,7 +86,9 @@ types-requests = "*"
 # avoid specifying versions for pylint/pylint-django/astroid
 prospector = {version = "^1.16.0", extras=["with_bandit"]}
 pyenchant = "*"
-ruff = "^0.1.5"
+pylint = "*"
+pylint-django = "*"
+ruff = "^0.4.6"
 
 [tool.poetry.group.test.dependencies]
 # Can't read configuration from pyproject.toml without this dependency
@@ -170,7 +172,7 @@ norecursedirs = [
     "settings",
     "migrations",
     ".data",
-# - {% if cookiecutter.frontend_style == SPA %}
+# - {% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
     "app",
 # - {% elif cookiecutter.frontend_style == WEBAPP %}
     "webapp",
@@ -295,7 +297,7 @@ unfixable = [
     "RUF100", # Don't remove unused noqa comments automatically
 ]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "{{ cookiecutter.repo_name }}/*" = [
     "INP001", # we can't have a top-level __init__.py file as this messes up sys.path during pytest run
 ]
@@ -326,28 +328,28 @@ unfixable = [
 # The following rules are native re-implementations in ruff.
 # The listed tools are not actually run, and configuration only affects ruff.
 # Some of the tools are already part of our pipeline, but will hopefully be replaced by ruff in the future.
-[tool.ruff.mccabe]
+[tool.ruff.lint.mccabe]
 max-complexity = 22
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 # This configuration is equivalent to our current isort configuration and `ruff --select I ." should be equivalent to `isort .`
 section-order = ["future", "standard-library", "django", "pytest", "third-party", "first-party", "local-folder"]
 lines-after-imports = 2
 order-by-type = false
 known-first-party = ["accounts", "{{cookiecutter.default_django_app}}"]
 
-[tool.ruff.isort.sections]
+[tool.ruff.lint.isort.sections]
 django = ["django"]
 pytest = ["pytest"]
 
 # Pylint parity can be seen in https://github.com/astral-sh/ruff/issues/970
 # Identical values to our prospector configuration can still be errors, as ruff only supports `noqa` and not `pylint: disable`
-[tool.ruff.pylint]
+[tool.ruff.lint.pylint]
 max-branches = 20
 max-args = 6
 max-returns = 8
 
-[tool.ruff.flake8-builtins]
+[tool.ruff.lint.flake8-builtins]
 builtins-ignorelist = [
     "filter",
     "help",
@@ -357,13 +359,13 @@ builtins-ignorelist = [
     "type",
 ]
 
-[tool.ruff.flake8-import-conventions]
+[tool.ruff.lint.flake8-import-conventions]
 banned-from = ["typing"]
 
-[tool.ruff.flake8-import-conventions.aliases]
+[tool.ruff.lint.flake8-import-conventions.aliases]
 "typing" = "t"
 
-[tool.ruff.flake8-import-conventions.banned-aliases]
+[tool.ruff.lint.flake8-import-conventions.banned-aliases]
 #"django.utils.translation.gettext" = ["_"]
 #"django.utils.translation.gettext_lazy" = ["_"]
 #"django.utils.translation.pgettext" = ["_"]

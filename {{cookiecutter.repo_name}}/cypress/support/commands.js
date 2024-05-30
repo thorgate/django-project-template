@@ -22,7 +22,7 @@ import { testAccount, adminAccount, URLS } from '../constants';
 
 Cypress.Commands.add('login', () => {
     cy.visit(URLS.login);
-    // - {% if cookiecutter.frontend_style == "spa" %}
+    // - {% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
     cy.get('input#email').clear().type(testAccount.email);
     cy.get('input#password').clear().type(testAccount.password);
     cy.get('button[type=submit]').click();

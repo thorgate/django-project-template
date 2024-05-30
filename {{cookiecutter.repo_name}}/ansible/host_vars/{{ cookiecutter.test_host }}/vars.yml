@@ -1,7 +1,7 @@
 # - {%- set BASE_HOSTNAME = cookiecutter.repo_name | as_hostname + "." + cookiecutter.test_host %}
 
 # Hostnames for the site
-# - {%- if cookiecutter.frontend_style == SPA %}
+# - {%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 django_site_host: "{{ cookiecutter.spa_django_host_prefix | as_hostname }}.{{ BASE_HOSTNAME }}"
 node_site_host: "{{ BASE_HOSTNAME }}"
 # - {%- else %}
@@ -15,7 +15,7 @@ django_server_email: ""
 # Sentry config
 django_sentry_environment: "test"
 django_sentry_dsn: ""  # TODO: Set to correct value or remove the TODO
-# - {%- if cookiecutter.frontend_style == SPA %}
+# - {%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 app_sentry_environment: "test"
 app_sentry_dsn: ""  # TODO: Set to correct value or remove the TODO
 # - {%- endif %}

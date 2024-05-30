@@ -11,7 +11,7 @@
     - { src: "common.django.include", dest: "common.{{ project }}.django.include" }
     - { src: "ssl.include", dest: "ssl.{{ project }}.include" }
 # - {%- endraw %}
-# - {%- if cookiecutter.frontend_style == SPA %}
+# - {%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 # - {%- raw %}
     - { src: "app.proxy_node.include", dest: "app.{{ project }}.proxy_node.include" }
     - { src: "common.node.include", dest: "common.{{ project }}.node.include" }

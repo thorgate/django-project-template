@@ -10,6 +10,7 @@ YES = "{{YES}}"
 NO = "{{NO}}"
 WEBAPP = "{{WEBAPP}}"
 SPA = "{{SPA}}"
+SPA_NEXT = "{{SPA_NEXT}}"
 ALPINE = "{{ALPINE}}"
 DEBIAN = "{{DEBIAN}}"
 
@@ -71,7 +72,7 @@ def cleanup():
             'deploy/nginx/app.{{cookiecutter.repo_name}}.proxy_node.include',
             'deploy/nginx/common.{{cookiecutter.repo_name}}.node.include',
         ]
-    elif '{{ cookiecutter.frontend_style }}' == SPA:
+    elif '{{ cookiecutter.frontend_style }}' in [SPA, SPA_NEXT]:
         cleanup_paths += [
             'webapp',
             '{{cookiecutter.repo_name}}/accounts/emails.py',
@@ -103,7 +104,7 @@ def cleanup():
             '{{cookiecutter.repo_name}}/settings/test_cypress.py',
         ]
     else:
-        if '{{ cookiecutter.frontend_style }}' == SPA:
+        if '{{ cookiecutter.frontend_style }}' in [SPA, SPA_NEXT]:
             # Order is important: rename first, then cleanup
             rename_paths = [
                 ('cypress/cypress.json', 'app/cypress.json'),
@@ -157,6 +158,16 @@ def cleanup():
 
     # remove CC leftovers
     kill_lines(cwd)
+
+    # Rename SPA folder to be correct one
+    if '{{ cookiecutter.frontend_style }}' == SPA_NEXT:
+        print('Switching SPA app to app-next')
+        app_dir = os.path.join(cwd, "app")
+        app_next_dir = os.path.join(cwd, "app-next")
+        shutil.rmtree(app_dir)
+        os.rename(app_next_dir, app_dir)
+    elif '{{ cookiecutter.frontend_style }}' == SPA:
+        cleanup_paths += ["app-next"]
 
     # Rename first, then cleanup
     for old_path, new_path in rename_paths:
@@ -217,9 +228,13 @@ def remove_ci_project_generation_extra_commands(path):
 
 
 def run_lint_fix(path):
-    subprocess.check_call(["ruff","--cache-dir=.ruff_cache", "--fix", path])
-    subprocess.check_call(["ruff","--cache-dir=.ruff_cache", "--select", "I", path])
-    subprocess.check_call(["ruff","format", "--cache-dir=.ruff_cache", path])
+    try:
+        subprocess.check_output(["ruff","--cache-dir=.ruff_cache", "--fix", path])
+        subprocess.check_output(["ruff","--cache-dir=.ruff_cache", "--select", "I", path])
+        subprocess.check_output(["ruff","format", "--cache-dir=.ruff_cache", path])
+    except subprocess.CalledProcessError as e:
+        print("ERROR: %s" % e.output.decode())
+        raise e
 
 
 def ask_input(prompt, default_response=None, allowed_responses=None):
