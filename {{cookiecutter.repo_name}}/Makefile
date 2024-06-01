@@ -521,6 +521,9 @@ patch-rtk-queries-api:
 .PHONY:
 create-rtk-queries-api-patch:
 	@diff ./app/lib/queries/queriesApi.generated.base.ts ./app/lib/queries/queriesApi.generated.ts > ./app/lib/queries/queriesApi.generated.patch
+
+.PHONY:
+api: generate-rtk-query-api
 {%- endif %}
 
 
