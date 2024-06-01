@@ -1,4 +1,3 @@
-{%- raw -%}
 import React from "react";
 import { Trans, useTranslation } from "next-i18next";
 import { PaginationLink } from "./PaginationLink";
@@ -6,11 +5,11 @@ import { RetrieveQueryPageOnlyResult } from "@lib/factories/types";
 
 export interface PaginationProps {
     data?: RetrieveQueryPageOnlyResult;
-    setPageNumber: (pageNumber: string | undefined) => void;
+    setPageNumber: (pageNumber: number | undefined) => void;
 }
 
 type PageNumber =
-    | string // Regular page (i.e. one that requires page number in URL)
+    | number // Regular page (i.e. one that requires page number in URL)
     | undefined // Page with no explicit number required in URL (i.e. first/default page)
     | null; // No page (i.e. page past the last one)
 
@@ -27,7 +26,7 @@ const extractPageNumber = (
     if (!args.pageNumber) {
         return undefined;
     }
-    return `${args.pageNumber}`;
+    return args.pageNumber;
 };
 
 export const Pagination = ({ data, setPageNumber }: PaginationProps) => {
@@ -91,4 +90,3 @@ export const Pagination = ({ data, setPageNumber }: PaginationProps) => {
         </div>
     );
 };
-{%- endraw %}
