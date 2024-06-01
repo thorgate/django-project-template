@@ -53,7 +53,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-node
-# - {%- if (cookiecutter.frontend_style == WEBAPP and cookiecutter.webapp_include_storybook == YES) or cookiecutter.frontend_style == SPA %}
+# - {%- if (cookiecutter.frontend_style == WEBAPP and cookiecutter.webapp_include_storybook == YES) or cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
     ports:
 # - {%- if cookiecutter.frontend_style == WEBAPP and cookiecutter.webapp_include_storybook == YES %}
       - "6006:80"
