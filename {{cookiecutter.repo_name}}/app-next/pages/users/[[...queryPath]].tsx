@@ -1,21 +1,18 @@
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { useTranslation } from "next-i18next";
 import {
-    defaultPaginatedURLParameters,
+    paginationState,
     listPageFactory,
 } from "@lib/factories/ListPageFactory";
-import { queriesApi, UserListApiArg } from "@lib/queries";
+import { queriesApi, UserDetail, UserListApiArg } from "@lib/queries";
 import { wrapper } from "@lib/store";
 import { prepareSession } from "@lib/session";
 import {
+    type UserListPageState,
     UserListView,
-    userListSortParameter,
 } from "@/components/User/UserListView";
-import {
-    booleanArrayQueryParameterExtractor,
-    booleanQueryParameterExtractor,
-} from "@lib/factories/util";
-import { SelectMultipleURLParameterSpecification } from "@lib/factories/types";
+import { PageStateItemWithAPIInfo } from "@lib/hooks/state";
+import { SelectUserWidget } from "@components/FilterWidgets";
 
 const IsStaffFilterLabel = () => {
     const { t } = useTranslation("common");
@@ -52,43 +49,118 @@ const TranslatedInactive = () => {
     return <>{t("filters.values.inactive")}</>;
 };
 
-const isStaffFilter: SelectMultipleURLParameterSpecification<
-    UserListApiArg,
-    "isStaffIn"
-> = {
-    /* This is a showcase of API based filter, and has no value for any real use case as it will always
-     * only choose one user. TODO:NEWPROJECT remove this filter.*/
-    type: "multi-select",
-    queryArg: "isStaffIn",
-    label: <IsStaffFilterLabel />,
-    options: [
-        { label: <TranslatedTrue />, value: true },
-        { label: <TranslatedFalse />, value: false },
-    ],
-    defaultValue: [],
-    queryExtractor: booleanArrayQueryParameterExtractor,
+const TranslatedSearch = () => {
+    const { t } = useTranslation("common");
+    return <>{t("filters.search")}</>;
 };
 
-const [UserList, getExtraProps] = listPageFactory({
+const [UserList, getExtraProps] = listPageFactory<
+    UserDetail,
+    UserListApiArg,
+    UserListPageState
+>({
     retrieveEndpoint: queriesApi.endpoints.userList,
-    parameters: [
-        ...defaultPaginatedURLParameters,
-        { type: "search", queryArg: "search", defaultValue: "" },
-        {
-            type: "select",
-            queryArg: "isActive",
-            label: <IsActiveFilterLabel />,
-            defaultValue: true,
-            options: [
-                { label: <TranslatedAll />, value: undefined },
-                { label: <TranslatedActive />, value: true },
-                { label: <TranslatedInactive />, value: false },
-            ],
-            queryExtractor: booleanQueryParameterExtractor,
+    extraQueryArgument: { pageSize: 5 } satisfies UserListApiArg,
+    pageStateDefinition: {
+        search: {
+            defaultValue: "",
+            isFilter: true,
+            api: {
+                key: "search",
+            },
+            url: {
+                key: "search",
+                serializer: (v) => [v],
+                deserializer: (v) => v[0],
+            },
+            widget: {
+                label: <TranslatedSearch />,
+                deserializer: (value: string) => value,
+                index: 10,
+            },
         },
-        isStaffFilter,
-        userListSortParameter,
-    ],
+        isActive: {
+            defaultValue: null,
+            isFilter: true,
+            api: {
+                key: "isActive",
+                serializer: (v) => v ?? undefined,
+            },
+            url: {
+                key: "isActive",
+                serializer: (v) => (v === null ? [] : [`${v}`]),
+                deserializer: (v) => `${v[0]}`.toLowerCase() === "true",
+            },
+            widget: {
+                label: <IsActiveFilterLabel />,
+                options: [
+                    { label: <TranslatedAll />, value: null },
+                    { label: <TranslatedActive />, value: true },
+                    { label: <TranslatedInactive />, value: false },
+                ],
+                index: 20,
+            },
+        } satisfies PageStateItemWithAPIInfo<
+            boolean | null,
+            UserListApiArg["isActive"],
+            "isActive"
+        >,
+        isStaff: {
+            defaultValue: [],
+            isFilter: true,
+            api: {
+                key: "isStaffIn",
+                serializer: (v) => v,
+            },
+            url: {
+                key: "isStaff",
+                serializer: (v) => v.map((e) => `${e}`),
+                deserializer: (v) =>
+                    v.map((e) => `${e}`.toLowerCase() === "true"),
+            },
+            widget: {
+                label: <IsStaffFilterLabel />,
+                multiple: true,
+                options: [
+                    { label: <TranslatedTrue />, value: true },
+                    { label: <TranslatedFalse />, value: false },
+                ],
+                index: 30,
+            },
+        },
+        /* TODO:NEWPROJECT:Remove this, as it is here for illustrative purposes*/
+        email: {
+            defaultValue: "",
+            isFilter: true,
+            api: {
+                key: "email",
+                serializer: (v) => v,
+            },
+            url: {
+                key: "email",
+                serializer: (v) => [v],
+                deserializer: (v) => v[0],
+            },
+            widget: {
+                label: "Email",
+                index: 40,
+                component: SelectUserWidget,
+            },
+        },
+        sort: {
+            defaultValue: "nameAsc",
+            api: {
+                key: "sort",
+            },
+            url: {
+                key: "sort",
+                serializer: (v) => (v ? [v] : []),
+                deserializer: (v) =>
+                    (v[0] || undefined) as UserListApiArg["sort"],
+            },
+        },
+        ...paginationState,
+    },
     ListView: UserListView,
 });
 

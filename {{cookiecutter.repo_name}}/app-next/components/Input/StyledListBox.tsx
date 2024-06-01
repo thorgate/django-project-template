@@ -11,6 +11,7 @@ import { useTranslation } from "next-i18next";
 interface Option<T> {
     value: T;
     label: React.ReactNode;
+    key?: string;
 }
 
 interface StyledListBoxProps<T> {
@@ -41,7 +42,7 @@ export const StyledListBox = <T,>({
             {({ open }) => (
                 <>
                     <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">
-                        {label || ""}
+                        {label}
                     </Listbox.Label>
                     <div className="relative mt-2 flex ">
                         <Listbox.Button
@@ -78,14 +79,14 @@ export const StyledListBox = <T,>({
                                 {options.map((option) => (
                                     <Listbox.Option
                                         key={
-                                            JSON.stringify(option.value) ??
-                                            "undefined"
+                                            option.key ??
+                                            JSON.stringify(option.value)
                                         }
                                         className={({ active }) =>
                                             clsx(
                                                 active
                                                     ? "bg-indigo-600 text-white"
-                                                    : "text-gray-900 text-black dark:text-white",
+                                                    : "text-gray-900 dark:text-white",
                                                 "relative cursor-default select-none py-2 pl-3 pr-9"
                                             )
                                         }

@@ -23,7 +23,7 @@ export const booleanQueryParameterExtractor = (value: string[]) => {
         return false;
     }
 
-    return undefined;
+    return null;
 };
 
 export const makeArrayQueryParameterExtractor =

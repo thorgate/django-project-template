@@ -166,6 +166,7 @@ export const apiSelectFactory = <
         value,
         label,
         onChange,
+        onReset,
         testId,
         className,
         disabled,
@@ -191,9 +192,13 @@ export const apiSelectFactory = <
                 hasMore: true,
                 searchQuery: "",
             });
-            setSelectedValue(null);
-            onChange(null);
-        }, [setOptions, onChange]);
+            if (onReset) {
+                onReset();
+            } else {
+                setSelectedValue(null);
+                onChange(null);
+            }
+        }, [setOptions, onChange, onReset]);
         const onSelectionChange = React.useCallback(
             (value: ApiSelectOption<ValueType>) => {
                 setSelectedValue(value);

@@ -1,7 +1,4 @@
 import React from "react";
-import { useRouter } from "next/router";
-import { useTranslation } from "next-i18next";
-import { CustomFilterWidgetPropsFromEndpoint } from "@components/ListFilter/types";
 
 import {
     queriesApi,
@@ -12,6 +9,7 @@ import {
 import { ApiSelectOption } from "@lib/factories/types";
 import { apiSelectWithLoadInitialValueFactory } from "@lib/factories/ApiSelectHookFormFactory";
 import { useLoadingFallbackValueLabel } from "@lib/factories/hooks";
+import { WidgetProps } from "@lib/hooks/state";
 
 const getOptionForItem = (item: UserDetail): ApiSelectOption<string> => ({
     value: item.email,
@@ -37,40 +35,32 @@ const SelectUser = apiSelectWithLoadInitialValueFactory<
     getInitialValueQueryArgs: (value) => ({ email: value || "" }),
 });
 
-export const SelectUserWidget = ({
-    parameter,
-    initial,
-    replaceQueryParameter,
-}: CustomFilterWidgetPropsFromEndpoint<
-    typeof queriesApi.endpoints.userList,
-    "email"
->) => {
-    const router = useRouter();
-    const { t } = useTranslation(["common"]);
-
+export const SelectUserWidget: React.FC<WidgetProps<string>> = ({
+    value,
+    onChange: outerOnChange,
+    onReset,
+    widget: { label },
+}) => {
     const onChange = React.useCallback(
         (value: string | null) => {
-            replaceQueryParameter({
-                parameter,
-                value: value ?? undefined,
-                router,
-            });
+            outerOnChange(value ?? "");
         },
-        [parameter, router, replaceQueryParameter]
+        [outerOnChange]
     );
 
     const selectProps = React.useMemo(
         () => ({
             className: "mt-1",
-            label: parameter.label ?? t("filters.select"),
+            label,
+            onReset,
         }),
-        [t, parameter]
+        [onReset, label]
     );
     const fallbackValueLabel = useLoadingFallbackValueLabel();
 
     return (
         <SelectUser
-            value={initial ?? null}
+            value={value ?? null}
             onChange={onChange}
             fallbackValueLabel={fallbackValueLabel}
             selectProps={selectProps}

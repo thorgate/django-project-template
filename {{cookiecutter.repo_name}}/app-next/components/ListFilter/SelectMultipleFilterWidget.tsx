@@ -7,104 +7,47 @@ import {
     XMarkIcon,
 } from "@heroicons/react/20/solid";
 import clsx from "clsx";
-import { useRouter } from "next/router";
 import {
-    ArrayArgItemType,
-    BaseQueryArgType,
-    ReplaceQueryParametersFunction,
-    SelectOption,
-    SelectMultipleURLParameterSpecification,
-} from "@lib/factories/types";
+    isMultipleChoiceWidget,
+    MultipleChoiceWidget,
+    WidgetProps,
+} from "@lib/hooks/state";
 
-export interface SelectMultipleFilterProps<
-    QueryArgType extends BaseQueryArgType,
-    QueryArg extends keyof QueryArgType,
-    UrlParameter extends SelectMultipleURLParameterSpecification<
-        QueryArgType,
-        QueryArg
-    >
-> {
-    parameter: UrlParameter;
-    initial: QueryArgType[QueryArg] | undefined;
-    replaceQueryParameter: ReplaceQueryParametersFunction<QueryArgType>;
-}
-export const SelectMultipleFilter = <
-    QueryArgType extends BaseQueryArgType,
-    QueryArg extends keyof QueryArgType,
-    UrlParameter extends SelectMultipleURLParameterSpecification<
-        QueryArgType,
-        QueryArg
-    >
->({
-    parameter,
-    initial,
-    replaceQueryParameter,
-}: SelectMultipleFilterProps<QueryArgType, QueryArg, UrlParameter>) => {
+export const SelectMultipleFilterWidget = <ValueType,>({
+    widget,
+    onChange: outerOnChange,
+    onReset,
+    value,
+}: WidgetProps<ValueType>) => {
     const { t } = useTranslation("common");
-    const router = useRouter();
-
-    const initialOptions = React.useMemo<
-        SelectOption<ArrayArgItemType<QueryArgType, QueryArg>>[]
-    >(() => {
-        if (!initial) {
-            return [];
-        }
-
-        return parameter.options.filter((option) =>
-            (
-                initial as Array<ArrayArgItemType<QueryArgType, QueryArg>>
-            ).includes(option.value)
-        );
-    }, [parameter.options, initial]);
-
-    const defaultOptions = React.useMemo<
-        SelectOption<ArrayArgItemType<QueryArgType, QueryArg>>[]
-    >(() => {
-        if (!parameter.defaultValue) {
-            return [];
-        }
-
-        return parameter.options.filter((option) =>
-            (
-                parameter.defaultValue as Array<
-                    ArrayArgItemType<QueryArgType, QueryArg>
-                >
-            ).includes(option.value)
-        );
-    }, [parameter.options, parameter.defaultValue]);
-
-    const [selectedOptions, setSelectedOptions] = React.useState<
-        SelectOption<ArrayArgItemType<QueryArgType, QueryArg>>[] | undefined
-    >(initialOptions);
-    React.useEffect(() => {
-        setSelectedOptions(initialOptions);
-    }, [initialOptions]);
-
+    const { options } = React.useMemo(
+        () =>
+            isMultipleChoiceWidget(widget)
+                ? widget
+                : ({
+                      options: [],
+                      multiple: true,
+                  } as MultipleChoiceWidget<ValueType>),
+        [widget]
+    );
+    const selectedOptions = React.useMemo(
+        () =>
+            options.filter(
+                (option) =>
+                    Array.isArray(value) &&
+                    value.find((v) => v === option.value) !== undefined
+            ),
+        [options, value]
+    );
     const onChange = React.useCallback(
         (
-            values:
-                | SelectOption<ArrayArgItemType<QueryArgType, QueryArg>>[]
-                | null
+            newOptions: {
+                value: ValueType extends Array<infer T> ? T : never;
+            }[]
         ) => {
-            setSelectedOptions(values || []);
-            replaceQueryParameter<QueryArg>({
-                parameter,
-                value: (values
-                    ? values.map((option) => option.value)
-                    : []) as QueryArgType[QueryArg],
-                router,
-            });
+            outerOnChange(newOptions.map((o) => o.value) as ValueType);
         },
-        [parameter, router, replaceQueryParameter]
-    );
-
-    const onReset = React.useMemo<
-        Required<React.InputHTMLAttributes<HTMLButtonElement>>["onClick"]
-    >(
-        () => () => {
-            onChange(defaultOptions);
-        },
-        [defaultOptions, onChange]
+        [outerOnChange]
     );
 
     return (
@@ -113,7 +56,7 @@ export const SelectMultipleFilter = <
             {({ open }) => (
                 <>
                     <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">
-                        {parameter.label ?? t("filters.select")}
+                        {widget.label}
                     </Listbox.Label>
                     <div className="relative mt-2 flex ">
                         <Listbox.Button className="relative w-full cursor-default rounded-l-md py-1.5 pl-3 pr-10 text-left shadow-sm ring-1 ring-inset sm:text-sm sm:leading-6 text-black dark:text-white focus:ring-2 focus:ring-inset focus:ring-indigo-600 outline-none bg-white dark:bg-slate-800 ring-slate-300 dark:ring-slate-700">
@@ -121,7 +64,10 @@ export const SelectMultipleFilter = <
                                 {selectedOptions && selectedOptions.length > 0
                                     ? selectedOptions.map((v, index) => (
                                           <React.Fragment
-                                              key={v.key ?? String(v.value)}
+                                              key={
+                                                  v.key ??
+                                                  JSON.stringify(v.value)
+                                              }
                                           >
                                               {v.label}
                                               {index <
@@ -147,14 +93,17 @@ export const SelectMultipleFilter = <
                             leaveTo="opacity-0"
                         >
                             <Listbox.Options className="absolute z-10 mt-9 max-h-60 w-full overflow-auto rounded-md bg-white dark:bg-slate-800 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                                {parameter.options.map((option) => (
+                                {options.map((option) => (
                                     <Listbox.Option
-                                        key={option.key ?? String(option.value)}
+                                        key={
+                                            option.key ??
+                                            JSON.stringify(option.value)
+                                        }
                                         className={({ active }) =>
                                             clsx(
                                                 active
                                                     ? "bg-indigo-600 text-white"
-                                                    : "text-gray-900 text-black dark:text-white",
+                                                    : "text-black dark:text-white",
                                                 "relative cursor-default select-none py-2 pl-3 pr-9"
                                             )
                                         }
