@@ -5,69 +5,55 @@ import { useTranslation } from "next-i18next";
 import { XCircleIcon, CheckCircleIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 
-import { useRouter } from "next/router";
-import { queriesApi, UserListApiArg } from "@lib/queries";
+import type { UserDetail, UserListApiArg } from "@lib/queries";
 import { DateTime } from "@components/Text";
-import { ListQueryArgFromEndpoint } from "@components/ListFilter/types";
-import {
-    HiddenURLParameterSpecification,
-    ListViewPropsFromEndpoint,
-} from "@lib/factories/types";
+import { ListViewProps } from "@lib/factories/types";
 import { Button } from "@components/Button";
 import { SortToggleButton } from "@components/Button/SortButton";
-
-export const userListSortParameter: HiddenURLParameterSpecification<
-    ListQueryArgFromEndpoint<typeof queriesApi.endpoints.userList>,
-    "sort"
-> = {
-    type: "hidden",
-    queryArg: "sort",
-    defaultValue: "nameAsc" as UserListApiArg["sort"],
-    queryExtractor: (queryValues) =>
-        (queryValues[0] as UserListApiArg["sort"]) ?? "creationTimeAsc",
-    querySerializer: (value) => [value ?? "creationTimeAsc"],
-};
+import type { PaginatedPageState } from "@lib/factories";
 
 type sortColumn = "name" | "email" | "creationTime" | "lastModificationTime";
 
+export interface UserListPageState extends PaginatedPageState {
+    search: string;
+    isActive: boolean | null;
+    isStaff: boolean[];
+    email: string;
+    sort: UserListApiArg["sort"];
+}
+
 export const UserListView = ({
     pageData,
-    queryParameters,
-    replaceQueryParameter,
-}: ListViewPropsFromEndpoint<typeof queriesApi.endpoints.userList>) => {
+    pageState,
+    setPageState,
+}: ListViewProps<UserDetail, UserListPageState>) => {
     const { t } = useTranslation(["user", "common"]);
-    const router = useRouter();
-
     const onToggleSort = React.useCallback(
         (fieldName: sortColumn) => {
-            replaceQueryParameter({
-                parameter: userListSortParameter,
-                value:
-                    queryParameters.sort === `${fieldName}Asc`
+            setPageState({
+                sort:
+                    pageState.sort === `${fieldName}Asc`
                         ? `${fieldName}Desc`
                         : `${fieldName}Asc`,
-                router,
             });
         },
-        [replaceQueryParameter, router, queryParameters.sort]
+        [pageState.sort, setPageState]
     );
 
     const getIsSortActiveForColumn = React.useCallback(
         (fieldName: sortColumn) => {
             return (
-                queryParameters.sort === `${fieldName}Asc` ||
-                queryParameters.sort === `${fieldName}Desc`
+                pageState.sort === `${fieldName}Asc` ||
+                pageState.sort === `${fieldName}Desc`
             );
         },
-        [queryParameters.sort]
+        [pageState.sort]
     );
 
     return (
         <>
             <Head>
-                <title>{`${t(
-                    "common:pageTitles.userList"
-                )} - {{ cookiecutter.project_title }}`}</title>
+                <title>{`${t("common:pageTitles.userList")} - RainPaul`}</title>
             </Head>
             <div className="px-4 sm:px-6 lg:px-8 pt-1 mt-3 bg-white dark:bg-slate-900 text-black dark:text-white ">
                 <div className="mt-8 flow-root">
