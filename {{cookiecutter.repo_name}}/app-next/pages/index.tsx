@@ -10,7 +10,8 @@ import { prepareSession } from "@lib/session";
 import { appUserSlice, wrapper } from "@lib/store";
 import { useAppSelector } from "@lib/hooks";
 
-const placeholderImage = "https://placehold.co/300x200/png?text={{ cookiecutter.project_title }}";
+const placeholderImage =
+    "https://placehold.co/300x200/png?text={{ cookiecutter.project_title }}";
 
 export const getServerSideProps = wrapper.getServerSideProps(
     (store) => async (context) => {
