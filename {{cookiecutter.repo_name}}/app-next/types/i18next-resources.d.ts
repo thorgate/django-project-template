@@ -1,5 +1,3 @@
-interface Resources {
-
-}
+interface Resources {}
 
 export default Resources;

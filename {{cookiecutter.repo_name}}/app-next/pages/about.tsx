@@ -39,7 +39,9 @@ export default function About({
     return (
         <>
             <Head>
-                <title>{`${t("pageTitles.about")} - {{ cookiecutter.project_title }}`}</title>
+                <title>{`${t(
+                    "pageTitles.about"
+                )} - {{ cookiecutter.project_title }}`}</title>
             </Head>
             <div className="flex flex-col space-between items-center min-h-100vh p-10">
                 <div className="p-2 md:p-1">
