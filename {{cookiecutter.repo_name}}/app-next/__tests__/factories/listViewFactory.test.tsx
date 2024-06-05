@@ -87,7 +87,7 @@ describe("listPageFactory", () => {
         );
     });
     it("creates proper server side preloader", async () => {
-        const store = makeStore({});
+        const store = makeStore({ context: {} });
         await getExtraProps(store, { query: {} });
 
         render(
