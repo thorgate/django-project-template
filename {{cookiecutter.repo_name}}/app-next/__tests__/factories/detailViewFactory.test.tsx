@@ -35,9 +35,7 @@ describe("detailViewFactory", () => {
         );
     });
     it("creates proper server side preloader", async () => {
-        const store = makeStore({
-            context: {},
-        });
+        const store = makeStore({ context: {} });
         await getExtraProps(store, { query: {} });
 
         render(
