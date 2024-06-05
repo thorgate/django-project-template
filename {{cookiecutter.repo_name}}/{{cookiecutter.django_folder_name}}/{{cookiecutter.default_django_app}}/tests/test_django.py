@@ -14,7 +14,7 @@ def test_for_missing_migrations():
             "makemigrations", interactive=False, dry_run=True, check=True, stdout=output
         )
     except SystemExit:
-        pytest.fail("There are missing migrations:\n %s" % output.getvalue())
+        pytest.fail(f"There are missing migrations:\n {output.getvalue()}")
 
 
 # Without this settings patch, we get an error:
