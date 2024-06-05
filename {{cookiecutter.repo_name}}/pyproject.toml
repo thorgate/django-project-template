@@ -44,8 +44,8 @@ psycopg2-binary = "==2.9.*"
 # - {%- endif %}
 sentry-sdk = "^1.30"
 redis = "^5"
-# - {% if cookiecutter.frontend_style == WEBAPP %}
 django-crispy-forms = "==1.11.*"
+# - {% if cookiecutter.frontend_style == WEBAPP %}
 django-reverse-js = "==0.1.3"
 django-settings-export = "==1.2.*"
 django-webpack-loader = "==1.4.*"
