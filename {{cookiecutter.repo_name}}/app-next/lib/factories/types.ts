@@ -29,7 +29,7 @@ export interface RetrieveQueryPageOnlyResult {
 }
 export interface RetrieveQueryResult<ItemType>
     extends RetrieveQueryPageOnlyResult {
-    results?: ItemType[];
+    results: ItemType[];
 }
 
 export type BaseItemType = object;
