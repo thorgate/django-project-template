@@ -184,6 +184,7 @@ run-python:
 	 -v $(SITE_ROOT):/app \
 	 -v $(PROJECT_ROOT)/pyproject.toml:/pyproject.toml \
 	 -v $(PROJECT_ROOT)/poetry.lock:/poetry.lock \
+	 -v $(PROJECT_ROOT)/ignored-vulnerabilities.txt:/ignored-vulnerabilities.txt \
 	  $(DJANGO_IMAGE_NAME) $(cmd)
 
 
