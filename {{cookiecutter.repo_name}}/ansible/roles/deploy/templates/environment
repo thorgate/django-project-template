@@ -31,7 +31,8 @@ NEXTAUTH_URL=https://{{ "{{ node_site_host }}" }}
 APP_SITE_URL=https://{{ "{{ node_site_host }}" }}
 APP_BACKEND_SITE_URL=https://{{ "{{ django_site_host }}" }}
 APP_PUBLIC_BACKEND_SITE_URL=https://{{ "{{ django_site_host }}" }}
-
+APP_PUBLIC_SENTRY_ENVIRONMENT={{ "{{ app_sentry_environment }}" }}
+APP_PUBLIC_SENTRY_DSN={{ "{{ app_sentry_dsn }}" }}
 {%- endif %}
 
 DJANGO_DATABASE_HOST=postgres
