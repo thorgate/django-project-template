@@ -213,7 +213,7 @@ publish_node:
   script:
     # Note: For test deployments `DPT_AUTO_DEPLOY_TEST_VAULT_PASSWORD` secret should only be masked not protected. This is
     #        due to the fact that protected variables are only accessible in protected branches or tags.
-    - ./scripts/deploy/autodeploy.sh ${DPT_AUTO_DEPLOY_ENVIRONMENT} ${DPT_AUTO_DEPLOY_HOSTNAME} ${DPT_AUTO_DEPLOY_TEST_VAULT_PASSWORD} ${CI_COMMIT_SHA}
+    - ./scripts/deploy/autodeploy.sh ${DPT_AUTO_DEPLOY_ENVIRONMENT} ${DPT_AUTO_DEPLOY_HOSTNAME} ${DPT_AUTODEPLOY_TEST_VAULT_PASSWORD} ${CI_COMMIT_SHA}
 
 deploy_to_test:
   extends: .deploy_to_test
