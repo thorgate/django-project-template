@@ -17,3 +17,5 @@ disable_indexing: false
 
 # Ensure ansible uses python3 interpreter
 ansible_python_interpreter: /usr/bin/python3
+
+compose_command_local: "docker-compose"

@@ -1,36 +1,14 @@
 {%- raw -%}
-- name: "Figure out the local postgres data directory"
-  shell: "{{ "{{ compose_command }}" }} config | yq -r '.services.postgres.volumes[]' | grep '/var/lib/postgresql/data' | cut -d: -f1"
-  delegate_to: localhost
-  vars:
-    ansible_become: no
-  register: "db_directory"
-
-
-- name: "Figure out the local postgres mirror directory"
-  shell: "{{ "{{ compose_command }}" }} config | yq -r '.services.postgres.volumes[]' | grep 'db-mirror' | cut -d: -f1"
-  delegate_to: localhost
-  vars:
-    ansible_become: no
-  register: "mirror_directory"
-
-
-- set_fact:
-    local_db_path: "{{ db_directory.stdout }}"
-    local_mirror_path: "{{ mirror_directory.stdout }}"
-
-
 - name: "Ensure local site is turned off"
-  shell: "{{ "{{ compose_command }}" }} down"
+  shell: "{{ compose_command_local }} down"
   delegate_to: localhost
   vars:
     ansible_become: no
 
 
 - name: "Delete files in the local postgres data directory"
-  file:
-    path: "{{ local_db_path }}"
-    state: absent
+  shell: >
+    {{ compose_command_local }} run --rm postgres bash -c "rm -r /var/lib/postgresql/data/*"
   delegate_to: localhost
   vars:
     ansible_become: no
@@ -51,7 +29,7 @@
 - name: "Download the dump file"
   synchronize:
     src: "{{ dump_filename }}"
-    dest: "{{ local_mirror_path }}/mirror-db-dump.pg_dump"
+    dest: "{{ dump_filename }}"
     mode: pull
     set_remote_user: no
     recursive: no
@@ -61,15 +39,26 @@
 
 
 - name: "Turn postgres on again"
-  shell: "{{ "{{ compose_command }}" }} up -d --build postgres"
+  shell: "{{ compose_command_local }} up -d --build postgres"
+  delegate_to: localhost
+  vars:
+    ansible_become: no
+
+
+- name: "Copy wait for it script into postgres container"
+  shell: >
+    {{ compose_command_local }} cp ../wait-for-it.sh postgres:/wait-for-it.sh
   delegate_to: localhost
   vars:
     ansible_become: no
 
 
 - name: "Give postgres some time to start up"
-  pause:
-    seconds: 10
+  shell: >
+    {{ compose_command_local }} exec -T postgres /wait-for-it.sh 127.0.0.1:5432 -t 60
+  delegate_to: localhost
+  vars:
+    ansible_become: no
 
 
 - name: "Delete the remote dump file"
@@ -80,8 +69,7 @@
 
 - name: "Load the dump file locally"
   shell: >
-    {{ "{{ compose_command }}" }} exec -T postgres pg_restore --user {{ project }} -d {{ project }} \
-      /db-mirror/mirror-db-dump.pg_dump
+     {{ compose_command_local }} exec -T postgres pg_restore -h 127.0.0.1 -U {{ project }} -d {{ project }} < {{ dump_filename }}
   delegate_to: localhost
   vars:
     ansible_become: no
@@ -89,7 +77,7 @@
 
 - name: "Delete the local dump file"
   file:
-    path: "{{ local_mirror_path }}/mirror-db-dump.pg_dump"
+    path: "{{ dump_filename }}"
     state: absent
   delegate_to: localhost
   vars:
@@ -97,7 +85,7 @@
 
 
 - name: "Turn everything off again"
-  shell: "{{ "{{ compose_command }}" }} down"
+  shell: "{{ compose_command_local }} down"
   delegate_to: localhost
   vars:
     ansible_become: no
