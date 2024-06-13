@@ -1,170 +1,111 @@
 import React from "react";
 
-import { useRouter } from "next/router";
+import { ApiEndpointQuery } from "@reduxjs/toolkit/dist/query/core/module";
+import { EndpointDefinitions } from "@reduxjs/toolkit/dist/query/endpointDefinitions";
+import { QueryHooks } from "@reduxjs/toolkit/dist/query/react/buildHooks";
+
 import { queriesApi } from "@lib/queries";
-import { Pagination } from "@components/Pagination";
-import { Filterset } from "@components/ListFilter";
-import {
-    baseParseQueryParameters,
-    defaultURLParameterQuerySerializer,
-} from "@lib/factories/util";
 import { useExtractNonFieldError } from "@lib/convertError";
 import { LoadingState, ErrorState } from "@components/NonIdealState";
+
 import {
     BaseItemType,
     BaseQueryArgType,
     FactoryServerSidePropsFunction,
-    ListPageFactoryArguments,
-    ReplaceQueryParametersFunction,
-    ValidURLParameterForItemAndQueryArg,
+    ListViewProps,
+    RetrieveQueryDefinition,
 } from "@lib/factories/types";
+import {
+    apiStateFromPageState,
+    PageStateDefinitionWithAPIInfo,
+    pageStateFromQueryParameters,
+    useApiState,
+    usePageState,
+} from "@lib/hooks/state";
+import { Pagination } from "@components/Pagination";
+import { Filterset } from "@components/ListFilter";
 
-export const pageURLParameterSpecification = {
-    type: "page-number",
-    queryArg: "pageNumber",
-    routeQueryArg: "queryPath",
-    querySerializer: (value: unknown) =>
-        value === undefined ? [] : [`${value}`],
+export interface PaginatedPageState {
+    pageNumber: number;
+}
+
+export const paginationState = {
+    pageNumber: {
+        defaultValue: 1,
+        isPagination: true,
+        api: {
+            key: "pageNumber",
+        },
+        url: {
+            key: "queryPath",
+            serializer: (v: number) => (v ? [`${v}`] : []),
+            deserializer: (v: string[]) => (v.length ? parseInt(v[0], 10) : 1),
+        },
+    },
 } as const;
-
-export const defaultPaginatedURLParameters = [
-    pageURLParameterSpecification,
-] as const;
 
 export const listPageFactory = <
     ItemType extends BaseItemType,
     QueryArgType extends BaseQueryArgType,
-    UrlParametersType extends Array<
-        ValidURLParameterForItemAndQueryArg<QueryArgType>
-    >
+    PageStateType extends object
 >({
     retrieveEndpoint,
-    parameters,
+    extraQueryArgument,
+    pageStateDefinition,
     ListView,
-}: ListPageFactoryArguments<ItemType, QueryArgType, UrlParametersType>): [
+}: {
+    retrieveEndpoint: ApiEndpointQuery<
+        RetrieveQueryDefinition<ItemType, QueryArgType>,
+        EndpointDefinitions
+    > &
+        QueryHooks<RetrieveQueryDefinition<ItemType, QueryArgType>>;
+    extraQueryArgument: QueryArgType;
+    pageStateDefinition: PageStateDefinitionWithAPIInfo<
+        PageStateType,
+        QueryArgType
+    >;
+    ListView: React.ComponentType<ListViewProps<ItemType, PageStateType>>;
+}): [
     React.FunctionComponent<Record<string, never>>,
     FactoryServerSidePropsFunction
 ] => {
-    const parseQueryParameters = (
-        query: ReturnType<typeof useRouter>["query"]
-    ) => baseParseQueryParameters(query, parameters);
+    const paginationKeys = (
+        Object.keys(
+            pageStateDefinition
+        ) as (keyof PageStateDefinitionWithAPIInfo<
+            PageStateType,
+            QueryArgType
+        >)[]
+    ).filter((k) => pageStateDefinition[k].isPagination);
 
-    const paginationParameters = (parameters || []).filter(
-        (parameter) => parameter.type === "page-number"
-    );
-
-    const makeReplaceQueryParameter =
-        (
-            setQueryParameters: React.Dispatch<
-                React.SetStateAction<QueryArgType>
-            >
-        ): ReplaceQueryParametersFunction<QueryArgType> =>
-        ({ parameter, value, options, router: currentRouter }) => {
-            const shouldResetPagination = !(
-                options?.keepPagination || parameter.type === "page-number"
-            );
-
-            setQueryParameters((currentQueryParameters) => ({
-                ...currentQueryParameters,
-                ...(shouldResetPagination
-                    ? paginationParameters.reduce(
-                          (acc, p) => ({
-                              ...acc,
-                              [p.queryArg]: p.defaultValue,
-                          }),
-                          {}
-                      )
-                    : {}),
-                [parameter.queryArg]: value,
-            }));
-            const routeQueryArg = parameter.routeQueryArg
-                ? String(parameter.routeQueryArg)
-                : String(parameter.queryArg);
-            const newQuery: typeof currentRouter.query = {
-                ...currentRouter.query,
-                ...(shouldResetPagination
-                    ? paginationParameters.reduce(
-                          (acc, p) => ({
-                              ...acc,
-                              [p.routeQueryArg || p.queryArg]: (
-                                  p.querySerializer ||
-                                  defaultURLParameterQuerySerializer
-                              )(undefined),
-                          }),
-                          {}
-                      )
-                    : {}),
-                [routeQueryArg]: (
-                    parameter.querySerializer ||
-                    defaultURLParameterQuerySerializer
-                )(value),
-            };
-            if (Array.isArray(value) && Array.isArray(parameter.defaultValue)) {
-                // For arrays, compare arrays by value
-                if (
-                    JSON.stringify([...value].sort()) ===
-                    JSON.stringify([...parameter.defaultValue].sort())
-                ) {
-                    delete newQuery[routeQueryArg];
-                }
-            } else {
-                // Compare to default value, and remove if it matches
-                if (value === parameter.defaultValue) {
-                    delete newQuery[routeQueryArg];
-                }
-            }
-
-            currentRouter.push(
-                {
-                    query: newQuery,
-                },
-                undefined,
-                { shallow: true }
-            );
-        };
+    // Only allow pagination to work with exactly one pagination parameter
+    const paginationKey =
+        paginationKeys?.length === 1 ? paginationKeys[0] : undefined;
 
     const ListViewController = () => {
-        const router = useRouter();
-        const validateAndParseQueryParameters = (
-            query: ReturnType<typeof useRouter>["query"]
-        ) => {
-            const parsedParams = parseQueryParameters(query);
+        const { pageState, setPageState } = usePageState(pageStateDefinition);
+        const queryArg = useApiState(pageStateDefinition, {
+            pageState,
+            unmanagedApiState: extraQueryArgument,
+        });
 
-            return Object.entries(parsedParams).reduce((acc, [key, value]) => {
-                const parameterDefinition = parameters.find(
-                    (param) => param.queryArg === key
-                );
-
-                if (
-                    !parameterDefinition?.validate ||
-                    parameterDefinition.validate(value)
-                ) {
-                    acc[key as keyof QueryArgType] = value;
-                }
-                return acc;
-            }, {} as QueryArgType);
-        };
-
-        const urlQueryParameters = React.useMemo(
-            () => validateAndParseQueryParameters(router.query),
-            [router]
-        );
-        const [queryParameters, setQueryParameters] =
-            React.useState<QueryArgType>(() => urlQueryParameters);
-        React.useEffect(() => {
-            setQueryParameters(urlQueryParameters);
-        }, [urlQueryParameters]);
-
-        const replaceQueryParameter = React.useMemo(
-            () => makeReplaceQueryParameter(setQueryParameters),
-            []
+        const setPageNumber = React.useMemo(
+            () =>
+                paginationKey
+                    ? (pageNumber: number | undefined) => {
+                          setPageState({
+                              [paginationKey]: pageNumber,
+                          } as Partial<PageStateType>);
+                      }
+                    : undefined,
+            [setPageState]
         );
 
         const {
             data,
             error,
             isLoading: isApiLoading,
-        } = retrieveEndpoint.useQuery(queryParameters);
+        } = retrieveEndpoint.useQuery(queryArg);
 
         const pageData: ItemType[] = data?.results || [];
         const extractNonFieldError = useExtractNonFieldError();
@@ -184,43 +125,20 @@ export const listPageFactory = <
 
         return (
             <div className="pb-24">
-                {parameters ? (
-                    <Filterset
-                        parameters={parameters}
-                        initial={urlQueryParameters}
-                        replaceQueryParameter={replaceQueryParameter}
-                    />
-                ) : null}
+                <Filterset
+                    filtersetDefinition={pageStateDefinition}
+                    pageState={pageState}
+                    setPageState={setPageState}
+                />
                 <ListView
                     pageData={pageData}
-                    parameters={parameters || []}
-                    queryParameters={queryParameters}
-                    replaceQueryParameter={replaceQueryParameter}
+                    pageState={pageState}
+                    setPageState={setPageState}
                 />
                 {/* Normally, we'll only have one pagination type parameter */}
-                {parameters
-                    ? parameters.map((parameter) => {
-                          if (parameter.type !== "page-number") {
-                              return null;
-                          }
-
-                          return (
-                              <Pagination
-                                  key={String(parameter.queryArg)}
-                                  data={data}
-                                  setPageNumber={(value) => {
-                                      replaceQueryParameter({
-                                          parameter,
-                                          value: value as
-                                              | QueryArgType[typeof parameter.queryArg]
-                                              | undefined,
-                                          router,
-                                      });
-                                  }}
-                              />
-                          );
-                      })
-                    : null}
+                {setPageNumber ? (
+                    <Pagination data={data} setPageNumber={setPageNumber} />
+                ) : null}
             </div>
         );
     };
@@ -230,9 +148,16 @@ export const listPageFactory = <
         store,
         context
     ) => {
-        const queryParameters = parseQueryParameters(context.query);
+        const pageState = pageStateFromQueryParameters(
+            pageStateDefinition,
+            context.query
+        );
+        const queryArgument = apiStateFromPageState(pageStateDefinition, {
+            pageState,
+            unmanagedApiState: extraQueryArgument,
+        });
 
-        store.dispatch(retrieveEndpoint.initiate(queryParameters));
+        store.dispatch(retrieveEndpoint.initiate(queryArgument));
         await Promise.all(
             store.dispatch(queriesApi.util.getRunningQueriesThunk())
         );

@@ -18,7 +18,7 @@ export function SortToggleButton({
         setSortAscending(!sortAscending);
         onToggleSort();
     };
-    const className = `h-5 w-5 text-gray-300`;
+    const className = `h-5 w-5 text-gray-300 mr-2`;
 
     return (
         <button onClick={handleClick} className="flex w-full">

@@ -1,12 +1,15 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 
-import { listPageFactory } from "@lib/factories/ListPageFactory";
-import { queriesApi, UserDetail } from "@lib/queries";
+import {
+    listPageFactory,
+    PaginatedPageState,
+} from "@lib/factories/ListPageFactory";
+import { queriesApi, UserDetail, UserListApiArg } from "@lib/queries";
 import { ProvidersWrapper } from "@lib/testUtils";
 
 import { makeStore } from "@lib/store";
-import { defaultPaginatedURLParameters } from "@lib/factories/ListPageFactory";
+import { paginationState } from "@lib/factories/ListPageFactory";
 import { booleanQueryParameterExtractor } from "@lib/factories/util";
 
 const DummyListView = ({ pageData }: { pageData: UserDetail[] }) => (
@@ -16,24 +19,58 @@ const DummyListView = ({ pageData }: { pageData: UserDetail[] }) => (
         ))}
     </ul>
 );
-const [UserListComponent, getExtraProps] = listPageFactory({
+const [UserListComponent, getExtraProps] = listPageFactory<
+    UserDetail,
+    UserListApiArg,
+    {
+        search: string;
+        isActive: boolean | null;
+    } & PaginatedPageState
+>({
     retrieveEndpoint: queriesApi.endpoints.userList,
-    parameters: [
-        ...defaultPaginatedURLParameters,
-        { type: "search", queryArg: "search", defaultValue: "" },
-        {
-            type: "select",
-            queryArg: "isActive",
-            label: "filters.titles.isActive",
-            defaultValue: true,
-            options: [
-                { label: "filters.values.all", value: undefined },
-                { label: "filters.values.active", value: true },
-                { label: "filters.values.inactive", value: false },
-            ],
-            queryExtractor: booleanQueryParameterExtractor,
+    extraQueryArgument: {},
+    pageStateDefinition: {
+        ...paginationState,
+        search: {
+            defaultValue: "",
+            isFilter: true,
+            api: {
+                key: "search",
+            },
+            url: {
+                key: "search",
+                serializer: (v) => [v],
+                deserializer: (v) => v[0],
+            },
+            widget: {
+                label: "Search",
+                deserializer: (value: string) => value,
+                index: 10,
+            },
         },
-    ],
+        isActive: {
+            defaultValue: null,
+            isFilter: true,
+            api: {
+                key: "isActive",
+                serializer: (v) => v ?? undefined,
+            },
+            url: {
+                key: "isActive",
+                serializer: (v) => (v === null ? [] : [`${v}`]),
+                deserializer: (v) => `${v[0]}`.toLowerCase() === "true",
+            },
+            widget: {
+                label: "Is Active?",
+                options: [
+                    { label: "All", value: null },
+                    { label: "Yes", value: true },
+                    { label: "No", value: false },
+                ],
+                index: 20,
+            },
+        },
+    },
     ListView: DummyListView,
 });
 
@@ -50,9 +87,7 @@ describe("listPageFactory", () => {
         );
     });
     it("creates proper server side preloader", async () => {
-        const store = makeStore({
-            context: {},
-        });
+        const store = makeStore({ context: {} });
         await getExtraProps(store, { query: {} });
 
         render(

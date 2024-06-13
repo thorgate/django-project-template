@@ -16,13 +16,10 @@ import {
     FieldValues,
 } from "react-hook-form/dist/types";
 import { baseQuery } from "@lib/queries/baseQueriesApi";
-import {
-    CustomFilterWidgetProps,
-    ListQueryArgFromEndpoint,
-    ListResultTypeFromEndpoint,
-} from "@components/ListFilter/types";
+import { CustomFilterWidgetProps } from "@components/ListFilter/types";
 import { AppStore } from "@lib/store";
 import { ComboboxBodyProps } from "@components/Input";
+import { UsePageStateResult } from "@lib/hooks/state";
 
 export interface RetrieveQueryPageOnlyResult {
     totalCount?: number;
@@ -70,12 +67,11 @@ export type ValidURLParameterForItemAndQueryArg<
 
 export interface ListViewProps<
     ItemType extends BaseItemType,
-    QueryArgType extends BaseQueryArgType
+    PageStateType extends object
 > {
     pageData: ItemType[];
-    parameters: Array<ValidURLParameterForItemAndQueryArg<QueryArgType>>;
-    queryParameters: QueryArgType;
-    replaceQueryParameter: ReplaceQueryParametersFunction<QueryArgType>;
+    pageState: PageStateType;
+    setPageState: UsePageStateResult<PageStateType>["setPageState"];
 }
 
 export type QueryDefinitionFromEndpoint<Endpoint> = Endpoint extends QueryHooks<
@@ -92,11 +88,6 @@ export type QueryDefinitionFromEndpoint<Endpoint> = Endpoint extends QueryHooks<
             : never
         : never
     : never;
-
-export type ListViewPropsFromEndpoint<Endpoint> = ListViewProps<
-    ListResultTypeFromEndpoint<Endpoint>,
-    ListQueryArgFromEndpoint<Endpoint>
->;
 
 export interface BaseURLParameterSpecificationForList<
     QueryArgType extends BaseQueryArgType,
@@ -219,22 +210,6 @@ export type URLParameterSpecification<
     | SelectURLParameterSpecification<QueryArgType, QueryArg>
     | SelectMultipleURLParameterSpecification<QueryArgType, QueryArg>;
 
-export interface ListPageFactoryArguments<
-    ItemType extends BaseItemType,
-    QueryArgType extends BaseQueryArgType,
-    UrlParametersType extends Array<
-        ValidURLParameterForItemAndQueryArg<QueryArgType>
-    >
-> {
-    retrieveEndpoint: ApiEndpointQuery<
-        RetrieveQueryDefinition<ItemType, QueryArgType>,
-        EndpointDefinitions
-    > &
-        QueryHooks<RetrieveQueryDefinition<ItemType, QueryArgType>>;
-    parameters: UrlParametersType;
-    ListView: React.ComponentType<ListViewProps<ItemType, QueryArgType>>;
-}
-
 export interface ReplaceQueryParametersOptions<
     QueryArgType extends BaseQueryArgType,
     QueryArg extends keyof QueryArgType,
@@ -307,6 +282,7 @@ export interface BaseApiSelectProps {
 export interface ApiSelectProps<T> extends BaseApiSelectProps {
     value?: ApiSelectOption<T> | null;
     onChange: (chosenOption: ApiSelectOption<T> | null) => void;
+    onReset?: () => void;
 }
 
 export interface ApiSelectMultipleProps<T> extends BaseApiSelectProps {
@@ -394,6 +370,7 @@ export interface ApiSelectWithLoadInitialValueProps<ValueT> {
     value: ValueT | null;
     fallbackValueLabel?: FallbackValue;
     onChange?: (value: ValueT | null) => void;
+    onReset?: () => void;
     selectProps: Omit<
         ApiSelectProps<ValueT>,
         "onChange" | "initialValue" | "loadingInitialValue" | "disabled"

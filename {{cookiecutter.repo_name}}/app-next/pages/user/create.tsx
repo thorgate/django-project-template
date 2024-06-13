@@ -33,9 +33,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
     }
 );
 
-const makeQueryArgs = (
-    values: UserCreate
-): UserCreateApiArg => ({
+const makeQueryArgs = (values: UserCreate): UserCreateApiArg => ({
     userCreate: values,
 });
 
