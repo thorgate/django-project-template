@@ -1,29 +1,11 @@
 {%- raw -%}
-- name: "Extract settings from container"
-  import_tasks: ../../helpers/run-management-command.yml
-  vars:
-    command_params: "settings --keys AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_STORAGE_BUCKET_NAME GS_BUCKET_NAME GS_PROJECT_ID GS_CREDENTIALS"
-
-
-- name: "Store settings as json {{ result.stdout }}"
-  set_fact:
-    settings: "{{ result.stdout | from_json }}"
-
-
 - set_fact:
     media_backend: "FS"
 
 
 - set_fact:
     media_backend: "S3"
-  when: "'AWS_ACCESS_KEY_ID' in settings and settings.AWS_ACCESS_KEY_ID != '<unset>'"
-  ignore_errors: yes
-
-
-- set_fact:
-    media_backend: "GCS"
-  when: "'GS_PROJECT_ID' in settings and settings.GS_PROJECT_ID != '<unset>'"
-  ignore_errors: yes
+  when: django_aws_access_key_id is defined
 
 
 - name: "Media backend is {{ media_backend }}"
@@ -36,29 +18,16 @@
   when: "media_backend == 'GCS'"
 
 
-- name: "Install yq on the server"
-  pip:
-    name: "yq"
-
-
-- name: "Figure out the local media directory"
-  shell: "{{ "{{ compose_command }}" }} config | yq -r '.services.django.volumes[]' | grep '/files/media' | cut -d: -f1"
-  delegate_to: localhost
-  vars:
-    ansible_become: no
-  register: "media_directory"
-
-
-- set_fact:
-    local_media_path: "{{ media_directory.stdout }}"
-
-
 - name: "Mirror S3 media files"
   import_tasks: mirror_media_S3.yml
   when: "media_backend == 'S3'"
 
 
 - name: "Mirror FS media files"
-  import_tasks: mirror_media_FS.yml
+  fail:
+    msg: >
+      Media backend {{ media_backend }} does not have logic for mirroring, but feel free to implement it.
+      Use docker-compose cp on server to extract data from the volume into temporarily location, then copy it with
+      ansible, and then do same as is done for S3 to put it back into docker volume.
   when: "media_backend == 'FS'"
 {%- endraw %}
