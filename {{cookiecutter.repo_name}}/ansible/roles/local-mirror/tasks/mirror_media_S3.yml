@@ -1,13 +1,58 @@
 {%- raw -%}
 # Note: `aws-cli` must be installed locally to make this role work. E.g. `sudo pip install awscli`.
 
+- name: "Generate an unique directory name for dump"
+  set_fact:
+    dump_directory: "/tmp/mirror-files-{{ project | mandatory }}-{{ ansible_date_time.epoch }}/"
+
 - name: "Use aws s3 command to download media files"
   delegate_to: localhost
   delegate_facts: true
   vars:
     ansible_become: no
-  command: "aws s3 cp s3://{{ settings.AWS_STORAGE_BUCKET_NAME }}/media {{ local_media_path }} --recursive"
+  command: >
+    aws s3 cp s3://{{ django_aws_storage_bucket_name }}/media {{ dump_directory }} --recursive
   environment:
-    AWS_ACCESS_KEY_ID: "{{ settings.AWS_ACCESS_KEY_ID }}"
-    AWS_SECRET_ACCESS_KEY: "{{ settings.AWS_SECRET_ACCESS_KEY }}"
+    AWS_ACCESS_KEY_ID: "{{ django_aws_access_key_id }}"
+    AWS_SECRET_ACCESS_KEY: "{{ django_aws_secret_access_key }}"
+
+- name: "Start django up"
+  shell: >
+    {{ compose_command_local }} up -d --build django
+  delegate_to: localhost
+  vars:
+    ansible_become: no
+
+# This is not the most efficient way, but instead of relying on jq, yq, other external tools, and {{ compose_command_local }}
+# of being of same version that author of the script has so that the configuration output it produces is in the
+# same format, we just copy stuff into the place where we know it should be. Docker-compose will see that this
+# is a volume and correctly put it in .data/media or into whatever place this volume is.
+- name: "Get all imported files"
+  find:
+    paths: "{{ dump_directory }}"
+  delegate_to: localhost
+  register: files
+
+# Can't do {{ compose_command_local }} cp /some/path/*, so have to iterate over items using ansible
+- name: "Put the media files into docker"
+  shell: >
+    {{ compose_command_local }} cp {{ item.path }} django:/files/media/
+  delegate_to: localhost
+  vars:
+    ansible_become: no
+  with_items: "{{ files.files }}"
+
+- name: "Delete the local dump directory"
+  file:
+    path: "{{ dump_directory }}"
+    state: absent
+  delegate_to: localhost
+  vars:
+    ansible_become: no
+
+- name: "Turn everything off again"
+  shell: "{{ compose_command_local }} down"
+  delegate_to: localhost
+  vars:
+    ansible_become: no
 {%- endraw %}
