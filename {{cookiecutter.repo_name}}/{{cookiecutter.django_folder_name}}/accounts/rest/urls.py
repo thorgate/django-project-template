@@ -1,6 +1,6 @@
 from django.urls import re_path
 
-from tg_react.api.accounts.views import ForgotPassword, RestorePassword
+from tg_react.api.accounts.views import ForgotPassword
 
 from accounts.rest import views
 
@@ -13,7 +13,7 @@ urlpatterns = [
     re_path(r"^forgot_password$", ForgotPassword.as_view(), name="api-forgot-password"),
     re_path(
         r"^forgot_password/token$",
-        RestorePassword.as_view(),
+        views.RestorePassword.as_view(),
         name="api-forgot-password-token",
     ),
 ]

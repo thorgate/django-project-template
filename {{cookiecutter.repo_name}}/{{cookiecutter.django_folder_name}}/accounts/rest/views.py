@@ -8,12 +8,14 @@ from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from tg_react.api.accounts.serializers import SignupSerializer
+from tg_react.api.accounts.views import RestorePassword as TgReactRestorePassword
 from tg_react.api.accounts.views import SignUpView as TgReactSignUpView
 from tg_react.api.accounts.views import UserDetails as TgReactUserDetails
 
 from accounts.models import User
 from accounts.rest.filters import UserFilterSet
 from accounts.rest.serializers import (
+    RecoveryPasswordSerializer,
     UserCreateSerializer,
     UserDetailMeSerializer,
     UserDetailSerializer,
@@ -52,6 +54,10 @@ class SignUpView(TgReactSignUpView):
         return Response(
             {"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
         )
+
+
+class RestorePassword(TgReactRestorePassword):
+    serializer_class = RecoveryPasswordSerializer
 
 
 class UserViewSet(
