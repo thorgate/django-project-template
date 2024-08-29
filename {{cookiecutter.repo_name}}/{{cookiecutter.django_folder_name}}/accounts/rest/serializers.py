@@ -2,13 +2,18 @@ import base64
 import json
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AnonymousUser
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.translation import gettext
 
 from rest_framework import serializers
-from tg_react.api.accounts.views import (
+from tg_react.api.accounts.serializers import (
+    ForgotPasswordSerializer as TgReactForgotPasswordSerializer,
+)
+from tg_react.api.accounts.serializers import (
     UserDetailsSerializer as TgReactUserDetailsSerializer,
 )
+from tg_react.settings import get_email_case_sensitive
 
 from {{cookiecutter.default_django_app}}.rest.core.serializers import ModelSerializerMixin
 
@@ -47,6 +52,33 @@ class UserDetailSerializer(UserDetailMeSerializer):
         fields = super().get_fields()
         fields.pop("password", None)
         return fields
+
+
+class ForgotPasswordSerializer(TgReactForgotPasswordSerializer):
+    def validate_email(self, email):
+        user_model = get_user_model()
+
+        if not get_email_case_sensitive():
+            email = email.lower()
+
+        try:
+            self.user = user_model.objects.get(email=email)
+        except user_model.DoesNotExist:
+            self.user = AnonymousUser()
+
+        return email
+
+    def validate(self, attrs):
+        # Serialize uid and token to json then encode to base64
+        uid_and_token = json.dumps(
+            {
+                "uid": self.user.pk,
+                "token": default_token_generator.make_token(self.user) if self.user.pk else "",
+            }
+        ).encode("utf-8")
+        return {
+            "uid_and_token_b64": base64.urlsafe_b64encode(uid_and_token).decode("ascii")
+        }
 
 
 class RecoveryPasswordSerializer(serializers.Serializer):
