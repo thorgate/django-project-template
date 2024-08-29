@@ -412,16 +412,15 @@ ruff-format-check:
 ruff-format:
 	@echo -e "$(CYAN)Running ruff format$(COFF)"
 	@make run-python cmd="ruff format ."
-	@make run-python cmd="ruff format --select I . --fix"
 
 .PHONY:
 ruff-lint:
 	@echo -e "$(CYAN)Running The Ruff Linter$(COFF)"
-	@make run-python cmd="ruff ."
+	@make run-python cmd="ruff check ."
 
 .PHONY:
 ruff-lint-fix:
-	@make run-python cmd="ruff --fix --exit-non-zero-on-fix ."
+	@make run-python cmd="ruff check --fix --exit-non-zero-on-fix ."
 
 .PHONY:
 ruff-lint-ci:
