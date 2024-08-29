@@ -34,6 +34,11 @@ export const ResetPasswordForm = ({
             {errors?.root?.message ? (
                 <p className="text-red-500 text-xs">{errors?.root?.message}</p>
             ) : null}
+            {errors?.uidAndTokenEncoded?.message ? (
+                <p className="text-red-500 text-xs">
+                    {errors?.uidAndTokenEncoded?.message}
+                </p>
+            ) : null}
 
             <Input
                 id="password"
