@@ -63,7 +63,7 @@
     "_ end::node_version[] ": "",
 
     "_ tag::postgres_version[] ":"",
-    "postgres_version": ["12", "11", "10", "9"],
+    "postgres_version": ["16", "15", "14", "12"],
     "_ end::postgres_version[] ": "",
 
     "_ tag::django_admin_path[] ":"",
