@@ -66,5 +66,5 @@ services:
 
   postgres-cypress:
     # We want to always start with a fresh db, so don't mount any local volumes.
-    image: postgres:{{cookiecutter.postgres_version}}
+    image: postgres:${POSTGRES_VERSION}
     env_file: .env.cypress

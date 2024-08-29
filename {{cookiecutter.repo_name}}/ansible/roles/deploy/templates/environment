@@ -9,6 +9,8 @@
 {#- otherwise the "raw/endraw" tags would make it very difficult to process the logic. #}
 {#- ************************************* #}
 
+POSTGRES_VERSION={{ "{{ postgres_version | mandatory }}" }}
+
 {%- if cookiecutter.build_in_ci == YES %}
 SITE_VERSION={{ "{{ git_commit_sha.stdout }}" }}
 SITE_DJANGO_IMAGE=registry.gitlab.com/{{ cookiecutter.gitlab_repo_url | get_url_path }}/django
