@@ -8,12 +8,16 @@ from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from tg_react.api.accounts.serializers import SignupSerializer
+from tg_react.api.accounts.views import ForgotPassword as TgReactForgotPassword
+from tg_react.api.accounts.views import RestorePassword as TgReactRestorePassword
 from tg_react.api.accounts.views import SignUpView as TgReactSignUpView
 from tg_react.api.accounts.views import UserDetails as TgReactUserDetails
 
 from accounts.models import User
 from accounts.rest.filters import UserFilterSet
 from accounts.rest.serializers import (
+    ForgotPasswordSerializer,
+    RecoveryPasswordSerializer,
     UserCreateSerializer,
     UserDetailMeSerializer,
     UserDetailSerializer,
@@ -52,6 +56,18 @@ class SignUpView(TgReactSignUpView):
         return Response(
             {"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST
         )
+
+
+class RestorePassword(TgReactRestorePassword):
+    serializer_class = RecoveryPasswordSerializer
+
+
+class ForgotPassword(TgReactForgotPassword):
+    serializer_class = ForgotPasswordSerializer
+
+    def send_email_notification(self, user, uid_and_token_b64):
+        if user.id:
+            super().send_email_notification(user, uid_and_token_b64)
 
 
 class UserViewSet(

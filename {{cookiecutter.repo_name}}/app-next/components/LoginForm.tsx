@@ -1,5 +1,6 @@
 import { useForm, FieldValues } from "react-hook-form";
 import * as React from "react";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { signIn } from "next-auth/react";
 import { useTranslation } from "next-i18next";
@@ -81,12 +82,17 @@ export const LoginForm = ({ csrfToken }: LoginFormProps) => {
                 })}
             />
 
-            <Button
-                type="submit"
-                disabled={isSubmitting || isValidating || !isValid}
-            >
-                {t("auth:form.submit")}
-            </Button>
+            <div className="flex flex-row justify-between items-center">
+                <Button
+                    type="submit"
+                    disabled={isSubmitting || isValidating || !isValid}
+                >
+                    {t("auth:form.submit")}
+                </Button>
+                <Link href="/auth/forgot-password">
+                    {t("auth:forgotPassword.link")}
+                </Link>
+            </div>
         </form>
     );
 };

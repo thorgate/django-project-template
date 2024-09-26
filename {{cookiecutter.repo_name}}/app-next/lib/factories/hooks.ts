@@ -62,6 +62,12 @@ export const isMutationResultError = (
         | Exclude<BaseQueryError<typeof baseQuery>, undefined>;
 } => isRecord(result) && result.hasOwnProperty("error");
 
+const hasSubErrorsField = (
+    data: unknown
+): data is { errors: unknown } => (
+    isRecord(data) && data.hasOwnProperty("errors") && !!(data as { errors: unknown }).errors
+);
+
 export const extractErrorsRecursively = <T>(
     referenceValue: unknown,
     errors: unknown,
@@ -149,7 +155,7 @@ export const useApiBasedForm = <
                     return;
                 }
 
-                extractErrorsRecursively(value, data, setError, "root");
+                extractErrorsRecursively(value, hasSubErrorsField(data) ? data.errors : data, setError, "root");
             });
         },
         [
