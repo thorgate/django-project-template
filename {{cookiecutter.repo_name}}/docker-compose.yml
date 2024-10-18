@@ -107,7 +107,7 @@ services:
 
   postgres:
     <<: *common-spec
-    image: postgres:${POSTGRES_VERSION}
+    image: postgres:${POSTGRES_VERSION:-{{cookiecutter.postgres_version}}}
     # Comment in the following lines to connect to your Dockerized instance of Postgres from your host machine.
     # Change the host port (before colon) if you have a local instance of Postgres running on that port.
     # ports:
