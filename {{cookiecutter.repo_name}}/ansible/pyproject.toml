@@ -8,13 +8,9 @@ authors = ["Thorgate <hi@thorgate.eu>"]
 python = "^3.8"
 ansible = "^5.7"
 jinja2 = "^3.1"
-docker-compose = "^1.29"
 cryptography = "^37.0.2"
 yq = "^2.14.0"
 jq = "^1.2.2"
-
-[tool.poetry.dev-dependencies]
-pyyaml = "^6"
 
 [build-system]
 requires = ["poetry>=1.0"]
