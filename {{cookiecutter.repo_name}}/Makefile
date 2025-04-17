@@ -381,7 +381,7 @@ eslint-fix:
 .PHONY:
 prospector:
 	@echo -e "$(CYAN)Running Prospector$(COFF)"
-	@make run-python cmd='prospector --with-tool bandit --without-tool pep257'
+	@make run-python cmd='prospector --with-tool bandit --without-tool pep257 -X'
 
 
 {%- if cookiecutter.use_mypy == YES %}
