@@ -5,6 +5,7 @@ description = "{{ cookiecutter.project_title }}"
 license = "Proprietary" # or "MIT"
 authors = ["{{ cookiecutter.live_domain_name }} <{{ cookiecutter.admin_email }}>"]
 repository = "ssh://{{ cookiecutter.gitlab_repo_url | as_git_path }}"
+package-mode = false
 
 # NOTE:
 # without this explicit reference to PyPI, poetry may raise exception "PackageNotFound".
@@ -23,7 +24,7 @@ Django = "==4.2.*"
 # - {%- if cookiecutter.content_security_policy == YES %}
 django-csp = "^3.7"
 # - {% endif %}
-environs = "^9.5.0"
+environs = "^14.1.1"
 dj-database-url = "^2.1.0"
 django-redis = "==5.2.*"
 # - {%- if cookiecutter.django_media_engine == GCS %}
@@ -58,7 +59,7 @@ tg-react = "==3.*"
 tg-utils = {version = "^1.0.1 ", extras = ["model-hash", "health_check"]}
 
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 bump-my-version = "^0.12.0"
 ipython = "^8.0.0"
 pysnooper = "^1.2.0"
@@ -81,10 +82,8 @@ types-requests = "*"
 # Note prospector is very picky about its dependencies,
 # and let prospector determine which versions work together
 # avoid specifying versions for pylint/pylint-django/astroid
-prospector = {version = "^1.10.0", extras=["with_bandit"]}
+prospector = {version = "^1.16.0", extras=["with_bandit"]}
 pyenchant = "*"
-pylint = "*"
-pylint-django = "*"
 ruff = "^0.1.5"
 
 [tool.poetry.group.test.dependencies]
@@ -109,11 +108,8 @@ pytest-translations = "*"
 flaky = "^3.7.0"
 responses = "^0.22.0"
 
-
-
 [tool.poetry.group.security.dependencies]
 pip-audit = ">=2.6.1"
-
 
 [build-system]
 requires = ["poetry>=0.12"]

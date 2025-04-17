@@ -55,7 +55,7 @@
     "_ end::docker_base_image[] ": "",
 
     "_ tag::python_version[] ":"",
-    "python_version": ["3.10", "3.11", "3.9", "3.8", "3.7", "3.6"],
+    "python_version": ["3.10", "3.11", "3.12", "3.9", "3.8", "3.7", "3.6"],
     "_ end::python_version[] ": "",
 
     "_ tag::node_version[] ":"",

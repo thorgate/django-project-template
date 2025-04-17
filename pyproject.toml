@@ -4,8 +4,7 @@ version = "1.0"
 description = "The Django project template"
 authors = ["Thorgate <info@thorgate.eu>"]
 repository = "https://gitlab.com/thorgate-public/django-project-template"
-# When poetry is updated to 1.8+, uncomment the following line
-# package-mode = false
+package-mode = false
 
 # NOTE:
 # without this explicit reference to PyPI, poetry may raise exception "PackageNotFound".
@@ -15,9 +14,9 @@ url = "https://pypi.org/simple"
 priority = "primary"
 
 [tool.poetry.dependencies]
-python = "^3.7.0"
+python = "^3.10.0"
 
-cookiecutter = "==1.7.*"
+cookiecutter = "^2.6.0"
 cookiecutter_repo_extensions = "==0.2.*"
 docker = "^5.0.3"
 fqdn = "==1.*"
@@ -25,9 +24,11 @@ stringcase = "==1.2.*"
 # It s dep for ansible-vault, but adding it here, makes locking a lot faster
 ansible = "^4.10.0"
 ansible-vault = "^2.1.0"
-git-url-parse = "==1.2.*"
+cryptography = "^44"
+cffi = "^1.17.1"
+git-url-parse = "^1.2.2"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 ruff = "0.1.5"
 pyyaml = "^6"
 pytest = "^7"
