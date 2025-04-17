@@ -9,7 +9,9 @@ ENV DJANGO_PRODUCTION_MODE 1
 ENV DJANGO_SETTINGS_MODULE settings.cloud
 ENV DJANGO_DEBUG 0
 ENV PYTHONPYCACHEPREFIX /.pycache
-ENV PIP_BREAK_SYSTEM_PACKAGES 1
+
+# Remove externally managed marker to allow installing to global scope
+RUN find / -name EXTERNALLY-MANAGED -exec rm -f {} \; || true
 
 # Let all *.pyc files stay within the container, for Python >= 3.8
 RUN mkdir -p $PYTHONPYCACHEPREFIX
