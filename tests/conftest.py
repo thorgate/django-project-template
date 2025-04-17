@@ -53,7 +53,7 @@ def default_project():
         "webapp_include_storybook": NO,
         "test_host": "test1.thorgate.eu",
         "python_version": "3.10",
-        "node_version": "14",
+        "node_version": "18",
         "frontend_style": WEBAPP,
         "use_cypress": NO,
     }
