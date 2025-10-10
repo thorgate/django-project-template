@@ -1,0 +1,46 @@
+- name: "Stop the project"
+  command: >-
+      docker-compose
+# - {% if cookiecutter.build_in_ci == NO %}
+        -f {{ "{{ compose_file "}} }}
+# - {% endif %}
+        stop
+  args:
+    chdir: "{{ "{{ code_dir }}" }}"
+
+# - {%- raw %}
+- name: Define source postgres version when not set
+  set_fact:
+    source_postgres_version: "{{ postgres_version }}"
+  when: source_postgres_version is not defined
+
+- name: "Detach shared containers to project specific networks"
+  shell:
+      cmd: >-
+        docker network disconnect {{ item.name }} {{ item.container }} || echo "Container {{ item.container }} not connected to network {{ item.name }}"
+  loop:
+      - name: "{{ project }}_nginx"
+        container: nginx
+      - name: "{{ project }}_postgres"
+        container: "postgres-{{ source_postgres_version }}"
+
+- name: "Update nginx config"
+  template:
+    src: "site-nginx.conf"
+    dest: "/etc/nginx/sites-enabled/{{ project }}"
+  vars:
+    target_host: "{{ inventory_hostname }}"
+
+- name: "Update nginx proxy configs"
+  template:
+    src: "{{ item.src }}"
+    dest: "/etc/nginx/conf.d/{{ item.dest }}"
+  loop:
+    - { src: "app.proxy_pass.include", dest: "app.{{ project }}.proxy_django.include" }
+    - { src: "app.proxy_pass.include", dest: "app.{{ project }}.proxy_node.include" }
+  vars:
+    target_host: "{{ "{{ inventory_hostname }}" }}"
+
+- name: "Reload nginx"
+  import_tasks: ../../helpers/reload-nginx.yml
+# - {%- endraw %}

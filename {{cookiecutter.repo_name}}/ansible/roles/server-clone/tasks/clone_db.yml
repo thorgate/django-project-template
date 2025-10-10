@@ -71,6 +71,12 @@
         GRANT ALL PRIVILEGES ON DATABASE {{ "{{ project }}" }} to {{ "{{ project }}" }};
       " | docker exec -i postgres-{{ "{{ postgres_version | mandatory }}" }} psql -U postgres
 
+- name: "Grant schema access"
+  shell: >
+     echo "
+        GRANT all ON SCHEMA public to {{ "{{ project }}" }};
+     " | docker exec -i postgres-{{ "{{ postgres_version | mandatory }}" }} psql -U postgres -d {{ "{{ project }}" }}
+
 - name: "Load the dump file"
   shell: >
     cat {{ "{{ dump_filename }}" }} | docker exec -i postgres-{{ "{{ postgres_version | mandatory }}" }} pg_restore \

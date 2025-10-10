@@ -1,0 +1,4 @@
+{%- raw -%}
+include conf.d/app.{{ project }}.proxy.include;
+proxy_pass https://{{ target_host }};
+{%- endraw %}

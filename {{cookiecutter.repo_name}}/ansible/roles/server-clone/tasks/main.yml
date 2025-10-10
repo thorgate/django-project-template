@@ -12,6 +12,13 @@
     local_media_path: "./clone-{{ "{{ project | mandatory }}" }}-files/"
 
 
+- name: "Clone certificates"
+  import_tasks: clone_certificate.yml
+  tags:
+    - certs
+    - certificates
+
+
 - name: "Download media files"
   import_tasks: clone_media_source.yml
   tags:
@@ -31,3 +38,11 @@
   tags:
     - db
     - database
+
+
+- name: "Setup the proxy"
+  import_tasks: setup_proxy.yml
+  when: setup_proxy | default(false)
+  delegate_to: "{{ "{{ source_host | mandatory }}" }}"
+  tags:
+    - proxy

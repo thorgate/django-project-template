@@ -47,6 +47,13 @@
     " | docker exec -i postgres-{{ "{{ postgres_version | mandatory }}" }} psql -U postgres -d {{ "{{ project }}" }}
   when: not db_created.stat.exists
 
+- name: "Grant schema access"
+  shell: >
+     echo "
+        GRANT all ON SCHEMA public to {{ "{{ project }}" }};
+     " | docker exec -i postgres-{{ "{{ postgres_version | mandatory }}" }} psql -U postgres -d {{ "{{ project }}" }}
+  when: not db_created.stat.exists
+
 
 - name: "Create db creation lockfile"
   file:
