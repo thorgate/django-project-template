@@ -1,0 +1,73 @@
+# - {%- raw %}
+- set_fact:
+    certbot_binary: "certbot"
+    dump_filename: "/tmp/{{ project }}-certs.tar.gz"
+    dump_filename_local: "./{{ project }}-certs.tar.gz"
+
+- name: Trigger forced renewal of SSL certificate
+  shell: >
+    {{ certbot_binary }} renew --force-renewal --cert-name "{{ node_site_host }}"
+  when: forced_renewal | default(False)
+  delegate_to: "{{ source_host | mandatory }}"
+
+- name: "Create archive of certificates"
+  shell: >
+    tar -czf {{ dump_filename }} \
+      /etc/letsencrypt/live/{{ node_site_host }} \
+      /etc/letsencrypt/archive/{{ node_site_host }} \
+      /etc/letsencrypt/configs/*{{ project }}* \
+      /etc/letsencrypt/renewal/{{ node_site_host }}*
+  delegate_to: "{{ source_host | mandatory }}"
+
+- name: "Download certificates from source host"
+  shell: >
+    rsync --delay-updates -F --compress --archive \
+      --no-recursive {{ source_host }}:{{ dump_filename }} {{ dump_filename_local }}
+  delegate_to: localhost
+  vars:
+    ansible_become: no
+
+- name: Upload the certificates to target host"
+  synchronize:
+    src: "{{ dump_filename_local }}"
+    dest: "{{ dump_filename }}"
+    mode: push
+    set_remote_user: no
+    recursive: no
+  delegate_to: localhost
+  vars:
+    ansible_become: no
+
+- name: "Delete the existing certificates from target host"
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "/etc/letsencrypt/live/{{ node_site_host }}"
+    - "/etc/letsencrypt/archive/{{ node_site_host }}"
+
+- name: "Extract the certificates on target host"
+  shell: >
+    tar -xvzhf {{ dump_filename }} -C /
+
+- name: Check renewal of SSL certificate
+  shell: >
+    {{ certbot_binary }} renew --cert-name "{{ node_site_host }}"
+
+- name: "Delete the dump file from source host"
+  file:
+    path: "{{ dump_filename }}"
+    state: absent
+  delegate_to: "{{ source_host }}"
+
+- name: "Delete the dump file locally"
+  file:
+    path: "{{ dump_filename_local }}"
+    state: absent
+  delegate_to: localhost
+
+- name: "Delete the dump file from target host"
+  file:
+    path: "{{ dump_filename }}"
+    state: absent
+# - {%- endraw %}
