@@ -38,9 +38,20 @@ output "media_bucket_user" {
   description = "Media bucket user"
 }
 
+variable "DJANGO_AWS_ACCESS_KEY_ID_SENSITIVE" {
+  description = "ACCESS_KEY_ID for media bucket user sensitive"
+  default = ""
+  sensitive   = true
+}
+
+locals {
+    DJANGO_AWS_ACCESS_KEY_ID_SENSITIVE = module.s3_media.key.id
+}
+
 output "DJANGO_AWS_ACCESS_KEY_ID" {
-  value       = module.s3_media.key.id
+  value       = local.DJANGO_AWS_ACCESS_KEY_ID_SENSITIVE
   description = "ACCESS_KEY_ID for media bucket user"
+  sensitive   = true                                                                                  
 }
 
 output "DJANGO_AWS_SECRET_ACCESS_KEY" {
