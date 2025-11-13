@@ -1,4 +1,4 @@
-import typing as t
+import logging
 
 from django.db import DEFAULT_DB_ALIAS, models
 
@@ -6,10 +6,6 @@ from django.db import DEFAULT_DB_ALIAS, models
 class DatabaseView(models.Model):
     # Class names of views that are needed for this view
     dependencies: set[str] = set()
-
-    # Collection of columns each of which will be indexed in this view (for faster lookups and access). Values in the
-    # columns do not have to be unique.
-    view_indexes: t.ClassVar[t.Collection[str]] = []
 
     # You need to also define columns of your view in the subclass. Keep in mind, that Django assumes that every model
     # has a single column unique primary key. This means:
@@ -19,9 +15,8 @@ class DatabaseView(models.Model):
     #   ForeignKey field, django will effectively convert it to OneToOne field which may not be what you want).
     #
     # The simplest workaround for this for views that don't have a single column with unique values is to just
-    # annotate the materialized view queryset with id=models.Value(None), creating the `id` column Django expects and
+    # annotate the view queryset with id=models.Value(None), creating the `id` column Django expects and
     # populating it with NULLs (which is okay since we never intend to use it anyway).
-
 
     class Meta:
         abstract = True
@@ -29,20 +24,18 @@ class DatabaseView(models.Model):
         # db_table is not overridden, as we take advantage of django automatically generating the table name for us
         # in the code that creates the views.
 
-    def save(
-        self, force_insert=False, force_update=False, using=None, update_fields=None
-    ):
+    def save(self, *args, force_insert=False, force_update=False, using=None, update_fields=None):
         raise RuntimeError("Can't perform UPDATE or INSERT on database view.")
 
     @classmethod
     def get_view_queryset(cls) -> models.QuerySet:
-        """Composes and returns a queryset that will be materialized as view."""
-        raise NotImplementedError()
+        """Composes and returns a queryset that will be used as view."""
+        raise NotImplementedError
 
     @classmethod
     def drop_view(cls):
         """Drops (removes) the view from DB."""
-        # NB: CASCADE and IF EXISTS are important for current implementation of `drop_all_materialized_views`
+        # NB: CASCADE and IF EXISTS are important for current implementation of `drop_all_views`
         # to work correctly
         with cls.get_compiler().connection.cursor() as cursor:
             cursor.execute(
@@ -54,22 +47,24 @@ class DatabaseView(models.Model):
         return cls.get_view_queryset().query.get_compiler(DEFAULT_DB_ALIAS)
 
     @classmethod
+    def get_view_sql(cls):
+        return cls.get_compiler().as_sql()
+
+    @classmethod
     def create_view_from_queryset(cls):
         """Creates (or re-creates, if exists) the view in DB.
 
         Caveat: if there are views that depend on this view, they will be dropped and will not be re-created. For this
-        reason, this method should not be used manually and should always be called from `create_all_materialized_views`
+        reason, this method should not be used manually and should always be called from `create_all_views`
         unless you really know what you are doing.
         """
         if cls._meta.abstract:
             return
 
-        compiler = cls.get_compiler()
-        view_query_sql, params = compiler.as_sql()
-
+        view_query_sql, params = cls.get_view_sql()
         sql = f"CREATE OR REPLACE VIEW {cls._meta.db_table} AS {view_query_sql};"
 
-        with compiler.connection.cursor() as cursor:
+        with cls.get_compiler().connection.cursor() as cursor:
             cursor.execute(sql, params)
 
     @staticmethod
@@ -106,9 +101,7 @@ class DatabaseView(models.Model):
                 conflicting_view_names = ", ".join(
                     {subclass.__name__ for subclass in DatabaseView.__subclasses__()}.difference(processed)
                 )
-                raise RuntimeError(
-                    f"Circular or invalid dependency for database views {conflicting_view_names}."
-                )
+                raise RuntimeError(f"Circular or invalid dependency for database views {conflicting_view_names}.")
 
     @staticmethod
     def create_all_views():
@@ -129,8 +122,14 @@ class DatabaseView(models.Model):
 
 
 def pre_migrate(*args, **kwargs):
+    if kwargs.get("app_config").name != "database_view":
+        return
+    logging.info("Dropping all DB views before migration to unblock any possible table changes.")
     DatabaseView.drop_all_views()
 
 
 def post_migrate(*args, **kwargs):
+    if kwargs.get("app_config").name != "database_view":
+        return
+    logging.info("Re-creating all DB views after migrations.")
     DatabaseView.create_all_views()

@@ -9,8 +9,6 @@ from rest_framework.permissions import BasePermission
 
 
 class SignedAccessResourceMixin:
-    signed_resource_name: str
-
     def get_signed_resource_id(self) -> str:
         return getattr(self, "id", "")
 

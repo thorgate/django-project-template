@@ -69,6 +69,7 @@ TGR_PASSWORD_RECOVERY_URL = "/auth/reset-password/%s"
 INSTALLED_APPS = [
     # Local apps
     "accounts",
+    "database_view",
     DEFAULT_DJANGO_APP,
     # Third-party apps
     # - {% if cookiecutter.frontend_style == WEBAPP %}
@@ -434,6 +435,8 @@ SPECTACULAR_SETTINGS = {
         "drf_spectacular.contrib.djangorestframework_camel_case.camelize_serializer_fields",
     ],
     "CAMELIZE_NAMES": True,
+    "COMPONENT_SPLIT_REQUEST": True,
+    "COMPONENT_SPLIT_PATCH": True,
     "SCHEMA_PATH_PREFIX": "/api/",
     "SERVERS": [
         {
@@ -441,6 +444,9 @@ SPECTACULAR_SETTINGS = {
             "description": "Local development environment",
         },
     ],
+    "SWAGGER_UI_DIST": "SIDECAR",
+    "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
+    "REDOC_DIST": "SIDECAR",
 }
 
 # - {%- endif %}
