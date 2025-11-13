@@ -18,31 +18,25 @@ const SelectUser = apiSelectFactory({
 
 describe("apiSelectFactory", () => {
     it("creates working user filter", async () => {
-        render(<SelectUser onChange={() => []} testId="user-select" />, {
+        render(<SelectUser label="Select user" onChange={() => []} />, {
             wrapper: ProvidersWrapper,
         });
 
-        const selectUserElement = screen.getByTestId("user-select");
-        expect(selectUserElement).toBeInTheDocument();
+        const comboboxInput = screen.getByRole("combobox", {
+            name: "Select user",
+        });
+        expect(comboboxInput).toBeInTheDocument();
 
-        const comboboxButton = screen.getByTestId("combobox-button");
-        expect(comboboxButton).toBeInTheDocument();
-        fireEvent.click(comboboxButton);
-        // By default, no options are loaded before the use expands the select; however in test environment
-        // InteractionObserver is not available, so it will just render
-        expect(screen.getByText("errors.loading")).toBeInTheDocument();
-
-        const comboboxInput = screen.getByTestId("combobox-input");
+        fireEvent.click(comboboxInput);
         fireEvent.change(comboboxInput, {
             target: { value: "test" },
         });
 
-        // Wait for the options to load from API, at least one option should load and load more button should be visible
-        // as well
+        // Wait for the options to load from API, at least one option should load
         await waitFor(() =>
-            expect(
-                screen.getByTestId("combobox-options").children.length
-            ).toBeGreaterThan(1)
+            expect(screen.getByRole("listbox").children.length).toBeGreaterThan(
+                1,
+            ),
         );
     });
 });

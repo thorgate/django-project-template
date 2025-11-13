@@ -13,7 +13,7 @@ interface CalendarDay {
 }
 
 export const stringToCalendarDay = (
-    dateString: string | undefined
+    dateString: string | undefined,
 ): CalendarDay | undefined => {
     if (dateString === undefined) {
         return undefined;
@@ -50,6 +50,9 @@ export interface CalendarProps {
     scrollButtons?: boolean;
 }
 
+export const zeroPadCalendarNumber = (value: number) =>
+    value.toString().padStart(2, "0");
+
 interface CalendarDayWithMeta {
     date: CalendarDay;
     isoFormat: string;
@@ -83,7 +86,7 @@ export const Calendar = ({
         initial ?? {
             month: today.month,
             year: today.year,
-        }
+        },
     );
 
     const changeMonth = React.useCallback((offset: number) => {
@@ -112,14 +115,19 @@ export const Calendar = ({
     }, [changeMonth]);
     const days = React.useMemo<CalendarDayWithMeta[]>(() => {
         const result: CalendarDayWithMeta[] = [];
-        const monthStart = new Date(`${month.year}-${month.month}-01`);
+        const monthStart = new Date(
+            `${month.year}-${zeroPadCalendarNumber(month.month)}-01`,
+        );
 
         const monthEnd = addDays(addMonths(monthStart, 1), -1);
 
-        const calendarStart = addDays(monthStart, -monthStart.getDay());
-        let extraDays = 6 - monthEnd.getDay();
-        if (extraDays === 6) {
-            extraDays = -1;
+        const calendarStart = addDays(
+            monthStart,
+            -(monthStart.getDay() + 6) % 7,
+        );
+        let extraDays = 7 - monthEnd.getDay();
+        if (extraDays === 7) {
+            extraDays = 0;
         }
         const calendarEnd = addDays(monthEnd, extraDays);
         for (
@@ -158,7 +166,7 @@ export const Calendar = ({
                     <button
                         type="button"
                         onClick={onPreviousMonth}
-                        className="-m-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500 dark:text-gray-600"
+                        className="-m-1.5 flex flex-none items-center justify-center p-1.5 text-brand-primary"
                     >
                         <span className="sr-only">
                             {t("calendar.nextMonth")}
@@ -169,14 +177,14 @@ export const Calendar = ({
                         />
                     </button>
                 ) : null}
-                <div className="flex-auto text-sm font-semibold">
+                <div className="flex-auto text-sm font-semibold text-brand-dark">
                     <MonthName month={month.month} /> {month.year}
                 </div>
                 {scrollButtons ? (
                     <button
                         type="button"
                         onClick={onNextMonth}
-                        className="-m-1.5 flex flex-none items-center justify-center p-1.5 text-gray-400 hover:text-gray-500 dark:text-gray-600"
+                        className="-m-1.5 flex flex-none items-center justify-center p-1.5 text-brand-primary"
                     >
                         <span className="sr-only">
                             {t("calendar.previousMonth")}
@@ -188,7 +196,7 @@ export const Calendar = ({
                     </button>
                 ) : null}
             </div>
-            <div className="mt-6 grid grid-cols-7 text-xs leading-6 text-gray-500">
+            <div className="mt-6 grid grid-cols-7 text-xs leading-6 text-brand-light">
                 <div>
                     <WeekDayName day={1} />
                 </div>
@@ -211,31 +219,33 @@ export const Calendar = ({
                     <WeekDayName day={0} />
                 </div>
             </div>
-            <div className="isolate mt-2 grid grid-cols-7 gap-px rounded-lg bg-gray-200 ring-gray-200 dark:bg-gray-700 dark:ring-gray-700 text-sm shadow ring-1 ">
+            <div className="isolate mt-2 grid grid-cols-7 gap-px rounded-md bg-brand-disabled-light ring-brand-disabled-light text-sm shadow ring-1 ">
                 {days.map((day, dayIdx) => (
                     <button
                         key={day.isoFormat}
                         type="button"
                         className={clsx(
-                            "py-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 focus:z-10",
+                            "py-1.5 hover:bg-brand-bg-highlight focus:z-10",
                             day.isCurrentMonth
-                                ? "bg-white dark:bg-gray-900"
-                                : "bg-gray-50 dark:bg-gray-800",
+                                ? "bg-white"
+                                : "bg-brand-disabled-light",
                             (day.isSelected || day.isToday) && "font-semibold",
-                            day.isSelected && "text-white dark:text-black",
+                            day.isSelected && "text-white ",
                             !day.isSelected &&
                                 day.isCurrentMonth &&
                                 !day.isToday &&
-                                "text-gray-900 dark:text-gray-300",
+                                "text-brand-dark",
                             !day.isSelected &&
                                 !day.isCurrentMonth &&
                                 !day.isToday &&
-                                "text-gray-400 dark:text-gray-500",
-                            day.isToday && !day.isSelected && "text-indigo-600",
-                            dayIdx === 0 && "rounded-tl-lg",
-                            dayIdx === 6 && "rounded-tr-lg",
-                            dayIdx === days.length - 7 && "rounded-bl-lg",
-                            dayIdx === days.length - 1 && "rounded-br-lg"
+                                "text-brand-disabled-dark",
+                            day.isToday &&
+                                !day.isSelected &&
+                                "text-brand-light",
+                            dayIdx === 0 && "rounded-tl-md",
+                            dayIdx === 6 && "rounded-tr-md",
+                            dayIdx === days.length - 7 && "rounded-bl-md",
+                            dayIdx === days.length - 1 && "rounded-br-md",
                         )}
                         onClick={
                             onSelect ? () => onSelect(day.date) : undefined
@@ -247,10 +257,10 @@ export const Calendar = ({
                                 "mx-auto flex h-7 w-7 items-center justify-center rounded-full",
                                 day.isSelected &&
                                     day.isToday &&
-                                    "bg-indigo-600",
+                                    "bg-brand-light",
                                 day.isSelected &&
                                     !day.isToday &&
-                                    "bg-gray-900 dark:bg-gray-100"
+                                    "bg-brand-dark ",
                             )}
                         >
                             {day.date.day}

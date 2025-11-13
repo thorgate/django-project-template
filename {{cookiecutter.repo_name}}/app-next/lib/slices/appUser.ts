@@ -25,11 +25,15 @@ export const appUserSlice = createSlice({
             action: PayloadAction<Pick<
                 AppUserState,
                 "accessToken" | "refreshToken"
-            > | null>
+            > | null>,
         ) => {
             state.accessToken = action.payload?.accessToken || "";
             state.refreshToken = action.payload?.refreshToken || "";
             state.sessionInitialized = true;
+            state.sessionExpired = false;
+        },
+        setSessionExpired: (state) => {
+            state.sessionExpired = true;
         },
         setLocale: (state, action: PayloadAction<string>) => {
             state.locale = action.payload;

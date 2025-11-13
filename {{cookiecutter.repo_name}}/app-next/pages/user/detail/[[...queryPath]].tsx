@@ -27,7 +27,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
                 session,
             },
         };
-    }
+    },
 );
 
 export default UserDetail;

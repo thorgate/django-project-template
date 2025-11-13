@@ -1,9 +1,7 @@
 import React from "react";
+import clsx from "clsx";
 
-import { ApiEndpointQuery } from "@reduxjs/toolkit/dist/query/core/module";
-import { EndpointDefinitions } from "@reduxjs/toolkit/dist/query/endpointDefinitions";
-import { QueryHooks } from "@reduxjs/toolkit/dist/query/react/buildHooks";
-
+import { NextLayoutComponentType } from "next";
 import { queriesApi } from "@lib/queries";
 import { useExtractNonFieldError } from "@lib/convertError";
 import { LoadingState, ErrorState } from "@components/NonIdealState";
@@ -13,7 +11,8 @@ import {
     BaseQueryArgType,
     FactoryServerSidePropsFunction,
     ListViewProps,
-    RetrieveQueryDefinition,
+    ListQueryResult,
+    APIQuery,
 } from "@lib/factories/types";
 import {
     apiStateFromPageState,
@@ -24,6 +23,7 @@ import {
 } from "@lib/hooks/state";
 import { Pagination } from "@components/Pagination";
 import { Filterset } from "@components/ListFilter";
+import { AppStore } from "@lib/store";
 
 export interface PaginatedPageState {
     pageNumber: number;
@@ -47,31 +47,38 @@ export const paginationState = {
 export const listPageFactory = <
     ItemType extends BaseItemType,
     QueryArgType extends BaseQueryArgType,
-    PageStateType extends object
+    PageStateType extends object,
 >({
     retrieveEndpoint,
     extraQueryArgument,
     pageStateDefinition,
     ListView,
+    extraFilterSetChildren,
+    Context,
+    extraClassName,
+    processResponseData,
 }: {
-    retrieveEndpoint: ApiEndpointQuery<
-        RetrieveQueryDefinition<ItemType, QueryArgType>,
-        EndpointDefinitions
-    > &
-        QueryHooks<RetrieveQueryDefinition<ItemType, QueryArgType>>;
+    retrieveEndpoint: APIQuery<QueryArgType, ListQueryResult<ItemType>>;
     extraQueryArgument: QueryArgType;
     pageStateDefinition: PageStateDefinitionWithAPIInfo<
         PageStateType,
         QueryArgType
     >;
     ListView: React.ComponentType<ListViewProps<ItemType, PageStateType>>;
+    extraFilterSetChildren?: React.ReactNode;
+    Context?: React.Context<PageStateType | null>;
+    extraClassName?: string;
+    processResponseData?: (
+        store: AppStore,
+        data: undefined | ItemType[],
+    ) => Promise<void>;
 }): [
-    React.FunctionComponent<Record<string, never>>,
-    FactoryServerSidePropsFunction
+    NextLayoutComponentType<Record<string, never>>,
+    FactoryServerSidePropsFunction,
 ] => {
     const paginationKeys = (
         Object.keys(
-            pageStateDefinition
+            pageStateDefinition,
         ) as (keyof PageStateDefinitionWithAPIInfo<
             PageStateType,
             QueryArgType
@@ -98,13 +105,14 @@ export const listPageFactory = <
                           } as Partial<PageStateType>);
                       }
                     : undefined,
-            [setPageState]
+            [setPageState],
         );
 
         const {
             data,
             error,
             isLoading: isApiLoading,
+            isFetching: isApiFetching,
         } = retrieveEndpoint.useQuery(queryArg);
 
         const pageData: ItemType[] = data?.results || [];
@@ -123,17 +131,21 @@ export const listPageFactory = <
             );
         }
 
-        return (
-            <div className="pb-24">
+        const view = (
+            <div className={clsx({ "pb-24": !extraClassName }, extraClassName)}>
                 <Filterset
                     filtersetDefinition={pageStateDefinition}
                     pageState={pageState}
                     setPageState={setPageState}
-                />
+                    isUpdating={isApiFetching}
+                >
+                    {extraFilterSetChildren}
+                </Filterset>
                 <ListView
                     pageData={pageData}
                     pageState={pageState}
                     setPageState={setPageState}
+                    isUpdating={isApiFetching}
                 />
                 {/* Normally, we'll only have one pagination type parameter */}
                 {setPageNumber ? (
@@ -141,25 +153,36 @@ export const listPageFactory = <
                 ) : null}
             </div>
         );
+
+        if (!Context) {
+            return view;
+        }
+
+        return <Context.Provider value={pageState}>{view}</Context.Provider>;
     };
     ListViewController.defaultProps = {};
 
     const getExtraProps: FactoryServerSidePropsFunction = async (
         store,
-        context
+        context,
     ) => {
         const pageState = pageStateFromQueryParameters(
             pageStateDefinition,
-            context.query
+            context.query,
         );
         const queryArgument = apiStateFromPageState(pageStateDefinition, {
             pageState,
             unmanagedApiState: extraQueryArgument,
         });
 
-        store.dispatch(retrieveEndpoint.initiate(queryArgument));
+        const results = (
+            await store.dispatch(retrieveEndpoint.initiate(queryArgument))
+        )?.data?.results;
+        if (processResponseData) {
+            await processResponseData(store, results);
+        }
         await Promise.all(
-            store.dispatch(queriesApi.util.getRunningQueriesThunk())
+            store.dispatch(queriesApi.util.getRunningQueriesThunk()),
         );
 
         return {} as Record<string, never>;

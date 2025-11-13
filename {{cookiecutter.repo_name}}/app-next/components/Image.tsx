@@ -13,11 +13,11 @@ export const Image: React.FC<
 > = ({ loadDirectly, unoptimized: outerUnoptimized, ...props }) => {
     const unoptimized = React.useMemo(
         () => outerUnoptimized || debug || loadDirectly,
-        [outerUnoptimized, loadDirectly]
+        [outerUnoptimized, loadDirectly],
     );
     const loader = React.useMemo(
         () => (unoptimized ? directLoader : undefined),
-        [unoptimized]
+        [unoptimized],
     );
 
     return <NextImage {...props} unoptimized={unoptimized} loader={loader} />;

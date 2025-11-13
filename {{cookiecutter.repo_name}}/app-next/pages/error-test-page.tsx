@@ -17,7 +17,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
                 session,
             },
         };
-    }
+    },
 );
 
 export default function ErrorTestPage() {

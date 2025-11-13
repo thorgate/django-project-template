@@ -30,12 +30,12 @@ export const SimpleSelect = <T extends FieldValues = FieldValues>({
             defaultValue={defaultValue}
             render={({ field }) => {
                 const selectedOption = options.find(
-                    (option) => option.value === field.value
+                    (option) => option.value === field.value,
                 );
                 return (
                     <StyledListBox
                         options={options}
-                        selectedOption={selectedOption ?? null}
+                        selectedOption={selectedOption ?? undefined}
                         onChange={(option) => field.onChange(option.value)}
                         disabled={disabled}
                         onReset={() => field.onChange("")}

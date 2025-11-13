@@ -16,11 +16,6 @@ const nextConfig = {
 
     i18n,
 
-    sentry: {
-        disableServerWebpackPlugin: true,
-        disableClientWebpackPlugin: true,
-    },
-
     images: {
         minimumCacheTTL: 60, // 1 minute
         remotePatterns: [
@@ -42,4 +37,7 @@ const nextConfig = {
     },
 };
 
-module.exports = withSentryConfig(nextConfig);
+module.exports = withSentryConfig(nextConfig, {
+    disableServerWebpackPlugin: true,
+    disableClientWebpackPlugin: true,
+});

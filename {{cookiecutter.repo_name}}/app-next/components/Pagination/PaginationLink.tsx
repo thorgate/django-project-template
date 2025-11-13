@@ -20,7 +20,7 @@ export const PaginationLink = ({
                 "bg-white hover:bg-gray-50 dark:bg-slate-500 dark:hover:bg-slate-600 text-gray-900 dark:text-gray-100 focus-visible:outline-offset-0",
             !onClick &&
                 "bg-gray-200 dark:bg-slate-900 text-gray-500 dark:text-gray-300",
-            className
+            className,
         )}
         {...rest}
     >

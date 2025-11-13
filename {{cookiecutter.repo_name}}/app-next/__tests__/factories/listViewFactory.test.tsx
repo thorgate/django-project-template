@@ -52,8 +52,7 @@ const [UserListComponent, getExtraProps] = listPageFactory<
             defaultValue: null,
             isFilter: true,
             api: {
-                key: "isActive",
-                serializer: (v) => v ?? undefined,
+                serializer: (v) => ({ isActive: v ?? undefined }),
             },
             url: {
                 key: "isActive",
@@ -82,8 +81,8 @@ describe("listPageFactory", () => {
 
         await waitFor(() =>
             expect(
-                screen.getByTestId("user-list").children.length
-            ).toBeGreaterThan(0)
+                screen.getByTestId("user-list").children.length,
+            ).toBeGreaterThan(0),
         );
     });
     it("creates proper server side preloader", async () => {
@@ -93,11 +92,11 @@ describe("listPageFactory", () => {
         render(
             <Provider store={store}>
                 <UserListComponent />
-            </Provider>
+            </Provider>,
         );
 
         expect(screen.getByTestId("user-list").children.length).toBeGreaterThan(
-            0
+            0,
         );
     });
 });

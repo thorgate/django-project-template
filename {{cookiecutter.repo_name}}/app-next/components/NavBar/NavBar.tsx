@@ -1,10 +1,11 @@
+import * as React from "react";
 import clsx from "clsx";
-import { ReactNode } from "react";
 import Link from "next/link";
 
 export interface NavItem {
     label: string;
     href: string;
+    className?: string;
 }
 
 export interface NavBarProps {
@@ -12,24 +13,32 @@ export interface NavBarProps {
 
     navItems: NavItem[];
 
-    children?: ReactNode;
+    children?: React.ReactNode;
 }
 
 export function NavBar({ className, navItems, children }: NavBarProps) {
+    const [isOpen, setIsOpen] = React.useState(false);
+    const onToggleDropdown = React.useCallback(() => {
+        setIsOpen((current) => !current);
+    }, []);
+    const onCloseDropdown = React.useCallback(() => {
+        setIsOpen(false);
+    }, []);
+
     return (
         <nav
             className={clsx(
-                "fixed top-0 left-0 z-50 w-full h-16 bg-white dark:bg-slate-800 shadow-lg border-b border-blue-400 dark:border-blue-600",
-                className
+                "fixed top-0 left-0 z-50 w-full h-16 text-white",
+                className,
             )}
         >
-            <div className="w-full flex items-center justify-between mt-0 px-6 py-2">
+            <div className="w-full flex items-center justify-between mt-0 px-6 pt-1 pb-2 flex-wrap md:flex-nowrap border-t bg-brand-muted border-brand-muted">
                 <label
-                    htmlFor="menu-toggle"
                     className="cursor-pointer md:hidden block"
+                    onClick={onToggleDropdown}
                 >
                     <svg
-                        className="fill-current text-blue-600 dark:text-blue-400"
+                        className="fill-current text-brand-light"
                         xmlns="http://www.w3.org/2000/svg"
                         width="20"
                         height="20"
@@ -39,16 +48,27 @@ export function NavBar({ className, navItems, children }: NavBarProps) {
                         <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"></path>
                     </svg>
                 </label>
-                <input className="hidden" type="checkbox" id="menu-toggle" />
 
-                <div className="hidden md:flex md:items-center md:w-auto w-full order-3 md:order-1">
+                <div
+                    className={clsx(
+                        "md:flex md:items-center md:w-auto w-full order-3 md:order-1",
+                        {
+                            hidden: !isOpen,
+                            flex: isOpen,
+                        },
+                    )}
+                >
                     <nav>
-                        <ul className="md:flex items-center justify-between text-base text-blue-600 dark:text-blue-400 pt-3 md:pt-0">
+                        <ul className="md:flex items-center justify-between text-base text-white pt-3 md:pt-0">
                             {navItems.map((item) => (
                                 <li key={item.href}>
                                     <Link
-                                        className="nav-link inline-block no-underline hover:text-black dark:hover:text-white font-medium text-lg py-2 px-3 lg:-ml-2"
+                                        className={clsx(
+                                            "nav-link inline-block no-underline text-white hover:text-brand-primary hover:bg-brand-muted-dark font-light py-2 px-3 uppercase",
+                                            item.className,
+                                        )}
                                         href={item.href}
+                                        onClick={onCloseDropdown}
                                     >
                                         {item.label}
                                     </Link>

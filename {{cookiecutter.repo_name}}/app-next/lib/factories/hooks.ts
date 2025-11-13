@@ -8,39 +8,30 @@ import {
     ErrorOption,
 } from "react-hook-form";
 import type { UseFormReturn } from "react-hook-form";
-import { EndpointDefinitions } from "@reduxjs/toolkit/dist/query/endpointDefinitions";
-
-import { MutationDefinition } from "@reduxjs/toolkit/query";
-import { ApiEndpointMutation } from "@reduxjs/toolkit/dist/query/core/module";
-import { MutationHooks } from "@reduxjs/toolkit/dist/query/react/buildHooks";
 import { SerializedError } from "@reduxjs/toolkit";
-import { BaseQueryError } from "@reduxjs/toolkit/dist/query/baseQueryTypes";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query/react";
+
 import {
     extractErrorData,
     useExtractNonFieldError,
     isRecord,
 } from "@lib/convertError";
-import { baseQuery } from "@lib/queries/baseQueriesApi";
-import { BaseItemType, BaseQueryArgType } from "@lib/factories/types";
+import {
+    APIMutation,
+    BaseItemType,
+    BaseQueryArgType,
+} from "@lib/factories/types";
 
-export type ApiError =
-    | SerializedError
-    | Exclude<BaseQueryError<typeof baseQuery>, undefined>;
+export type ApiError = SerializedError | FetchBaseQueryError;
 
 export type OnError = (error: ApiError) => void;
 
 export interface UseAPIBasedFormProps<
     ItemType extends BaseItemType,
     QueryArgType extends BaseQueryArgType,
-    TFieldValues extends FieldValues
+    TFieldValues extends FieldValues,
 > {
-    endpoint: ApiEndpointMutation<
-        MutationDefinition<QueryArgType, typeof baseQuery, string, ItemType>,
-        EndpointDefinitions
-    > &
-        MutationHooks<
-            MutationDefinition<QueryArgType, typeof baseQuery, string, ItemType>
-        >;
+    endpoint: APIMutation<QueryArgType, ItemType>;
     makeQueryArgs: (values: TFieldValues) => QueryArgType;
     onSuccess?: (result: ItemType) => void;
     resetOnSuccess?: boolean;
@@ -55,24 +46,16 @@ export interface UseAPIBasedFormResult<TFieldValues extends FieldValues>
 }
 
 export const isMutationResultError = (
-    result: unknown
+    result: unknown,
 ): result is {
-    error:
-        | SerializedError
-        | Exclude<BaseQueryError<typeof baseQuery>, undefined>;
+    error: ApiError;
 } => isRecord(result) && result.hasOwnProperty("error");
-
-const hasSubErrorsField = (
-    data: unknown
-): data is { errors: unknown } => (
-    isRecord(data) && data.hasOwnProperty("errors") && !!(data as { errors: unknown }).errors
-);
 
 export const extractErrorsRecursively = <T>(
     referenceValue: unknown,
     errors: unknown,
     setError: (path: Path<T>, error: ErrorOption) => void,
-    currentPath: Path<T>
+    currentPath: Path<T>,
 ): void => {
     const pathPrefix = currentPath === "root" ? "" : `${currentPath}.`;
     if (Array.isArray(referenceValue) && Array.isArray(errors)) {
@@ -81,8 +64,8 @@ export const extractErrorsRecursively = <T>(
                 referenceValue[index],
                 error,
                 setError,
-                `${pathPrefix}${index}` as Path<T>
-            )
+                `${pathPrefix}${index}` as Path<T>,
+            ),
         );
     } else if (isRecord(referenceValue) && isRecord(errors)) {
         Object.entries(errors).forEach(([key, value]) =>
@@ -90,8 +73,8 @@ export const extractErrorsRecursively = <T>(
                 referenceValue[key],
                 value,
                 setError,
-                `${pathPrefix}${key}` as Path<T>
-            )
+                `${pathPrefix}${key}` as Path<T>,
+            ),
         );
     } else {
         setError(currentPath, { message: extractErrorData(errors) });
@@ -103,7 +86,7 @@ const defaultFormProps = {};
 export const useApiBasedForm = <
     ItemType extends BaseItemType,
     QueryArgType extends BaseQueryArgType,
-    TFieldValues extends FieldValues
+    TFieldValues extends FieldValues,
 >({
     endpoint,
     makeQueryArgs,
@@ -155,7 +138,7 @@ export const useApiBasedForm = <
                     return;
                 }
 
-                extractErrorsRecursively(value, hasSubErrorsField(data) ? data.errors : data, setError, "root");
+                extractErrorsRecursively(value, data, setError, "root");
             });
         },
         [
@@ -167,11 +150,11 @@ export const useApiBasedForm = <
             extractNonFieldError,
             makeQueryArgs,
             trigger,
-        ]
+        ],
     );
     const handleSubmit = React.useMemo<() => void>(
         () => handleFormSubmit(onSubmit),
-        [handleFormSubmit, onSubmit]
+        [handleFormSubmit, onSubmit],
     );
 
     return {
@@ -192,6 +175,6 @@ export const useLoadingFallbackValueLabel = () => {
             label: t("common:errors.loading"),
             needsRefreshFromApi: true,
         }),
-        [t]
+        [t],
     );
 };
