@@ -12,55 +12,7 @@ else:
     _SerializerMixinBase = object
 
 
-class ModelSerializerForRequestSchemaMixin(_SerializerMixinBase):
-    view_name = ""
-
-    def get_fields(self):
-        fields = super().get_fields().copy()
-        read_only_field_names = []
-
-        for field_name, field in fields.items():
-            if field.read_only:
-                read_only_field_names.append(field_name)
-
-            elif isinstance(field, ForRequestSchemaSerializerMixin):
-                fields[field_name] = field.for_request_schema(
-                    view_name=self.view_name
-                )()
-
-            elif isinstance(field, serializers.ListSerializer) and isinstance(
-                field.child, ForRequestSchemaSerializerMixin
-            ):
-                fields[field_name] = field.child.for_request_schema(
-                    view_name=self.view_name
-                )(many=True)
-
-        for field_name in read_only_field_names:
-            del fields[field_name]
-
-        return fields
-
-
-class ForRequestSchemaSerializerMixin(_SerializerMixinBase):
-    request_schemas: dict[str, t.Type] = {}
-
-    @classmethod
-    def for_request_schema(cls, view_name=""):
-        base_name = cls.__name__.replace("Serializer", "")
-        final_name = f"{base_name}{view_name}Serializer"
-        if final_name in cls.request_schemas:
-            return cls.request_schemas[final_name]
-
-        request_serializer = type(
-            final_name,
-            (ModelSerializerForRequestSchemaMixin, cls),
-            {"view_name": view_name},
-        )
-        cls.request_schemas[final_name] = request_serializer
-        return cls.request_schemas[final_name]
-
-
-class ModelSerializerMixin(ForRequestSchemaSerializerMixin):
+class ModelSerializerMixin(_SerializerMixinBase):
     exclude_updated_timestamp = False
     exclude_created_timestamp = False
 
@@ -69,7 +21,7 @@ class ModelSerializerMixin(ForRequestSchemaSerializerMixin):
 
     def get_field_names(self, declared_fields, info):
         field_names = list(super().get_field_names(declared_fields, info))
-        model = getattr(self.Meta, "model")
+        model = self.Meta.model
 
         if not issubclass(model, BaseModel):
             return field_names
@@ -101,7 +53,7 @@ class ModelSerializerMixin(ForRequestSchemaSerializerMixin):
     def get_extra_kwargs(self):
         extra_kwargs = super().get_extra_kwargs()
 
-        model = getattr(self.Meta, "model")
+        model = self.Meta.model
 
         if not issubclass(model, BaseModel):
             return extra_kwargs

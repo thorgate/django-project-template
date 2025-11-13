@@ -52,11 +52,14 @@ class CustomUserAdmin(UserAdmin):
         (None, {"classes": ("wide",), "fields": ("email", "password1", "password2")}),
     )
     list_display = ("id", "email", "name", "is_staff")
-    search_fields = ("email", "name")
+    search_fields = ("email_deterministic", "name")
     ordering = ("email",)
 
     form = UserChangeForm
     add_form = UserCreationForm
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).with_deterministic_email()
 
 
 with contextlib.suppress(admin.sites.NotRegistered):
