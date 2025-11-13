@@ -5,11 +5,11 @@ import {
 } from "@lib/factories/types";
 
 export const defaultURLParameterQueryExtractor = (
-    queryValues: Array<string>
+    queryValues: Array<string>,
 ): string => queryValues.join(",");
 
 export const defaultURLParameterQuerySerializer = (
-    value: unknown
+    value: unknown,
 ): string[] => [`${value}`];
 
 export const booleanQueryParameterExtractor = (value: string[]) => {
@@ -28,7 +28,7 @@ export const booleanQueryParameterExtractor = (value: string[]) => {
 
 export const makeArrayQueryParameterExtractor =
     <T>(
-        childExtractor: (value: string[]) => T | undefined
+        childExtractor: (value: string[]) => T | undefined,
     ): ((value: string[]) => T[] | undefined) =>
     (value: string[]) => {
         if (value.length === 0) {
@@ -42,7 +42,7 @@ export const makeArrayQueryParameterExtractor =
                 if (convertedSubItem !== undefined) {
                     results.push(convertedSubItem);
                 }
-            })
+            }),
         );
 
         return results;
@@ -55,7 +55,7 @@ export const booleanArrayQueryParameterExtractor =
     makeArrayQueryParameterExtractor(booleanQueryParameterExtractor);
 
 export const normalizeQueryValue = (
-    value: string | string[] | undefined
+    value: string | string[] | undefined,
 ): string[] | undefined =>
     (value && typeof value !== "string" && value) ||
     (value !== undefined && [value]) ||
@@ -65,7 +65,7 @@ export const baseParseQueryParameters = <QueryArgType extends BaseQueryArgType>(
     query: ReturnType<typeof useRouter>["query"],
     parameters:
         | Array<URLParameterSpecification<QueryArgType, keyof QueryArgType>>
-        | undefined
+        | undefined,
 ): QueryArgType => {
     /* This function is used internally in list and detail view factories to parse parameters from URL based on
      * specification passed into the view factory and into query parameters for respective endpoint. It handles
@@ -76,12 +76,12 @@ export const baseParseQueryParameters = <QueryArgType extends BaseQueryArgType>(
     if (parameters) {
         parameters.forEach((parameter) => {
             const routeQueryArg = String(
-                parameter.routeQueryArg ?? parameter.queryArg
+                parameter.routeQueryArg ?? parameter.queryArg,
             );
 
             // Take all values for this parameter from URL
             const values: Array<string> | undefined = normalizeQueryValue(
-                query[routeQueryArg]
+                query[routeQueryArg],
             );
 
             // Use explicitly provided extractor function to convert array of strings coming from URL parameters
@@ -90,7 +90,7 @@ export const baseParseQueryParameters = <QueryArgType extends BaseQueryArgType>(
             const extractorFn =
                 parameter.queryExtractor ??
                 (defaultURLParameterQueryExtractor as unknown as (
-                    values: Array<string>
+                    values: Array<string>,
                 ) => QueryArgType[typeof parameter.queryArg]);
 
             const convertedValue:

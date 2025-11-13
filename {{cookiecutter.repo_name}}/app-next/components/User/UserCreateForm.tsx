@@ -4,14 +4,16 @@ import { useTranslation } from "next-i18next";
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 import { UseAPIBasedFormResult } from "@lib/factories/hooks";
-import { UserCreate } from "@lib/queries";
+import { UserCreateRequest } from "@lib/queries";
 
 export interface UserCreateFormProps {
     title: string;
     onCancel: () => void;
-    form: UseAPIBasedFormResult<UserCreate & {
-        passwordConfirm: string;
-    }>;
+    form: UseAPIBasedFormResult<
+        UserCreateRequest & {
+            passwordConfirm: string;
+        }
+    >;
 }
 
 export const UserCreateForm = ({
@@ -83,7 +85,7 @@ export const UserCreateForm = ({
                                     validate: (val: string) => {
                                         if (watch("password") != val) {
                                             return t(
-                                                "user:error.passwordsDoNotMatch"
+                                                "user:error.passwordsDoNotMatch",
                                             );
                                         }
                                     },

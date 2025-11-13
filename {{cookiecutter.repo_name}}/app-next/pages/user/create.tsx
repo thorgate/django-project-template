@@ -8,7 +8,7 @@ import {
     queriesApi,
     UserCreateApiArg,
     UserCreateApiResponse,
-    UserCreate,
+    UserCreateRequest,
     UserDetail,
 } from "@lib/queries";
 
@@ -30,11 +30,11 @@ export const getServerSideProps = wrapper.getServerSideProps(
                 session,
             },
         };
-    }
+    },
 );
 
-const makeQueryArgs = (values: UserCreate): UserCreateApiArg => ({
-    userCreate: values,
+const makeQueryArgs = (values: UserCreateRequest): UserCreateApiArg => ({
+    userCreateRequest: values,
 });
 
 const UserCreate = () => {
@@ -45,13 +45,13 @@ const UserCreate = () => {
             toast.success(t("user:created", { name: user.name }));
             router.push("/users");
         },
-        [t, router]
+        [t, router],
     );
     const onCancel = React.useCallback(() => router.push("/users"), [router]);
     const form = useApiBasedForm<
         UserCreateApiResponse,
         UserCreateApiArg,
-        UserCreate & { passwordConfirm: string }
+        UserCreateRequest & { passwordConfirm: string }
     >({
         endpoint: queriesApi.endpoints.userCreate,
         makeQueryArgs,
@@ -62,8 +62,8 @@ const UserCreate = () => {
         <>
             <Head>
                 <title>{`${t(
-                    "common:pageTitles.userCreate"
-                )} - {{ cookiecutter.project_title }}`}</title>
+                    "common:pageTitles.userCreate",
+                )} - Cumberland Recycling`}</title>
             </Head>
             <UserCreateForm
                 title={t("user:titleCreate")}

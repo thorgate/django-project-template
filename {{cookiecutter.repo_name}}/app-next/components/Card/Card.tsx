@@ -11,7 +11,7 @@ export function Card({ children, className }: CardProps) {
         <div
             className={clsx(
                 "bg-white dark:bg-slate-700 shadow w-full rounded-lg divide-y divide-gray-200",
-                className
+                className,
             )}
         >
             {children}

@@ -38,7 +38,7 @@ export const makeStore = ({
                         collapsed: true,
                         duration: true,
                         logger: console,
-                    }) as Middleware
+                    }) as Middleware,
                 );
             }
 

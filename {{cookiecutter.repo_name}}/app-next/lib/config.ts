@@ -13,28 +13,31 @@ function isBrowser() {
 function getFiltered() {
     return Object.keys(process.env)
         .filter((key) => new RegExp(`^${prefix}_`, "i").test(key))
-        .reduce((env, key) => {
-            env[key] = process.env[key];
-            return env;
-        }, {} as Record<string, string | undefined>);
+        .reduce(
+            (env, key) => {
+                env[key] = process.env[key];
+                return env;
+            },
+            {} as Record<string, string | undefined>,
+        );
 }
 
 export function parseValue(
     value: string | undefined,
-    type: "string"
+    type: "string",
 ): string | undefined;
 export function parseValue(
     value: string | undefined,
-    type: "number"
+    type: "number",
 ): number | undefined;
 export function parseValue(
     value: string | undefined,
-    type: "boolean"
+    type: "boolean",
 ): boolean | undefined;
 
 export function parseValue(
     value: string | undefined,
-    type: "string" | "number" | "boolean" = "string"
+    type: "string" | "number" | "boolean" = "string",
 ) {
     if (type === "number") {
         return Number(value);
@@ -51,12 +54,12 @@ export default function config(key: string): string | undefined;
 export default function config(key: string, type: "number"): number | undefined;
 export default function config(
     key: string,
-    type: "boolean"
+    type: "boolean",
 ): boolean | undefined;
 export default function config(): Record<string, string | undefined>;
 export default function config(
     key = "",
-    type?: "string" | "number" | "boolean"
+    type?: "string" | "number" | "boolean",
 ) {
     const safeKey = `${prefix}_${key}`;
 
@@ -84,3 +87,6 @@ export default function config(
 
     return isBrowser() ? window.__ENV : getFiltered();
 }
+
+// Keep consistent with next-i18next.config.js
+export const defaultLocale = "en";

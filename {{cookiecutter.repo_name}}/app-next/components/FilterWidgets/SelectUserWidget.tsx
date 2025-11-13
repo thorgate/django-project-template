@@ -27,10 +27,6 @@ const SelectUser = apiSelectWithLoadInitialValueFactory<
     retrieveEndpoint: queriesApi.endpoints.userList,
     getSearchQueryArgs: (query) => ({ search: query }),
     getOptionForItem,
-    extraComboboxBodyProps: {
-        allowWrap: false,
-        displaySelectedSeparately: false,
-    },
     initialValueRetrieveEndpoint: queriesApi.endpoints.userRetrieve,
     getInitialValueQueryArgs: (value) => ({ email: value || "" }),
 });
@@ -45,7 +41,7 @@ export const SelectUserWidget: React.FC<WidgetProps<string>> = ({
         (value: string | null) => {
             outerOnChange(value ?? "");
         },
-        [outerOnChange]
+        [outerOnChange],
     );
 
     const selectProps = React.useMemo(
@@ -54,7 +50,7 @@ export const SelectUserWidget: React.FC<WidgetProps<string>> = ({
             label,
             onReset,
         }),
-        [onReset, label]
+        [onReset, label],
     );
     const fallbackValueLabel = useLoadingFallbackValueLabel();
 

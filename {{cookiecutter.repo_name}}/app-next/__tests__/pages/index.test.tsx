@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import Home from "@/pages/index";
 import { ProvidersWrapper } from "@lib/testUtils";
-import { server } from "@mock/api/server";
+import { server } from "@mock/api/node";
 
 describe("Home", () => {
     it("renders a heading", () => {

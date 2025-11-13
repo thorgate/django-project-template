@@ -29,7 +29,7 @@ export function LanguageSwitcher() {
             await router.push(path, path, { locale });
             router.reload();
         },
-        [router]
+        [router],
     );
 
     const languageChanged = useCallback(
@@ -38,7 +38,7 @@ export function LanguageSwitcher() {
 
             await switchToLocale(option);
         },
-        [switchToLocale]
+        [switchToLocale],
     );
 
     return (
@@ -59,7 +59,7 @@ export function LanguageSwitcher() {
                         <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md py-1 text-base shadow-lg ring-1 ring-opacity-5 sm:text-sm text-black dark:text-white outline-none bg-slate-50 dark:bg-slate-600 ring-slate-300 dark:ring-slate-700">
                             {locales.map((locale) => {
                                 const label = capitalize(
-                                    languageNames.of(locale) ?? locale
+                                    languageNames.of(locale) ?? locale,
                                 );
 
                                 return (
@@ -71,7 +71,7 @@ export function LanguageSwitcher() {
                                                 active
                                                     ? "bg-indigo-600 text-white"
                                                     : "text-gray-900 dark:text-gray-300",
-                                                "relative cursor-default select-none py-2 pl-3 pr-9"
+                                                "relative cursor-default select-none py-2 pl-3 pr-9",
                                             )
                                         }
                                     >
@@ -83,7 +83,7 @@ export function LanguageSwitcher() {
                                                             "font-semibold",
                                                         !selected &&
                                                             "font-normal",
-                                                        "block truncate"
+                                                        "block truncate",
                                                     )}
                                                 >
                                                     {label}

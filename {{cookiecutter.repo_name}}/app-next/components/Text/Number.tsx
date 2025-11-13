@@ -1,27 +1,28 @@
 import * as React from "react";
 import numeral from "numeral";
-import "numeral/locales/et";
 import clsx from "clsx";
-
-numeral.locale("et");
 
 export interface NumberProps {
     children: number | string | undefined | null;
     decimalPlaces?: number;
     className?: string;
+    prefix?: React.ReactNode;
+    suffix?: React.ReactNode;
 }
 
 export const makeNumeralNumber = (value: number | string | undefined | null) =>
     numeral(
         String(value ?? "0")
-            .replace(".", ",")
-            .replace(" ", "")
+            .replace(",", "")
+            .replace(/\s+/g, ""),
     );
 
 export const Number: React.FC<NumberProps> = ({
     children: value,
     decimalPlaces = 2,
     className,
+    prefix,
+    suffix,
 }) => {
     const numberFormat = React.useMemo(() => {
         const decimalZeros = "0".repeat(decimalPlaces);
@@ -29,25 +30,26 @@ export const Number: React.FC<NumberProps> = ({
     }, [decimalPlaces]);
     const numeralNumber = React.useMemo(
         () => makeNumeralNumber(value),
-        [value]
+        [value],
     );
     const displayValue = React.useMemo(
         () => numeralNumber.format(numberFormat),
-        [numeralNumber, numberFormat]
+        [numeralNumber, numberFormat],
     );
 
     if (value === null || value === undefined) {
         return null;
     }
 
-    // eslint-disable-next-line react/jsx-no-useless-fragment
     return (
         <span
             className={clsx(className, {
                 "text-gray-400": numeralNumber.value() == 0,
             })}
         >
+            {prefix ?? null}
             {displayValue}
+            {suffix ?? null}
         </span>
     );
 };

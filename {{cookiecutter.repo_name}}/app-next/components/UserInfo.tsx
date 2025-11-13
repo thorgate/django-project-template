@@ -10,7 +10,7 @@ export const UserInfo = () => {
 
     const { data, status, requestId, error } = useUserMeRetrieveQuery(
         // Re-fetch the query every time the counter changes - this is useful currently for debugging token expiry
-        (count ? count : undefined) as unknown as void
+        (count ? count : undefined) as unknown as void,
     );
 
     return (

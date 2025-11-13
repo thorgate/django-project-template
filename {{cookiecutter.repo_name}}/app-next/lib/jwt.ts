@@ -2,7 +2,7 @@ import * as jose from "jose";
 import config from "@lib/config";
 
 export const verifyToken = async (
-    token?: string | null
+    token?: string | null,
 ): Promise<jose.JWTPayload | false> => {
     try {
         const key = config("JWT_PUBLIC_KEY");
@@ -17,13 +17,13 @@ export const verifyToken = async (
         });
 
         return payload;
-    } catch (e) {
+    } catch {
         return false;
     }
 };
 
 export function getExpirationDate(
-    payload: jose.JWTPayload | false
+    payload: jose.JWTPayload | false,
 ): number | undefined | false {
     if (!payload) {
         return false;

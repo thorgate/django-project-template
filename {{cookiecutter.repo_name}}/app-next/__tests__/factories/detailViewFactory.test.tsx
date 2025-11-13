@@ -31,7 +31,7 @@ describe("detailViewFactory", () => {
         });
 
         await waitFor(() =>
-            expect(screen.getByTestId("email")).toBeInTheDocument()
+            expect(screen.getByTestId("email")).toBeInTheDocument(),
         );
     });
     it("creates proper server side preloader", async () => {
@@ -41,7 +41,7 @@ describe("detailViewFactory", () => {
         render(
             <Provider store={store}>
                 <UserDetailComponent />
-            </Provider>
+            </Provider>,
         );
 
         expect(screen.getByTestId("email")).toBeInTheDocument();

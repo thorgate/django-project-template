@@ -16,7 +16,7 @@ interface Option<T> {
 
 interface StyledListBoxProps<T> {
     options: Option<T>[];
-    selectedOption: Option<T> | null;
+    selectedOption: Option<T> | undefined;
     onChange: (option: Option<T>) => void;
     onReset: (event: React.MouseEvent<HTMLButtonElement>) => void;
     label?: React.ReactNode;
@@ -54,7 +54,7 @@ export const StyledListBox = <T,>({
                                 !disabled && "bg-white dark:bg-slate-800",
                                 error && "ring-red-500",
                                 !error && "ring-slate-300 dark:ring-slate-700",
-                                !allowClear && "rounded-r-md"
+                                !allowClear && "rounded-r-md",
                             )}
                         >
                             <span className="block truncate">
@@ -87,7 +87,7 @@ export const StyledListBox = <T,>({
                                                 active
                                                     ? "bg-indigo-600 text-white"
                                                     : "text-gray-900 dark:text-white",
-                                                "relative cursor-default select-none py-2 pl-3 pr-9"
+                                                "relative cursor-default select-none py-2 pl-3 pr-9",
                                             )
                                         }
                                         value={option}
@@ -99,7 +99,7 @@ export const StyledListBox = <T,>({
                                                         selected
                                                             ? "font-semibold"
                                                             : "font-normal",
-                                                        "block truncate"
+                                                        "block truncate",
                                                     )}
                                                 >
                                                     {option.label}
@@ -111,7 +111,7 @@ export const StyledListBox = <T,>({
                                                             active
                                                                 ? "text-white"
                                                                 : "text-indigo-600",
-                                                            "absolute inset-y-0 right-0 flex items-center pr-4"
+                                                            "absolute inset-y-0 right-0 flex items-center pr-4",
                                                         )}
                                                     >
                                                         <CheckIcon
@@ -138,7 +138,7 @@ export const StyledListBox = <T,>({
                                     !disabled && "bg-white dark:bg-slate-800",
                                     error && "ring-red-500",
                                     !error &&
-                                        "ring-slate-300 dark:ring-slate-700"
+                                        "ring-slate-300 dark:ring-slate-700",
                                 )}
                                 onClick={onReset}
                             >

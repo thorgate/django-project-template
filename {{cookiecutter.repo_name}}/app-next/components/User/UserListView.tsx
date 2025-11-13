@@ -37,7 +37,7 @@ export const UserListView = ({
                         : `${fieldName}Asc`,
             });
         },
-        [pageState.sort, setPageState]
+        [pageState.sort, setPageState],
     );
 
     const getIsSortActiveForColumn = React.useCallback(
@@ -47,13 +47,15 @@ export const UserListView = ({
                 pageState.sort === `${fieldName}Desc`
             );
         },
-        [pageState.sort]
+        [pageState.sort],
     );
 
     return (
         <>
             <Head>
-                <title>{`${t("common:pageTitles.userList")} - RainPaul`}</title>
+                <title>{`${t(
+                    "common:pageTitles.userList",
+                )} - {{ cookiecutter.project_title }}`}</title>
             </Head>
             <div className="px-4 sm:px-6 lg:px-8 pt-1 mt-3 bg-white dark:bg-slate-900 text-black dark:text-white ">
                 <div className="mt-8 flow-root">
@@ -77,7 +79,7 @@ export const UserListView = ({
                                                 }
                                                 label={t("user:name")}
                                                 isActive={getIsSortActiveForColumn(
-                                                    "name"
+                                                    "name",
                                                 )}
                                             />
                                         </th>
@@ -91,7 +93,7 @@ export const UserListView = ({
                                                 }
                                                 label={t("user:email")}
                                                 isActive={getIsSortActiveForColumn(
-                                                    "email"
+                                                    "email",
                                                 )}
                                             />
                                         </th>
@@ -111,7 +113,7 @@ export const UserListView = ({
                                                 }
                                                 label={t("user:dateJoined")}
                                                 isActive={getIsSortActiveForColumn(
-                                                    "creationTime"
+                                                    "creationTime",
                                                 )}
                                             />
                                         </th>

@@ -5,9 +5,9 @@ import { useRouter } from "next/router";
 import { useTranslation } from "next-i18next";
 import { toast } from "react-toastify";
 import {
+    PatchedUserDetailRequest,
     queriesApi,
     UserDetail,
-    PatchedUserDetail,
     UserPartialUpdateApiArg,
 } from "@lib/queries";
 
@@ -24,21 +24,21 @@ export const UserDetailView = ({
     const onSuccess = React.useCallback(
         (user: UserDetail) => {
             toast.success(t("user:updated", { name: user.name }));
-            router.push("/users");
+            void router.push("/users");
         },
-        [t, router]
+        [t, router],
     );
     const onCancel = React.useCallback(() => router.push("/users"), [router]);
     const makeQueryArgs = React.useCallback(
-        (values: PatchedUserDetail): UserPartialUpdateApiArg => ({
+        (values: PatchedUserDetailRequest): UserPartialUpdateApiArg => ({
             email: user.email,
-            patchedUserDetail: values,
+            patchedUserDetailRequest: values,
         }),
-        [user.email]
+        [user.email],
     );
     const formProps = React.useMemo(
         () => ({ defaultValues: { name: user.name } }),
-        [user.name]
+        [user.name],
     );
     const form = useApiBasedForm({
         endpoint: queriesApi.endpoints.userPartialUpdate,

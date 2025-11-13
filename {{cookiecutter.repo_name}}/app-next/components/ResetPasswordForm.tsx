@@ -34,9 +34,9 @@ export const ResetPasswordForm = ({
             {errors?.root?.message ? (
                 <p className="text-red-500 text-xs">{errors?.root?.message}</p>
             ) : null}
-            {errors?.uidAndTokenEncoded?.message ? (
+            {errors?.uidAndTokenB64?.message ? (
                 <p className="text-red-500 text-xs">
-                    {errors?.uidAndTokenEncoded?.message}
+                    {errors?.uidAndTokenB64?.message}
                 </p>
             ) : null}
 
@@ -67,7 +67,7 @@ export const ResetPasswordForm = ({
             <input
                 type="hidden"
                 value={token}
-                {...register("uidAndTokenEncoded")}
+                {...register("uidAndTokenB64")}
             />
 
             <Button type="submit" disabled={isLoading}>

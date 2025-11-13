@@ -1,7 +1,7 @@
 3c3
 <  * Feel free to commit/edit it as you need.
 ---
->  * Run `make api` to re-generate.
+>  * Run `make generate-api-mock` to re-generate.
 8a9
 > import { resolveBaseUrl } from "@lib/utils";
 12c13

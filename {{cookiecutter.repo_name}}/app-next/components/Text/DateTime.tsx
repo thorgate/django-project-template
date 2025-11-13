@@ -12,15 +12,13 @@ export interface DateTimeProps {
 }
 
 // en-IE uses D/M/Y format and is in english, so it is somewhat suitable for international use in Europe for dates
-export const defaultLocale = "en-IE";
-export const defaultTimezone = "Europe/Tallinn";
+export const defaultLocale = "en-US";
+export const defaultTimezone = "America/Indiana/Knox";
 export const languageLocaleMap = {
-    en: "en-IE",
-    et: "et-EE",
+    en: "en-US",
 } as Record<string, string>;
 export const languageLocaleMapDateFns = {
     en: enIE,
-    et: et,
 } as Record<string, typeof enIE | typeof et>;
 export const defaultDateFnsLocale = enIE;
 
@@ -47,14 +45,35 @@ export const DateTime = ({
     timeZone = defaultTimezone,
 }: DateTimeProps) => {
     const { i18n } = useTranslation();
-    const value = React.useMemo(
-        () => (typeof children === "string" ? new Date(children) : children),
-        [children]
-    );
+    const value = React.useMemo(() => {
+        if (typeof children !== "string") {
+            return children;
+        }
+        if (children.length === 8 && !date) {
+            return new Date(`1970-01-01T${children}`);
+        }
+        if (children.length === 10 && !time) {
+            return new Date(`${children}T00:00:00.000Z`);
+        }
+        return new Date(children);
+    }, [date, time, children]);
+    const dateTime = React.useMemo(() => {
+        try {
+            if (!date && time) {
+                return value.toISOString().slice(10);
+            }
+            if (!time && date) {
+                return value.toISOString().slice(0, 10);
+            }
+            return value.toISOString();
+        } catch {
+            return "";
+        }
+    }, [date, time, value]);
     const locale = React.useMemo(
         () =>
             localeOverride || languageLocaleMap[i18n.language] || defaultLocale,
-        [localeOverride, i18n]
+        [localeOverride, i18n],
     );
 
     if (time && date) {
@@ -63,7 +82,7 @@ export const DateTime = ({
          * on server side there is no `,`. To avoid different rendering in SSR and locally, construct date
          * and time from separate components. */
         return (
-            <time dateTime={value.toISOString()}>
+            <time dateTime={dateTime}>
                 {value.toLocaleDateString(locale, {
                     ...defaultDateOptions,
                     timeZone,
@@ -78,7 +97,7 @@ export const DateTime = ({
 
     if (time) {
         return (
-            <time dateTime={value.toISOString()}>
+            <time dateTime={dateTime}>
                 {value.toLocaleTimeString(locale, {
                     ...defaultTimeOptions,
                     timeZone,
@@ -89,7 +108,7 @@ export const DateTime = ({
 
     if (date) {
         return (
-            <time dateTime={value.toISOString()}>
+            <time dateTime={dateTime}>
                 {value.toLocaleDateString(locale, {
                     ...defaultDateOptions,
                     timeZone,
@@ -101,6 +120,20 @@ export const DateTime = ({
     return null;
 };
 
+/* To avoid timezone conversion to screw the date over, pass it in UTC and display it in UTC. Otherwise
+ * (if just YYYY-MM-DD is passed) the date will be parsed as local time of user's browser, and
+ * then adjusted to whatever target timezone is. */
+export const FormattedDate = ({
+    children,
+    locale,
+}: Pick<DateTimeProps, "locale"> & { children: string }) => (
+    <DateTime
+        time={false}
+        locale={locale}
+        timeZone="UTC"
+    >{`${children}T00:00:00.000Z`}</DateTime>
+);
+
 export interface MonthNameProps {
     month: number;
     locale?: typeof enIE | typeof et;
@@ -111,7 +144,7 @@ const capitalizeFirstLetter = (s: string): string => {
 };
 
 export const useDateFnsLocale = (
-    localeOverride: typeof enIE | typeof et | undefined = undefined
+    localeOverride: typeof enIE | typeof et | undefined = undefined,
 ): typeof enIE | typeof et => {
     const { i18n } = useTranslation();
     const locale = React.useMemo(
@@ -119,7 +152,7 @@ export const useDateFnsLocale = (
             localeOverride ||
             languageLocaleMapDateFns[i18n.language] ||
             defaultDateFnsLocale,
-        [localeOverride, i18n]
+        [localeOverride, i18n],
     );
     return locale;
 };
@@ -160,7 +193,7 @@ export const WeekDayName: React.FunctionComponent<WeekDayName> = ({
             {capitalizeFirstLetter(
                 format(date, weekDayFormatMap[nameFormat], {
                     locale,
-                })
+                }),
             )}
         </>
     );

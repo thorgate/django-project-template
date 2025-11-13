@@ -1,5 +1,12 @@
-@import 'react-toastify/dist/ReactToastify.min.css';
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.clear-button {
+    @apply text-brand-primary bg-brand-danger-muted focus:outline-none ;
+    @apply transition-colors duration-100 ease-in-out;
+    @apply active:text-brand-primary-accent  active:bg-brand-disabled-light;
+    .clear-button-icon {
+        @apply aspect-square h-[1.15rem] mx-1 p-0;
+    }
+}

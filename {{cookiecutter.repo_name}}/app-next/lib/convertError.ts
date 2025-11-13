@@ -20,10 +20,18 @@ export const extractErrorData = (data: unknown): string => {
     }
 
     if (isRecord(data)) {
+        if (
+            typeof data.status === "number" &&
+            Math.floor(data.status / 100) === 4 &&
+            isRecord(data.data)
+        ) {
+            return extractErrorData(data.data);
+        }
+
         return extractErrorData(
             Object.entries(data).map(
-                ([key, value]) => `${key}: ${extractErrorData(value)}`
-            )
+                ([key, value]) => `${extractErrorData(value)} (${key})`,
+            ),
         );
     }
 
@@ -38,7 +46,7 @@ export const extractFieldError = (
         data?: unknown;
         message?: string;
     },
-    selector: (data: unknown) => unknown
+    selector: (data: unknown) => unknown,
 ): string | undefined => {
     if (!data) {
         return undefined;
@@ -71,7 +79,7 @@ export const extractNonFieldError = (
         message?: string;
     },
     fallbackWithCode: (code: number | string) => string,
-    fallback: string
+    fallback: string,
 ): string | undefined => {
     if (status && status !== 400) {
         return fallbackWithCode(status);
@@ -122,13 +130,13 @@ export const useExtractNonFieldError = () => {
                 data?: unknown;
                 message?: string;
             },
-            fallback: string | undefined = undefined
+            fallback: string | undefined = undefined,
         ): string | undefined =>
             extractNonFieldError(
                 { status, data, message },
                 (code) => t("errors.unexpectedErrorWithCode", { code }),
-                fallback || t("errors.unexpectedError")
+                fallback || t("errors.unexpectedError"),
             ),
-        [t]
+        [t],
     );
 };
