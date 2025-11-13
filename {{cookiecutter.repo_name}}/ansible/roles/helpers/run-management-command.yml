@@ -10,8 +10,23 @@
             django
   args:
       chdir: "{{ "{{ code_dir }}" }}"
+  when: "compose_command == 'docker-compose'"
   register: result
 
+- name: "Run manage.py {{ "{{ command_params | mandatory }}" }}"
+  command: >-
+            {{ "{{ compose_command }}" }}
+# - {% if cookiecutter.build_in_ci == NO %}
+            -f {{ "{{ compose_file "}} }}
+# - {% endif %}
+            run --rm
+            --entrypoint="''"
+            django
+            bash -c "python manage.py {{ "{{ command_params | mandatory }}" }}"
+  args:
+      chdir: "{{ "{{ code_dir }}" }}"
+  when: "compose_command != 'docker-compose'"
+  register: result
 
 - debug:
       var: result
