@@ -148,12 +148,12 @@ class BaseFilterSet(django_filters.FilterSet):
 
     @classmethod
     def filter_sort(cls, queryset, _, value):
-        method: None | t.Callable = getattr(
+        method: t.Callable[[models.QuerySet], models.QuerySet] | None = getattr(
             cls,
             f"sort_by_{value}",
             getattr(cls, f"sort_by_{camel_to_underscore(value)}", None),
         )
-        if method:
+        if method is not None:
             return method(queryset)
 
         name, order = cls.get_name_and_sorting_direction(value)
