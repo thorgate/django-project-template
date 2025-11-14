@@ -11,6 +11,11 @@ RUN mkdir -p $PYTHONPYCACHEPREFIX
 # Use non-interactive frontend for debconf
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 
+# Switch to archive apt repository for buster
+RUN sed -i s/deb.debian.org/archive.debian.org/g /etc/apt/sources.list
+RUN sed -i 's|security.debian.org|archive.debian.org|g' /etc/apt/sources.list
+RUN sed -i '/stretch-updates/d' /etc/apt/sources.list
+
 # Install system requirements
 RUN apt-get update && \
     apt-get install -y --no-install-recommends build-essential gettext libpq-dev zlib1g-dev libjpeg62-turbo-dev && \
