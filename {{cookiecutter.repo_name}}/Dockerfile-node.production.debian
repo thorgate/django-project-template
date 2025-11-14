@@ -4,6 +4,11 @@ FROM node:{{ cookiecutter.node_version }}-buster-slim
 # Use non-interactive frontend for debconf
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 
+# Switch to archive apt repository for buster
+RUN sed -i s/deb.debian.org/archive.debian.org/g /etc/apt/sources.list
+RUN sed -i 's|security.debian.org|archive.debian.org|g' /etc/apt/sources.list
+RUN sed -i '/stretch-updates/d' /etc/apt/sources.list
+
 # Set the default directory where CMD will execute
 WORKDIR /app
 
