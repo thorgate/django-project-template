@@ -19,7 +19,7 @@ COPY ./app/yarn.lock ./
 
 # Install system requirements
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends git python && \
+    apt-get install -y --no-install-recommends git python3 && \
     rm -rf /var/lib/apt/lists/*
 
 # Install node dependencies
