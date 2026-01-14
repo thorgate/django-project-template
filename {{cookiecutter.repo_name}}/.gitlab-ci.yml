@@ -228,8 +228,8 @@ deploy_to_live:
   script:
     # Create a new release in sentry
     - ./scripts/deploy/create-sentry-release.sh
-    # Note: `DPT_AUTODEPLOY_LIVE_VAULT_PASSWORD` secret should only be masked and protected.
-    - ./scripts/deploy/autodeploy.sh ${DPT_AUTO_DEPLOY_ENVIRONMENT} ${DPT_AUTO_DEPLOY_HOSTNAME} ${DPT_AUTODEPLOY_LIVE_VAULT_PASSWORD} ${CI_COMMIT_SHA}
+    # Note: `DPT_AUTO_DEPLOY_LIVE_VAULT_PASSWORD` secret should only be masked and protected.
+    - ./scripts/deploy/autodeploy.sh ${DPT_AUTO_DEPLOY_ENVIRONMENT} ${DPT_AUTO_DEPLOY_HOSTNAME} ${DPT_AUTO_DEPLOY_LIVE_VAULT_PASSWORD} ${CI_COMMIT_SHA}
     # Finalize sentry release
     - ./scripts/deploy/finalize-sentry-release.sh
   only:
