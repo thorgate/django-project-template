@@ -114,5 +114,5 @@ To remove the auto-deployment setup. One needs to remove project deploy user fro
 [source,shell]
 ----
 userdel {{ cookiecutter.repo_name }}-autodeploy
-sude rm -rf /home/{{ cookiecutter.repo_name }}-autodeploy
+sudo rm -rf /home/{{ cookiecutter.repo_name }}-autodeploy
 ----
