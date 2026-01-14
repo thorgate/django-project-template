@@ -51,7 +51,7 @@ RUN DJANGO_DOCKER_BUILD=True python manage.py compilemessages
 {%- if cookiecutter.frontend_style == WEBAPP %}
 
 # Based on Node {{ cookiecutter.node_version }} Debian
-FROM node:{{ cookiecutter.node_version }}-buster-slim as node_builder
+FROM node:{{ cookiecutter.node_version }}-bookworm-slim as node_builder
 
 # Set the default directory where CMD will execute
 WORKDIR /app

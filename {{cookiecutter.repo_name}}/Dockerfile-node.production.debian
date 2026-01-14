@@ -1,4 +1,4 @@
-FROM node:{{ cookiecutter.node_version }}-buster-slim
+FROM node:{{ cookiecutter.node_version }}-bookworm-slim
 
 # Install system requirements
 # Use non-interactive frontend for debconf

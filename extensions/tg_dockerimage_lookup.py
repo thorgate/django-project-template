@@ -7,7 +7,7 @@ from jinja2.ext import Extension
 
 DOCKER_BASE_IMAGE_PATTERN = {
     'alpine': 'python:{version}-alpine',
-    'debian': 'python:{version}-slim-buster',
+    'debian': 'python:{version}-slim-bookworm',
 }
 
 
