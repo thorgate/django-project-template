@@ -1,7 +1,5 @@
 # Docker compose configuration for production
 
-version: '3.8'
-
 x-common-spec: &common-spec
   env_file: .env
   restart: unless-stopped
