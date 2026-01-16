@@ -38,7 +38,7 @@ ansible-playbook autodeploy.yml --vault-id autodeploy_vault.live.yml@prompt --li
 Then create the secrets in gitlab ui:
 
 ----
-Key: DPT_AUTODEPLOY_TEST_VAULT_PASSWORD
+Key: DPT_AUTO_DEPLOY_TEST_VAULT_PASSWORD
 Type: File
 Protect: No
 Mask: Yes
@@ -46,13 +46,13 @@ Mask: Yes
 ----
 
 ----
-Key: DPT_AUTODEPLOY_LIVE_VAULT_PASSWORD
+Key: DPT_AUTO_DEPLOY_LIVE_VAULT_PASSWORD
 Type: File
 Protect: Yes
 Mask: Yes
 ----
 
-Also create/update the environment variable `SSH_KNOWN_HOSTS` based on instructions https://docs.gitlab.com/ee/ci/ssh_keys/#verifying-the-ssh-host-keys[here].
+Also create/update the environment variable `SSH_KNOWN_HOSTS` based on instructions https://docs.gitlab.com/ci/jobs/ssh_keys/#verifying-the-ssh-host-keys[here].
 
 == Creating a new environment
 
