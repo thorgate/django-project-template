@@ -198,13 +198,17 @@ docker: settings
 
 
 .PHONY:
-setup: pycharm settings{% if cookiecutter.frontend_style == SPA_NEXT %} api{% endif %} ## Sets up the project in your local machine. This includes copying PyCharm files, creating local settings file, and setting up Docker
+setup: pycharm settings ## Sets up the project in your local machine. This includes copying PyCharm files, creating local settings file, and setting up Docker
 	@echo -e "$(CYAN)Creating Docker images$(COFF)"
 	@docker compose build
 	@echo -e "$(CYAN)Running django migrations$(COFF)"
 	@make migrate
 	@echo -e "$(CYAN)Installing node modules$(COFF)"
 	@make node-install
+{% if cookiecutter.frontend_style == SPA_NEXT %}
+	@echo -e "$(CYAN)Generating API client$(COFF)"
+	@make api
+{% endif %}
 {% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 	@echo -e "$(CYAN)Extracting JS translations$(COFF)"
 	@make extract-i18n
