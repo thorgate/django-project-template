@@ -30,7 +30,7 @@
       path: "{{ "{{ code_dir }}" }}/database.lock"
   register: db_created
 
-
+# - {%  if cookiecutter.build_in_ci == NO %}
 - name: "Create database"
   shell: >
       echo "
@@ -46,7 +46,7 @@
       CREATE EXTENSION IF NOT EXISTS citext;
     " | docker exec -i postgres-{{ "{{ postgres_version | mandatory }}" }} psql -U postgres -d {{ "{{ project }}" }}
   when: not db_created.stat.exists
-
+# - {% endif %}
 
 - name: "Create db creation lockfile"
   file:

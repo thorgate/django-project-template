@@ -71,6 +71,10 @@
     "postgres_version": ["12", "11", "10", "9"],
     "_ end::postgres_version[] ": "",
 
+    "_ tag::shared_postgres[] ":"",
+    "shared_postgres": ["yes", "no"],
+    "_ end::shared_postgres[] ": "",
+
     "_ tag::django_admin_path[] ":"",
     "django_admin_path": "adminpanel",
     "_ end::django_admin_path[] ": "",

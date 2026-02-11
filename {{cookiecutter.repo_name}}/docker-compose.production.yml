@@ -25,8 +25,12 @@ x-django-container-spec: &django-container-spec
     - postgres-network
   depends_on:
     - redis
+# - {%  if cookiecutter.shared_postgres == NO %}
+    - postgres
+# - {%  else %}
   external_links:
     - postgres-{{cookiecutter.postgres_version}}:postgres
+# - {%  endif %}
 
 services:
   django:
@@ -83,6 +87,24 @@ services:
     #  guarantee and the lack of pidfile ensures that Celery Beat starts even if the Docker container was killed and
     #  then restarted (in which case the pidfile would still be present).
     command: celery --app {{cookiecutter.default_django_app}} beat --loglevel INFO --logfile /var/log/{{cookiecutter.repo_name}}/celery-beat.log --pidfile= --schedule /celery/celerybeat-schedule
+# - {%  endif %}
+
+# - {%  if cookiecutter.shared_postgres == NO %}
+  # Django of the version chosen for this project doesn't support the postgres version we have on the server,
+  # so we'll run a separate container for it. Backups system should pick it up automatically, as it supports
+  # custom postgres containers. Once server is upgraded, this database can be migrated and the container
+  # can be removed.
+  postgres:
+    <<: *common-spec
+    image: postgres:{{cookiecutter.postgres_version}}-bullseye
+    volumes:
+      - "/var/lib/docker-evr_ui/postgres:/var/lib/postgresql/data"
+    environment:
+      # credentials taken from .env file
+      POSTGRES_USER: "${DJANGO_DATABASE_USER:-{{ cookiecutter.repo_name }}}"
+      POSTGRES_PASSWORD: "${DJANGO_DATABASE_PASSWORD:-{{ cookiecutter.repo_name }}}"
+    networks:
+      - postgres-network
 # - {%  endif %}
 
   redis:
