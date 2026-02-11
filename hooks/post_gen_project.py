@@ -102,6 +102,7 @@ def cleanup():
             'cypress/',
             '{{cookiecutter.repo_name}}/cypress/',
             '{{cookiecutter.repo_name}}/settings/test_cypress.py',
+            '{{cookiecutter.repo_name}}/{{ cookiecutter.django_folder_name }}/cypress',
         ]
     else:
         if '{{ cookiecutter.frontend_style }}' in [SPA, SPA_NEXT]:
