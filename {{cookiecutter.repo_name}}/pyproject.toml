@@ -24,7 +24,7 @@ Django = "==5.0.*"
 # - {%- if cookiecutter.content_security_policy == YES %}
 django-csp = "^3.7"
 # - {% endif %}
-environs = "^9.5.0"
+environs = "*"
 dj-database-url = "^2.1.0"
 django-redis = "==5.2.*"
 # - {%- if cookiecutter.django_media_engine == GCS %}
