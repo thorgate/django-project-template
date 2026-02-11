@@ -215,8 +215,11 @@ setup: pycharm settings ## Sets up the project in your local machine. This inclu
 {% endif %}
 	@echo -e "$(CYAN)===================================================================="
 	@echo -e "SETUP SUCCEEDED"
+{% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
+	@echo -e "Run 'make docker' to start Django development server and node front-end.$(COFF)"
+{% else %}
 	@echo -e "Run 'make docker' to start Django development server and Webpack.$(COFF)"
-
+{% endif %}
 
 {%- if cookiecutter.thorgate == YES %}
 
