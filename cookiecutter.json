@@ -60,16 +60,20 @@
     "_ end::docker_base_image[] ": "",
 
     "_ tag::python_version[] ":"",
-    "python_version": ["3.10", "3.11", "3.9", "3.8", "3.7", "3.6"],
+    "python_version": ["3.10", "3.11", "3.14", "3.9", "3.8", "3.7", "3.6"],
     "_ end::python_version[] ": "",
 
     "_ tag::node_version[] ":"",
-    "node_version": ["16", "18"],
+    "node_version": ["16", "18", "24"],
     "_ end::node_version[] ": "",
 
     "_ tag::postgres_version[] ":"",
-    "postgres_version": ["12", "11", "10", "9"],
+    "postgres_version": ["16", "15", "14", "13", "12", "11", "10", "9"],
     "_ end::postgres_version[] ": "",
+
+    "_ tag::shared_postgres[] ":"",
+    "shared_postgres": ["yes", "no"],
+    "_ end::shared_postgres[] ": "",
 
     "_ tag::django_admin_path[] ":"",
     "django_admin_path": "adminpanel",
