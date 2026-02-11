@@ -205,14 +205,21 @@ setup: pycharm settings ## Sets up the project in your local machine. This inclu
 	@make migrate
 	@echo -e "$(CYAN)Installing node modules$(COFF)"
 	@make node-install
+{% if cookiecutter.frontend_style == SPA_NEXT %}
+	@echo -e "$(CYAN)Generating API client$(COFF)"
+	@make api
+{% endif %}
 {% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 	@echo -e "$(CYAN)Extracting JS translations$(COFF)"
 	@make extract-i18n
 {% endif %}
 	@echo -e "$(CYAN)===================================================================="
 	@echo -e "SETUP SUCCEEDED"
+{% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
+	@echo -e "Run 'make docker' to start Django development server and node front-end.$(COFF)"
+{% else %}
 	@echo -e "Run 'make docker' to start Django development server and Webpack.$(COFF)"
-
+{% endif %}
 
 {%- if cookiecutter.thorgate == YES %}
 
