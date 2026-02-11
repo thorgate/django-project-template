@@ -49,9 +49,9 @@ def cleanup():
 
     if '{{ cookiecutter.include_celery}}' == NO:
         cleanup_paths += [
-            '{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}/celery.py',
-            '{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}/celery_settings.py',
-            '{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}/tasks.py',
+            '{{ cookiecutter.repo_name }}/{{ cookiecutter.django_folder_name }}/celery.py',
+            '{{ cookiecutter.repo_name }}/{{ cookiecutter.django_folder_name }}/celery_settings.py',
+            '{{ cookiecutter.repo_name }}/{{ cookiecutter.django_folder_name }}/tasks.py',
         ]
 
     if '{{ cookiecutter.frontend_style }}' == WEBAPP:
@@ -63,7 +63,7 @@ def cleanup():
             '{{cookiecutter.repo_name}}/accounts/rest',
             '{{cookiecutter.repo_name}}/templates/emails/base.txt',
             '{{cookiecutter.repo_name}}/templates/emails/password_reset.txt',
-            '{{cookiecutter.repo_name}}/{{cookiecutter.repo_name}}/rest/',
+            '{{cookiecutter.repo_name}}/{{ cookiecutter.django_folder_name }}/rest/',
             '{{cookiecutter.repo_name}}/static/502.html',
             '{{cookiecutter.repo_name}}/static/robots.txt',
             'ansible/roles/deploy/templates/razzle.env',
