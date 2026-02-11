@@ -198,7 +198,7 @@ docker: settings
 
 
 .PHONY:
-setup: pycharm settings ## Sets up the project in your local machine. This includes copying PyCharm files, creating local settings file, and setting up Docker
+setup: pycharm settings{% if cookiecutter.frontend_style == SPA_NEXT %} api{% endif %} ## Sets up the project in your local machine. This includes copying PyCharm files, creating local settings file, and setting up Docker
 	@echo -e "$(CYAN)Creating Docker images$(COFF)"
 	@docker compose build
 	@echo -e "$(CYAN)Running django migrations$(COFF)"
