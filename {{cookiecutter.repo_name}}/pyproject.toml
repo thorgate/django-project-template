@@ -1,123 +1,116 @@
-[tool.poetry]
+[project]
 name = "{{ cookiecutter.repo_name }}"
 version = "1.0"
-description = "{{ cookiecutter.project_title }}"
-license = "Proprietary" # or "MIT"
-authors = ["{{ cookiecutter.live_domain_name }} <{{ cookiecutter.admin_email }}>"]
+requires-python = ">={{ cookiecutter.python_version }},<4"
+license = {text="Proprietary"}
+authors = [{name = "{{ cookiecutter.live_domain_name }}", email = "{{ cookiecutter.admin_email }}" }]
 repository = "ssh://{{ cookiecutter.gitlab_repo_url | as_git_path }}"
+dependencies = [
+    # - {% if cookiecutter.include_celery == YES %}
+    "celery[redis]>=5.4.0",
+    # - {% endif %}
+    # - {% if cookiecutter.python_version == '3.14' or cookiecutter.python_version == '3.13' %}
+    "Django>=5.2.8,<6",
+    # - {% else %}
+    "Django>=5.0.11,<5.1.0",
+    # - {% endif %}
+    # - {%- if cookiecutter.content_security_policy == YES %}
+    "django-csp>=3.7,<4",
+    # - {% endif %}
+    "environs",
+    "dj-database-url>=2.1.0,<3",
+    "django-redis>=5.4.0,<6",
+    # - {%- if cookiecutter.django_media_engine == GCS %}
+    "django-storages[google]==1.*",
+    # - {% elif cookiecutter.django_media_engine == S3 %}
+    "boto3>=1.28.44,<2",
+    "django-storages==1.*",
+    # - {%- endif %}
+    "gunicorn>=23.0,<24",
+    # - {%- if cookiecutter.docker_base_image == 'alpine' %}
+    # If you change the docker base image to be non-alpine
+    # This can be changed to psycopg2-binary to get advantage from
+    # using wheels
+    "psycopg2>=2.9",
+    # - {%- else %}
+    "psycopg2-binary>=2.9",
+    # - {%- endif %}
+    "sentry-sdk>=2.19.2,<3",
+    "redis>=5,<6",
+    "django-crispy-forms==1.11.*",
+    # - {% if cookiecutter.frontend_style == WEBAPP %}
+    "django-reverse-js==0.1.3",
+    "django-settings-export==1.2.*",
+    "django-webpack-loader==1.4.*",
+    # - {% elif cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
+    "djangorestframework==3.15.*",
+    "djangorestframework_simplejwt[crypto]>=5.4.0,<6",
+    "django-cors-headers==3.11.*",
+    "django-filter==23.*",
+    "drf-spectacular[sidecar]>=0.26.1,<1",
+    "djangorestframework-camel-case>=1.4.2,<2",
+    "tg-react==3.*",
+    # - {% endif %}
+    "tg-utils[model-hash,health_check,lock]>=1.0.1,<2",
+]
+
+
+[tool.poetry]
 package-mode = false
 
-# NOTE:
-# without this explicit reference to PyPI, poetry may raise exception "PackageNotFound".
 [[tool.poetry.source]]
 name = "the_pypi"
 url = "https://pypi.org/simple"
 priority = "primary"
 
-[tool.poetry.dependencies]
-python = "^{{ cookiecutter.python_version }}"
-
-# - {% if cookiecutter.include_celery == YES %}
-celery = {version = "==5.2.*", extras = ["redis"]}
-# - {% endif %}
-Django = "==5.0.*"
-# - {%- if cookiecutter.content_security_policy == YES %}
-django-csp = "^3.7"
-# - {% endif %}
-environs = "^14.1.1"
-dj-database-url = "^2.1.0"
-django-redis = "==5.2.*"
-# - {%- if cookiecutter.django_media_engine == GCS %}
-django-storages = { version = "==1.*", extras = ["google"] }
-# - {% elif cookiecutter.django_media_engine == S3 %}
-boto3 = "^1.28.44"
-django-storages = { version = "==1.*" }
-# - {%- endif %}
-gunicorn = "^20.1"
-# - {%- if cookiecutter.docker_base_image == 'alpine' %}
-# If you change the docker base image to be non-alpine
-# This can be changed to psycopg2-binary to get advantage from
-# using wheels
-psycopg2 = "==2.9.*"
-# - {%- else %}
-psycopg2-binary = "==2.9.*"
-# - {%- endif %}
-sentry-sdk = "^1.30"
-redis = "^5"
-django-crispy-forms = "==1.11.*"
-# - {% if cookiecutter.frontend_style == WEBAPP %}
-django-reverse-js = "==0.1.3"
-django-settings-export = "==1.2.*"
-django-webpack-loader = "==1.4.*"
-# - {% elif cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
-djangorestframework = "==3.15.*"
-djangorestframework_simplejwt = {version = "==5.3.*", extras = ["crypto"]}
-django-cors-headers = "==3.11.*"
-django-filter = "==23.*"
-drf-spectacular = "^0.26.1"
-djangorestframework-camel-case = "^1.4.2"
-tg-react = "==3.*"
-# - {% endif %}
-tg-utils = {version = "^1.0.1 ", extras = ["model-hash", "health_check"]}
-
-
-[tool.poetry.group.dev.dependencies]
-bump-my-version = "^0.12.0"
-ipython = "^8.0.0"
-pysnooper = "^1.2.0"
-django-debug-toolbar = "^4.2"
-
-
+[dependency-groups]
+dev = [
+    "bump-my-version>=0.12.0",
+    "ipython>=8.0.0",
+    "pysnooper>=1.2.0",
+    "django-debug-toolbar>=4.2",
+]
 # - {% if cookiecutter.use_mypy == YES %}
-[tool.poetry.group.mypy.dependencies]
-boto3-stubs = "^1.28.84"
-django-stubs = "*"
-djangorestframework-stubs = "*"
-mypy = "*"
-types-freezegun = "*"
-types-python-dateutil = "2.*"
-types-redis = "^4.4.0.0"
-types-requests = "*"
+mypy = [
+    "boto3-stubs>=1.28.84",
+    "django-stubs",
+    "djangorestframework-stubs",
+    "mypy",
+    "types-freezegun",
+    "types-python-dateutil",
+    "types-redis",
+    "types-requests",
+]
 # - {% endif %}
+lint = [
+    "prospector[with_bandit]>=1.10.3,<2",
+    "pyenchant",
+    "pylint",
+    "pylint-django",
+    "ruff>=0.4.6",
+]
+test = [
+    "coverage[toml]>=7.3.2,<8",
+    "factory-boy>=3.2.0,<4",
+    "freezegun>=1.2.2,<2",
+    "hypothesis[django]>=6.61.0,<7",
+    "model-bakery>=1.3.0,<2",
+    "moto[sns]",
+    "pytest",
+    "pytest-django",
+    "pytest-asyncio",
+    "pytest-cov",
+    "pytest-datadir",
+    "pytest-mock",
+    "pytest-regressions",
+    "pytest-translations",
+    "flaky>=3.7.0,<4",
+    "responses>=0.22.0,<1",
+]
+security = [
+    "pip-audit>=2.6.1",
+]
 
-[tool.poetry.group.lint.dependencies]
-# Note prospector is very picky about its dependencies,
-# and let prospector determine which versions work together
-# avoid specifying versions for pylint/pylint-django/astroid
-prospector = {version = "^1.16.0", extras=["with_bandit"]}
-pyenchant = "*"
-pylint = "*"
-pylint-django = "*"
-ruff = "^0.4.6"
-
-[tool.poetry.group.test.dependencies]
-# Can't read configuration from pyproject.toml without this dependency
-coverage = {version = "^7.3.2", extras = ["toml"]}
-factory-boy = "^3.2.0"
-freezegun = "^1.2.2"
-hypothesis = {extras = ["django"], version = "^6.61.0"}
-model-bakery = "^1.3.0"
-moto = { extras = ["sns"], version = "*" }
-
-pytest = "^7.4.3"
-# Let pytest determine which versions work together
-pytest-asyncio = "*"
-pytest-cov = "*"
-pytest-datadir = "*"
-pytest-django = "*"
-pytest-mock = "*"
-pytest-regressions = "*"
-pytest-translations = "*"
-
-flaky = "^3.7.0"
-responses = "^0.22.0"
-
-[tool.poetry.group.security.dependencies]
-pip-audit = ">=2.6.1"
-
-[build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
 
 [tool.coverage.run]
 branch = true
