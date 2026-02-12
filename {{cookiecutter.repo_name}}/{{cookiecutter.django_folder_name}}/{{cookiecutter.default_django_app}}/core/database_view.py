@@ -29,9 +29,8 @@ class DatabaseView(models.Model):
         # db_table is not overridden, as we take advantage of django automatically generating the table name for us
         # in the code that creates the views.
 
-    def save(
-        self, force_insert=False, force_update=False, using=None, update_fields=None
-    ):
+    # pylint: disable-next=arguments-differ
+    def save(self, *args, **kwargs):
         raise RuntimeError("Can't perform UPDATE or INSERT on database view.")
 
     @classmethod
