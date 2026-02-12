@@ -4,7 +4,8 @@ from django.contrib.auth.models import (
     PermissionsMixin,
 )
 from django.db import models
-from django.db.models.functions import Collate
+from django.db.models import UniqueConstraint
+from django.db.models.functions import Collate, Lower
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -38,7 +39,7 @@ class UserManager(BaseUserManager):
             is_superuser=is_superuser,
             last_login=now,
             created=now,
-            **extra_fields
+            **extra_fields,
         )
         user.set_password(password)  # type: ignore[attr-defined]
         user.save(using=self._db)
@@ -50,13 +51,17 @@ class UserManager(BaseUserManager):
     def create_superuser(self, email, password, **extra_fields):
         return self._create_user(email, password, True, True, **extra_fields)
 
+    def get_by_natural_key(self, username):
+        return self.get(**{f"{self.model.USERNAME_FIELD}__iexact": username})
+
+    async def aget_by_natural_key(self, username):
+        return await self.aget(**{f"{self.model.USERNAME_FIELD}__iexact": username})
 
 class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(
         verbose_name=_("email address"),
         max_length=254,
-        unique=True,
-        db_collation="case_insensitive",
+        unique=True,  # Must be unique, as it is declared as username field
     )
     name = models.CharField(max_length=255)
 
@@ -77,7 +82,11 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     def display_name(self):
         return name if (name := self.get_full_name()) else self.email
 
+    def natural_key(self):
+        return (self.get_username().lower(),)
+
     class Meta:
         verbose_name = _("User")
         verbose_name_plural = _("Users")
         ordering = ["-created"]
+        constraints = [UniqueConstraint(Lower("name").desc(), name="unique_lower_email")]

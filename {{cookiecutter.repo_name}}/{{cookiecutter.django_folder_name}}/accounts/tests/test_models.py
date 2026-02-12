@@ -1,3 +1,5 @@
+import secrets
+
 from django.conf import settings
 from django.utils import timezone
 
@@ -44,7 +46,7 @@ def test_create_user():
         assert user.created == now
 
     # Should be possible to get the same user regardless of casing of the email
-    assert User.objects.get(email="foo@bar.sdf").pk == user.pk
+    assert User.objects.get_by_natural_key(("foo@bar.sdf", )).pk == user.pk
 
 
 @pytest.mark.django_db()
@@ -57,13 +59,11 @@ def test_create_user_email_required():
 
 
 @pytest.mark.django_db()
-def test_create_superuser():
-    random_pass = User.objects.make_random_password(16)
-
+def test_create_superuser(random_password):
     now = timezone.now()
 
     with freeze_time(now):
-        user = User.objects.create_superuser(email="Foo@BAR.sdf", password=random_pass)
+        user = User.objects.create_superuser(email="Foo@BAR.sdf", password=random_password)
 
         assert user.email == "Foo@bar.sdf"
 

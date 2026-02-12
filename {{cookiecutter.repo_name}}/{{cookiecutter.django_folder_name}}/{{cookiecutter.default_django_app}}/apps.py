@@ -16,6 +16,8 @@ class {{cookiecutter.default_django_app|snake_to_pascal_case}}Config(AppConfig):
 
         # - {%- if cookiecutter.include_celery == YES %}
         # Ensure default celery app is configured all the time
-        from .celery import app # pylint: disable-all
+        # pylint: disable-next-all
+        from .celery import app
+
         assert app  # silence pyflakes F401 (app being imported but unused)  # nosec
         # - {%- endif %}
