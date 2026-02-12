@@ -120,6 +120,10 @@ MIDDLEWARE = [
     # - {%- endif %}
 ]
 
+if DEBUG:
+    INSTALLED_APPS += ["debug_toolbar"]
+    MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]
+
 # - {%- if cookiecutter.content_security_policy == YES %}
 # Content Security Policy https://django-csp.readthedocs.io/en/latest/configuration.html
 CSP_INCLUDE_NONCE_IN = (
