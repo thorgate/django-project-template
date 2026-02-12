@@ -6,7 +6,7 @@ RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selectio
 
 # Install system requirements
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends git python && \
+    apt-get install -y --no-install-recommends git python3 python-is-python3 && \
     rm -rf /var/lib/apt/lists/* && \
     npm -g i pnpm@^8 && \
     pnpm config set store-dir /usr/local/share/.cache/.pnpm-store
