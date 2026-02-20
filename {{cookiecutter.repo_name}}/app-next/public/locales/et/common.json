@@ -3,11 +3,16 @@
         "nextMonth": "Järgmine kuu",
         "previousMonth": "Eelmine kuu"
     },
+    "combobox": {
+        "nSelected": "{{ count }} valitud",
+        "showMore": " ja {{ count }} veel"
+    },
     "count": "Loendus",
     "error": "Viga",
     "errors": {
         "loading": "Laen...",
         "rateLimited": "Proovi hiljem uuesti",
+        "sessionExpired": "Sessioon aegus. Palun logi uuesti sisse.",
         "unexpectedError": "Tundmatu viga",
         "unexpectedErrorWithCode": "Ootamatu viga {{code}}",
         "serverError": "Serveri viga: {{code}}"
@@ -42,6 +47,17 @@
         "save": "Salvesta",
         "edit": "Muuda",
         "delete": "Kustuta"
+    },
+    "labels": {
+        "copyLink": "Kopeeri link",
+        "copyLinkProgress": {
+            "error": "Kopeerimine ei olnud võimalik",
+            "pending": "Lingi kopeerimine",
+            "success": "Link kopeeritud"
+        },
+        "hideFilters": "Peida filtrid",
+        "resetFilters": "Lähtesta filtrid",
+        "showFilters": "Kuva filtrid"
     },
     "navigation": {
         "signIn": "Logi sisse",

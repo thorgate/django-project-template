@@ -11,8 +11,11 @@ if not IS_DOCKER_BUILD:
     # Static site url, used when we need absolute url but lack request object, e.g. in email sending.
     # - {%- if cookiecutter.frontend_style == WEBAPP %}
     SITE_URL = env.str("DJANGO_SITE_URL")
-    # - {%- elif cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
+    # - {%- elif cookiecutter.frontend_style == SPA %}
     SITE_URL = env.str("APP_SITE_URL")
+    # - {%- elif cookiecutter.frontend_style == SPA_NEXT %}
+    SITE_URL = env.str("APP_PUBLIC_SITE_URL")
+    # - {%- endif %}
     DJANGO_SITE_URL = env.str("APP_BACKEND_SITE_URL")
     CSRF_COOKIE_DOMAIN = env.str("DJANGO_CSRF_COOKIE_DOMAIN")
 

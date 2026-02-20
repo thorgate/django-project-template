@@ -279,7 +279,7 @@ export const apiSelectFactory = <
             }
         }, [setOptions, onChange, onReset]);
         const onSelectionChange = React.useCallback(
-            (value: ApiSelectOption<ValueType> | null) => {
+            (value: ApiSelectOption<ValueType>) => {
                 onChange(value || null);
             },
             [onChange],
@@ -365,7 +365,7 @@ export const apiSelectMultipleFactory = <
                     onChange(values);
                 }
             },
-            [onChange, onClear],
+            [onChange],
         );
 
         return (

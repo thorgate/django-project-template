@@ -34,7 +34,7 @@ module.exports = {
                 "brand-danger-accent": "#E30F00",
                 "brand-safe": "#5DA4D4",
                 "brand-safe-accent": "#2F7FB4",
-                "brand-disabled-light": "#CCCDCC",
+                "brand-disabled-light": "#cccdcc",
                 "brand-disabled-dark": "#777777",
             },
         },

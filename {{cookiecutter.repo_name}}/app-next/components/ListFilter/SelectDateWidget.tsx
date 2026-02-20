@@ -38,7 +38,7 @@ export const previousMonthStart = (date?: Date) => {
     }
     return serializeDate(
         new Date(
-            date.getFullYear() - Math.floor((date.getMonth() - 1) / 12),
+            date.getFullYear() + Math.floor((date.getMonth() - 1) / 12),
             (date.getMonth() - 1 + 12) % 12,
             1,
         ),

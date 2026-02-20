@@ -29,6 +29,7 @@ export const nextBaseQuery = fetchBaseQuery({
         }),
 });
 
+
 export const baseQuery: BaseQueryFn<
     string | FetchArgs,
     unknown,
@@ -48,10 +49,8 @@ export const baseQuery: BaseQueryFn<
 
     const accessToken = session?.user?.accessToken ?? "";
     const refreshToken = session?.user?.refreshToken ?? "";
-    const sessionExpired = session?.user?.sessionExpired ?? true;
 
-    if (!accessToken || !refreshToken || sessionExpired) {
-        api.dispatch(appUserSlice.actions.setSessionExpired());
+    if (!accessToken || !refreshToken) {
         return result;
     }
 
@@ -59,22 +58,10 @@ export const baseQuery: BaseQueryFn<
         appUserSlice.actions.setTokens({
             accessToken,
             refreshToken,
-        }),
+        })
     );
-    const finalResult = await nextBaseQuery(args, api, extraOptions);
-    if (!finalResult.error || finalResult.error.status !== 401) {
-        return finalResult;
-    }
-    /* Normally this should not happen, but it may (for example if server Next/Django JWT settings are
-     * not consistent. In this case, to avoid redirect loop, consider session expired. */
-    api.dispatch(
-        appUserSlice.actions.setTokens({
-            accessToken: "",
-            refreshToken: "",
-        }),
-    );
-    api.dispatch(appUserSlice.actions.setSessionExpired());
-    return finalResult;
+
+    return baseQuery(args, api, extraOptions);
 };
 
 export const baseQueriesApi = createApi({

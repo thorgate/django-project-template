@@ -14,7 +14,7 @@
   "overrides": [
     // Next.js needs default exports for pages and API points
     {
-      "files": ["pages/**/*", "lib/config.ts"],
+      "files": ["pages/**/*", "**/*.stories.@(js|jsx|mjs|ts|tsx)", "lib/config.ts"],
       "rules": {
         "import/no-default-export": "off"
       }

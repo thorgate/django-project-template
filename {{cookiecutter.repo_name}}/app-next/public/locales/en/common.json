@@ -3,11 +3,16 @@
         "nextMonth": "Next month",
         "previousMonth": "Previous month"
     },
+    "combobox": {
+        "nSelected": "{{count}} selected",
+        "showMore": " and {{count}} more"
+    },
     "count": "Count",
     "error": "Error",
     "errors": {
         "loading": "Loading...",
         "rateLimited": "Rate limited - try again later",
+        "sessionExpired": "Session expired. Please log in again.",
         "unexpectedError": "Unexpected error",
         "unexpectedErrorWithCode": "Unexpected error {{code}}",
         "serverError": "Server error: {{code}}"
@@ -42,6 +47,17 @@
         "save": "Save",
         "edit": "Edit",
         "delete": "Delete"
+    },
+    "labels": {
+        "copyLink": "Copy link",
+        "copyLinkProgress": {
+            "error": "Error when trying to access the clipboard",
+            "pending": "Copying link",
+            "success": "Link copied"
+        },
+        "hideFilters": "Hide filters",
+        "resetFilters": "Reset filters",
+        "showFilters": "Show filters"
     },
     "navigation": {
         "signIn": "Sign in",

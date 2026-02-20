@@ -76,8 +76,8 @@ export const Pagination = ({ data, setPageNumber }: PaginationProps) => {
                     {firstItem && lastItem && totalCount ? (
                         <p className="text-sm text-gray-700 dark:text-gray-300">
                             <Trans i18nKey="pagination.paginationShownItems">
-                                {% raw %}Showing {{ firstItem }} to {{ lastItem }} of{" "}
-                                {{ totalCount }} results.{% endraw %}
+                                Showing {{ firstItem }} to {{ lastItem }} of{" "}
+                                {{ totalCount }} results.
                             </Trans>
                         </p>
                     ) : null}

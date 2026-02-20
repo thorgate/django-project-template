@@ -23,7 +23,7 @@ export const LoginForm = ({ csrfToken }: LoginFormProps) => {
     const { reload } = useRouter();
     const sessionIsValid = useSessionIsValid();
     const [isRedirecting, setIsRedirecting] = React.useState<"no" | "waiting">(
-        "no",
+        "no"
     );
 
     const {
@@ -63,7 +63,7 @@ export const LoginForm = ({ csrfToken }: LoginFormProps) => {
             isRedirecting !== "no" ||
             sessionIsValid === undefined ||
             sessionIsValid,
-        [sessionIsValid, isSubmitting, isRedirecting],
+        [sessionIsValid, isSubmitting, isRedirecting]
     );
 
     return (

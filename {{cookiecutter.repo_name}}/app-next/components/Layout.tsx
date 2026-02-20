@@ -18,7 +18,7 @@ interface LayoutProps {
 export function Layout({ children, authElements }: LayoutProps) {
     const { t } = useTranslation("common");
     const sessionIsValid = useSessionIsValid();
-    const { data: userData } = useUserMeRetrieveQuery(null as unknown as void, {
+    const { data: userData } = useUserMeRetrieveQuery(undefined, {
         skip: !sessionIsValid,
     });
 
