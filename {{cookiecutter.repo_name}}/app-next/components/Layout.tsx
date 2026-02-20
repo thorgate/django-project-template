@@ -7,6 +7,7 @@ import { NavBar } from "./NavBar";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { useUserMeRetrieveQuery } from "@lib/queries";
 import config from "@lib/config";
+import { useSessionIsValid } from "@lib/hooks/session";
 
 interface LayoutProps {
     children: React.ReactNode;
@@ -16,7 +17,10 @@ interface LayoutProps {
 
 export function Layout({ children, authElements }: LayoutProps) {
     const { t } = useTranslation("common");
-    const { data: userData } = useUserMeRetrieveQuery();
+    const sessionIsValid = useSessionIsValid();
+    const { data: userData } = useUserMeRetrieveQuery(undefined, {
+        skip: !sessionIsValid,
+    });
 
     const navItems = React.useMemo(
         () => [

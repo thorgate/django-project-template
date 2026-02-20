@@ -31,6 +31,9 @@ export const appUserSlice = createSlice({
             state.refreshToken = action.payload?.refreshToken || "";
             state.sessionInitialized = true;
         },
+        setSessionExpired: (state) => {
+            state.sessionExpired = true;
+        },
         setLocale: (state, action: PayloadAction<string>) => {
             state.locale = action.payload;
         },

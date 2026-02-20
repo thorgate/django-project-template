@@ -1,19 +1,17 @@
-{%- raw -%}
 import React from "react";
 import { useTranslation } from "next-i18next";
 
 import { Button } from "@components/Button";
 import { UseAPIBasedFormResult } from "@lib/factories/hooks";
 import { ButtonWithConfirm } from "@components/ConfirmationDialog/ButtonWithConfirm";
-import { UserDetail, PatchedUserDetail } from "@lib/queries";
-import { Calendar } from "@components/Calendar";
-import { CustomInput, Input } from "@components/Input";
+import { UserDetail, UserDetailUserViewSetUpdate } from "@lib/queries";
+import { CalendarInput, Input } from "@components/Input";
 
 export interface UserDetailFormProps {
     title: string;
     onCancel: () => void;
     onDelete: () => void;
-    form: UseAPIBasedFormResult<PatchedUserDetail>;
+    form: UseAPIBasedFormResult<UserDetailUserViewSetUpdate>;
     user: UserDetail;
 }
 
@@ -56,14 +54,12 @@ export const UserDetailForm = ({
                                 {...register("name")}
                             />
                         </div>
-                        {/* TODO:NEWPROJECT remove this, as it is included for demo purposes */}
                         <div className="sm:col-span-4 w-1/2">
-                            <CustomInput label={t("user:dateJoined")}>
-                                <Calendar
-                                    selected={user.created}
-                                    scrollButtons={false}
-                                />
-                            </CustomInput>
+                            <CalendarInput
+                                label={t("user:dateJoined")}
+                                value={user.created}
+                                disabled={true}
+                            ></CalendarInput>
                         </div>
                     </div>
                 </div>
@@ -98,4 +94,3 @@ export const UserDetailForm = ({
         </form>
     );
 };
-{%- endraw %}

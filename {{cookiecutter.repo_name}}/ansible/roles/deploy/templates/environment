@@ -29,6 +29,7 @@ DJANGO_CSRF_COOKIE_DOMAIN=.{{ "{{ node_site_host }}" }}
 # Site URL settings
 NEXTAUTH_URL=https://{{ "{{ node_site_host }}" }}
 APP_SITE_URL=https://{{ "{{ node_site_host }}" }}
+APP_PUBLIC_SITE_URL=https://{{ "{{ node_site_host }}" }}
 APP_BACKEND_SITE_URL=https://{{ "{{ django_site_host }}" }}
 APP_PUBLIC_BACKEND_SITE_URL=https://{{ "{{ django_site_host }}" }}
 APP_PUBLIC_SENTRY_ENVIRONMENT={{ "{{ app_sentry_environment }}" }}

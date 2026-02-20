@@ -11,6 +11,8 @@ import {
     get as getByFormPath,
 } from "react-hook-form";
 import { UseAPIBasedFormResult } from "@lib/factories/hooks";
+import { InputWrapper } from "@components/Input/InputWrapper";
+import { inputClassNames } from "@components/Input/style";
 
 export const THOUSANDS_SEPARATOR = " ";
 export const DECIMAL_SEPARATOR = ".";
@@ -43,80 +45,82 @@ export interface InnerNumericInputProps<TFieldValues extends FieldValues>
     suffix?: FormattingSymbol;
 }
 
-interface NumericInputProps<TFieldValues extends FieldValues>
-    extends Omit<
+interface NumericInputProps<
+    TFieldValues extends FieldValues,
+    TName extends Path<TFieldValues>,
+> extends Omit<
         InnerNumericInputProps<TFieldValues>,
         "name" | "label" | "form" | "disabled" | "suffix"
     > {
-    name: Path<TFieldValues>;
+    name: TName;
     label?: React.ReactNode;
     form: UseAPIBasedFormResult<TFieldValues>;
     disabled?: boolean;
     suffix?: string | undefined;
 }
 
-const InnerNumericInput = <TFieldValues extends FieldValues>(
-    {
-        label,
-        error,
-        onChange: outerOnChange,
-        suffix,
-        disabled,
-        ...props
-    }: InnerNumericInputProps<TFieldValues>,
-    ref: ForwardedRef<HTMLInputElement>
-) => {
-    const onChange = React.useCallback(
-        (e: React.ChangeEvent<HTMLInputElement>) => {
-            outerOnChange?.({
-                ...e,
-                target: {
-                    ...e.target,
-                    value: formatStringValue(e.target.value, suffix || ""),
-                },
-            });
-        },
-        [outerOnChange, suffix]
-    );
+interface SimpleNumericInputWithRef
+    extends ReturnType<
+        typeof forwardRef<HTMLInputElement, InnerNumericInputProps<FieldValues>>
+    > {
+    <TFieldValues extends FieldValues>(
+        x: InnerNumericInputProps<TFieldValues>,
+    ): React.ReactNode;
+}
 
-    return (
-        <div className={clsx("flex flex-col", error && "mb-4")}>
-            {label ? (
-                <label
-                    htmlFor={props.id}
-                    className="font-semibold text-sm text-gray-600 dark:text-white pb-1 block"
-                >
-                    {label}
-                </label>
-            ) : null}
-            <NumericFormat
-                getInputRef={ref}
-                onChange={onChange}
-                suffix={suffix}
-                disabled={disabled}
-                {...props}
-                className={clsx(
-                    "border-0 ring-1 ring-inset rounded-lg px-3 py-2 mt-1 mb-5 text-sm w-full",
-                    "text-black dark:text-white",
-                    "focus:ring-2 focus:ring-inset focus:ring-indigo-600 outline-none",
-                    disabled && "bg-slate-50 dark:bg-slate-600",
-                    !disabled && "bg-white dark:bg-slate-800",
-                    error && "ring-red-500",
-                    !error && "ring-slate-300 dark:ring-slate-700",
-                    props.className
+export const SimpleNumericInput: SimpleNumericInputWithRef = forwardRef(
+    <TFieldValues extends FieldValues>(
+        {
+            label,
+            error,
+            onChange: outerOnChange,
+            suffix,
+            disabled,
+            className,
+            ...props
+        }: InnerNumericInputProps<TFieldValues>,
+        ref: ForwardedRef<HTMLInputElement>,
+    ) => {
+        const onChange = React.useCallback(
+            (e: React.ChangeEvent<HTMLInputElement>) => {
+                outerOnChange?.({
+                    ...e,
+                    target: {
+                        ...e.target,
+                        value: formatStringValue(e.target.value, suffix || ""),
+                    },
+                });
+            },
+            [outerOnChange, suffix],
+        );
+
+        return (
+            <InputWrapper label={label} error={error}>
+                {({ id }) => (
+                    <NumericFormat
+                        {...props}
+                        getInputRef={ref}
+                        onChange={onChange}
+                        suffix={suffix}
+                        disabled={disabled}
+                        id={id}
+                        className={inputClassNames({
+                            error: !!error,
+                            disabled,
+                            className,
+                        })}
+                    />
                 )}
-            />
-            {error ? (
-                <span className="text-red-500 text-xs">{error}</span>
-            ) : null}
-        </div>
-    );
-};
-
-export const SimpleNumericInput = forwardRef(InnerNumericInput);
+            </InputWrapper>
+        );
+    },
+);
 SimpleNumericInput.displayName = "InnerNumericInput";
 
-export const NumericInput = <TFieldValues extends FieldValues>({
+export const NumericInput = <
+    TFieldValues extends FieldValues,
+    TName extends Path<TFieldValues>,
+>({
     name,
     label,
     disabled,
@@ -132,16 +136,16 @@ export const NumericInput = <TFieldValues extends FieldValues>({
     thousandSeparator = THOUSANDS_SEPARATOR,
     decimalSeparator = DECIMAL_SEPARATOR,
     ...rest
-}: NumericInputProps<TFieldValues>) => {
+}: NumericInputProps<TFieldValues, TName>) => {
     // Add a space before the unit to separate it from the value
     const unitWithPrecedingSpace: FormattingSymbol = suffix && ` ${suffix}`;
 
     return (
-        <Controller
+        <Controller<TFieldValues, TName>
             control={control}
             name={name}
             render={({ field: { value, onChange } }) => (
-                <InnerNumericInput
+                <SimpleNumericInput<TFieldValues>
                     id={name}
                     type={"tel"} // "tel" = numeric keyboard on mobile
                     label={label ?? String(name)}

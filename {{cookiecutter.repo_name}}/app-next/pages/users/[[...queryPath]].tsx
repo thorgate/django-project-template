@@ -11,7 +11,6 @@ import {
     type UserListPageState,
     UserListView,
 } from "@/components/User/UserListView";
-import { PageStateItemWithAPIInfo } from "@lib/hooks/state";
 import { SelectUserWidget } from "@components/FilterWidgets";
 
 const IsStaffFilterLabel = () => {
@@ -84,7 +83,6 @@ const [UserList, getExtraProps] = listPageFactory<
             isFilter: true,
             api: {
                 key: "isActive",
-                serializer: (v) => v ?? undefined,
             },
             url: {
                 key: "isActive",
@@ -100,17 +98,12 @@ const [UserList, getExtraProps] = listPageFactory<
                 ],
                 index: 20,
             },
-        } satisfies PageStateItemWithAPIInfo<
-            boolean | null,
-            UserListApiArg["isActive"],
-            "isActive"
-        >,
+        },
         isStaff: {
             defaultValue: [],
             isFilter: true,
             api: {
                 key: "isStaffIn",
-                serializer: (v) => v,
             },
             url: {
                 key: "isStaff",
@@ -134,7 +127,6 @@ const [UserList, getExtraProps] = listPageFactory<
             isFilter: true,
             api: {
                 key: "email",
-                serializer: (v) => v,
             },
             url: {
                 key: "email",
@@ -178,7 +170,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
                 session,
             },
         };
-    }
+    },
 );
 
 export default UserList;

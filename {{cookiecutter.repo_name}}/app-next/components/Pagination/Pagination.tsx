@@ -1,10 +1,10 @@
 import React from "react";
 import { Trans, useTranslation } from "next-i18next";
 import { PaginationLink } from "./PaginationLink";
-import { RetrieveQueryPageOnlyResult } from "@lib/factories/types";
+import { ListQueryPageOnlyResult } from "@lib/factories/types";
 
 export interface PaginationProps {
-    data?: RetrieveQueryPageOnlyResult;
+    data?: ListQueryPageOnlyResult;
     setPageNumber: (pageNumber: number | undefined) => void;
 }
 
@@ -18,7 +18,7 @@ type PageNumber =
  * Otherwise, it is a normal page.
  * */
 const extractPageNumber = (
-    args: { pageNumber?: number } | undefined | null
+    args: { pageNumber?: number } | undefined | null,
 ): PageNumber => {
     if (args === undefined || args === null) {
         return null;
@@ -52,15 +52,19 @@ export const Pagination = ({ data, setPageNumber }: PaginationProps) => {
             nextPageNumber !== null
                 ? () => setPageNumber(nextPageNumber ?? undefined)
                 : null,
-        [nextPageNumber, setPageNumber]
+        [nextPageNumber, setPageNumber],
     );
     const onPreviousPage = React.useMemo(
         () =>
             previousPageNumber !== null
                 ? () => setPageNumber(previousPageNumber ?? undefined)
                 : null,
-        [previousPageNumber, setPageNumber]
+        [previousPageNumber, setPageNumber],
     );
+
+    if (!onPreviousPage && !onNextPage) {
+        return null;
+    }
 
     return (
         <div className="fixed bottom-0 left-0 z-50 w-full h-16 bg-white border-t border-gray-200 dark:border-gray-800 dark:bg-gray-800 dark:border-gray-600">
@@ -72,8 +76,8 @@ export const Pagination = ({ data, setPageNumber }: PaginationProps) => {
                     {firstItem && lastItem && totalCount ? (
                         <p className="text-sm text-gray-700 dark:text-gray-300">
                             <Trans i18nKey="pagination.paginationShownItems">
-                                {% raw %}Showing {{ firstItem }} to {{ lastItem }} of{" "}
-                                {{ totalCount }} results.{% endraw %}
+                                Showing {{ firstItem }} to {{ lastItem }} of{" "}
+                                {{ totalCount }} results.
                             </Trans>
                         </p>
                     ) : null}

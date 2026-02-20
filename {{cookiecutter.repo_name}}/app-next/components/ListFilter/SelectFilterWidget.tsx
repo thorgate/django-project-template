@@ -4,7 +4,7 @@ import {
     ReplaceQueryParametersFunction,
     SelectURLParameterSpecification,
 } from "@lib/factories/types";
-import { StyledListBox } from "@components/Input/StyledListBox";
+import { Listbox } from "@components/Input";
 import {
     isSingleChoiceWidget,
     SingleChoiceWidget,
@@ -14,7 +14,10 @@ import {
 export interface SelectFilterProps<
     QueryArgType extends BaseQueryArgType,
     QueryArg extends keyof QueryArgType,
-    UrlParameter extends SelectURLParameterSpecification<QueryArgType, QueryArg>
+    UrlParameter extends SelectURLParameterSpecification<
+        QueryArgType,
+        QueryArg
+    >,
 > {
     parameter: UrlParameter;
     initial: QueryArgType[QueryArg] | undefined;
@@ -27,29 +30,40 @@ export const SelectFilterWidget = <ValueType,>({
     onReset,
     value,
 }: WidgetProps<ValueType>) => {
-    const { options } = React.useMemo(
-        () =>
-            isSingleChoiceWidget(widget)
-                ? widget
-                : ({ options: [] } as SingleChoiceWidget<ValueType>),
-        [widget]
-    );
+    const options = React.useMemo<
+        { key: string; label: React.ReactNode; value: ValueType }[]
+    >(() => {
+        const { options: providedOptions } = isSingleChoiceWidget(widget)
+            ? widget
+            : ({ options: [] } satisfies SingleChoiceWidget<ValueType>);
+        return providedOptions.map((option) => ({
+            ...option,
+            key: option.key ?? `${option.value}`,
+        }));
+    }, [widget]);
     const selectedOption = React.useMemo(
-        () => options.find((option) => option.value === value) ?? null,
-        [options, value]
+        () =>
+            options.find((option) => option.value === value) ??
+            options[0] ?? { key: "null", label: "" },
+        [options, value],
     );
     const onChange = React.useCallback(
-        (option: { value: ValueType }) => {
+        (option: { value: ValueType } | { value: ValueType }[]) => {
+            if (Array.isArray(option)) {
+                outerOnChange(option[0].value);
+                return;
+            }
             outerOnChange(option.value);
         },
-        [outerOnChange]
+        [outerOnChange],
     );
 
     return (
-        <StyledListBox
-            selectedOption={selectedOption}
+        <Listbox
             onChange={onChange}
-            onReset={onReset}
+            value={selectedOption}
+            by="key"
+            onClear={onReset}
             options={options}
             label={widget.label}
         />

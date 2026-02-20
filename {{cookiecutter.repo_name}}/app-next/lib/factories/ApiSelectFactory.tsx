@@ -1,21 +1,16 @@
 import React from "react";
 import { useTranslation } from "next-i18next";
 import throttle from "lodash.throttle";
-import { Combobox } from "@headlessui/react";
 
 import {
-    ApiSelectFactoryArguments,
-    ApiSelectMultipleFactoryArguments,
-    ApiSelectMultipleProps,
     ApiSelectOption,
-    ApiSelectProps,
-    BaseApiSelectFactoryArguments,
+    APIQuery,
     BaseItemType,
     BaseQueryArgType,
-    RetrieveQueryResult,
+    ListQueryResult,
 } from "@lib/factories/types";
 import { ScrollIntoViewEffect } from "@components/ScrollIntoViewEffect/";
-import { ComboboxBody } from "@components/Input/Combobox";
+import { Combobox } from "@components/Input";
 
 interface ApiSelectOptionsState<T> {
     options: ApiSelectOption<T>[];
@@ -24,20 +19,80 @@ interface ApiSelectOptionsState<T> {
     searchQuery: string;
 }
 
+export interface BaseApiSelectFactoryArguments<
+    ItemType extends BaseItemType,
+    QueryArgType extends BaseQueryArgType,
+    ValueType,
+> {
+    retrieveEndpoint: APIQuery<QueryArgType, ListQueryResult<ItemType>>;
+    getSearchQueryArgs: (query: string) => Partial<QueryArgType>;
+    getOptionForItem: (item: ItemType) => ApiSelectOption<ValueType>;
+    throttleWaitTime?: number;
+    displayName?: string;
+}
+
+export interface ApiSelectFactoryArguments<
+    ItemType extends BaseItemType,
+    QueryArgType extends BaseQueryArgType,
+    ValueType,
+> extends BaseApiSelectFactoryArguments<ItemType, QueryArgType, ValueType> {
+    filterByInitialValueOnInitialOpen?: boolean;
+}
+
+export type ApiSelectMultipleFactoryArguments<
+    ItemType extends BaseItemType,
+    QueryArgType extends BaseQueryArgType,
+    ValueType,
+> = BaseApiSelectFactoryArguments<ItemType, QueryArgType, ValueType>;
+
+export interface ApiSelectOptionWithoutValue {
+    label: string;
+    /* Key is used as react key, and for the form values, and must be unique string.*/
+    key: string;
+    /* Display value is rendered in the search box once option is selected, and ideally should be same as the value
+     * used for searching the API or option list. Falls back to label. */
+    displayValue?: string | undefined;
+    needsRefreshFromApi?: boolean;
+}
+
+export interface BaseApiSelectProps<QueryArgType> {
+    getSearchQueryArgs?: (query: string) => Partial<QueryArgType>;
+    label?: React.ReactNode;
+    error?: string;
+    loadingInitialValue?: boolean;
+    testId?: string;
+    className?: string;
+    disabled?: boolean;
+}
+
+export interface ApiSelectProps<T, QueryArgType>
+    extends BaseApiSelectProps<QueryArgType> {
+    value?: ApiSelectOption<T> | null;
+    onChange: (chosenOption: ApiSelectOption<T> | null) => void;
+    onReset?: () => void;
+}
+
+export interface ApiSelectMultipleProps<T, QueryArgType>
+    extends BaseApiSelectProps<QueryArgType> {
+    values?: ApiSelectOption<T>[];
+    onChange: (chosenOption: ApiSelectOption<T>[]) => void;
+}
+
 const loadPageHookFactory = <
     ItemType extends BaseItemType,
     QueryArgType extends BaseQueryArgType,
-    ValueType
+    ValueType,
 >(
     factoryArguments: BaseApiSelectFactoryArguments<
         ItemType,
         QueryArgType,
         ValueType
-    >
+    >,
 ) => {
     return (
         values: ApiSelectOption<ValueType>[],
-        initialSearchQuery: string
+        initialSearchQuery: string,
+        getSearchQueryArgs?: (query: string) => Partial<QueryArgType>,
     ) => {
         const [trigger] = factoryArguments.retrieveEndpoint.useLazyQuery();
         const [options, setOptions] = React.useState<
@@ -48,23 +103,12 @@ const loadPageHookFactory = <
             hasMore: true,
             searchQuery: initialSearchQuery,
         });
-        React.useEffect(() => {
-            // Every time the value changes, reset the option list in dropdown so that new search happens on
-            // dropdown trigger
-            setOptions({
-                options: values,
-                pageNumber: 0,
-                hasMore: true,
-                searchQuery: initialSearchQuery,
-            });
-        }, [values, initialSearchQuery]);
-
         const onLoadPage = React.useCallback(
             (
-                data: RetrieveQueryResult<ItemType> | undefined,
+                data: ListQueryResult<ItemType> | undefined,
                 resetOptions: boolean,
                 pageNumber: number,
-                searchQuery: string | undefined = undefined
+                searchQuery: string | undefined = undefined,
             ) => {
                 const results = data?.results || [];
                 setOptions((currentOptions) => {
@@ -72,7 +116,7 @@ const loadPageHookFactory = <
                         ? []
                         : currentOptions.options;
                     const previousKeys = new Set(
-                        previousOptions.map((o) => o.key)
+                        previousOptions.map((o) => o.key),
                     );
                     const newOptions = [
                         ...previousOptions,
@@ -95,31 +139,62 @@ const loadPageHookFactory = <
                     };
                 });
             },
-            []
+            [],
         );
-        const onLoadMore = React.useCallback(() => {
-            const nextPage = options.pageNumber + 1;
-            if (options.hasMore) {
-                trigger({
-                    ...factoryArguments.getSearchQueryArgs(options.searchQuery),
-                    pageNumber: nextPage,
-                } as QueryArgType).then(({ data }) => {
-                    onLoadPage(data, false, nextPage);
-                });
-            }
-        }, [onLoadPage, trigger, options]);
+        const onLoadMore = React.useCallback(
+            (
+                stateOverride?: Pick<
+                    ApiSelectOptionsState<ValueType>,
+                    "searchQuery" | "options"
+                >,
+            ) => {
+                const nextPage =
+                    stateOverride === undefined ? options.pageNumber + 1 : 1;
+                if (stateOverride !== undefined || options.hasMore) {
+                    trigger(
+                        {
+                            ...factoryArguments.getSearchQueryArgs(
+                                stateOverride?.searchQuery ??
+                                    options.searchQuery,
+                            ),
+                            ...(getSearchQueryArgs
+                                ? getSearchQueryArgs(
+                                      stateOverride?.searchQuery ??
+                                          options.searchQuery,
+                                  )
+                                : {}),
+                            pageNumber: nextPage,
+                        } as QueryArgType,
+                        true,
+                    ).then(({ data }) => {
+                        onLoadPage(data, false, nextPage);
+                    });
+                }
+            },
+            [onLoadPage, trigger, options, getSearchQueryArgs],
+        );
         const onSearchUnthrottled = React.useMemo<
-            Required<React.ComponentProps<typeof ComboboxBody>>["onSearch"]
+            Required<
+                React.ComponentProps<
+                    typeof Combobox<ApiSelectOption<ValueType>, false>
+                >
+            >["onSearch"]
         >(
             () => (value) => {
-                trigger({
-                    ...factoryArguments.getSearchQueryArgs(value),
-                    pageNumber: 1,
-                } as QueryArgType)?.then(({ data }) => {
+                trigger(
+                    {
+                        ...factoryArguments.getSearchQueryArgs(value),
+                        ...(getSearchQueryArgs
+                            ? getSearchQueryArgs(value)
+                            : {}),
+                        pageNumber: 1,
+                    } as QueryArgType,
+                    true,
+                )?.then(({ data }) => {
                     onLoadPage(data, true, 1, value);
                 });
             },
-            [onLoadPage, trigger]
+            [onLoadPage, trigger, getSearchQueryArgs],
         );
         const onSearch = React.useMemo(
             () =>
@@ -127,12 +202,22 @@ const loadPageHookFactory = <
                     onSearchUnthrottled,
                     factoryArguments.throttleWaitTime || 500,
                     {
-                        leading: true,
+                        leading: false,
                         trailing: true,
-                    }
+                    },
                 ),
-            [onSearchUnthrottled]
+            [onSearchUnthrottled],
         );
+        React.useEffect(() => {
+            // Every time the value changes, reset the option list in dropdown so that new search happens on
+            // dropdown trigger
+            onLoadMore({
+                options: values,
+                searchQuery: initialSearchQuery,
+            });
+            // But not every time the options change
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+        }, [values, initialSearchQuery]);
         return { options, setOptions, onSearch, onLoadMore };
     };
 };
@@ -140,14 +225,14 @@ const loadPageHookFactory = <
 export const apiSelectFactory = <
     ItemType extends BaseItemType,
     QueryArgType extends BaseQueryArgType,
-    ValueType
+    ValueType,
 >(
     factoryArguments: ApiSelectFactoryArguments<
         ItemType,
         QueryArgType,
         ValueType
-    >
-): React.FC<ApiSelectProps<ValueType>> => {
+    >,
+): React.FC<ApiSelectProps<ValueType, QueryArgType>> => {
     const useLoadPage = loadPageHookFactory(factoryArguments);
     const useInitialSearchQuery =
         factoryArguments.filterByInitialValueOnInitialOpen
@@ -156,34 +241,29 @@ export const apiSelectFactory = <
                       () =>
                           factoryArguments.filterByInitialValueOnInitialOpen &&
                           value
-                              ? value.displayValue ?? value.label ?? ""
+                              ? (value.displayValue ?? value.label ?? "")
                               : "",
-                      [value]
+                      [value],
                   )
             : () => React.useMemo(() => "", []);
 
     const ApiSelect = ({
         value,
+        getSearchQueryArgs,
         label,
         onChange,
         onReset,
-        testId,
-        className,
         disabled,
-    }: ApiSelectProps<ValueType>) => {
+        error,
+    }: ApiSelectProps<ValueType, QueryArgType>) => {
         const { t } = useTranslation();
-        const [selectedValue, setSelectedValue] =
-            React.useState<ApiSelectOption<ValueType> | null>(value || null);
-        const selectedValues = React.useMemo(
-            () => (selectedValue ? [selectedValue] : []),
-            [selectedValue]
-        );
         const values = React.useMemo(() => (value ? [value] : []), [value]);
         const initialSearchQuery = useInitialSearchQuery(value);
 
         const { options, setOptions, onSearch, onLoadMore } = useLoadPage(
             values,
-            initialSearchQuery
+            initialSearchQuery,
+            getSearchQueryArgs,
         );
         const onClear = React.useCallback(() => {
             setOptions({
@@ -195,50 +275,36 @@ export const apiSelectFactory = <
             if (onReset) {
                 onReset();
             } else {
-                setSelectedValue(null);
                 onChange(null);
             }
         }, [setOptions, onChange, onReset]);
         const onSelectionChange = React.useCallback(
             (value: ApiSelectOption<ValueType>) => {
-                setSelectedValue(value);
                 onChange(value || null);
             },
-            [onChange]
+            [onChange],
         );
-        React.useEffect(() => {
-            setSelectedValue(value ?? null);
-        }, [value]);
         return (
-            <Combobox
+            <Combobox<ApiSelectOption<ValueType>, false>
                 value={value}
-                by="key"
                 disabled={disabled}
                 onChange={onSelectionChange}
-                nullable={true}
+                onSearch={onSearch}
+                onClear={onClear}
                 multiple={false}
-                as="div"
-                className={className}
-                data-testid={testId ?? undefined}
+                label={label}
+                error={error}
+                options={options.options}
+                noResetToFirstOnSearch
             >
-                <ComboboxBody
-                    label={label}
-                    onSearch={onSearch}
-                    onClear={onClear}
-                    options={options.options}
-                    selectedOptions={selectedValues}
-                    showMore={
-                        options.hasMore ? (
-                            <ScrollIntoViewEffect effect={onLoadMore}>
-                                {t("errors.loading")}
-                            </ScrollIntoViewEffect>
-                        ) : null
-                    }
-                    displaySelectedSeparately={false}
-                    allowWrap={false}
-                    disabled={disabled}
-                    {...(factoryArguments.extraComboboxBodyProps || {})}
-                />
+                {options.hasMore ? (
+                    <ScrollIntoViewEffect
+                        effect={onLoadMore}
+                        className="text-brand-brand-disabled-dark"
+                    >
+                        {t("errors.loading")}
+                    </ScrollIntoViewEffect>
+                ) : null}
             </Combobox>
         );
     };
@@ -252,86 +318,74 @@ const emptyValues: ApiSelectOption<never>[] = [];
 export const apiSelectMultipleFactory = <
     ItemType extends BaseItemType,
     QueryArgType extends BaseQueryArgType,
-    ValueType
+    ValueType,
 >(
     factoryArguments: ApiSelectMultipleFactoryArguments<
         ItemType,
         QueryArgType,
         ValueType
-    >
-): React.FC<ApiSelectMultipleProps<ValueType>> => {
+    >,
+): React.FC<ApiSelectMultipleProps<ValueType, QueryArgType>> => {
     const useLoadPage = loadPageHookFactory(factoryArguments);
 
     const ApiSelectMultiple = ({
         values = emptyValues,
+        getSearchQueryArgs,
         label,
         onChange,
         loadingInitialValue,
-        testId,
-        className,
         disabled: outerDisabled,
-    }: ApiSelectMultipleProps<ValueType>) => {
+        error,
+    }: ApiSelectMultipleProps<ValueType, QueryArgType>) => {
         const { t } = useTranslation();
         const disabled = React.useMemo(
             () => outerDisabled || loadingInitialValue,
-            [outerDisabled, loadingInitialValue]
+            [outerDisabled, loadingInitialValue],
         );
 
         const { options, setOptions, onSearch, onLoadMore } = useLoadPage(
             values,
-            ""
+            "",
+            getSearchQueryArgs,
         );
-        const onClear = React.useCallback(
-            (option?: ApiSelectOption<ValueType>) => {
-                if (option) {
-                    onChange(values.filter((v) => v.value !== option.value));
-                    return;
-                }
-                setOptions({
-                    options: [],
-                    pageNumber: 1,
-                    hasMore: true,
-                    searchQuery: "",
-                });
-                onChange([]);
-            },
-            [values, setOptions, onChange]
-        );
+        const onClear = React.useCallback(() => {
+            setOptions({
+                options: [],
+                pageNumber: 1,
+                hasMore: true,
+                searchQuery: "",
+            });
+            onChange([]);
+        }, [setOptions, onChange]);
         const onSelectionChange = React.useCallback(
             (values: ApiSelectOption<ValueType>[]) => {
                 onChange(values);
             },
-            [onChange]
+            [onChange],
         );
 
         return (
-            <Combobox
+            <Combobox<ApiSelectOption<ValueType>, true>
                 value={values}
-                by="key"
                 disabled={disabled}
                 onChange={onSelectionChange}
-                nullable={false}
-                multiple={true}
-                as="div"
-                className={className}
-                data-testid={testId ?? undefined}
+                onSearch={onSearch}
+                onClear={onClear}
+                multiple
+                label={label}
+                error={error}
+                options={options.options}
+                noResetToFirstOnSearch
+                selectedOptionsDisplayLimit={1}
             >
-                <ComboboxBody
-                    label={label}
-                    onSearch={onSearch}
-                    onClear={onClear}
-                    options={options.options}
-                    selectedOptions={values}
-                    showMore={
-                        options.hasMore ? (
-                            <ScrollIntoViewEffect effect={onLoadMore}>
-                                {t("errors.loading")}
-                            </ScrollIntoViewEffect>
-                        ) : null
-                    }
-                    disabled={disabled}
-                    {...(factoryArguments.extraComboboxBodyProps || {})}
-                />
+                {options.hasMore ? (
+                    <ScrollIntoViewEffect
+                        effect={onLoadMore}
+                        className="text-brand-brand-disabled-dark"
+                    >
+                        {t("errors.loading")}
+                    </ScrollIntoViewEffect>
+                ) : null}
             </Combobox>
         );
     };
