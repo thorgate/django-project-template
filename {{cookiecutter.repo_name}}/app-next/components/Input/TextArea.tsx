@@ -14,7 +14,7 @@ export interface TextAreaProps
 export const TextArea = forwardRef(
     (
         { label, error, disabled, className, ...props }: TextAreaProps,
-        ref: ForwardedRef<HTMLTextAreaElement>,
+        ref: ForwardedRef<HTMLTextAreaElement>
     ) => {
         return (
             <InputWrapper label={label} error={error}>
@@ -29,14 +29,14 @@ export const TextArea = forwardRef(
                             disabled,
                             className: clsx(
                                 "w-full h-40 resize-none",
-                                className,
+                                className
                             ),
                         })}
                     />
                 )}
             </InputWrapper>
         );
-    },
+    }
 );
 
 TextArea.displayName = "TextArea";

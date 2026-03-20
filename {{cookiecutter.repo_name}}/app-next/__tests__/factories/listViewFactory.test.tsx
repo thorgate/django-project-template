@@ -81,8 +81,8 @@ describe("listPageFactory", () => {
 
         await waitFor(() =>
             expect(
-                screen.getByTestId("user-list").children.length,
-            ).toBeGreaterThan(0),
+                screen.getByTestId("user-list").children.length
+            ).toBeGreaterThan(0)
         );
     });
     it("creates proper server side preloader", async () => {
@@ -92,11 +92,11 @@ describe("listPageFactory", () => {
         render(
             <Provider store={store}>
                 <UserListComponent />
-            </Provider>,
+            </Provider>
         );
 
         expect(screen.getByTestId("user-list").children.length).toBeGreaterThan(
-            0,
+            0
         );
     });
 });

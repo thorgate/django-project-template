@@ -43,7 +43,7 @@ export function Button({
         variant === "safe" &&
             "bg-brand-safe text-white hover:bg-brand-safe-accent",
         disabled && "opacity-50 cursor-not-allowed",
-        className,
+        className
     );
 
     if (href) {

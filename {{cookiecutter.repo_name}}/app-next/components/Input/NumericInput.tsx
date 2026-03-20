@@ -47,7 +47,7 @@ export interface InnerNumericInputProps<TFieldValues extends FieldValues>
 
 interface NumericInputProps<
     TFieldValues extends FieldValues,
-    TName extends Path<TFieldValues>,
+    TName extends Path<TFieldValues>
 > extends Omit<
         InnerNumericInputProps<TFieldValues>,
         "name" | "label" | "form" | "disabled" | "suffix"
@@ -64,7 +64,7 @@ interface SimpleNumericInputWithRef
         typeof forwardRef<HTMLInputElement, InnerNumericInputProps<FieldValues>>
     > {
     <TFieldValues extends FieldValues>(
-        x: InnerNumericInputProps<TFieldValues>,
+        x: InnerNumericInputProps<TFieldValues>
     ): React.ReactNode;
 }
 
@@ -79,7 +79,7 @@ export const SimpleNumericInput: SimpleNumericInputWithRef = forwardRef(
             className,
             ...props
         }: InnerNumericInputProps<TFieldValues>,
-        ref: ForwardedRef<HTMLInputElement>,
+        ref: ForwardedRef<HTMLInputElement>
     ) => {
         const onChange = React.useCallback(
             (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,7 +91,7 @@ export const SimpleNumericInput: SimpleNumericInputWithRef = forwardRef(
                     },
                 });
             },
-            [outerOnChange, suffix],
+            [outerOnChange, suffix]
         );
 
         return (
@@ -113,13 +113,13 @@ export const SimpleNumericInput: SimpleNumericInputWithRef = forwardRef(
                 )}
             </InputWrapper>
         );
-    },
+    }
 );
 SimpleNumericInput.displayName = "InnerNumericInput";
 
 export const NumericInput = <
     TFieldValues extends FieldValues,
-    TName extends Path<TFieldValues>,
+    TName extends Path<TFieldValues>
 >({
     name,
     label,

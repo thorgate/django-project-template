@@ -1,11 +1,11 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 
 import { apiSelectFactory } from "@lib/factories/ApiSelectFactory";
-import { queriesApi, UserDetail } from "@lib/queries";
+import { queriesApi, UserDetail, UserListApiArg } from "@lib/queries";
 import type { ApiSelectOption } from "@lib/factories/types";
 import { ProvidersWrapper } from "@lib/testUtils";
 
-const SelectUser = apiSelectFactory({
+const SelectUser = apiSelectFactory<UserDetail, UserListApiArg, string>({
     retrieveEndpoint: queriesApi.endpoints.userList,
     getSearchQueryArgs: (query) => ({ search: query }),
     getOptionForItem: (item: UserDetail): ApiSelectOption<string> => ({
@@ -35,8 +35,8 @@ describe("apiSelectFactory", () => {
         // Wait for the options to load from API, at least one option should load
         await waitFor(() =>
             expect(screen.getByRole("listbox").children.length).toBeGreaterThan(
-                1,
-            ),
+                1
+            )
         );
     });
 });

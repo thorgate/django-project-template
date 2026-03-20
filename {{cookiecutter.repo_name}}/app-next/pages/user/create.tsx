@@ -8,7 +8,7 @@ import {
     queriesApi,
     UserCreateApiArg,
     UserCreateApiResponse,
-    UserCreate,
+    UserCreate as UserCreateType,
     UserDetail,
 } from "@lib/queries";
 
@@ -33,7 +33,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
     }
 );
 
-const makeQueryArgs = (values: UserCreate): UserCreateApiArg => ({
+const makeQueryArgs = (values: UserCreateType): UserCreateApiArg => ({
     userCreate: values,
 });
 
@@ -51,7 +51,7 @@ const UserCreate = () => {
     const form = useApiBasedForm<
         UserCreateApiResponse,
         UserCreateApiArg,
-        UserCreate & { passwordConfirm: string }
+        UserCreateType & { passwordConfirm: string }
     >({
         endpoint: queriesApi.endpoints.userCreate,
         makeQueryArgs,
@@ -63,7 +63,7 @@ const UserCreate = () => {
             <Head>
                 <title>{`${t(
                     "common:pageTitles.userCreate"
-                )} - {{ cookiecutter.project_title }}`}</title>
+                )} - prd_converter`}</title>
             </Head>
             <UserCreateForm
                 title={t("user:titleCreate")}

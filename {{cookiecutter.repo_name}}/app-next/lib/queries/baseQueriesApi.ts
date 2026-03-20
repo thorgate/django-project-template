@@ -29,7 +29,6 @@ export const nextBaseQuery = fetchBaseQuery({
         }),
 });
 
-
 export const baseQuery: BaseQueryFn<
     string | FetchArgs,
     unknown,

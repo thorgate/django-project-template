@@ -1,7 +1,7 @@
 import React from "react";
 import clsx from "clsx";
 
-import { NextLayoutComponentType } from "next";
+import { ApiEndpointQuery, EndpointDefinitions } from "@reduxjs/toolkit/query";
 import { queriesApi } from "@lib/queries";
 import { useExtractNonFieldError } from "@lib/convertError";
 import { LoadingState, ErrorState } from "@components/NonIdealState";
@@ -11,8 +11,8 @@ import {
     BaseQueryArgType,
     FactoryServerSidePropsFunction,
     ListViewProps,
-    ListQueryResult,
-    APIQuery,
+    QueryHooks,
+    RetrieveQueryDefinition,
 } from "@lib/factories/types";
 import {
     apiStateFromPageState,
@@ -47,38 +47,40 @@ export const paginationState = {
 export const listPageFactory = <
     ItemType extends BaseItemType,
     QueryArgType extends BaseQueryArgType,
-    PageStateType extends object,
+    PageStateType extends object
 >({
     retrieveEndpoint,
     extraQueryArgument,
     pageStateDefinition,
     ListView,
-    extraFilterSetChildren,
     Context,
     extraClassName,
     processResponseData,
 }: {
-    retrieveEndpoint: APIQuery<QueryArgType, ListQueryResult<ItemType>>;
+    retrieveEndpoint: ApiEndpointQuery<
+        RetrieveQueryDefinition<ItemType, QueryArgType>,
+        EndpointDefinitions
+    > &
+        QueryHooks<RetrieveQueryDefinition<ItemType, QueryArgType>>;
     extraQueryArgument: QueryArgType;
     pageStateDefinition: PageStateDefinitionWithAPIInfo<
         PageStateType,
         QueryArgType
     >;
     ListView: React.ComponentType<ListViewProps<ItemType, PageStateType>>;
-    extraFilterSetChildren?: React.ReactNode;
     Context?: React.Context<PageStateType | null>;
     extraClassName?: string;
     processResponseData?: (
         store: AppStore,
-        data: undefined | ItemType[],
+        data: undefined | ItemType[]
     ) => Promise<void>;
 }): [
-    NextLayoutComponentType<Record<string, never>>,
-    FactoryServerSidePropsFunction,
+    React.FunctionComponent<Record<string, never>>,
+    FactoryServerSidePropsFunction
 ] => {
     const paginationKeys = (
         Object.keys(
-            pageStateDefinition,
+            pageStateDefinition
         ) as (keyof PageStateDefinitionWithAPIInfo<
             PageStateType,
             QueryArgType
@@ -105,7 +107,7 @@ export const listPageFactory = <
                           } as Partial<PageStateType>);
                       }
                     : undefined,
-            [setPageState],
+            [setPageState]
         );
 
         const {
@@ -138,9 +140,7 @@ export const listPageFactory = <
                     pageState={pageState}
                     setPageState={setPageState}
                     isUpdating={isApiFetching}
-                >
-                    {extraFilterSetChildren}
-                </Filterset>
+                />
                 <ListView
                     pageData={pageData}
                     pageState={pageState}
@@ -164,11 +164,11 @@ export const listPageFactory = <
 
     const getExtraProps: FactoryServerSidePropsFunction = async (
         store,
-        context,
+        context
     ) => {
         const pageState = pageStateFromQueryParameters(
             pageStateDefinition,
-            context.query,
+            context.query
         );
         const queryArgument = apiStateFromPageState(pageStateDefinition, {
             pageState,
@@ -182,7 +182,7 @@ export const listPageFactory = <
             await processResponseData(store, results);
         }
         await Promise.all(
-            store.dispatch(queriesApi.util.getRunningQueriesThunk()),
+            store.dispatch(queriesApi.util.getRunningQueriesThunk())
         );
 
         return {} as Record<string, never>;

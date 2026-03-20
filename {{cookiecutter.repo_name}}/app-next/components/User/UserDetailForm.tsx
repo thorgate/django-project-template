@@ -1,17 +1,18 @@
+{%- raw -%}
 import React from "react";
 import { useTranslation } from "next-i18next";
 
 import { Button } from "@components/Button";
 import { UseAPIBasedFormResult } from "@lib/factories/hooks";
 import { ButtonWithConfirm } from "@components/ConfirmationDialog/ButtonWithConfirm";
-import { UserDetail, UserDetailUserViewSetUpdate } from "@lib/queries";
+import { UserDetail, UserPartialUpdateApiResponse } from "@lib/queries";
 import { CalendarInput, Input } from "@components/Input";
 
 export interface UserDetailFormProps {
     title: string;
     onCancel: () => void;
     onDelete: () => void;
-    form: UseAPIBasedFormResult<UserDetailUserViewSetUpdate>;
+    form: UseAPIBasedFormResult<UserPartialUpdateApiResponse>;
     user: UserDetail;
 }
 
@@ -94,3 +95,4 @@ export const UserDetailForm = ({
         </form>
     );
 };
+{%- endraw %}

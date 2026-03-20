@@ -9,16 +9,15 @@ import {
     UserDetail,
     PatchedUserDetail,
     UserPartialUpdateApiArg,
+    UserPartialUpdateApiResponse,
 } from "@lib/queries";
 
-import { DetailViewPropsFromEndpoint } from "@lib/factories/types";
+import { DetailViewProps } from "@lib/factories/types";
 import { isMutationResultError, useApiBasedForm } from "@lib/factories/hooks";
 import { UserDetailForm } from "@components/User/UserDetailForm";
 import { useExtractNonFieldError } from "@lib/convertError";
 
-export const UserDetailView = ({
-    data: user,
-}: DetailViewPropsFromEndpoint<typeof queriesApi.endpoints.userRetrieve>) => {
+export const UserDetailView = ({ data: user }: DetailViewProps<UserDetail>) => {
     const router = useRouter();
     const { t } = useTranslation(["user", "common"]);
     const onSuccess = React.useCallback(
@@ -40,7 +39,11 @@ export const UserDetailView = ({
         () => ({ defaultValues: { name: user.name } }),
         [user.name]
     );
-    const form = useApiBasedForm({
+    const form = useApiBasedForm<
+        UserPartialUpdateApiResponse,
+        UserPartialUpdateApiArg,
+        UserDetail
+    >({
         endpoint: queriesApi.endpoints.userPartialUpdate,
         makeQueryArgs,
         onSuccess,
@@ -75,7 +78,7 @@ export const UserDetailView = ({
             <Head>
                 <title>{`${t("common:pageTitles.userDetails", {
                     name: user.name,
-                })} - {{ cookiecutter.project_title }}`}</title>
+                })} - prd_converter`}</title>
             </Head>
             <UserDetailForm
                 title={t("user:titleUpdate", { name: user.name })}

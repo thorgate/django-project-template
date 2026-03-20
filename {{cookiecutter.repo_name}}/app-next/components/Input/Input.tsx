@@ -25,7 +25,7 @@ export const Input = React.forwardRef(
             onClear,
             ...props
         }: InputProps,
-        ref: React.ForwardedRef<HTMLInputElement>,
+        ref: React.ForwardedRef<HTMLInputElement>
     ) => {
         const { t } = useTranslation("common");
 
@@ -60,7 +60,7 @@ export const Input = React.forwardRef(
                                         Icon
                                             ? "pl-[calc(0.25rem-2px)]"
                                             : "pl-[calc(0.75rem-2px)]",
-                                        className,
+                                        className
                                     ),
                                     rounded: false,
                                     margin: false,
@@ -85,7 +85,7 @@ export const Input = React.forwardRef(
                 )}
             </InputWrapper>
         );
-    },
+    }
 );
 
 Input.displayName = "Input";

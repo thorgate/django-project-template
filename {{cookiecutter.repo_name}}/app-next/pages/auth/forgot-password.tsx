@@ -10,7 +10,7 @@ import {
     queriesApi,
     UserForgotPasswordCreateApiArg,
     UserForgotPasswordCreateApiResponse,
-    ForgotPassword,
+    ForgotPassword as ForgotPasswordType,
 } from "@lib/queries";
 import { wrapper } from "@lib/store";
 import { prepareSession } from "@lib/session";
@@ -34,7 +34,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
 );
 
 const makeQueryArgs = (
-    values: ForgotPassword
+    values: ForgotPasswordType
 ): UserForgotPasswordCreateApiArg => ({
     forgotPassword: values,
 });
@@ -49,7 +49,7 @@ const ForgotPassword = () => {
     const form = useApiBasedForm<
         UserForgotPasswordCreateApiResponse,
         UserForgotPasswordCreateApiArg,
-        ForgotPassword
+        ForgotPasswordType
     >({
         endpoint: queriesApi.endpoints.userForgotPasswordCreate,
         makeQueryArgs,

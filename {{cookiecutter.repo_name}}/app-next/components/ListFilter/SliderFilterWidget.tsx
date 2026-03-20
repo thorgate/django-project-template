@@ -26,7 +26,7 @@ export const SliderFilterWidget = ({
         (e) => {
             outerOnChange(parseFloat(e.target.value));
         },
-        [outerOnChange],
+        [outerOnChange]
     );
 
     return (

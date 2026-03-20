@@ -8,13 +8,15 @@ import {
     ErrorOption,
 } from "react-hook-form";
 import type { UseFormReturn } from "react-hook-form";
-import { EndpointDefinitions } from "@reduxjs/toolkit/dist/query/endpointDefinitions";
 
-import { MutationDefinition } from "@reduxjs/toolkit/query";
-import { ApiEndpointMutation } from "@reduxjs/toolkit/dist/query/core/module";
-import { MutationHooks } from "@reduxjs/toolkit/dist/query/react/buildHooks";
+import {
+    ApiEndpointMutation,
+    BaseQueryError,
+    EndpointDefinitions,
+    MutationDefinition,
+} from "@reduxjs/toolkit/query";
 import { SerializedError } from "@reduxjs/toolkit";
-import { BaseQueryError } from "@reduxjs/toolkit/dist/query/baseQueryTypes";
+import { TypedUseMutation } from "@reduxjs/toolkit/query/react";
 import {
     extractErrorData,
     useExtractNonFieldError,
@@ -37,10 +39,9 @@ export interface UseAPIBasedFormProps<
     endpoint: ApiEndpointMutation<
         MutationDefinition<QueryArgType, typeof baseQuery, string, ItemType>,
         EndpointDefinitions
-    > &
-        MutationHooks<
-            MutationDefinition<QueryArgType, typeof baseQuery, string, ItemType>
-        >;
+    > & {
+        useMutation: TypedUseMutation<ItemType, QueryArgType, typeof baseQuery>;
+    };
     makeQueryArgs: (values: TFieldValues) => QueryArgType;
     onSuccess?: (result: ItemType) => void;
     resetOnSuccess?: boolean;
@@ -62,11 +63,10 @@ export const isMutationResultError = (
         | Exclude<BaseQueryError<typeof baseQuery>, undefined>;
 } => isRecord(result) && result.hasOwnProperty("error");
 
-const hasSubErrorsField = (
-    data: unknown
-): data is { errors: unknown } => (
-    isRecord(data) && data.hasOwnProperty("errors") && !!(data as { errors: unknown }).errors
-);
+const hasSubErrorsField = (data: unknown): data is { errors: unknown } =>
+    isRecord(data) &&
+    data.hasOwnProperty("errors") &&
+    !!(data as { errors: unknown }).errors;
 
 export const extractErrorsRecursively = <T>(
     referenceValue: unknown,
@@ -155,7 +155,12 @@ export const useApiBasedForm = <
                     return;
                 }
 
-                extractErrorsRecursively(value, hasSubErrorsField(data) ? data.errors : data, setError, "root");
+                extractErrorsRecursively(
+                    value,
+                    hasSubErrorsField(data) ? data.errors : data,
+                    setError,
+                    "root"
+                );
             });
         },
         [

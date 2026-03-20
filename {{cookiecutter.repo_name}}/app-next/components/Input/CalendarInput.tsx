@@ -47,12 +47,12 @@ export const CalendarInput = forwardRef(
             onClear,
             ...rest
         }: CalendarInputProps,
-        ref: ForwardedRef<HTMLInputElement>,
+        ref: ForwardedRef<HTMLInputElement>
     ) => {
         const { t } = useTranslation("common");
         const locale = useDateFnsLocale();
         const [value, setValue] = React.useState<CalendarDay | undefined>(
-            stringToCalendarDay(initialValue),
+            stringToCalendarDay(initialValue)
         );
         React.useEffect(() => {
             setValue(stringToCalendarDay(initialValue));
@@ -64,7 +64,7 @@ export const CalendarInput = forwardRef(
             return format(
                 new Date(value.year, value.month - 1, value.day),
                 "P",
-                { locale },
+                { locale }
             );
         }, [value, locale]);
         const selectDate = React.useCallback(
@@ -72,13 +72,13 @@ export const CalendarInput = forwardRef(
                 if (onChange) {
                     onChange(
                         `${newValue.year}-${zeroPadCalendarNumber(
-                            newValue.month,
-                        )}-${zeroPadCalendarNumber(newValue.day)}`,
+                            newValue.month
+                        )}-${zeroPadCalendarNumber(newValue.day)}`
                     );
                 }
                 setValue(newValue);
             },
-            [onChange],
+            [onChange]
         );
 
         return (
@@ -145,7 +145,7 @@ export const CalendarInput = forwardRef(
                                             "absolute z-[999] min-w-[300px] -mt-5 p-3 rounded-md text-base shadow-lg ring-1 ring-brand-dark ring-opacity-5 focus:outline-none sm:text-sm",
                                             disabled &&
                                                 "bg-brand-disabled-light",
-                                            !disabled && "bg-white",
+                                            !disabled && "bg-white"
                                         )}
                                         aria-label={t("labels.calendar")}
                                     >
@@ -165,7 +165,7 @@ export const CalendarInput = forwardRef(
                 )}
             </InputWrapper>
         );
-    },
+    }
 );
 
 CalendarInput.displayName = "CalendarInput";

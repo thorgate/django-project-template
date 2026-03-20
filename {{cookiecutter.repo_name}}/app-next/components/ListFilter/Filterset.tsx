@@ -22,7 +22,7 @@ import {
 } from "@lib/hooks/state";
 
 const chooseFilterComponent = <ValueType,>(
-    widget: AnyWidget<ValueType>,
+    widget: AnyWidget<ValueType>
 ): React.ComponentType<WidgetProps<ValueType>> => {
     if (isTextWidget(widget)) {
         return TextFilterWidget;
@@ -42,7 +42,7 @@ const chooseFilterComponent = <ValueType,>(
 
 export const FilterWidgetWrapper = <
     PageStateType extends object,
-    PageStateKey extends keyof PageStateType,
+    PageStateKey extends keyof PageStateType
 >({
     widget,
     pageStateKey,
@@ -57,16 +57,13 @@ export const FilterWidgetWrapper = <
     const component = chooseFilterComponent(widget);
     const value = React.useMemo(
         () => pageState[pageStateKey],
-        [pageState, pageStateKey],
+        [pageState, pageStateKey]
     );
     const onChange = React.useMemo(() => {
         const onChangeHandler = (newValue: PageStateType[PageStateKey]) => {
             setPageState({
                 [pageStateKey]: newValue,
-            } as Record<
-                PageStateKey,
-                PageStateType[PageStateKey]
-            > as Partial<PageStateType>);
+            } as Record<PageStateKey, PageStateType[PageStateKey]> as Partial<PageStateType>);
         };
         const {
             throttle: shouldThrottle = true,
@@ -79,7 +76,7 @@ export const FilterWidgetWrapper = <
                 {
                     leading: false,
                     trailing: true,
-                },
+                }
             ) as typeof onChangeHandler;
         }
         if (shouldThrottle) {
@@ -89,7 +86,7 @@ export const FilterWidgetWrapper = <
                 {
                     leading: false,
                     trailing: true,
-                },
+                }
             ) as typeof onChangeHandler;
         }
         return onChangeHandler;
@@ -145,14 +142,14 @@ export const Filterset = <PageStateType extends object>({
         () =>
             (Object.keys(filtersetDefinition) as (keyof PageStateType)[])
                 .filter(
-                    (definition) => !!filtersetDefinition[definition]?.widget,
+                    (definition) => !!filtersetDefinition[definition]?.widget
                 )
                 .sort(
                     (a, b) =>
                         (filtersetDefinition[a]?.widget?.index ?? 0) -
-                        (filtersetDefinition[b]?.widget?.index ?? 0),
+                        (filtersetDefinition[b]?.widget?.index ?? 0)
                 ),
-        [filtersetDefinition],
+        [filtersetDefinition]
     );
     const copyLink = React.useCallback(() => {
         void toast.promise(
@@ -161,7 +158,7 @@ export const Filterset = <PageStateType extends object>({
                 pending: t("common:labels.copyLinkProgress.pending"),
                 error: t("common:labels.copyLinkProgress.error"),
                 success: t("common:labels.copyLinkProgress.success"),
-            },
+            }
         );
     }, [t]);
 

@@ -61,22 +61,22 @@ export type AnyWidget<ValueType> = BaseWidgetOptions &
     );
 
 export const isCustomComponentWidget = <ValueType>(
-    value: AnyWidget<ValueType>,
+    value: AnyWidget<ValueType>
 ): value is CustomComponentWidget<ValueType> & BaseWidgetOptions =>
     Object.hasOwn(value, "component");
 
 export const isTextWidget = <ValueType>(
-    value: AnyWidget<ValueType>,
+    value: AnyWidget<ValueType>
 ): value is TextWidget<ValueType> & BaseWidgetOptions =>
     Object.hasOwn(value, "deserializer");
 
 export const isSingleChoiceWidget = <ValueType>(
-    value: AnyWidget<ValueType>,
+    value: AnyWidget<ValueType>
 ): value is SingleChoiceWidget<ValueType> & BaseWidgetOptions =>
     Object.hasOwn(value, "options") && isRecord(value) && !value.multiple;
 
 export const isMultipleChoiceWidget = <ValueType>(
-    value: AnyWidget<ValueType>,
+    value: AnyWidget<ValueType>
 ): value is MultipleChoiceWidget<ValueType> & BaseWidgetOptions =>
     Object.hasOwn(value, "options") && isRecord(value) && !!value.multiple;
 
@@ -98,7 +98,7 @@ export interface PageStateItemWithAPIInfo<
     ValueType,
     PageStateType,
     ApiArgType,
-    ApiArgKey extends keyof ApiArgType,
+    ApiArgKey extends keyof ApiArgType
 > extends PageStateItem<ValueType> {
     api?:
         | (ValueType extends ApiArgType[ApiArgKey]
@@ -111,14 +111,14 @@ export interface PageStateItemWithAPIInfo<
               key?: undefined;
               serializer: (
                   value: ValueType,
-                  completeState: PageStateType,
+                  completeState: PageStateType
               ) => Partial<ApiArgType>;
           };
 }
 
 export type PageStateDefinitionWithAPIInfo<
     PageStateType extends object,
-    ApiArgType extends object,
+    ApiArgType extends object
 > = {
     [K in keyof PageStateType]: {
         [AK in keyof ApiArgType]: PageStateItemWithAPIInfo<
@@ -138,12 +138,12 @@ export interface UsePageStateResult<PageStateType extends object> {
     pageState: PageStateType;
     setPageState: (
         newState: Partial<PageStateType>,
-        reset?: Record<keyof PageStateType, boolean> | true,
+        reset?: Record<keyof PageStateType, boolean> | true
     ) => void;
 }
 
 const normalizeQueryValue = (
-    value: string | string[] | undefined,
+    value: string | string[] | undefined
 ): string[] | undefined =>
     (value && typeof value !== "string" && value) ||
     (value !== undefined && [value]) ||
@@ -151,7 +151,7 @@ const normalizeQueryValue = (
 
 export const pageStateFromQueryParameters = <PageStateType extends object>(
     definition: PageStateDefinition<PageStateType>,
-    query: ParsedUrlQuery,
+    query: ParsedUrlQuery
 ): PageStateType => {
     const initialState: Partial<PageStateType> = {};
     for (const key of Object.keys(definition) as (keyof PageStateType)[]) {
@@ -169,12 +169,12 @@ export const pageStateFromQueryParameters = <PageStateType extends object>(
 };
 
 export const usePageState = <PageStateType extends object>(
-    definition: PageStateDefinition<PageStateType>,
+    definition: PageStateDefinition<PageStateType>
 ): UsePageStateResult<PageStateType> => {
     const { query, push } = useRouter();
 
     const [state, setState] = React.useState<PageStateType>(() =>
-        pageStateFromQueryParameters(definition, query),
+        pageStateFromQueryParameters(definition, query)
     );
 
     /* Use mutable refs instead of re-creating the setPageState function every time - this helps with throttling and
@@ -189,7 +189,7 @@ export const usePageState = <PageStateType extends object>(
     >(
         (newState, resetState) => {
             const setNewState = (
-                currentState: PageStateType,
+                currentState: PageStateType
             ): PageStateType => {
                 const completeNewState: PageStateType = {
                     ...currentState,
@@ -206,7 +206,7 @@ export const usePageState = <PageStateType extends object>(
                 }
                 const paginationResetNeeded =
                     (Object.keys(newState) as (keyof PageStateType)[]).some(
-                        (key) => definition[key].isFilter,
+                        (key) => definition[key].isFilter
                     ) ||
                     (resetState &&
                         (
@@ -227,7 +227,7 @@ export const usePageState = <PageStateType extends object>(
                 /* Manage URL parameters */
                 const changedQuery: typeof query = {};
                 for (const key of Object.keys(
-                    completeNewState,
+                    completeNewState
                 ) as (keyof PageStateType)[]) {
                     const { defaultValue } = definition[key];
                     const { key: urlKey, serializer } =
@@ -265,7 +265,7 @@ export const usePageState = <PageStateType extends object>(
             /* Manage state */
             setState(setNewState);
         },
-        [definition],
+        [definition]
     );
 
     return { pageState: state, setPageState };
@@ -273,7 +273,7 @@ export const usePageState = <PageStateType extends object>(
 
 export const apiStateFromPageState = <
     PageStateType extends object,
-    ApiArgType extends object,
+    ApiArgType extends object
 >(
     definition: PageStateDefinitionWithAPIInfo<PageStateType, ApiArgType>,
     {
@@ -282,7 +282,7 @@ export const apiStateFromPageState = <
     }: {
         pageState: PageStateType;
         unmanagedApiState: ApiArgType;
-    },
+    }
 ): ApiArgType => {
     let newState = { ...unmanagedApiState };
     for (const key of Object.keys(definition) as (keyof PageStateType)[]) {
@@ -304,7 +304,7 @@ export const apiStateFromPageState = <
 
 export const useApiState = <
     PageStateType extends object,
-    ApiArgType extends object,
+    ApiArgType extends object
 >(
     definition: PageStateDefinitionWithAPIInfo<PageStateType, ApiArgType>,
     {
@@ -313,11 +313,11 @@ export const useApiState = <
     }: {
         pageState: PageStateType;
         unmanagedApiState: ApiArgType;
-    },
+    }
 ): ApiArgType => {
     return React.useMemo<ApiArgType>(
         () =>
             apiStateFromPageState(definition, { pageState, unmanagedApiState }),
-        [definition, pageState, unmanagedApiState],
+        [definition, pageState, unmanagedApiState]
     );
 };

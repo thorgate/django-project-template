@@ -12,6 +12,7 @@ declare module "next" {
         P
     > & {
         getLayout?: (page: ReactNode) => ReactNode;
+        getLayoutProps?: () => Partial<LayoutProps>;
     };
 }
 

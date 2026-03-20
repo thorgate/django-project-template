@@ -17,7 +17,7 @@ export const verifyToken = async (
         });
 
         return payload;
-    } catch (e) {
+    } catch {
         return false;
     }
 };

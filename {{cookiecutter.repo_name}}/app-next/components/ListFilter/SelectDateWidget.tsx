@@ -5,10 +5,10 @@ import { CalendarInput } from "@components/Input";
 
 export const serializeDate = (date: Date): string => {
     const year = new Intl.DateTimeFormat("en", { year: "numeric" }).format(
-        date,
+        date
     );
     const month = new Intl.DateTimeFormat("en", { month: "2-digit" }).format(
-        date,
+        date
     );
     const day = new Intl.DateTimeFormat("en", { day: "2-digit" }).format(date);
     return `${year}-${month}-${day}`;
@@ -28,8 +28,8 @@ export const monthEnd = (date?: Date) => {
         new Date(
             date.getFullYear() + Math.floor((date.getMonth() + 1) / 12),
             (date.getMonth() + 1) % 12,
-            0,
-        ),
+            0
+        )
     );
 };
 export const previousMonthStart = (date?: Date) => {
@@ -40,8 +40,8 @@ export const previousMonthStart = (date?: Date) => {
         new Date(
             date.getFullYear() + Math.floor((date.getMonth() - 1) / 12),
             (date.getMonth() - 1 + 12) % 12,
-            1,
-        ),
+            1
+        )
     );
 };
 export const previousMonthEnd = (date?: Date) => {
@@ -58,7 +58,7 @@ export const SelectDateWidget: React.FC<
 > = ({ widget, value, onChange, onReset, displayValueIfNull }) => {
     const valueOrDefault = React.useMemo(
         () => value ?? displayValueIfNull?.() ?? serializeDate(new Date()),
-        [displayValueIfNull, value],
+        [displayValueIfNull, value]
     );
     const id = React.useId();
 
@@ -74,9 +74,9 @@ export const SelectDateWidget: React.FC<
 };
 
 export const SelectStartDateWidget: React.FC<WidgetProps<string | null>> = (
-    props,
+    props
 ) => <SelectDateWidget {...props} displayValueIfNull={previousMonthStart} />;
 
 export const SelectEndDateWidget: React.FC<WidgetProps<string | null>> = (
-    props,
+    props
 ) => <SelectDateWidget {...props} displayValueIfNull={previousMonthEnd} />;

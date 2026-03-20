@@ -170,7 +170,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
                 session,
             },
         };
-    },
+    }
 );
 
 export default UserList;
