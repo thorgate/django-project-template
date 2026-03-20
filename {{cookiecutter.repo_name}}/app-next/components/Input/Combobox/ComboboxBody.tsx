@@ -42,7 +42,7 @@ const extractString = (obj: unknown): string => {
 
 export const defaultFilterFn = (
     option: BaseComboboxOption,
-    search: string,
+    search: string
 ): boolean => {
     if (search === "") {
         return true;
@@ -104,7 +104,7 @@ export const ComboboxBody = <T extends BaseComboboxOption>({
                 onSearch(e.target.value);
             }
         },
-        [onSearch],
+        [onSearch]
     );
     const inputRef = React.useRef<HTMLInputElement>(null);
 
@@ -126,11 +126,11 @@ export const ComboboxBody = <T extends BaseComboboxOption>({
         const selectedOptions = Array.isArray(value)
             ? value
             : value
-              ? [value]
-              : [];
+            ? [value]
+            : [];
         const selectedKeys = selectedOptions.map((option) => option.key);
         const nonSelectedOptions = providedOptions.filter(
-            (option) => !selectedKeys.includes(option.key),
+            (option) => !selectedKeys.includes(option.key)
         );
         /* This ensures that selected options are always in the same order -
         regardless if they are still in provided options or not -
@@ -143,13 +143,13 @@ export const ComboboxBody = <T extends BaseComboboxOption>({
             (
                 filterFn ??
                 (onSearch === undefined ? defaultFilterFn : noOpFilterFn)
-            )(option, searchQuery),
+            )(option, searchQuery)
         );
         const filteredKeys = filteredOptions.map((option) => option.key);
         const filteredAndSelectedOptions = combinedOptions.filter(
             (option) =>
                 selectedKeys.includes(option.key) ||
-                filteredKeys.includes(option.key),
+                filteredKeys.includes(option.key)
         );
 
         if (topOptions === "none") {
@@ -162,19 +162,19 @@ export const ComboboxBody = <T extends BaseComboboxOption>({
         ) {
             return [
                 ...filteredAndSelectedOptions.filter((option) =>
-                    selectedKeys.includes(option.key),
+                    selectedKeys.includes(option.key)
                 ),
                 ...filteredAndSelectedOptions.filter(
-                    (option) => !selectedKeys.includes(option.key),
+                    (option) => !selectedKeys.includes(option.key)
                 ),
             ];
         }
         return [
             ...filteredAndSelectedOptions.filter((option) =>
-                filteredKeys.includes(option.key),
+                filteredKeys.includes(option.key)
             ),
             ...filteredAndSelectedOptions.filter(
-                (option) => !filteredKeys.includes(option.key),
+                (option) => !filteredKeys.includes(option.key)
             ),
         ];
     }, [providedOptions, value, topOptions, searchQuery, filterFn, onSearch]);
@@ -182,7 +182,7 @@ export const ComboboxBody = <T extends BaseComboboxOption>({
     /* Handle selecting 1st element on option list change */
     const optionKeys = React.useMemo(
         () => options.map((option) => option.key).join(),
-        [options],
+        [options]
     );
 
     const onInputKeyDown = React.useCallback<
@@ -267,7 +267,7 @@ export const ComboboxBody = <T extends BaseComboboxOption>({
                                 className={clsx(
                                     "absolute z-[999] -mt-5 max-h-[320px] w-full overflow-auto rounded-md text-base shadow-lg ring-1 ring-brand-dark ring-opacity-5 focus:outline-none sm:text-sm",
                                     disabled && "bg-brand-disabled-light",
-                                    !disabled && "bg-white",
+                                    !disabled && "bg-white"
                                 )}
                                 /* Re-mounting the whole component due to key change will cause the focus to move to 1st
                                  * checked item (or 1st item if none are checked) */
@@ -286,7 +286,7 @@ export const ComboboxBody = <T extends BaseComboboxOption>({
                                                 "relative cursor-default select-none py-2 pl-3 pr-9",
                                                 focus
                                                     ? "bg-brand-primary text-white"
-                                                    : "text-brand-dark bg-white",
+                                                    : "text-brand-dark bg-white"
                                             )
                                         }
                                     >
@@ -296,7 +296,7 @@ export const ComboboxBody = <T extends BaseComboboxOption>({
                                                     className={clsx(
                                                         "block truncate",
                                                         selected &&
-                                                            "font-semibold",
+                                                            "font-semibold"
                                                     )}
                                                 >
                                                     {option.label}
@@ -307,7 +307,7 @@ export const ComboboxBody = <T extends BaseComboboxOption>({
                                                             "absolute inset-y-0 right-0 flex items-center pr-4",
                                                             focus
                                                                 ? "text-white"
-                                                                : "text-brand-primary",
+                                                                : "text-brand-primary"
                                                         )}
                                                     >
                                                         <CheckIcon

@@ -2,8 +2,13 @@ import { isRejectedWithValue } from "@reduxjs/toolkit";
 import type { Middleware } from "@reduxjs/toolkit";
 import { i18n } from "next-i18next";
 import { toast } from "react-toastify";
-import { extractNonFieldError } from "@lib/convertError";
+import { extractNonFieldError, isRecord } from "@lib/convertError";
 import { appUserSlice } from "@lib/slices/appUser";
+
+const isServerSideAction = (action: unknown) =>
+    isRecord(action) &&
+    isRecord(action.meta) &&
+    action.meta.source !== undefined;
 
 export const rtkQueryErrorLogger: Middleware =
     ({ dispatch }) =>
@@ -22,11 +27,7 @@ export const rtkQueryErrorLogger: Middleware =
         // the client on error due to the nature of how RTKq work. We don't want to show an error message for these,
         // as it will either work client side and error message will be misleading, or it will fail and error message will
         // be duplicated.
-        if (
-            isRejectedWithValue(action) &&
-            action.meta &&
-            action.meta?.source !== "GSSP"
-        ) {
+        if (isRejectedWithValue(action) && !isServerSideAction(action)) {
             const t =
                 i18n?.t ||
                 (((key: string) => key) as (

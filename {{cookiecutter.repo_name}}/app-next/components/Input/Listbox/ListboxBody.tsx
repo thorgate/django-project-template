@@ -102,7 +102,7 @@ export const ListboxBody = <T extends BaseListboxOption>({
                                 className={clsx(
                                     "absolute z-[999] -mt-5 max-h-[320px] w-full overflow-auto rounded-md text-base shadow-lg ring-1 ring-brand-dark ring-opacity-5 focus:outline-none sm:text-sm",
                                     disabled && "bg-brand-disabled-light",
-                                    !disabled && "bg-white",
+                                    !disabled && "bg-white"
                                 )}
                             >
                                 {options.map((option) => (
@@ -114,7 +114,7 @@ export const ListboxBody = <T extends BaseListboxOption>({
                                                 "relative cursor-default select-none py-2 pl-3 pr-9",
                                                 active
                                                     ? "bg-brand-primary text-white"
-                                                    : "text-brand-dark bg-white",
+                                                    : "text-brand-dark bg-white"
                                             )
                                         }
                                     >
@@ -124,7 +124,7 @@ export const ListboxBody = <T extends BaseListboxOption>({
                                                     className={clsx(
                                                         "block truncate",
                                                         selected &&
-                                                            "font-semibold",
+                                                            "font-semibold"
                                                     )}
                                                 >
                                                     {option.label}
@@ -135,7 +135,7 @@ export const ListboxBody = <T extends BaseListboxOption>({
                                                             "absolute inset-y-0 right-0 flex items-center pr-4",
                                                             active
                                                                 ? "text-white"
-                                                                : "text-brand-primary",
+                                                                : "text-brand-primary"
                                                         )}
                                                     >
                                                         <CheckIcon

@@ -41,5 +41,5 @@ export const inputClassNames = ({
         disabled && ring && "ring-brand-disabled-dark",
         !disabled && error && ring && "ring-brand-danger",
         !disabled && !error && ring && "ring-brand-primary",
-        className,
+        className
     );

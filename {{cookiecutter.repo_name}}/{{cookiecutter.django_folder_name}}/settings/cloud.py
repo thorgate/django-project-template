@@ -15,7 +15,6 @@ if not IS_DOCKER_BUILD:
     SITE_URL = env.str("APP_SITE_URL")
     # - {%- elif cookiecutter.frontend_style == SPA_NEXT %}
     SITE_URL = env.str("APP_PUBLIC_SITE_URL")
-    # - {%- endif %}
     DJANGO_SITE_URL = env.str("APP_BACKEND_SITE_URL")
     CSRF_COOKIE_DOMAIN = env.str("DJANGO_CSRF_COOKIE_DOMAIN")
 

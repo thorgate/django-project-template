@@ -1,116 +1,28 @@
 import React from "react";
-import {
-    ControllerProps,
-    FieldPath,
-    FieldValues,
-} from "react-hook-form/dist/types";
+import { FieldPath, FieldValues } from "react-hook-form/dist/types";
 import { Controller } from "react-hook-form";
 import {
+    ApiSelectHookFormFactoryArguments,
+    ApiSelectHookFormProps,
+    ApiSelectMultipleHookFormFactoryArguments,
+    ApiSelectMultipleHookFormProps,
+    ApiSelectMultipleWithLoadInitialValueProps,
     ApiSelectOption,
-    BaseHookFormFactoryArguments,
+    ApiSelectWithLoadInitialValueProps,
     BaseItemType,
     BaseQueryArgType,
 } from "@lib/factories/types";
 import {
     apiSelectFactory,
-    ApiSelectFactoryArguments,
     apiSelectMultipleFactory,
-    ApiSelectMultipleFactoryArguments,
-    ApiSelectMultipleProps,
-    ApiSelectProps,
 } from "@lib/factories/ApiSelectFactory";
 import { isMutationResultError } from "@lib/factories/hooks";
-
-type FallbackValue =
-    | {
-          label: string;
-          needsRefreshFromApi?: boolean;
-      }
-    | string;
-
-export interface ApiSelectWithLoadInitialValueProps<ValueT, QueryArgType> {
-    value: ValueT | null;
-    fallbackValueLabel?: FallbackValue;
-    getSearchQueryArgs?: (query: string) => Partial<QueryArgType>;
-    onChange?: (value: ValueT | null) => void;
-    onReset?: () => void;
-    selectProps: Omit<
-        ApiSelectProps<ValueT, QueryArgType>,
-        "onChange" | "initialValue" | "loadingInitialValue" | "disabled"
-    >;
-    disabled?: boolean;
-}
-
-export interface ApiSelectMultipleWithLoadInitialValueProps<
-    ValueT,
-    QueryArgType,
-> {
-    values: ValueT[];
-    fallbackValueLabel?: (value: ValueT) => FallbackValue;
-    getSearchQueryArgs?: (query: string) => Partial<QueryArgType>;
-    onChange?: (options: ValueT[]) => void;
-    selectProps: Omit<
-        ApiSelectProps<ValueT, QueryArgType>,
-        "onChange" | "initialValue" | "loadingInitialValue" | "disabled"
-    >;
-    disabled?: boolean;
-}
-
-export interface ApiSelectHookFormProps<
-    TFieldValues extends FieldValues,
-    TName extends FieldPath<TFieldValues>,
-    TValue extends TFieldValues[TName],
-    QueryArgType,
-> extends Omit<ControllerProps<TFieldValues, TName>, "render"> {
-    selectProps?: Omit<
-        ApiSelectProps<TValue, QueryArgType>,
-        "onChange" | "initialValue" | "loadingInitialValue"
-    >;
-    initialValueLabel?: string;
-}
-
-export interface ApiSelectMultipleHookFormProps<
-    TFieldValues extends FieldValues,
-    TName extends FieldPath<TFieldValues>,
-    TValue,
-    QueryArgType,
-> extends Omit<ControllerProps<TFieldValues, TName>, "render"> {
-    selectProps?: Omit<
-        ApiSelectMultipleProps<TValue & TFieldValues[TName], QueryArgType>,
-        "onChange" | "initialValue" | "loadingInitialValue"
-    >;
-    initialValueLabels?: (value: TValue) => string;
-}
-
-export interface ApiSelectHookFormFactoryArguments<
-    ItemType extends BaseItemType,
-    QueryArgType extends BaseQueryArgType,
-    ValueType,
-    InitialQueryArgType extends BaseQueryArgType,
-> extends ApiSelectFactoryArguments<ItemType, QueryArgType, ValueType>,
-        BaseHookFormFactoryArguments<
-            ItemType,
-            InitialQueryArgType,
-            ValueType
-        > {}
-
-export interface ApiSelectMultipleHookFormFactoryArguments<
-    ItemType extends BaseItemType,
-    QueryArgType extends BaseQueryArgType,
-    ValueType,
-    InitialQueryArgType extends BaseQueryArgType,
-> extends ApiSelectMultipleFactoryArguments<ItemType, QueryArgType, ValueType>,
-        BaseHookFormFactoryArguments<
-            ItemType,
-            InitialQueryArgType,
-            ValueType
-        > {}
 
 export const apiSelectWithLoadInitialValueFactory = <
     ItemType extends BaseItemType,
     QueryArgType extends BaseQueryArgType,
     ValueType,
-    InitialQueryArgType extends BaseQueryArgType,
+    InitialQueryArgType extends BaseQueryArgType
 >({
     initialValueRetrieveEndpoint,
     getInitialValueQueryArgs,
@@ -140,7 +52,7 @@ export const apiSelectWithLoadInitialValueFactory = <
                           label: rawFallbackLabel ?? String(value),
                           needsRefreshFromApi: false,
                       },
-            [rawFallbackLabel, value],
+            [rawFallbackLabel, value]
         );
         const fallbackValue = React.useMemo(
             () =>
@@ -155,7 +67,7 @@ export const apiSelectWithLoadInitialValueFactory = <
                               !!fallbackLabel.needsRefreshFromApi,
                       }
                     : null,
-            [value, fallbackLabel],
+            [value, fallbackLabel]
         );
         const [chosenOption, setChosenOption] = React.useState<
             ApiSelectOption<ValueType> | null | undefined
@@ -175,14 +87,14 @@ export const apiSelectWithLoadInitialValueFactory = <
         }, [fallbackValue]);
         const skipLoading = React.useMemo(
             () => value === null || !fallbackLabel.needsRefreshFromApi,
-            [fallbackLabel, value],
+            [fallbackLabel, value]
         );
         const queryArguments = React.useMemo(
             () =>
                 value === null
                     ? ({} as InitialQueryArgType)
                     : getInitialValueQueryArgs(value),
-            [value],
+            [value]
         );
         const { data: valueData, isLoading: loadingValueData } =
             initialValueRetrieveEndpoint.useQuery(queryArguments, {
@@ -203,7 +115,7 @@ export const apiSelectWithLoadInitialValueFactory = <
                 setChosenOption(option);
                 outerOnChange?.(option?.value ?? null);
             },
-            [outerOnChange],
+            [outerOnChange]
         );
 
         return (
@@ -225,7 +137,7 @@ export const apiSelectMultipleWithLoadInitialValueFactory = <
     ItemType extends BaseItemType,
     QueryArgType extends BaseQueryArgType,
     InitialQueryArgType extends BaseQueryArgType,
-    ValueType,
+    ValueType
 >({
     initialValueRetrieveEndpoint,
     getInitialValueQueryArgs,
@@ -267,7 +179,7 @@ export const apiSelectMultipleWithLoadInitialValueFactory = <
                     needsRefreshFromApi: !!fallbackLabel.needsRefreshFromApi,
                 };
             },
-            [fallbackValueLabel],
+            [fallbackValueLabel]
         );
 
         const [chosenOptions, setChosenOptions] = React.useState<
@@ -293,15 +205,15 @@ export const apiSelectMultipleWithLoadInitialValueFactory = <
                 valuesWithFallback.map(
                     (value) =>
                         currentValuesByValue[value.mappedValue.key] ??
-                        value.mappedValue,
-                ),
+                        value.mappedValue
+                )
             );
 
             valuesWithFallback
                 .filter((value) => value.mappedValue.needsRefreshFromApi)
                 .forEach((value) => {
                     const queryArguments = getInitialValueQueryArgs(
-                        value.originalValue,
+                        value.originalValue
                     );
                     trigger(queryArguments, true).then((result) => {
                         if (isMutationResultError(result)) {
@@ -314,7 +226,7 @@ export const apiSelectMultipleWithLoadInitialValueFactory = <
                         const option = factoryArguments.getOptionForItem(data);
                         setChosenOptions((currentOptions) => {
                             return currentOptions.map((o) =>
-                                o.key === option.key ? option : o,
+                                o.key === option.key ? option : o
                             );
                         });
                     });
@@ -329,7 +241,7 @@ export const apiSelectMultipleWithLoadInitialValueFactory = <
                 setChosenOptions(options);
                 outerOnChange?.(options.map((option) => option.value));
             },
-            [outerOnChange],
+            [outerOnChange]
         );
 
         return (
@@ -352,7 +264,7 @@ export const apiSelectHookFormFactory = <
     ItemType extends BaseItemType,
     QueryArgType extends BaseQueryArgType,
     ValueType,
-    InitialQueryArgType extends BaseQueryArgType,
+    InitialQueryArgType extends BaseQueryArgType
 >({
     initialValueRetrieveEndpoint,
     getInitialValueQueryArgs,
@@ -371,7 +283,7 @@ export const apiSelectHookFormFactory = <
 
     const ApiSelect = <
         TFieldValues extends FieldValues,
-        TName extends FieldPath<TFieldValues>,
+        TName extends FieldPath<TFieldValues>
     >({
         selectProps = {},
         initialValueLabel,
@@ -402,7 +314,7 @@ export const apiSelectMultipleHookFormFactory = <
     ItemType extends BaseItemType,
     QueryArgType extends BaseQueryArgType,
     ValueType,
-    InitialQueryArgType extends BaseQueryArgType,
+    InitialQueryArgType extends BaseQueryArgType
 >({
     initialValueRetrieveEndpoint,
     getInitialValueQueryArgs,
@@ -421,7 +333,7 @@ export const apiSelectMultipleHookFormFactory = <
 
     const ApiSelect = <
         TFieldValues extends FieldValues,
-        TName extends FieldPath<TFieldValues>,
+        TName extends FieldPath<TFieldValues>
     >({
         selectProps = {},
         initialValueLabels,

@@ -1,10 +1,11 @@
+{%- raw -%}
 import React from "react";
 import { Trans, useTranslation } from "next-i18next";
 import { PaginationLink } from "./PaginationLink";
-import { ListQueryPageOnlyResult } from "@lib/factories/types";
+import { RetrieveQueryPageOnlyResult } from "@lib/factories/types";
 
 export interface PaginationProps {
-    data?: ListQueryPageOnlyResult;
+    data?: RetrieveQueryPageOnlyResult;
     setPageNumber: (pageNumber: number | undefined) => void;
 }
 
@@ -18,7 +19,7 @@ type PageNumber =
  * Otherwise, it is a normal page.
  * */
 const extractPageNumber = (
-    args: { pageNumber?: number } | undefined | null,
+    args: { pageNumber?: number } | undefined | null
 ): PageNumber => {
     if (args === undefined || args === null) {
         return null;
@@ -52,14 +53,14 @@ export const Pagination = ({ data, setPageNumber }: PaginationProps) => {
             nextPageNumber !== null
                 ? () => setPageNumber(nextPageNumber ?? undefined)
                 : null,
-        [nextPageNumber, setPageNumber],
+        [nextPageNumber, setPageNumber]
     );
     const onPreviousPage = React.useMemo(
         () =>
             previousPageNumber !== null
                 ? () => setPageNumber(previousPageNumber ?? undefined)
                 : null,
-        [previousPageNumber, setPageNumber],
+        [previousPageNumber, setPageNumber]
     );
 
     if (!onPreviousPage && !onNextPage) {
@@ -94,3 +95,4 @@ export const Pagination = ({ data, setPageNumber }: PaginationProps) => {
         </div>
     );
 };
+{%- endraw -%}

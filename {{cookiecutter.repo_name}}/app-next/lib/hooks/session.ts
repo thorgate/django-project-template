@@ -5,7 +5,7 @@ import { useAppSelector } from "@lib/hooks/redux";
 export const useSessionIsValid = () => {
     const { status, data: sessionData } = useSession();
     const sessionExpired = useAppSelector(
-        (state) => state.appUser.sessionExpired,
+        (state) => state.appUser.sessionExpired
     );
 
     return React.useMemo<boolean | undefined>(() => {

@@ -13,7 +13,7 @@ interface CalendarDay {
 }
 
 export const stringToCalendarDay = (
-    dateString: string | undefined,
+    dateString: string | undefined
 ): CalendarDay | undefined => {
     if (dateString === undefined) {
         return undefined;
@@ -86,7 +86,7 @@ export const Calendar = ({
         initial ?? {
             month: today.month,
             year: today.year,
-        },
+        }
     );
 
     const changeMonth = React.useCallback((offset: number) => {
@@ -116,14 +116,14 @@ export const Calendar = ({
     const days = React.useMemo<CalendarDayWithMeta[]>(() => {
         const result: CalendarDayWithMeta[] = [];
         const monthStart = new Date(
-            `${month.year}-${zeroPadCalendarNumber(month.month)}-01`,
+            `${month.year}-${zeroPadCalendarNumber(month.month)}-01`
         );
 
         const monthEnd = addDays(addMonths(monthStart, 1), -1);
 
         const calendarStart = addDays(
             monthStart,
-            -(monthStart.getDay() + 6) % 7,
+            -(monthStart.getDay() + 6) % 7
         );
         let extraDays = 7 - monthEnd.getDay();
         if (extraDays === 7) {
@@ -245,7 +245,7 @@ export const Calendar = ({
                             dayIdx === 0 && "rounded-tl-md",
                             dayIdx === 6 && "rounded-tr-md",
                             dayIdx === days.length - 7 && "rounded-bl-md",
-                            dayIdx === days.length - 1 && "rounded-br-md",
+                            dayIdx === days.length - 1 && "rounded-br-md"
                         )}
                         onClick={
                             onSelect ? () => onSelect(day.date) : undefined
@@ -260,7 +260,7 @@ export const Calendar = ({
                                     "bg-brand-light",
                                 day.isSelected &&
                                     !day.isToday &&
-                                    "bg-brand-dark ",
+                                    "bg-brand-dark "
                             )}
                         >
                             {day.date.day}

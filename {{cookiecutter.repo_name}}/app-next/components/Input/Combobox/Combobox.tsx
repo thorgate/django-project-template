@@ -9,7 +9,7 @@ import {
 
 type ComboboxProps<
     TValue extends BaseComboboxOption,
-    TMultiple extends boolean | undefined,
+    TMultiple extends boolean | undefined
 > = Omit<
     typeof HeadlessCombobox<
         TMultiple extends true ? TValue[] : TValue | null
@@ -24,7 +24,7 @@ type ComboboxProps<
 
 export const Combobox = <
     T extends BaseComboboxOption,
-    TMultiple extends boolean | undefined,
+    TMultiple extends boolean | undefined
 >({
     label,
     onSearch = undefined,

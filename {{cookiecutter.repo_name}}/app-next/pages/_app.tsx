@@ -26,12 +26,12 @@ const TokenWatcher = ({ pageProps }: TokenWatcherProps) => {
     const { push } = useRouter();
     const dispatch = useAppDispatch();
     const currentAccessToken = useAppSelector(
-        (state) => state.appUser.accessToken,
+        (state) => state.appUser.accessToken
     );
     const [previousAccessToken, setPreviousAccessToken] =
         useState(currentAccessToken);
     const sessionExpired = useAppSelector(
-        (state) => state.appUser.sessionExpired,
+        (state) => state.appUser.sessionExpired
     );
     const [previouslyExpired, setPreviouslyExpired] = useState(sessionExpired);
 

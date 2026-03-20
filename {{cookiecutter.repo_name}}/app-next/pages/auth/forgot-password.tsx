@@ -10,7 +10,7 @@ import {
     queriesApi,
     UserForgotPasswordCreateApiArg,
     UserForgotPasswordCreateApiResponse,
-    ForgotPassword as APIForgotPassword,
+    ForgotPassword as ForgotPasswordType,
 } from "@lib/queries";
 import { wrapper } from "@lib/store";
 import { prepareSession } from "@lib/session";
@@ -30,13 +30,13 @@ export const getServerSideProps = wrapper.getServerSideProps(
                 session,
             },
         };
-    },
+    }
 );
 
 const makeQueryArgs = (
-    values: APIForgotPassword,
+    values: ForgotPasswordType
 ): UserForgotPasswordCreateApiArg => ({
-    forgotPasswordRequest: values,
+    forgotPassword: values,
 });
 
 const ForgotPassword = () => {
@@ -49,7 +49,7 @@ const ForgotPassword = () => {
     const form = useApiBasedForm<
         UserForgotPasswordCreateApiResponse,
         UserForgotPasswordCreateApiArg,
-        APIForgotPassword
+        ForgotPasswordType
     >({
         endpoint: queriesApi.endpoints.userForgotPasswordCreate,
         makeQueryArgs,
@@ -60,8 +60,8 @@ const ForgotPassword = () => {
         <>
             <Head>
                 <title>{`${t(
-                    "auth:forgotPassword.title",
-                )} - {{ cookiecutter.project_title }}`}</title>
+                    "auth:forgotPassword.title"
+                )} - test-project`}</title>
             </Head>
             <div className="p-10 xs:p-0 mx-auto md:w-full md:max-w-md">
                 <Card>

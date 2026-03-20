@@ -11,14 +11,14 @@ export const TextFilterWidget = <ValueType,>({
 }: WidgetProps<ValueType>) => {
     const Icon = React.useMemo(
         () => widget.icon ?? MagnifyingGlassIcon,
-        [widget],
+        [widget]
     );
     const currentSearchQuery = React.useMemo(
         () =>
             isTextWidget(widget) && widget.serializer
                 ? widget.serializer(value)
                 : `${value}`,
-        [widget, value],
+        [widget, value]
     );
     const inputElement = React.useRef<HTMLInputElement | null>(null);
     React.useEffect(() => {
@@ -35,11 +35,11 @@ export const TextFilterWidget = <ValueType,>({
                 onChange(widget.deserializer(e.target.value));
             }
         },
-        [onChange, widget],
+        [onChange, widget]
     );
     const extraInputProps = React.useMemo(
         () => (isTextWidget(widget) && widget.inputProps) || {},
-        [widget],
+        [widget]
     );
 
     return (

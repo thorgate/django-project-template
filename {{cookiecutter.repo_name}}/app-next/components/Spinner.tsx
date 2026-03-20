@@ -7,7 +7,7 @@ export const Spinner: React.FC<{ className?: string }> = ({ className }) => (
         className={clsx(
             "animate-spin",
             !className && "text-brand-muted w-5 h-5",
-            className,
+            className
         )}
     />
 );

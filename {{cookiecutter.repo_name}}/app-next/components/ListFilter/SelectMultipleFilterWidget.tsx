@@ -36,9 +36,9 @@ export const SelectMultipleFilterWidget = <ValueType,>({
             options.filter(
                 (option) =>
                     Array.isArray(value) &&
-                    value.find((v) => v === option.value) !== undefined,
+                    value.find((v) => v === option.value) !== undefined
             ),
-        [options, value],
+        [options, value]
     );
     const onChange = React.useCallback(
         (
@@ -48,14 +48,14 @@ export const SelectMultipleFilterWidget = <ValueType,>({
                   }[]
                 | {
                       value: ValueType extends Array<infer T> ? T : never;
-                  },
+                  }
         ) => {
             const newValues = (
                 Array.isArray(newOptions) ? newOptions : [newOptions]
             ).map((option) => option.value);
             outerOnChange(newValues as ValueType);
         },
-        [outerOnChange],
+        [outerOnChange]
     );
 
     return (

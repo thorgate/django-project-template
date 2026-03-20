@@ -35,11 +35,11 @@ export const ComboboxValues: React.FC<
         () => ({
             truncatedValues: values.slice(
                 0,
-                values.length > limit ? limit - 1 : undefined,
+                values.length > limit ? limit - 1 : undefined
             ),
             more: Math.max(0, values.length - limit + 1),
         }),
-        [values, limit],
+        [values, limit]
     );
     return (
         <label {...props} ref={limitRef}>

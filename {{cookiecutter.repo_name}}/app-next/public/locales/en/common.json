@@ -20,7 +20,6 @@
     "filters": {
         "nothingSelected": "Select",
         "search": "Search",
-        "select": "Select",
         "titles": {
             "isActive": "Is active?",
             "isStaff": "Is staff?"
@@ -32,6 +31,7 @@
             "inactive": "Inactive",
             "true": "Yes"
         },
+        "select": "Select",
         "hidden": "Hidden",
         "page-number": "Page number",
         "multi-select": "Select multiple"
@@ -49,6 +49,8 @@
         "delete": "Delete"
     },
     "labels": {
+        "calendar": "Calendar",
+        "clear": "Clear",
         "copyLink": "Copy link",
         "copyLinkProgress": {
             "error": "Error when trying to access the clipboard",

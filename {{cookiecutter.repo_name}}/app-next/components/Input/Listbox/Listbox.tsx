@@ -13,7 +13,7 @@ type ListboxDefaultTag = React.ExoticComponent<{
 
 type ListboxProps<
     TValue extends BaseListboxOption,
-    TMultiple extends boolean | undefined,
+    TMultiple extends boolean | undefined
 > = Omit<
     typeof HeadlessListbox<
         ListboxDefaultTag,
@@ -29,7 +29,7 @@ type ListboxProps<
 
 export const Listbox = <
     T extends BaseListboxOption,
-    TMultiple extends boolean | undefined,
+    TMultiple extends boolean | undefined
 >({
     label,
     onClear = undefined,

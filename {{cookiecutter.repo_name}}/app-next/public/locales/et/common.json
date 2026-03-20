@@ -20,7 +20,6 @@
     "filters": {
         "nothingSelected": "Vali",
         "search": "Otsi",
-        "select": "Vali",
         "titles": {
             "isActive": "Lubatud?",
             "isStaff": "Administraator?"
@@ -32,6 +31,7 @@
             "inactive": "Pole lubatud",
             "true": "Jah"
         },
+        "select": "Vali",
         "hidden": "Salajane",
         "page-number": "Lehekülje number",
         "multi-select": "Vali mitu"
@@ -49,6 +49,8 @@
         "delete": "Kustuta"
     },
     "labels": {
+        "calendar": "Kalender",
+        "clear": "Tühista",
         "copyLink": "Kopeeri link",
         "copyLinkProgress": {
             "error": "Kopeerimine ei olnud võimalik",
