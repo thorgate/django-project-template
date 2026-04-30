@@ -57,6 +57,7 @@ def cleanup():
     if '{{ cookiecutter.frontend_style }}' == WEBAPP:
         cleanup_paths += [
             'app',
+            'app-next',
             'Dockerfile-node.production',
             '{{ cookiecutter.django_folder_name }}/accounts/api_urls.py',
             '{{ cookiecutter.django_folder_name }}/accounts/jwt',
