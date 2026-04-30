@@ -8,6 +8,7 @@ import {
 import * as qs from "qs";
 import { RootState, appUserSlice } from "@lib/store";
 import { resolveBaseUrl } from "@lib/utils";
+import { isRecord } from "@lib/convertError";
 
 // eslint-disable-next-line no-console
 console.log("API Base URL:", resolveBaseUrl());
@@ -35,7 +36,11 @@ export const baseQuery: BaseQueryFn<
     FetchBaseQueryError
 > = async (args, api, extraOptions) => {
     const result = await nextBaseQuery(args, api, extraOptions);
-    if (!result.error || result.error.status !== 401) {
+    if (
+        !result.error ||
+        result.error.status !== 401 ||
+        (isRecord(extraOptions) && !!extraOptions.retryingAuth)
+    ) {
         return result;
     }
 
@@ -60,7 +65,7 @@ export const baseQuery: BaseQueryFn<
         })
     );
 
-    return baseQuery(args, api, extraOptions);
+    return baseQuery(args, api, { ...extraOptions, retryingAuth: true });
 };
 
 export const baseQueriesApi = createApi({

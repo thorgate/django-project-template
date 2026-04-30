@@ -100,7 +100,7 @@ export const ListboxBody = <T extends BaseListboxOption>({
                         >
                             <HeadlessListbox.Options
                                 className={clsx(
-                                    "absolute z-[999] -mt-5 max-h-[320px] w-full overflow-auto rounded-md text-base shadow-lg ring-1 ring-brand-dark ring-opacity-5 focus:outline-none sm:text-sm",
+                                    "absolute z-[999] -mt-5 max-h-[320px] w-full overflow-auto rounded-md text-base text-brand-dark shadow-lg ring-1 ring-brand-dark ring-opacity-5 focus:outline-none sm:text-sm",
                                     disabled && "bg-brand-disabled-light",
                                     !disabled && "bg-white"
                                 )}
