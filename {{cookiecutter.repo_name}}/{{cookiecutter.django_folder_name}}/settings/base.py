@@ -81,6 +81,7 @@ INSTALLED_APPS = [
     "tg_react",
     "corsheaders",
     "drf_spectacular",
+    "drf_spectacular_sidecar",
     # - {%- endif %}
     # Health-checks
     "health_check",
@@ -441,10 +442,13 @@ SPECTACULAR_SETTINGS = {
     "SCHEMA_PATH_PREFIX": "/api/",
     "SERVERS": [
         {
-            "url": "http://127.0.0.1:8000/",
+            "url": "http://api.{{ cookiecutter.repo_name|slugify }}.localtest.me:8000/",
             "description": "Local development environment",
         },
     ],
+    "SWAGGER_UI_DIST": "SIDECAR",
+    "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
+    "REDOC_DIST": "SIDECAR",
 }
 
 # - {%- endif %}

@@ -3,13 +3,11 @@ name = "{{ cookiecutter.repo_name }}-ansible"
 version = "1.0.0"
 description = "Ansible scripts for {{ cookiecutter.project_title }} deployment"
 authors = ["Thorgate <hi@thorgate.eu>"]
+package-mode = false
 
 [tool.poetry.dependencies]
-python = "^3.8"
-ansible = "^5.7"
-jinja2 = "^3.1"
-docker-compose = "^1.29"
-cryptography = "^37.0.2"
+python = "^3.10"
+ansible = "^10.0"
 yq = "^2.14.0"
 jq = "^1.2.2"
 

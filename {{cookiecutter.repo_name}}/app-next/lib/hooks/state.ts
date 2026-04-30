@@ -82,6 +82,7 @@ export const isMultipleChoiceWidget = <ValueType>(
 
 export interface PageStateItem<ValueType = never> {
     defaultValue: ValueType;
+    defaultValueFactory?: () => ValueType;
     /* Pagination state needs to be reset if filters change */
     isPagination?: boolean;
     isFilter?: boolean;
@@ -149,6 +150,9 @@ const normalizeQueryValue = (
     (value !== undefined && [value]) ||
     undefined;
 
+export const defaultValueForPageStateItem = <T>(item: PageStateItem<T>): T =>
+    item?.defaultValueFactory?.() ?? item.defaultValue;
+
 export const pageStateFromQueryParameters = <PageStateType extends object>(
     definition: PageStateDefinition<PageStateType>,
     query: ParsedUrlQuery
@@ -163,7 +167,9 @@ export const pageStateFromQueryParameters = <PageStateType extends object>(
         initialState[key] =
             valueFromUrl !== undefined && deserializer
                 ? (deserializer(valueFromUrl) as PageStateType[typeof key])
-                : (definition[key].defaultValue as PageStateType[typeof key]);
+                : (defaultValueForPageStateItem(
+                      definition[key]
+                  ) as PageStateType[typeof key]);
     }
     return initialState as PageStateType;
 };
@@ -200,8 +206,9 @@ export const usePageState = <PageStateType extends object>(
                         ? (Object.keys(definition) as (keyof PageStateType)[])
                         : (Object.keys(resetState) as (keyof PageStateType)[])
                     ).forEach((key) => {
-                        completeNewState[key] = definition[key]
-                            .defaultValue as PageStateType[typeof key];
+                        completeNewState[key] = defaultValueForPageStateItem(
+                            definition[key]
+                        ) as PageStateType[typeof key];
                     });
                 }
                 const paginationResetNeeded =
@@ -218,8 +225,10 @@ export const usePageState = <PageStateType extends object>(
                         Object.keys(definition) as (keyof PageStateType)[]
                     ).forEach((key) => {
                         if (definition[key].isPagination) {
-                            completeNewState[key] = definition[key]
-                                .defaultValue as PageStateType[typeof key];
+                            completeNewState[key] =
+                                defaultValueForPageStateItem(
+                                    definition[key]
+                                ) as PageStateType[typeof key];
                         }
                     });
                 }
@@ -229,7 +238,9 @@ export const usePageState = <PageStateType extends object>(
                 for (const key of Object.keys(
                     completeNewState
                 ) as (keyof PageStateType)[]) {
-                    const { defaultValue } = definition[key];
+                    const defaultValue = defaultValueForPageStateItem(
+                        definition[key]
+                    );
                     const { key: urlKey, serializer } =
                         definition[key].url ?? {};
                     if (!urlKey || !serializer) {

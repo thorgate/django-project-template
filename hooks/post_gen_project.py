@@ -169,6 +169,13 @@ def cleanup():
     elif '{{ cookiecutter.frontend_style }}' == SPA:
         cleanup_paths += ["app-next"]
 
+    if '{{ cookiecutter.frontend_style }}' != SPA_NEXT:
+        cleanup_paths += [
+            'AGENTS.md',
+            'CLAUDE.md',
+            'docs/agent-guides',
+        ]
+
     # Rename first, then cleanup
     for old_path, new_path in rename_paths:
         old_full_path = os.path.join(cwd, old_path)
@@ -223,7 +230,7 @@ def remove_ci_project_generation_extra_commands(path):
     Will line containing CI_TEST_PROJECT_GENERATE and the following it.
     """
 
-    sed_command = f"/CI_TEST_PROJECT_GENERATE/,+2d"
+    sed_command = f"/CI_TEST_PROJECT_GENERATE/,+1d"
     return subprocess.check_call(["find", path, "-type", "f", "-exec", "sed", "-i", sed_command, "{}", "+"])
 
 
