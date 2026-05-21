@@ -1,4 +1,4 @@
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { serverSideTranslations } from "next-i18next/pages/serverSideTranslations";
 import { useEffect } from "react";
 import { wrapper } from "@lib/store";
 import { prepareSession } from "@lib/session";

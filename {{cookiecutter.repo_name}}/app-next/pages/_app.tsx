@@ -1,19 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { AppLayoutProps, AppProps } from "next/app";
 import { useRouter } from "next/router";
 import { SessionProvider, useSession, signOut } from "next-auth/react";
-import { appWithTranslation } from "next-i18next";
+import { appWithTranslation } from "next-i18next/pages";
 import { Provider } from "react-redux";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import { toast } from "react-toastify";
 
 import "@/styles/globals.css";
-import NextI18nextConfig from "@/next-i18next.config";
 import { Button } from "@components/Button";
 import { Layout } from "@components/Layout";
 import { useAppDispatch, useAppSelector } from "@lib/hooks";
 import { wrapper } from "@lib/store";
 import { queriesApi } from "@lib/queries";
+import NextI18nextConfig from "@/next-i18next.config";
 
 interface TokenWatcherProps {
     pageProps: Omit<AppProps, "Component">;
@@ -26,32 +26,31 @@ const TokenWatcher = ({ pageProps }: TokenWatcherProps) => {
     const { push } = useRouter();
     const dispatch = useAppDispatch();
     const currentAccessToken = useAppSelector(
-        (state) => state.appUser.accessToken
+        (state) => state.appUser.accessToken,
     );
-    const [previousAccessToken, setPreviousAccessToken] =
-        useState(currentAccessToken);
+    const previousAccessTokenRef = useRef(currentAccessToken);
     const sessionExpired = useAppSelector(
-        (state) => state.appUser.sessionExpired
+        (state) => state.appUser.sessionExpired,
     );
-    const [previouslyExpired, setPreviouslyExpired] = useState(sessionExpired);
+    const previouslyExpiredRef = useRef(sessionExpired);
 
     useEffect(() => {
-        if (currentAccessToken !== previousAccessToken) {
+        if (currentAccessToken !== previousAccessTokenRef.current) {
             dispatch(queriesApi.util.invalidateTags(["user", "auth"]));
-            setPreviousAccessToken(currentAccessToken);
+            previousAccessTokenRef.current = currentAccessToken;
         }
-    }, [dispatch, currentAccessToken, previousAccessToken]);
+    }, [dispatch, currentAccessToken]);
 
     useEffect(() => {
-        if (sessionExpired && !previouslyExpired) {
+        if (sessionExpired && !previouslyExpiredRef.current) {
             toast.warning(t("errors.sessionExpired"));
-            setPreviouslyExpired(true);
+            previouslyExpiredRef.current = true;
             signOut({ redirect: false }).then(() => push("/auth/login"));
         }
-        if (!sessionExpired && previouslyExpired) {
-            setPreviouslyExpired(false);
+        if (!sessionExpired && previouslyExpiredRef.current) {
+            previouslyExpiredRef.current = false;
         }
-    }, [t, sessionExpired, previouslyExpired, push]);
+    }, [t, sessionExpired, push]);
 
     return null;
 };

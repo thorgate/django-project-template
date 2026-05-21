@@ -1,5 +1,5 @@
 import React from "react";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import throttle from "lodash.throttle";
 
 import {
@@ -26,18 +26,18 @@ interface ApiSelectOptionsState<T> {
 const loadPageHookFactory = <
     ItemType extends BaseItemType,
     QueryArgType extends BaseQueryArgType,
-    ValueType
+    ValueType,
 >(
     factoryArguments: BaseApiSelectFactoryArguments<
         ItemType,
         QueryArgType,
         ValueType
-    >
+    >,
 ) => {
     return (
         values: ApiSelectOption<ValueType>[],
         initialSearchQuery: string,
-        getSearchQueryArgs?: (query: string) => Partial<QueryArgType>
+        getSearchQueryArgs?: (query: string) => Partial<QueryArgType>,
     ) => {
         const [trigger] = factoryArguments.retrieveEndpoint.useLazyQuery();
         const [options, setOptions] = React.useState<
@@ -53,7 +53,7 @@ const loadPageHookFactory = <
                 data: RetrieveQueryResult<ItemType> | undefined,
                 resetOptions: boolean,
                 pageNumber: number,
-                searchQuery: string | undefined = undefined
+                searchQuery: string | undefined = undefined,
             ) => {
                 const results = data?.results || [];
                 setOptions((currentOptions) => {
@@ -61,7 +61,7 @@ const loadPageHookFactory = <
                         ? []
                         : currentOptions.options;
                     const previousKeys = new Set(
-                        previousOptions.map((o) => o.key)
+                        previousOptions.map((o) => o.key),
                     );
                     const newOptions = [
                         ...previousOptions,
@@ -84,14 +84,14 @@ const loadPageHookFactory = <
                     };
                 });
             },
-            []
+            [],
         );
         const onLoadMore = React.useCallback(
             (
                 stateOverride?: Pick<
                     ApiSelectOptionsState<ValueType>,
                     "searchQuery" | "options"
-                >
+                >,
             ) => {
                 const nextPage =
                     stateOverride === undefined ? options.pageNumber + 1 : 1;
@@ -100,23 +100,23 @@ const loadPageHookFactory = <
                         {
                             ...factoryArguments.getSearchQueryArgs(
                                 stateOverride?.searchQuery ??
-                                    options.searchQuery
+                                    options.searchQuery,
                             ),
                             ...(getSearchQueryArgs
                                 ? getSearchQueryArgs(
                                       stateOverride?.searchQuery ??
-                                          options.searchQuery
+                                          options.searchQuery,
                                   )
                                 : {}),
                             pageNumber: nextPage,
                         } as QueryArgType,
-                        true
+                        true,
                     ).then(({ data }) => {
                         onLoadPage(data, false, nextPage);
                     });
                 }
             },
-            [onLoadPage, trigger, options, getSearchQueryArgs]
+            [onLoadPage, trigger, options, getSearchQueryArgs],
         );
         const onSearchUnthrottled = React.useMemo<
             Required<
@@ -134,12 +134,12 @@ const loadPageHookFactory = <
                             : {}),
                         pageNumber: 1,
                     } as QueryArgType,
-                    true
+                    true,
                 )?.then(({ data }) => {
                     onLoadPage(data, true, 1, value);
                 });
             },
-            [onLoadPage, trigger, getSearchQueryArgs]
+            [onLoadPage, trigger, getSearchQueryArgs],
         );
         const onSearch = React.useMemo(
             () =>
@@ -149,9 +149,9 @@ const loadPageHookFactory = <
                     {
                         leading: false,
                         trailing: true,
-                    }
+                    },
                 ),
-            [onSearchUnthrottled]
+            [onSearchUnthrottled],
         );
         React.useEffect(() => {
             // Every time the value changes, reset the option list in dropdown so that new search happens on
@@ -161,7 +161,7 @@ const loadPageHookFactory = <
                 searchQuery: initialSearchQuery,
             });
             // But not every time the options change
-            // eslint-disable-next-line react-hooks/exhaustive-deps
+            // eslint-disable-next-line @eslint-react/exhaustive-deps
         }, [values, initialSearchQuery]);
         return { options, setOptions, onSearch, onLoadMore };
     };
@@ -170,13 +170,13 @@ const loadPageHookFactory = <
 export const apiSelectFactory = <
     ItemType extends BaseItemType,
     QueryArgType extends BaseQueryArgType,
-    ValueType
+    ValueType,
 >(
     factoryArguments: ApiSelectFactoryArguments<
         ItemType,
         QueryArgType,
         ValueType
-    >
+    >,
 ): React.FC<ApiSelectProps<ValueType, QueryArgType>> => {
     const useLoadPage = loadPageHookFactory(factoryArguments);
     const useInitialSearchQuery =
@@ -186,9 +186,9 @@ export const apiSelectFactory = <
                       () =>
                           factoryArguments.filterByInitialValueOnInitialOpen &&
                           value
-                              ? value.displayValue ?? value.label ?? ""
+                              ? (value.displayValue ?? value.label ?? "")
                               : "",
-                      [value]
+                      [value],
                   )
             : () => React.useMemo(() => "", []);
 
@@ -207,7 +207,7 @@ export const apiSelectFactory = <
         const { options, setOptions, onSearch, onLoadMore } = useLoadPage(
             values,
             initialSearchQuery,
-            getSearchQueryArgs
+            getSearchQueryArgs,
         );
         const onClear = React.useCallback(() => {
             setOptions({
@@ -226,7 +226,7 @@ export const apiSelectFactory = <
             (value: ApiSelectOption<ValueType> | null) => {
                 onChange(value || null);
             },
-            [onChange]
+            [onChange],
         );
         return (
             <Combobox<ApiSelectOption<ValueType>, false>
@@ -261,13 +261,13 @@ const emptyValues: ApiSelectOption<never>[] = [];
 export const apiSelectMultipleFactory = <
     ItemType extends BaseItemType,
     QueryArgType extends BaseQueryArgType,
-    ValueType
+    ValueType,
 >(
     factoryArguments: ApiSelectMultipleFactoryArguments<
         ItemType,
         QueryArgType,
         ValueType
-    >
+    >,
 ): React.FC<ApiSelectMultipleProps<ValueType, QueryArgType>> => {
     const useLoadPage = loadPageHookFactory(factoryArguments);
 
@@ -282,13 +282,13 @@ export const apiSelectMultipleFactory = <
         const { t } = useTranslation();
         const disabled = React.useMemo(
             () => outerDisabled || loadingInitialValue,
-            [outerDisabled, loadingInitialValue]
+            [outerDisabled, loadingInitialValue],
         );
 
         const { options, setOptions, onSearch, onLoadMore } = useLoadPage(
             values,
             "",
-            getSearchQueryArgs
+            getSearchQueryArgs,
         );
         const onClear = React.useCallback(() => {
             setOptions({
@@ -303,7 +303,7 @@ export const apiSelectMultipleFactory = <
             (values: ApiSelectOption<ValueType>[] | null) => {
                 onChange(values ?? []);
             },
-            [onChange]
+            [onChange],
         );
 
         return (

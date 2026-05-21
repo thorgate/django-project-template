@@ -1,7 +1,7 @@
 import React from "react";
 import { format } from "date-fns";
 import { enIE, et } from "date-fns/locale";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 
 export interface DateTimeProps {
     children: string | Date;

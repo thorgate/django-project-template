@@ -2,12 +2,11 @@ import { useForm } from "react-hook-form";
 import * as React from "react";
 import { useRouter } from "next/router";
 import { signIn } from "next-auth/react";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 
 import { Button } from "@components/Button";
 import { Input } from "@components/Input";
 import { Spinner } from "@components/Spinner";
-import { useSessionIsValid } from "@lib/hooks/session";
 
 interface LoginFormValues {
     email: string;
@@ -21,10 +20,7 @@ interface LoginFormProps {
 export const LoginForm = ({ csrfToken }: LoginFormProps) => {
     const { t } = useTranslation(["auth", "common"]);
     const { reload } = useRouter();
-    const sessionIsValid = useSessionIsValid();
-    const [isRedirecting, setIsRedirecting] = React.useState<"no" | "waiting">(
-        "no"
-    );
+    const [isRedirecting, setIsRedirecting] = React.useState(false);
 
     const {
         register,
@@ -47,24 +43,12 @@ export const LoginForm = ({ csrfToken }: LoginFormProps) => {
         if (!result?.ok) {
             setError("root", { message: t("auth:error.invalidCredentials") });
         } else {
-            setIsRedirecting("waiting");
+            setIsRedirecting(true);
+            reload();
         }
     };
 
-    React.useEffect(() => {
-        if (sessionIsValid && isRedirecting === "waiting") {
-            void reload();
-        }
-    }, [sessionIsValid, reload, isRedirecting]);
-
-    const disabled = React.useMemo(
-        () =>
-            isSubmitting ||
-            isRedirecting !== "no" ||
-            sessionIsValid === undefined ||
-            sessionIsValid,
-        [sessionIsValid, isSubmitting, isRedirecting]
-    );
+    const disabled = isSubmitting || isRedirecting;
 
     return (
         <form className="px-5 py-7" onSubmit={handleSubmit(onSubmit)}>

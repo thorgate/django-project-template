@@ -1,13 +1,13 @@
 import React from "react";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import { ToastContainer } from "react-toastify";
 
-import { Container } from "./Container";
-import { NavBar } from "./NavBar";
-import { LanguageSwitcher } from "./LanguageSwitcher";
 import { useUserMeRetrieveQuery } from "@lib/queries";
 import config from "@lib/config";
 import { useSessionIsValid } from "@lib/hooks/session";
+import { Container } from "./Container";
+import { NavBar } from "./NavBar";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 
 interface LayoutProps {
     children: React.ReactNode;
@@ -49,13 +49,13 @@ export function Layout({ children, authElements }: LayoutProps) {
                       {
                           label: t("pageTitles.apiDocumentation"),
                           href: `${config(
-                              "BACKEND_SITE_URL"
+                              "BACKEND_SITE_URL",
                           )}/api/schema/swagger-ui`,
                       },
                   ]
                 : []),
         ],
-        [userData?.isStaff, t]
+        [userData?.isStaff, t],
     );
 
     return (

@@ -11,36 +11,39 @@ export const ScrollIntoViewEffect = ({
     children,
     className = "",
 }: ScrollIntoViewEffectProps) => {
-    const component = React.useRef(null);
-    const [triggered, setTriggered] = React.useState<boolean>(false);
+    const componentRef = React.useRef(null);
+    const triggeredRef = React.useRef(false);
+    const prevEffectRef = React.useRef(effect);
+    if (prevEffectRef.current !== effect) {
+        prevEffectRef.current = effect;
+        triggeredRef.current = false;
+    }
     const trigger = React.useCallback(() => {
-        if (!triggered) {
+        if (!triggeredRef.current) {
             effect();
         }
-        setTriggered(true);
-    }, [triggered, effect]);
-
-    /* Reset on effect change */
-    React.useEffect(() => {
-        setTriggered(false);
+        triggeredRef.current = true;
     }, [effect]);
 
     React.useEffect(() => {
         // IntersectionObserver is not available on server side and in tests
-        if (component.current && typeof IntersectionObserver !== "undefined") {
+        if (
+            componentRef.current &&
+            typeof IntersectionObserver !== "undefined"
+        ) {
             const observer = new IntersectionObserver((entries) => {
                 const entry = entries[0];
                 if (entry && entry.isIntersecting) {
                     trigger();
                 }
             });
-            observer.observe(component.current);
+            observer.observe(componentRef.current);
             return () => observer.disconnect();
         }
-    }, [component, trigger]);
+    }, [componentRef, trigger]);
 
     return (
-        <span ref={component} className={className}>
+        <span ref={componentRef} className={className}>
             {children}
         </span>
     );

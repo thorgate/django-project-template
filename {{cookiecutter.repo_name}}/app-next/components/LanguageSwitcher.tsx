@@ -1,4 +1,4 @@
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import { useRouter } from "next/router";
 import { Fragment, useCallback, useMemo, useState } from "react";
 import { Listbox, Transition } from "@headlessui/react";
@@ -45,7 +45,7 @@ export function LanguageSwitcher() {
         <Listbox value={value} onChange={languageChanged}>
             {({ open }) => (
                 <div className="relative mr-2 w-28">
-                    <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left shadow-sm ring-1 ring-inset sm:text-sm sm:leading-6 text-black dark:text-white focus:ring-2 focus:ring-inset focus:ring-indigo-600 outline-none bg-slate-50 dark:bg-slate-600 ring-slate-300 dark:ring-slate-700">
+                    <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left shadow-xs ring-1 ring-inset sm:text-sm sm:leading-6 text-black dark:text-white focus:ring-2 focus:ring-inset focus:ring-indigo-600 outline-hidden bg-slate-50 dark:bg-slate-600 ring-slate-300 dark:ring-slate-700">
                         {capitalize(languageNames.of(value) ?? value)}
                     </Listbox.Button>
 
@@ -56,7 +56,7 @@ export function LanguageSwitcher() {
                         leaveFrom="opacity-100"
                         leaveTo="opacity-0"
                     >
-                        <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md py-1 text-base shadow-lg ring-1 ring-opacity-5 sm:text-sm text-black dark:text-white outline-none bg-slate-50 dark:bg-slate-600 ring-slate-300 dark:ring-slate-700">
+                        <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md py-1 text-base shadow-lg ring-1 ring-opacity-5 sm:text-sm text-black dark:text-white outline-hidden bg-slate-50 dark:bg-slate-600 ring-slate-300 dark:ring-slate-700">
                             {locales.map((locale) => {
                                 const label = capitalize(
                                     languageNames.of(locale) ?? locale,

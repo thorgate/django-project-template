@@ -47,7 +47,7 @@ export const paginationState = {
 export const listPageFactory = <
     ItemType extends BaseItemType,
     QueryArgType extends BaseQueryArgType,
-    PageStateType extends object
+    PageStateType extends object,
 >({
     retrieveEndpoint,
     extraQueryArgument,
@@ -72,15 +72,15 @@ export const listPageFactory = <
     extraClassName?: string;
     processResponseData?: (
         store: AppStore,
-        data: undefined | ItemType[]
+        data: undefined | ItemType[],
     ) => Promise<void>;
 }): [
     React.FunctionComponent<Record<string, never>>,
-    FactoryServerSidePropsFunction
+    FactoryServerSidePropsFunction,
 ] => {
     const paginationKeys = (
         Object.keys(
-            pageStateDefinition
+            pageStateDefinition,
         ) as (keyof PageStateDefinitionWithAPIInfo<
             PageStateType,
             QueryArgType
@@ -107,7 +107,7 @@ export const listPageFactory = <
                           } as Partial<PageStateType>);
                       }
                     : undefined,
-            [setPageState]
+            [setPageState],
         );
 
         const {
@@ -158,17 +158,17 @@ export const listPageFactory = <
             return view;
         }
 
-        return <Context.Provider value={pageState}>{view}</Context.Provider>;
+        return <Context value={pageState}>{view}</Context>;
     };
     ListViewController.defaultProps = {};
 
     const getExtraProps: FactoryServerSidePropsFunction = async (
         store,
-        context
+        context,
     ) => {
         const pageState = pageStateFromQueryParameters(
             pageStateDefinition,
-            context.query
+            context.query,
         );
         const queryArgument = apiStateFromPageState(pageStateDefinition, {
             pageState,
@@ -182,7 +182,7 @@ export const listPageFactory = <
             await processResponseData(store, results);
         }
         await Promise.all(
-            store.dispatch(queriesApi.util.getRunningQueriesThunk())
+            store.dispatch(queriesApi.util.getRunningQueriesThunk()),
         );
 
         return {} as Record<string, never>;

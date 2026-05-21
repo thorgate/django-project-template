@@ -2,16 +2,16 @@ import * as React from "react";
 import Head from "next/head";
 import Image from "next/image";
 import { getCsrfToken } from "next-auth/react";
-import { useTranslation } from "next-i18next";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useTranslation } from "next-i18next/pages";
+import { serverSideTranslations } from "next-i18next/pages/serverSideTranslations";
 
-import { UserInfo } from "@/components/UserInfo";
 import { prepareSession } from "@lib/session";
 import { appUserSlice, wrapper } from "@lib/store";
 import { useAppSelector } from "@lib/hooks";
+import { UserInfo } from "@/components/UserInfo";
 
 const placeholderImage =
-    "https://placehold.co/300x200/png?text={{ cookiecutter.project_title }}";
+    "https://placehold.co/300x200/png?text=pistrik-waybiller";
 
 export const getServerSideProps = wrapper.getServerSideProps(
     (store) => async (context) => {
@@ -41,7 +41,7 @@ function Home() {
     return (
         <>
             <Head>
-                <title>{{ cookiecutter.project_title }}</title>
+                <title>pistrik-waybiller</title>
                 <meta
                     name="viewport"
                     content="width=device-width, initial-scale=1"
@@ -58,7 +58,7 @@ function Home() {
                         src={placeholderImage}
                         width={300}
                         height={200}
-                        alt="{{ cookiecutter.project_title }}"
+                        alt="pistrik-waybiller"
                     />
                 </div>
 

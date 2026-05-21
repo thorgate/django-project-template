@@ -1,6 +1,6 @@
 import { isRejectedWithValue } from "@reduxjs/toolkit";
 import type { Middleware } from "@reduxjs/toolkit";
-import { i18n } from "next-i18next";
+import { i18n } from "next-i18next/pages";
 import { toast } from "react-toastify";
 import { extractNonFieldError, isRecord } from "@lib/convertError";
 import { appUserSlice } from "@lib/slices/appUser";

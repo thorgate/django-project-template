@@ -16,6 +16,8 @@ const nextConfig = {
 
     i18n,
 
+    turbopack: {},
+
     images: {
         minimumCacheTTL: 60, // 1 minute
         remotePatterns: [

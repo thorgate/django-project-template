@@ -5,14 +5,14 @@ import type {
 import Head from "next/head";
 import { getCsrfToken } from "next-auth/react";
 import { getServerSession } from "next-auth";
-import { useTranslation } from "next-i18next";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useTranslation } from "next-i18next/pages";
+import { serverSideTranslations } from "next-i18next/pages/serverSideTranslations";
 import React from "react";
 
+import config from "@lib/config";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { Card } from "@/components/Card";
 import { LoginForm } from "@/components/LoginForm";
-import config from "@lib/config";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
     const session = await getServerSession(
@@ -51,9 +51,7 @@ export default function Login({
     return (
         <>
             <Head>
-                <title>{`${t(
-                    "pageTitles.login"
-                )} - {{ cookiecutter.project_title }}`}</title>
+                <title>{`${t("pageTitles.login")} - pistrik-waybiller`}</title>
             </Head>
             <div className="flex flex-col justify-center">
                 <div className="p-10 xs:p-0 mx-auto md:w-full md:max-w-md">

@@ -2,7 +2,7 @@ import React from "react";
 import Head from "next/head";
 
 import { useRouter } from "next/router";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import { toast } from "react-toastify";
 import {
     PatchedUserDetailRequest,

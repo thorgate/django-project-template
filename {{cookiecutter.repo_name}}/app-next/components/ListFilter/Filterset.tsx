@@ -1,7 +1,7 @@
 import React from "react";
 import throttle from "lodash.throttle";
 import debounce from "lodash.debounce";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import { toast } from "react-toastify";
 import clsx from "clsx";
 

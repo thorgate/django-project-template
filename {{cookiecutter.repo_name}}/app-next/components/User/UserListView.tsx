@@ -1,7 +1,7 @@
 import React from "react";
 import Head from "next/head";
 
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import { XCircleIcon, CheckCircleIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 

@@ -6,7 +6,7 @@ import {
     ChevronUpDownIcon,
     XMarkIcon,
 } from "@heroicons/react/20/solid";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import { InputWrapper } from "@components/Input/InputWrapper";
 import { inputClassNames } from "@components/Input/style";
 import { ComboboxValues } from "@components/Input/Combobox/ComboboxValues";
@@ -60,7 +60,7 @@ export const ListboxBody = <T extends BaseListboxOption>({
                                 error: Boolean(error),
                                 disabled,
                                 className:
-                                    "grid grid-cols-[1fr,20px] grow ring-0 focus:ring-0 rounded-l-md m-[2px] px-[calc(0.25rem-2px)] py-[calc(0.5rem-2px)] outline-none rounded-md",
+                                    "grid grid-cols-[1fr_20px] grow ring-0 focus:ring-0 rounded-l-md m-[2px] px-[calc(0.25rem-2px)] py-[calc(0.5rem-2px)] outline-hidden rounded-md",
                                 rounded: false,
                                 margin: false,
                                 padding: false,
@@ -100,7 +100,7 @@ export const ListboxBody = <T extends BaseListboxOption>({
                         >
                             <HeadlessListbox.Options
                                 className={clsx(
-                                    "absolute z-[999] -mt-5 max-h-[320px] w-full overflow-auto rounded-md text-base text-brand-dark shadow-lg ring-1 ring-brand-dark ring-opacity-5 focus:outline-none sm:text-sm",
+                                    "absolute z-999 -mt-5 max-h-[320px] w-full overflow-auto rounded-md text-base text-brand-dark shadow-lg ring-1 ring-brand-dark ring-opacity-5 focus:outline-hidden sm:text-sm",
                                     disabled && "bg-brand-disabled-light",
                                     !disabled && "bg-white"
                                 )}
