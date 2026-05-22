@@ -237,12 +237,9 @@ def remove_ci_project_generation_extra_commands(path):
 
 def run_lint_fix(path):
     try:
-        subprocess.check_output(["ruff", "check", "--fix", path], env={
-            "RUFF_CACHE_DIR": ".ruff_cache",
-        })
-        subprocess.check_output(["ruff", "format", path], env={
-            "RUFF_CACHE_DIR": ".ruff_cache",
-        })
+        env = {**os.environ, "RUFF_CACHE_DIR": ".ruff_cache"}
+        subprocess.check_output(["ruff", "check", "--fix", path], env=env)
+        subprocess.check_output(["ruff", "format", path], env=env)
     except subprocess.CalledProcessError as e:
         print("ERROR: %s" % e.output.decode())
         raise e
