@@ -11,7 +11,7 @@ import { useAppSelector } from "@lib/hooks";
 import { UserInfo } from "@/components/UserInfo";
 
 const placeholderImage =
-    "https://placehold.co/300x200/png?text=pistrik-waybiller";
+    "https://placehold.co/300x200/png?text={{ cookiecutter.project_title }}";
 
 export const getServerSideProps = wrapper.getServerSideProps(
     (store) => async (context) => {
@@ -41,7 +41,7 @@ function Home() {
     return (
         <>
             <Head>
-                <title>pistrik-waybiller</title>
+                <title>{{ cookiecutter.project_title }}</title>
                 <meta
                     name="viewport"
                     content="width=device-width, initial-scale=1"
@@ -58,7 +58,7 @@ function Home() {
                         src={placeholderImage}
                         width={300}
                         height={200}
-                        alt="pistrik-waybiller"
+                        alt="{{ cookiecutter.project_title }}"
                     />
                 </div>
 

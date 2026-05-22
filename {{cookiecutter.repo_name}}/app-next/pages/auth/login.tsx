@@ -51,7 +51,9 @@ export default function Login({
     return (
         <>
             <Head>
-                <title>{`${t("pageTitles.login")} - pistrik-waybiller`}</title>
+                <title>{`${t(
+                    "pageTitles.login"
+                )} - {{ cookiecutter.project_title }}`}</title>
             </Head>
             <div className="flex flex-col justify-center">
                 <div className="p-10 xs:p-0 mx-auto md:w-full md:max-w-md">
