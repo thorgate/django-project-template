@@ -96,7 +96,7 @@ services:
     <<: *common-spec
     image: postgres:${POSTGRES_VERSION:-{{cookiecutter.postgres_version}}}-bullseye
     volumes:
-      - "/var/lib/docker-evr_ui/postgres:/var/lib/postgresql/data"
+      - "/var/lib/docker-{{ cookiecutter.repo_name }}/postgres:/var/lib/postgresql/data"
     environment:
       # credentials taken from .env file
       POSTGRES_USER: "${DJANGO_DATABASE_USER:-{{ cookiecutter.repo_name }}}"

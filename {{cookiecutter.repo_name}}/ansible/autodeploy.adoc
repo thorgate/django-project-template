@@ -63,7 +63,7 @@ First we need to generate an SSH key pair (without passphrase):
 ssh-keygen -t ed25519 -C {{ cookiecutter.repo_name }}-autodeploy-${ENVIRONMENT}@thorgate.eu -f ./autodeploy-tmp-key
 ----
 
-Now you should create a new vault file for the environment from link:./vault-template.yml[vault-template.yml]
+Now you should create a new vault file for the environment from link:./roles/autodeploy/vault-template.yml[vault-template.yml]
 and save it as `project_root/ansible/autodeploy_vault.${ENVIRONMENT}.yml`.
 
 ----

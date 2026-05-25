@@ -108,8 +108,10 @@
   loop:
       - name: "{{ "{{ project }}" }}_nginx"
         container: nginx
+# - {%  if cookiecutter.shared_postgres != NO %}
       - name: "{{ "{{ project }}" }}_postgres"
         container: "postgres-{{ "{{ postgres_version }}" }}"
+# - {%  endif %}
 
 
 # - {% if cookiecutter.build_in_ci == YES %}
