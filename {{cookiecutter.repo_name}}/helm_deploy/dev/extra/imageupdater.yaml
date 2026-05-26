@@ -43,6 +43,18 @@ spec:
             helm:
               name: applications.django.image
               tag: applications.django.imageTag
+{%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
+        - alias: node
+{%- if cookiecutter.thorgate == YES %}
+          imageName: registry.gitlab.com/thorgate/{{ cookiecutter.repo_name }}/node
+{%- else %}
+          imageName: registry.gitlab.com/your-group/{{ cookiecutter.repo_name }}/node
+{%- endif %}
+          manifestTargets:
+            helm:
+              name: applications.node.image
+              tag: applications.node.imageTag
+{%- endif %}
       writeBackConfig:
         # Use the dedicated argocd-image-updater write Secret instead of
         # the shared SCM repocreds. The shared repocreds token should

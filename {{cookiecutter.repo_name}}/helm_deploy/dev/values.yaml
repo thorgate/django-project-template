@@ -3,9 +3,11 @@
 # The appset matches any repo in the `thorgate` group with topic
 # `argo-managed` that has helm_deploy/dev/values.yaml committed.
 #
-# This file ships with the project as a starting scaffold; customise
-# app-specific bits (commands, resources, env keys, ingress hostnames)
-# per your project's needs.
+# Two-app SPA-NEXT/SPA shape when frontend_style is `spa` or `spa-next`:
+#   * django (API backend) at office.<base-host>
+#   * node   (frontend)     at <base-host> - user-facing
+# WEBAPP mode: django alone, serving the prebuilt webapp from its
+# static dir at /.
 
 chart: phoenix
 chartVersion: "0.3.0-dev"   # Pin to an exact version once the chart stabilises
@@ -55,10 +57,9 @@ applications:
         cpu: 500m
         memory: 512Mi
 
-    # Kubelet probes the pod over its IP; Django sees `Host: <pod-ip>:8000`
-    # and rejects with 400 DisallowedHost because ALLOWED_HOSTS only
-    # contains the public domain. Setting the Host header here makes the
-    # probe look like an external request to django.
+    # Probe Host header set explicitly because Django's ALLOWED_HOSTS
+    # rejects the kubelet's pod-IP-based Host header (returns 400
+    # DisallowedHost).
     readinessProbe:
       httpGet:
         path: /{{ cookiecutter.django_health_check_path }}
@@ -66,7 +67,11 @@ applications:
         httpHeaders:
           - name: Host
 {%- if cookiecutter.thorgate == YES %}
+            {%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
+            value: {{ cookiecutter.spa_django_host_prefix }}.{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+            {%- else %}
             value: {{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+            {%- endif %}
 {%- else %}
             value: {{ cookiecutter.live_domain_name }}   # TODO: confirm this matches your dev ingress
 {%- endif %}
@@ -81,7 +86,11 @@ applications:
         httpHeaders:
           - name: Host
 {%- if cookiecutter.thorgate == YES %}
+            {%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
+            value: {{ cookiecutter.spa_django_host_prefix }}.{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+            {%- else %}
             value: {{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+            {%- endif %}
 {%- else %}
             value: {{ cookiecutter.live_domain_name }}
 {%- endif %}
@@ -116,13 +125,196 @@ applications:
       DJANGO_SETTINGS_MODULE: settings.cloud
 
 {%- if cookiecutter.thorgate == YES %}
+{%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
+      # SPA mode: django at office.<host>; node at <host> (user-facing).
+      # See ansible/roles/deploy/templates/environment for the canonical
+      # list of env vars in this scaffold.
+      APP_PUBLIC_SITE_URL: https://{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+      APP_SITE_URL: https://{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+      APP_BACKEND_SITE_URL: https://{{ cookiecutter.spa_django_host_prefix }}.{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+      APP_PUBLIC_BACKEND_SITE_URL: https://{{ cookiecutter.spa_django_host_prefix }}.{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+      NEXTAUTH_URL: https://{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+      DJANGO_SITE_URL: https://{{ cookiecutter.spa_django_host_prefix }}.{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+      DJANGO_ALLOWED_HOSTS: {{ cookiecutter.spa_django_host_prefix }}.{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools,{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+      # Parent-domain cookie so auth cookies set by django are visible
+      # to node (browser sees them as same-site via shared parent).
+      DJANGO_CSRF_COOKIE_DOMAIN: .{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+{%- else %}
+      # WEBAPP mode: single host (django serves the built webapp).
+      APP_PUBLIC_SITE_URL: https://{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+      APP_SITE_URL: https://{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+      DJANGO_SITE_URL: https://{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+      DJANGO_ALLOWED_HOSTS: {{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+      DJANGO_CSRF_COOKIE_DOMAIN: {{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+{%- endif %}
+{%- else %}
+      # TODO: set these to your project's actual hostnames (non-Thorgate).
+      APP_PUBLIC_SITE_URL: https://{{ cookiecutter.live_domain_name }}
+      DJANGO_ALLOWED_HOSTS: {{ cookiecutter.live_domain_name }}
+      DJANGO_CSRF_COOKIE_DOMAIN: {{ cookiecutter.live_domain_name }}
+{%- endif %}
+
+{%- if cookiecutter.django_media_engine == S3 %}
+      # S3 / DO Spaces. Bucket need not exist for boot - only used when
+      # uploading media. Placeholder for the experimental scaffold.
+      DJANGO_AWS_S3_ENDPOINT_URL: https://fra1.digitaloceanspaces.com
+      DJANGO_AWS_STORAGE_BUCKET_NAME: {{ cookiecutter.repo_name|as_hostname }}-media
+{%- endif %}
+
+      DJANGO_SENTRY_ENVIRONMENT: dev
+{%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
+      APP_PUBLIC_SENTRY_ENVIRONMENT: dev
+{%- endif %}
+
+      DJANGO_DEFAULT_FROM_EMAIL: {{ cookiecutter.admin_email }}
+      DJANGO_SERVER_EMAIL: {{ cookiecutter.admin_email }}
+
+      # TODO: SECRETS - currently defaulted by Django ("dummy key"),
+      # not safe outside an experimental test repo. Seal these for any
+      # real deployment via extra/sealed-secret-django-env.yaml:
+      #   DJANGO_SECRET_KEY
+{%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
+      #   NEXTAUTH_SECRET, DJANGO_JWT_PRIVATE_KEY / PUBLIC_KEY
+{%- endif %}
+      #   DJANGO_SENTRY_DSN, DJANGO_EMAIL_HOST_PASSWORD
+{%- if cookiecutter.django_media_engine == S3 %}
+      #   DJANGO_AWS_ACCESS_KEY_ID / DJANGO_AWS_SECRET_ACCESS_KEY
+{%- endif %}
+
+{%- if cookiecutter.thorgate == YES %}
+    {%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
+    urlHost: {{ cookiecutter.spa_django_host_prefix }}.{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+    {%- else %}
+    urlHost: {{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+    {%- endif %}
+{%- else %}
+    urlHost: {{ cookiecutter.live_domain_name }}
+{%- endif %}
+    urlPath: /
+    tier: backend
+
+{%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
+
+  # node: frontend service (Razzle for SPA mode, Next.js for SPA-NEXT).
+  # Image is registry.../<repo>/node (separate build from django).
+  # Listens on port 80 per docker-compose.production.yml's
+  # `pnpm start -p 80`.
+  node:
+    port: 80
+    serviceType: ClusterIP
+    replicas: 1
+
+    command:
+      - "pnpm"
+      - "start"
+      - "-p"
+      - "80"
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+    {%- if cookiecutter.frontend_style == SPA_NEXT %}
+    # Next.js: lightweight bundled /api/health route (see
+    # app/pages/api/health.ts) returns {ok: true} as soon as the
+    # server is ready - avoids the SSR overhead of probing `/`.
+    readinessProbe:
+      httpGet:
+        path: /api/health
+        port: 80
+        httpHeaders:
+          - name: Host
+{%- if cookiecutter.thorgate == YES %}
+            value: {{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+{%- else %}
+            value: {{ cookiecutter.live_domain_name }}
+{%- endif %}
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 5
+
+    livenessProbe:
+      httpGet:
+        path: /api/health
+        port: 80
+        httpHeaders:
+          - name: Host
+{%- if cookiecutter.thorgate == YES %}
+            value: {{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+{%- else %}
+            value: {{ cookiecutter.live_domain_name }}
+{%- endif %}
+      initialDelaySeconds: 30
+      periodSeconds: 20
+      timeoutSeconds: 5
+    {%- else %}
+    # Razzle (SPA mode): no built-in JSON health endpoint, probing `/`
+    # works once SSR is up. Consider adding a static /_health route
+    # for cheaper probes (see app/server/static/_health).
+    readinessProbe:
+      httpGet:
+        path: /
+        port: 80
+        httpHeaders:
+          - name: Host
+{%- if cookiecutter.thorgate == YES %}
+            value: {{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+{%- else %}
+            value: {{ cookiecutter.live_domain_name }}
+{%- endif %}
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 5
+
+    livenessProbe:
+      httpGet:
+        path: /
+        port: 80
+        httpHeaders:
+          - name: Host
+{%- if cookiecutter.thorgate == YES %}
+            value: {{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+{%- else %}
+            value: {{ cookiecutter.live_domain_name }}
+{%- endif %}
+      initialDelaySeconds: 30
+      periodSeconds: 20
+      timeoutSeconds: 5
+    {%- endif %}
+
+    environment:
+      # Public URLs (also baked at next build time via APP_PUBLIC_*);
+      # these are runtime overrides for SSR + next-auth.
+{%- if cookiecutter.thorgate == YES %}
+      APP_PUBLIC_SITE_URL: https://{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+      APP_SITE_URL: https://{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+      APP_BACKEND_SITE_URL: https://{{ cookiecutter.spa_django_host_prefix }}.{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+      APP_PUBLIC_BACKEND_SITE_URL: https://{{ cookiecutter.spa_django_host_prefix }}.{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+      NEXTAUTH_URL: https://{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+{%- else %}
+      APP_PUBLIC_SITE_URL: https://{{ cookiecutter.live_domain_name }}
+      APP_SITE_URL: https://{{ cookiecutter.live_domain_name }}
+{%- endif %}
+
+      APP_PUBLIC_SENTRY_ENVIRONMENT: dev
+
+      # TODO: SECRETS - seal these via extra/sealed-secret-node-env.yaml:
+      #   NEXTAUTH_SECRET (required for next-auth in non-dev mode)
+      #   APP_PUBLIC_JWT_PUBLIC_KEY (mirror of django's)
+      #   APP_PUBLIC_SENTRY_DSN
+
+{%- if cookiecutter.thorgate == YES %}
     urlHost: {{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
 {%- else %}
     urlHost: {{ cookiecutter.live_domain_name }}
 {%- endif %}
     urlPath: /
-
-    tier: backend
+    tier: frontend
+{%- endif %}
 
 # Ingress
 ingress:

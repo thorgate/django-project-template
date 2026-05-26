@@ -15,4 +15,13 @@ applications:
     # TODO: set to your project's image registry path
     image: registry.gitlab.com/your-group/{{ cookiecutter.repo_name }}/django
 {%- endif %}
-    imageTag: dev-PLACEHOLDER   # image-updater replaces on first matching push
+    imageTag: PLACEHOLDER   # image-updater replaces on first matching push
+{%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
+  node:
+{%- if cookiecutter.thorgate == YES %}
+    image: registry.gitlab.com/thorgate/{{ cookiecutter.repo_name }}/node
+{%- else %}
+    image: registry.gitlab.com/your-group/{{ cookiecutter.repo_name }}/node
+{%- endif %}
+    imageTag: PLACEHOLDER   # image-updater replaces on first matching push
+{%- endif %}
