@@ -1,0 +1,18 @@
+# Image references - auto-updated by argocd-image-updater on push of
+# new commit-SHA tags to the registry. See extra/imageupdater.yaml for
+# the ImageUpdater CR that drives this. Initial values are placeholders;
+# image-updater rewrites them on the first matching tag push.
+#
+# Main configuration lives in values.yaml; images here override any
+# image settings declared there because the ApplicationSet merges
+# values.yaml first, then images.yaml.
+
+applications:
+  django:
+{%- if cookiecutter.thorgate == YES %}
+    image: registry.gitlab.com/thorgate/{{ cookiecutter.repo_name }}/django
+{%- else %}
+    # TODO: set to your project's image registry path
+    image: registry.gitlab.com/your-group/{{ cookiecutter.repo_name }}/django
+{%- endif %}
+    imageTag: dev-PLACEHOLDER   # image-updater replaces on first matching push

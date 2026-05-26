@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Resources applied alongside the Helm chart by the ApplicationSet's
+# first source (kustomize directory at helm_deploy/dev/extra/). The
+# sync-wave: "10" annotation is applied by the ApplicationSet to all
+# resources in this directory, so the individual files only need to
+# override that with a SMALLER number (more negative) for things that
+# must precede the chart's wave-30 resources.
+resources:
+  - namespace.yaml
+  - postgres.yaml
+  - imageupdater.yaml
+  # TODO: add sealed-secret manifests for app config / registry creds
+  # once you have them encrypted via kubeseal. Reference shape:
+  #   helm_deploy/dev/extra/sealed-secret-django-env.yaml
+  #   helm_deploy/dev/extra/sealed-secret-gitlab-registry.yaml
+  # See tg-platform-gitops/examples/http-echo-sealed-secrets/ for the
+  # canonical SealedSecret pattern with kubeseal.

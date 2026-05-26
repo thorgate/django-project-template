@@ -154,6 +154,13 @@ def cleanup():
             "scripts/deploy",
         ]
 
+    if '{{ cookiecutter.use_kubernetes }}' == NO:
+        # Remove the Helm/Argo scaffold when the project isn't k8s-deployed.
+        # See CookiecutterVariables.adoc#use_kubernetes for what this gates.
+        cleanup_paths += [
+            "helm_deploy",
+        ]
+
     if os.getenv("DPT_CI_PROJECT_TEST") != "1":
         remove_ci_project_generation_extra_commands(cwd)
 

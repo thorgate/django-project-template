@@ -1,0 +1,153 @@
+# ArgoCD ApplicationSet picks this up from:
+#   tg-platform-gitops/argocd/applications/clients-helm-appset-dev.yaml
+# The appset matches any repo in the `thorgate` group with topic
+# `argo-managed` that has helm_deploy/dev/values.yaml committed.
+#
+# This file ships with the project as a starting scaffold; customise
+# app-specific bits (commands, resources, env keys, ingress hostnames)
+# per your project's needs.
+
+chart: phoenix
+chartVersion: "0.3.0-dev"   # Pin to an exact version once the chart stabilises
+
+applicationName: {{ cookiecutter.repo_name }}
+
+imagePullPolicy: Always
+imageSecrets:
+  - gitlab-registry
+
+applications:
+  django:
+    # Image configuration lives in images.yaml (auto-updated by
+    # argocd-image-updater via extra/imageupdater.yaml).
+
+    port: 8000
+    serviceType: ClusterIP
+    replicas: 1
+
+    # TODO: adjust gunicorn args per your app's WSGI module + concurrency
+    command:
+      - "gunicorn"
+      - "{{ cookiecutter.django_folder_name }}.wsgi:application"
+      - "--workers"
+      - "2"
+      - "--bind"
+      - "0.0.0.0:8000"
+      - "--access-logfile"
+      - "-"
+
+    # TODO: add your project's pre-start commands (migrations, collectstatic, etc.)
+    initCommands:
+      - name: db-migrations
+        command: ["python", "manage.py", "migrate", "--noinput"]
+      - name: check-deploy
+        command: ["python", "manage.py", "check", "--deploy"]
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+    # Kubelet probes the pod over its IP; Django sees `Host: <pod-ip>:8000`
+    # and rejects with 400 DisallowedHost because ALLOWED_HOSTS only
+    # contains the public domain. Setting the Host header here makes the
+    # probe look like an external request to django.
+    readinessProbe:
+      httpGet:
+        path: /{{ cookiecutter.django_health_check_path }}
+        port: 8000
+        httpHeaders:
+          - name: Host
+{%- if cookiecutter.thorgate == YES %}
+            value: {{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+{%- else %}
+            value: {{ cookiecutter.live_domain_name }}   # TODO: confirm this matches your dev ingress
+{%- endif %}
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 5
+
+    livenessProbe:
+      httpGet:
+        path: /{{ cookiecutter.django_health_check_path }}
+        port: 8000
+        httpHeaders:
+          - name: Host
+{%- if cookiecutter.thorgate == YES %}
+            value: {{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+{%- else %}
+            value: {{ cookiecutter.live_domain_name }}
+{%- endif %}
+      initialDelaySeconds: 30
+      periodSeconds: 20
+      timeoutSeconds: 5
+
+    # Database credentials provided by movetokube postgres-operator
+    # (the Secret is generated from extra/postgres.yaml's PostgresUser CR).
+    environmentFromSecret:
+      DJANGO_DATABASE_NAME:
+        name: dbcred-{{ cookiecutter.repo_name|as_hostname }}-dev-user
+        key: DATABASE_NAME
+      DJANGO_DATABASE_USER:
+        name: dbcred-{{ cookiecutter.repo_name|as_hostname }}-dev-user
+        key: LOGIN
+      DJANGO_DATABASE_PASSWORD:
+        name: dbcred-{{ cookiecutter.repo_name|as_hostname }}-dev-user
+        key: PASSWORD
+      DJANGO_DATABASE_PORT:
+        name: dbcred-{{ cookiecutter.repo_name|as_hostname }}-dev-user
+        key: PORT
+
+    # The dbcred Secret may not populate DATABASE_HOST for OWNER users
+    # (it's cross-namespace anyway); pin to the in-cluster service.
+    environment:
+      DJANGO_DATABASE_HOST: pg17-rw.databases.svc.cluster.local
+      DJANGO_DATABASE_SSLMODE: require
+      DJANGO_SETTINGS_MODULE: {{ cookiecutter.django_folder_name }}.settings.cloud   # TODO: confirm the settings module name
+
+{%- if cookiecutter.thorgate == YES %}
+    urlHost: {{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+{%- else %}
+    urlHost: {{ cookiecutter.live_domain_name }}
+{%- endif %}
+    urlPath: /
+
+    tier: backend
+
+# Ingress
+ingress:
+  enabled: true
+  type: traefik
+  tls:
+    enabled: true
+    certIssuer: letsencrypt-prod
+    certIssuerKind: ClusterIssuer
+  defaultResponseHeaders:
+    X-Frame-Options: {{ cookiecutter.x_frame_options }}
+    X-Content-Type-Options: nosniff
+{%- if cookiecutter.thorgate == YES %}
+    X-Robots-Tag: "noindex nofollow"   # TODO: drop this once the app is publicly indexable
+{%- endif %}
+
+# TODO: enable Redis if your app needs celery / caching / sessions
+redis-ha:
+  enabled: false
+
+# Sync waves: extras (configmap, postgres, secrets) apply at default wave
+# (0/10), this chart's resources at wave 30 so migrations run after the
+# Postgres CR has reconciled. The movetokube CR health customisation in
+# argocd-cm gates the Postgres CR's "Healthy" status on
+# .status.succeeded=true, so wave 30 waits for the actual DB + Secret.
+hookAnnotations:
+  argocd.argoproj.io/sync-wave: "30"
+
+commonAnnotations:
+  argocd.argoproj.io/sync-wave: "30"
+
+# Image-updater config is in extra/imageupdater.yaml (CRD-based, not
+# inline). Leave this disabled.
+imageUpdater:
+  enabled: false

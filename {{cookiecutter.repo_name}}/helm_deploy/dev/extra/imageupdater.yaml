@@ -1,0 +1,62 @@
+# argocd-image-updater config: watch the GitLab registry for new
+# commit-SHA tags (env-prefixed `dev-*` per the publish-prod-image.sh
+# convention) on the django image, and write them back into images.yaml
+# in this repo. ArgoCD then picks up the change and rolls the deployment.
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: {{ cookiecutter.repo_name|as_hostname }}
+  namespace: argocd
+  annotations:
+    # Apply this CR before the consumer Application syncs, so the
+    # cross-namespace ImageUpdater is in place when image-updater
+    # reconciles. Without PreSync it can race the consumer Application
+    # and end up OutOfSync forever.
+    argocd.argoproj.io/hook: PreSync
+spec:
+  commonUpdateSettings:
+    pullSecret: "pullsecret:argocd/gitlab-registry-credentials"
+    updateStrategy: newest-build
+    # Match the env-prefixed tags that scripts/images/publish-prod-image.sh
+    # pushes (`dev-<sha>` for develop/dev/staging branches). Mutable tags
+    # like `master` and `latest` are deliberately excluded so the value
+    # written to git is always an immutable SHA reference.
+    allowTags: "regexp:^dev-[0-9a-f]{7,40}$"
+
+  applicationRefs:
+    - namePattern: {{ cookiecutter.repo_name|as_hostname }}-helm-dev
+      images:
+        - alias: django
+{%- if cookiecutter.thorgate == YES %}
+          imageName: registry.gitlab.com/thorgate/{{ cookiecutter.repo_name }}/django
+{%- else %}
+          # TODO: match your project's registry path
+          imageName: registry.gitlab.com/your-group/{{ cookiecutter.repo_name }}/django
+{%- endif %}
+          manifestTargets:
+            helm:
+              name: applications.django.image
+              tag: applications.django.imageTag
+      writeBackConfig:
+        # Use the dedicated argocd-image-updater write Secret instead of
+        # the shared SCM repocreds. The shared repocreds token should
+        # eventually drop write_repository scope (see tg-platform-gitops
+        # README "target state" section); for that to be possible, every
+        # consumer (including this one) must use the dedicated Secret.
+        method: "git:secret:argocd/gitlab-write-credentials"
+        gitConfig:
+          # Pin the repository explicitly so image-updater isn't confused
+          # by the consumer Application's $values multi-source ref.
+          # Without this, writes can target the wrong repo entirely.
+{%- if cookiecutter.thorgate == YES %}
+          repository: https://gitlab.com/thorgate/{{ cookiecutter.repo_name }}.git
+{%- else %}
+          # TODO: set your project's https git URL
+          repository: https://gitlab.com/your-group/{{ cookiecutter.repo_name }}.git
+{%- endif %}
+          # Relative path: this CR is in helm_deploy/dev/extra/,
+          # images.yaml is one level up in helm_deploy/dev/. Using the
+          # absolute path here resulted in a doubled write-back path in
+          # earlier image-updater versions.
+          writeBackTarget: "helmvalues:../images.yaml"
+          branch: master   # TODO: change to main if your default branch is main
