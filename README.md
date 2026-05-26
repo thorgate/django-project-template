@@ -54,8 +54,9 @@ After that, you should:
     poetry install
     ```
 2. Activate the virtualenv created by _poetry_:
+    https://python-poetry.org/docs/managing-environments/#activating-the-environment
     ```
-    poetry shell
+    eval $(poetry env activate)
     ```
 3. Navigate to the directory where you'd like to create your project:
     ```
