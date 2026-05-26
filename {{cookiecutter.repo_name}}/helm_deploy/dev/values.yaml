@@ -123,6 +123,11 @@ applications:
       # so the settings module is reachable as `settings.cloud` (no
       # <project>. prefix). Matches kostra's pattern.
       DJANGO_SETTINGS_MODULE: settings.cloud
+      # Phoenix chart's redis-ha subchart deploys at <release>-redis-ha:6379
+      # but doesn't auto-wire the URL into the django container. settings/base.py
+      # default points at `redis:6379` which won't resolve in-namespace;
+      # override explicitly.
+      DJANGO_REDIS_URL: redis://{{ cookiecutter.repo_name|as_hostname }}-redis-ha:6379/1
 
 {%- if cookiecutter.thorgate == YES %}
 {%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
