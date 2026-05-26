@@ -14,10 +14,7 @@ import {
 export interface SelectFilterProps<
     QueryArgType extends BaseQueryArgType,
     QueryArg extends keyof QueryArgType,
-    UrlParameter extends SelectURLParameterSpecification<
-        QueryArgType,
-        QueryArg
-    >,
+    UrlParameter extends SelectURLParameterSpecification<QueryArgType, QueryArg>
 > {
     parameter: UrlParameter;
     initial: QueryArgType[QueryArg] | undefined;
@@ -45,7 +42,7 @@ export const SelectFilterWidget = <ValueType,>({
         () =>
             options.find((option) => option.value === value) ??
             options[0] ?? { key: "null", label: "" },
-        [options, value],
+        [options, value]
     );
     const onChange = React.useCallback(
         (option: { value: ValueType } | { value: ValueType }[]) => {
@@ -55,7 +52,7 @@ export const SelectFilterWidget = <ValueType,>({
             }
             outerOnChange(option.value);
         },
-        [outerOnChange],
+        [outerOnChange]
     );
 
     return (

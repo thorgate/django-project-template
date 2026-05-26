@@ -19,9 +19,10 @@ def as_git_path(value):
 
     res = value.strip()
 
-    # value is already a git ssh url. Return it as is
-    if value.startswith("git@"):
-        return value
+    if res.startswith("git@"):
+        parts = giturlparse.parse(res)
+        path = "/".join(x for x in [parts.owner, parts.name] if x)
+        return f"git@{parts.resource}:{path}.git"
 
     res = res.replace("http://", "")
     res = res.replace("https://", "")

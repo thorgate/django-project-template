@@ -1,9 +1,9 @@
 import type { InferGetServerSidePropsType } from "next";
 import * as React from "react";
 import Head from "next/head";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import { toast } from "react-toastify";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { serverSideTranslations } from "next-i18next/pages/serverSideTranslations";
 import { useRouter } from "next/router";
 
 import { Card } from "@components/Card";

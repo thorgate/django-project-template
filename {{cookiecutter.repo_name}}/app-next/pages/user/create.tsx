@@ -1,14 +1,14 @@
 import * as React from "react";
 import Head from "next/head";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import { toast } from "react-toastify";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { serverSideTranslations } from "next-i18next/pages/serverSideTranslations";
 import { useRouter } from "next/router";
 import {
     queriesApi,
     UserCreateApiArg,
     UserCreateApiResponse,
-    UserCreateRequest,
+    UserCreate as UserCreateType,
     UserDetail,
 } from "@lib/queries";
 
@@ -30,11 +30,11 @@ export const getServerSideProps = wrapper.getServerSideProps(
                 session,
             },
         };
-    },
+    }
 );
 
-const makeQueryArgs = (values: UserCreateRequest): UserCreateApiArg => ({
-    userCreateRequest: values,
+const makeQueryArgs = (values: UserCreateType): UserCreateApiArg => ({
+    userCreate: values,
 });
 
 const UserCreate = () => {
@@ -45,13 +45,13 @@ const UserCreate = () => {
             toast.success(t("user:created", { name: user.name }));
             router.push("/users");
         },
-        [t, router],
+        [t, router]
     );
     const onCancel = React.useCallback(() => router.push("/users"), [router]);
     const form = useApiBasedForm<
         UserCreateApiResponse,
         UserCreateApiArg,
-        UserCreateRequest & { passwordConfirm: string }
+        UserCreateType & { passwordConfirm: string }
     >({
         endpoint: queriesApi.endpoints.userCreate,
         makeQueryArgs,
@@ -62,8 +62,8 @@ const UserCreate = () => {
         <>
             <Head>
                 <title>{`${t(
-                    "common:pageTitles.userCreate",
-                )} - Cumberland Recycling`}</title>
+                    "common:pageTitles.userCreate"
+                )} - prd_converter`}</title>
             </Head>
             <UserCreateForm
                 title={t("user:titleCreate")}

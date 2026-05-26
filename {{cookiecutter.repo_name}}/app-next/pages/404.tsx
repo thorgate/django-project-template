@@ -1,7 +1,7 @@
 import { GetStaticProps } from "next";
 import NextErrorComponent from "next/error";
-import { useTranslation } from "next-i18next";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useTranslation } from "next-i18next/pages";
+import { serverSideTranslations } from "next-i18next/pages/serverSideTranslations";
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => {
     return {

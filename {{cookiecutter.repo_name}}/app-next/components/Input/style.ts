@@ -34,12 +34,12 @@ export const inputClassNames = ({
         !disabled && color && "text-black",
         disabled && color && "text-brand-disabled-dark",
         ring &&
-            "ring-1 focus:ring-2 focus-within:ring-2 group-focus-within:ring-2 focus:ring-brand-primary-accent focus-within:ring-brand-primary-accent group-focus-within:ring-brand-primary-accent outline-none",
+            "ring-1 focus:ring-2 focus-within:ring-2 group-focus-within:ring-2 focus:ring-brand-primary-accent focus-within:ring-brand-primary-accent group-focus-within:ring-brand-primary-accent outline-hidden",
         rounded && "rounded-lg",
         disabled && background && "bg-brand-disabled-light",
         !disabled && background && "bg-white",
         disabled && ring && "ring-brand-disabled-dark",
         !disabled && error && ring && "ring-brand-danger",
         !disabled && !error && ring && "ring-brand-primary",
-        className,
+        className
     );

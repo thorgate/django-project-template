@@ -8,6 +8,7 @@ import {
 import * as qs from "qs";
 import { RootState, appUserSlice } from "@lib/store";
 import { resolveBaseUrl } from "@lib/utils";
+import { isRecord } from "@lib/convertError";
 
 // eslint-disable-next-line no-console
 console.log("API Base URL:", resolveBaseUrl());
@@ -35,7 +36,11 @@ export const baseQuery: BaseQueryFn<
     FetchBaseQueryError
 > = async (args, api, extraOptions) => {
     const result = await nextBaseQuery(args, api, extraOptions);
-    if (!result.error || result.error.status !== 401) {
+    if (
+        !result.error ||
+        result.error.status !== 401 ||
+        (isRecord(extraOptions) && !!extraOptions.retryingAuth)
+    ) {
         return result;
     }
 
@@ -48,10 +53,8 @@ export const baseQuery: BaseQueryFn<
 
     const accessToken = session?.user?.accessToken ?? "";
     const refreshToken = session?.user?.refreshToken ?? "";
-    const sessionExpired = session?.user?.sessionExpired ?? true;
 
-    if (!accessToken || !refreshToken || sessionExpired) {
-        api.dispatch(appUserSlice.actions.setSessionExpired());
+    if (!accessToken || !refreshToken) {
         return result;
     }
 
@@ -59,22 +62,10 @@ export const baseQuery: BaseQueryFn<
         appUserSlice.actions.setTokens({
             accessToken,
             refreshToken,
-        }),
+        })
     );
-    const finalResult = await nextBaseQuery(args, api, extraOptions);
-    if (!finalResult.error || finalResult.error.status !== 401) {
-        return finalResult;
-    }
-    /* Normally this should not happen, but it may (for example if server Next/Django JWT settings are
-     * not consistent. In this case, to avoid redirect loop, consider session expired. */
-    api.dispatch(
-        appUserSlice.actions.setTokens({
-            accessToken: "",
-            refreshToken: "",
-        }),
-    );
-    api.dispatch(appUserSlice.actions.setSessionExpired());
-    return finalResult;
+
+    return baseQuery(args, api, { ...extraOptions, retryingAuth: true });
 };
 
 export const baseQueriesApi = createApi({

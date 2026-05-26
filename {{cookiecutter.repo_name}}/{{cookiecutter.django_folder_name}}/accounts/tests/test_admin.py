@@ -9,18 +9,16 @@ from ..models import User
 
 
 @pytest.mark.django_db()
-def test_admin_create_user(client, superuser):
+def test_admin_create_user(client, superuser, random_password):
     client.force_login(superuser)
-
-    random_pass = User.objects.make_random_password(16)
 
     response = client.post(
         reverse(f"admin:{User._meta.app_label}_{User._meta.model_name}_add"),
         data=urlencode(
             {
                 "email": "t@t.sdf",
-                "password1": random_pass,
-                "password2": random_pass,
+                "password1": random_password,
+                "password2": random_password,
             }
         ),
         content_type="application/x-www-form-urlencoded",
@@ -40,7 +38,7 @@ def test_admin_change_user(superuser):
 
     url = reverse(
         f"admin:{User._meta.app_label}_{User._meta.model_name}_change",
-        args=(superuser.pk, ),
+        args=(superuser.pk,),
     )
 
     # This request gets the csrf token for following request

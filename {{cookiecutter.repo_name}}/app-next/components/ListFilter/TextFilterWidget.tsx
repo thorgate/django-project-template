@@ -20,10 +20,10 @@ export const TextFilterWidget = <ValueType,>({
                 : `${value}`,
         [widget, value],
     );
-    const inputElement = React.useRef<HTMLInputElement | null>(null);
+    const inputElementRef = React.useRef<HTMLInputElement | null>(null);
     React.useEffect(() => {
-        if (inputElement.current) {
-            inputElement.current.value = currentSearchQuery;
+        if (inputElementRef.current) {
+            inputElementRef.current.value = currentSearchQuery;
         }
     }, [currentSearchQuery]);
 
@@ -49,7 +49,7 @@ export const TextFilterWidget = <ValueType,>({
             onClear={onReset}
             onChange={onSearch}
             defaultValue={currentSearchQuery}
-            ref={inputElement}
+            ref={inputElementRef}
             autoComplete="off"
             {...extraInputProps}
         />

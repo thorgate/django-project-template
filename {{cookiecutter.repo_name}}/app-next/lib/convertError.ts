@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 
 const EMPTY_RECORD: Record<string, unknown> = {};
 export const isRecord = (value: unknown): value is Record<string, unknown> =>

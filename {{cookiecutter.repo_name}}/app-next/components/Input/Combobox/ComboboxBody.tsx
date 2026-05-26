@@ -14,11 +14,11 @@ import {
     XMarkIcon,
 } from "@heroicons/react/20/solid";
 import clsx from "clsx";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
+import { isRecord } from "@lib/convertError";
 import { InputWrapper } from "../InputWrapper";
 import { inputClassNames } from "../style";
 import { ComboboxValues } from "./ComboboxValues";
-import { isRecord } from "@lib/convertError";
 
 export interface BaseComboboxOption {
     key: string;
@@ -108,14 +108,17 @@ export const ComboboxBody = <T extends BaseComboboxOption>({
     );
     const inputRef = React.useRef<HTMLInputElement>(null);
 
-    /* Reset the input value every time new value is selected. This allows the user to instantly start typing again
-     * to search for another item. */
-    React.useEffect(() => {
+    const [prevValue, setPrevValue] = React.useState(value);
+    if (value !== prevValue) {
+        setPrevValue(value);
         if (!noResetOnSelect) {
             setSearchQuery("");
-            if (inputRef.current) {
-                inputRef.current.value = "";
-            }
+        }
+    }
+
+    React.useEffect(() => {
+        if (!noResetOnSelect && inputRef.current) {
+            inputRef.current.value = "";
         }
         if (inputRef.current) {
             inputRef.current.blur();
@@ -232,7 +235,7 @@ export const ComboboxBody = <T extends BaseComboboxOption>({
                             autoComplete="off"
                         />
                         <ComboboxButton
-                            className="text-brand-primary mx-1 group-focus-within:my-[2px] my-[1px] p-0"
+                            className="text-brand-primary mx-1 group-focus-within:my-[2px] my-px p-0"
                             onClick={() =>
                                 onSearch?.(inputRef?.current?.value ?? "")
                             }
@@ -265,7 +268,7 @@ export const ComboboxBody = <T extends BaseComboboxOption>({
                         >
                             <ComboboxOptions
                                 className={clsx(
-                                    "absolute z-[999] -mt-5 max-h-[320px] w-full overflow-auto rounded-md text-base shadow-lg ring-1 ring-brand-dark ring-opacity-5 focus:outline-none sm:text-sm",
+                                    "absolute z-999 -mt-5 max-h-[320px] w-full overflow-auto rounded-md text-base text-brand-dark shadow-lg ring-1 ring-brand-dark ring-opacity-5 focus:outline-hidden sm:text-sm",
                                     disabled && "bg-brand-disabled-light",
                                     !disabled && "bg-white",
                                 )}

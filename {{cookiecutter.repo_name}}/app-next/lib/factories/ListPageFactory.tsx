@@ -1,7 +1,7 @@
 import React from "react";
 import clsx from "clsx";
 
-import { NextLayoutComponentType } from "next";
+import { ApiEndpointQuery, EndpointDefinitions } from "@reduxjs/toolkit/query";
 import { queriesApi } from "@lib/queries";
 import { useExtractNonFieldError } from "@lib/convertError";
 import { LoadingState, ErrorState } from "@components/NonIdealState";
@@ -11,8 +11,8 @@ import {
     BaseQueryArgType,
     FactoryServerSidePropsFunction,
     ListViewProps,
-    ListQueryResult,
-    APIQuery,
+    QueryHooks,
+    RetrieveQueryDefinition,
 } from "@lib/factories/types";
 import {
     apiStateFromPageState,
@@ -53,19 +53,21 @@ export const listPageFactory = <
     extraQueryArgument,
     pageStateDefinition,
     ListView,
-    extraFilterSetChildren,
     Context,
     extraClassName,
     processResponseData,
 }: {
-    retrieveEndpoint: APIQuery<QueryArgType, ListQueryResult<ItemType>>;
+    retrieveEndpoint: ApiEndpointQuery<
+        RetrieveQueryDefinition<ItemType, QueryArgType>,
+        EndpointDefinitions
+    > &
+        QueryHooks<RetrieveQueryDefinition<ItemType, QueryArgType>>;
     extraQueryArgument: QueryArgType;
     pageStateDefinition: PageStateDefinitionWithAPIInfo<
         PageStateType,
         QueryArgType
     >;
     ListView: React.ComponentType<ListViewProps<ItemType, PageStateType>>;
-    extraFilterSetChildren?: React.ReactNode;
     Context?: React.Context<PageStateType | null>;
     extraClassName?: string;
     processResponseData?: (
@@ -73,7 +75,7 @@ export const listPageFactory = <
         data: undefined | ItemType[],
     ) => Promise<void>;
 }): [
-    NextLayoutComponentType<Record<string, never>>,
+    React.FunctionComponent<Record<string, never>>,
     FactoryServerSidePropsFunction,
 ] => {
     const paginationKeys = (
@@ -138,9 +140,7 @@ export const listPageFactory = <
                     pageState={pageState}
                     setPageState={setPageState}
                     isUpdating={isApiFetching}
-                >
-                    {extraFilterSetChildren}
-                </Filterset>
+                />
                 <ListView
                     pageData={pageData}
                     pageState={pageState}
@@ -158,7 +158,7 @@ export const listPageFactory = <
             return view;
         }
 
-        return <Context.Provider value={pageState}>{view}</Context.Provider>;
+        return <Context value={pageState}>{view}</Context>;
     };
     ListViewController.defaultProps = {};
 

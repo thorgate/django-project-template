@@ -205,6 +205,10 @@ setup: pycharm settings ## Sets up the project in your local machine. This inclu
 	@make migrate
 	@echo -e "$(CYAN)Installing node modules$(COFF)"
 	@make node-install
+{% if cookiecutter.frontend_style == SPA_NEXT %}
+	@echo -e "$(CYAN)Generating API client$(COFF)"
+	@make api
+{% endif %}
 {% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 	@echo -e "$(CYAN)Extracting JS translations$(COFF)"
 	@make extract-i18n
@@ -213,8 +217,11 @@ setup: pycharm settings ## Sets up the project in your local machine. This inclu
 {% endif %}
 	@echo -e "$(CYAN)===================================================================="
 	@echo -e "SETUP SUCCEEDED"
+{% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
+	@echo -e "Run 'make docker' to start Django development server and node front-end.$(COFF)"
+{% else %}
 	@echo -e "Run 'make docker' to start Django development server and Webpack.$(COFF)"
-
+{% endif %}
 
 {%- if cookiecutter.thorgate == YES %}
 
@@ -427,7 +434,7 @@ ruff-lint-fix:
 .PHONY:
 ruff-lint-ci:
 	@echo -e "$(subst SECTION_NAME,ruff-linter,$(GL_SECTION_START))$(CYAN)Running The Ruff Linter [ci]$(COFF)"
-	@make run-python cmd="ruff --exit-zero --output-format gitlab --output-file coverage/python/ruff.json ."
+	@make run-python cmd="ruff check --output-format gitlab --output-file coverage/python/ruff.json . || echo 'Exit code ignored'"
 	# might be wrong here...
 	@make run-python cmd="sed -i 's|\"path\": \"|&${CI_PROJECT_DIR}/${DJANGO_FOLDER_NAME}/|g' coverage/python/ruff.json"
 	@echo -e "$(subst SECTION_NAME,ruff-linter,$(GL_SECTION_END))"
@@ -506,12 +513,12 @@ extract-i18n:
 
 .PHONY:
 export-schema:
-	docker-compose run --rm django ./manage.py spectacular --format openapi-json --file schema.json
+	docker compose run --rm django ./manage.py spectacular --format openapi-json --file schema.json
 	@cp $(SITE_ROOT)/schema.json $(APP_ROOT)/lib/queries/schema.json
 
 .PHONY:
 generate-rtk-query-api: export-schema
-	docker-compose run --rm node pnpm generate-api
+	docker compose run --rm node pnpm generate-api
 	@make patch-rtk-queries-api
 	@make fmt-js
 

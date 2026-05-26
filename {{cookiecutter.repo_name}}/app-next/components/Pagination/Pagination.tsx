@@ -1,10 +1,11 @@
+{%- raw -%}
 import React from "react";
-import { Trans, useTranslation } from "next-i18next";
+import { Trans, useTranslation } from "next-i18next/pages";
+import { RetrieveQueryPageOnlyResult } from "@lib/factories/types";
 import { PaginationLink } from "./PaginationLink";
-import { ListQueryPageOnlyResult } from "@lib/factories/types";
 
 export interface PaginationProps {
-    data?: ListQueryPageOnlyResult;
+    data?: RetrieveQueryPageOnlyResult;
     setPageNumber: (pageNumber: number | undefined) => void;
 }
 
@@ -76,8 +77,8 @@ export const Pagination = ({ data, setPageNumber }: PaginationProps) => {
                     {firstItem && lastItem && totalCount ? (
                         <p className="text-sm text-gray-700 dark:text-gray-300">
                             <Trans i18nKey="pagination.paginationShownItems">
-                                {% raw %}Showing {{ firstItem }} to {{ lastItem }} of{" "}
-                                {{ totalCount }} results.{% endraw %}
+                                Showing {{ firstItem }} to {{ lastItem }} of{" "}
+                                {{ totalCount }} results.
                             </Trans>
                         </p>
                     ) : null}
@@ -94,3 +95,4 @@ export const Pagination = ({ data, setPageNumber }: PaginationProps) => {
         </div>
     );
 };
+{%- endraw %}

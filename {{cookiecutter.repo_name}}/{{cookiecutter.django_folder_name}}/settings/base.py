@@ -16,6 +16,9 @@ from typing import Any
 from urllib.parse import quote
 
 import environs
+# - {%- if cookiecutter.content_security_policy == YES %}
+from csp.constants import NONCE
+# - {%- endif %}
 # - {%- if cookiecutter.include_celery == "yes" %}
 from celery.schedules import crontab
 # - {%- endif %}
@@ -82,6 +85,7 @@ INSTALLED_APPS = [
     "tg_react",
     "corsheaders",
     "drf_spectacular",
+    "drf_spectacular_sidecar",
     # - {%- endif %}
     # Health-checks
     "health_check",
@@ -121,31 +125,28 @@ MIDDLEWARE = [
     # - {%- endif %}
 ]
 
+if DEBUG:
+    INSTALLED_APPS += ["debug_toolbar"]
+    MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]
+
 # - {%- if cookiecutter.content_security_policy == YES %}
 # Content Security Policy https://django-csp.readthedocs.io/en/latest/configuration.html
-CSP_INCLUDE_NONCE_IN = (
-    "script-src",
-    "style-src",
-)
-CSP_BASE_URI = ("'self'",)
-CSP_DEFAULT_SRC = ("'self'",)
-CSP_CONNECT_SRC = ("'self'",)
-CSP_FONT_SRC = ("'self'",)
-CSP_IMG_SRC = ("*", )
-CSP_SCRIPT_SRC = (
-    "'self'",
-    "'unsafe-inline'",
-    "'unsafe-eval'"
-)
-CSP_STYLE_SRC = (
-    "'self'",
-    "'unsafe-inline'",
-)
-CSP_FORM_ACTION = ("'self'",)
-CSP_FRAME_ANCESTORS = ("'self'",)
-CSP_OBJECT_SRC = ("'none'",)
-CSP_FRAME_SRC = ("'none'",)
-CSP_WORKER_SRC = ("'none'",)
+CONTENT_SECURITY_POLICY = {
+    "DIRECTIVES": {
+        "base-uri": ["'self'"],
+        "default-src": ["'self'"],
+        "connect-src": ["'self'"],
+        "font-src": ["'self'"],
+        "img-src": ["*"],
+        "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'", NONCE],
+        "style-src": ["'self'", "'unsafe-inline'", NONCE],
+        "form-action": ["'self'"],
+        "frame-ancestors": ["'self'"],
+        "object-src": ["'none'"],
+        "frame-src": ["'none'"],
+        "worker-src": ["'none'"],
+    },
+}
 # - {%- endif %}
 
 TEMPLATES = [
@@ -351,8 +352,10 @@ LOGOUT_REDIRECT_URL = "login"
 # - {%- endif %}
 
 
+# - {%- if cookiecutter.frontend_style == WEBAPP %}
 # Crispy-forms
 CRISPY_TEMPLATE_PACK = "bootstrap4"
+# - {%- endif %}
 
 
 # Email config
@@ -440,7 +443,7 @@ SPECTACULAR_SETTINGS = {
     "SCHEMA_PATH_PREFIX": "/api/",
     "SERVERS": [
         {
-            "url": "http://127.0.0.1:8000/",
+            "url": "http://api.{{ cookiecutter.repo_name|slugify }}.localtest.me:8000/",
             "description": "Local development environment",
         },
     ],

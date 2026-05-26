@@ -10,7 +10,6 @@ import { ProvidersWrapper } from "@lib/testUtils";
 
 import { makeStore } from "@lib/store";
 import { paginationState } from "@lib/factories/ListPageFactory";
-import { booleanQueryParameterExtractor } from "@lib/factories/util";
 
 const DummyListView = ({ pageData }: { pageData: UserDetail[] }) => (
     <ul data-testid="user-list">

@@ -13,10 +13,10 @@ export const SliderFilterWidget = ({
     step,
 }: WidgetProps<number> & { min: number; max: number; step?: number }) => {
     const Icon = React.useMemo(() => widget.icon ?? HashtagIcon, [widget]);
-    const inputElement = React.useRef<HTMLInputElement | null>(null);
+    const inputElementRef = React.useRef<HTMLInputElement | null>(null);
     React.useEffect(() => {
-        if (inputElement.current) {
-            inputElement.current.value = `${value}`;
+        if (inputElementRef.current) {
+            inputElementRef.current.value = `${value}`;
         }
     }, [value]);
 
@@ -36,7 +36,7 @@ export const SliderFilterWidget = ({
             onClear={onReset}
             onChange={onChange}
             defaultValue={value}
-            ref={inputElement}
+            ref={inputElementRef}
             autoComplete="off"
             type="range"
             min={min}

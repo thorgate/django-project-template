@@ -30,6 +30,12 @@ def test_as_git_path(tmpdir):
         == "git@gitlab.com:group/subgroup/project.git"
     )
 
+    # Normalize git@ URLs with slash to colon format
+    assert (
+        as_git_path("git@gitlab.com/group/project.git")
+        == "git@gitlab.com:group/project.git"
+    )
+
 
 def test_get_url_path():
     assert (

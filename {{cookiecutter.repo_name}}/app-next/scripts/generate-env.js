@@ -4,8 +4,6 @@
 
 const fs = require("fs");
 const argv = require("minimist")(process.argv.slice(2), { "--": true });
-const dotenv = require("dotenv");
-const dotenvExpand = require("dotenv-expand");
 
 function writeBrowserEnvironment(env) {
     const base = fs.realpathSync(process.cwd());
@@ -17,7 +15,7 @@ function writeBrowserEnvironment(env) {
         console.debug(`react-env: ${JSON.stringify(env, null, 2)}`);
     }
     const populate = `window.__ENV = ${JSON.stringify(
-        env,
+        env
     )}; console.log("react-env: Runtime config loaded...");`;
     fs.writeFileSync(path, populate);
 }
@@ -54,10 +52,10 @@ const dotenvFiles = getEnvFiles();
 
 dotenvFiles.forEach((dotenvFile) => {
     if (fs.existsSync(dotenvFile)) {
-        dotenvExpand.expand(
-            dotenv.config({
+        require("dotenv-expand").expand(
+            require("dotenv").config({
                 path: dotenvFile,
-            }),
+            })
         );
     }
 });

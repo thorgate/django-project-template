@@ -41,7 +41,7 @@ export const SelectUserWidget: React.FC<WidgetProps<string>> = ({
         (value: string | null) => {
             outerOnChange(value ?? "");
         },
-        [outerOnChange],
+        [outerOnChange]
     );
 
     const selectProps = React.useMemo(
@@ -50,7 +50,7 @@ export const SelectUserWidget: React.FC<WidgetProps<string>> = ({
             label,
             onReset,
         }),
-        [onReset, label],
+        [onReset, label]
     );
     const fallbackValueLabel = useLoadingFallbackValueLabel();
 

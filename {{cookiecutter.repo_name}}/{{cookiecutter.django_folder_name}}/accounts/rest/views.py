@@ -3,7 +3,7 @@ from django.utils.translation import gettext
 
 from rest_framework import mixins, status
 from rest_framework.exceptions import ValidationError
-from rest_framework.permissions import IsAuthenticated
+from {{cookiecutter.default_django_app}}.rest.core.permissions import IsAdminUserOrReadOnly
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -74,7 +74,7 @@ class UserViewSet(
     }
 
     # TODO: NEWPROJECT - replace this permission check with relevant one
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminUserOrReadOnly]
     filterset_class = UserFilterSet
 
     def get_queryset(self):

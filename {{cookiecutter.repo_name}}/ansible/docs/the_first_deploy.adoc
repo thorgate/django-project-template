@@ -14,7 +14,7 @@ This project is deployed with docker images. The images themselves are built in 
 be able to deploy the code to the cloud the target server must be able to pull images from registry.gitlab.com.
 
 . Navigate to the Settings ->  Repository  ->  Deploy tokens of the project in gitlab
-** {{ cookiecutter.gitlab_repo_url }}/-/settings/repository/#js-deploy-tokens
+** https://gitlab.com/{{ cookiecutter.gitlab_repo_url | get_url_path }}/-/settings/repository/#js-deploy-tokens
 . Add a deploy token if it does not exist already for the server.
   Set the name to server name and use the project name for username.
   Under permissions make sure to only enable `read_registry`.

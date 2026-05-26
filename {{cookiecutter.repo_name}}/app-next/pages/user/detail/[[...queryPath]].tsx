@@ -1,4 +1,4 @@
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { serverSideTranslations } from "next-i18next/pages/serverSideTranslations";
 import { detailPageFactory } from "@lib/factories/DetailPageFactory";
 import { queriesApi } from "@lib/queries";
 import { wrapper } from "@lib/store";

@@ -1,5 +1,5 @@
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
-import { useTranslation } from "next-i18next";
+import { serverSideTranslations } from "next-i18next/pages/serverSideTranslations";
+import { useTranslation } from "next-i18next/pages";
 import {
     paginationState,
     listPageFactory,
@@ -7,11 +7,11 @@ import {
 import { queriesApi, UserDetail, UserListApiArg } from "@lib/queries";
 import { wrapper } from "@lib/store";
 import { prepareSession } from "@lib/session";
+import { SelectUserWidget } from "@components/FilterWidgets";
 import {
     type UserListPageState,
     UserListView,
 } from "@/components/User/UserListView";
-import { SelectUserWidget } from "@components/FilterWidgets";
 
 const IsStaffFilterLabel = () => {
     const { t } = useTranslation("common");

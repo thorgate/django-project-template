@@ -3,11 +3,16 @@
         "nextMonth": "Next month",
         "previousMonth": "Previous month"
     },
+    "combobox": {
+        "nSelected": "{{count}} selected",
+        "showMore": " and {{count}} more"
+    },
     "count": "Count",
     "error": "Error",
     "errors": {
         "loading": "Loading...",
         "rateLimited": "Rate limited - try again later",
+        "sessionExpired": "Session expired. Please log in again.",
         "unexpectedError": "Unexpected error",
         "unexpectedErrorWithCode": "Unexpected error {{code}}",
         "serverError": "Server error: {{code}}"
@@ -15,7 +20,6 @@
     "filters": {
         "nothingSelected": "Select",
         "search": "Search",
-        "select": "Select",
         "titles": {
             "isActive": "Is active?",
             "isStaff": "Is staff?"
@@ -27,6 +31,7 @@
             "inactive": "Inactive",
             "true": "Yes"
         },
+        "select": "Select",
         "hidden": "Hidden",
         "page-number": "Page number",
         "multi-select": "Select multiple"
@@ -42,6 +47,19 @@
         "save": "Save",
         "edit": "Edit",
         "delete": "Delete"
+    },
+    "labels": {
+        "calendar": "Calendar",
+        "clear": "Clear",
+        "copyLink": "Copy link",
+        "copyLinkProgress": {
+            "error": "Error when trying to access the clipboard",
+            "pending": "Copying link",
+            "success": "Link copied"
+        },
+        "hideFilters": "Hide filters",
+        "resetFilters": "Reset filters",
+        "showFilters": "Show filters"
     },
     "navigation": {
         "signIn": "Sign in",

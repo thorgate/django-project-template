@@ -1,5 +1,5 @@
 import { Fragment, useRef } from "react";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 
 import { Dialog, Transition } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
@@ -88,7 +88,7 @@ export const ConfirmationDialog = ({
                                     <button
                                         type="button"
                                         className={clsx(
-                                            "inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto",
+                                            "inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-xs sm:ml-3 sm:w-auto",
                                             isDangerous
                                                 ? "bg-brand-danger hover:bg-brand-danger-accent"
                                                 : "bg-brand-primary hover:bg-brand-primary-accent",
@@ -99,7 +99,7 @@ export const ConfirmationDialog = ({
                                     </button>
                                     <button
                                         type="button"
-                                        className="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-500 text-gray-900 dark:text-gray-100 px-3 py-2 text-sm font-semibold shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-700 sm:mt-0 sm:w-auto"
+                                        className="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-500 text-gray-900 dark:text-gray-100 px-3 py-2 text-sm font-semibold shadow-xs ring-1 ring-inset ring-gray-300 dark:ring-gray-700 sm:mt-0 sm:w-auto"
                                         onClick={onCancel}
                                         ref={cancelButtonRef}
                                     >

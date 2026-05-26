@@ -38,7 +38,7 @@ COPY pyproject.toml /
 COPY poetry.lock /
 
 # Install all non-dev dependencies from poetry.lock
-RUN poetry install --no-dev
+RUN poetry install --without dev --no-root
 
 # Find all file objects containing name `test` or compiled python files and remove them
 # Find all runtime dependencies that are marked as needed by scanelf

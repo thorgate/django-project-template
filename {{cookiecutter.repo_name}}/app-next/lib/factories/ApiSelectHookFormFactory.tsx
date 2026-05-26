@@ -1,110 +1,21 @@
 import React from "react";
+import { FieldPath, FieldValues, Controller } from "react-hook-form";
 import {
-    ControllerProps,
-    FieldPath,
-    FieldValues,
-} from "react-hook-form/dist/types";
-import { Controller } from "react-hook-form";
-import {
+    ApiSelectHookFormFactoryArguments,
+    ApiSelectHookFormProps,
+    ApiSelectMultipleHookFormFactoryArguments,
+    ApiSelectMultipleHookFormProps,
+    ApiSelectMultipleWithLoadInitialValueProps,
     ApiSelectOption,
-    BaseHookFormFactoryArguments,
+    ApiSelectWithLoadInitialValueProps,
     BaseItemType,
     BaseQueryArgType,
 } from "@lib/factories/types";
 import {
     apiSelectFactory,
-    ApiSelectFactoryArguments,
     apiSelectMultipleFactory,
-    ApiSelectMultipleFactoryArguments,
-    ApiSelectMultipleProps,
-    ApiSelectProps,
 } from "@lib/factories/ApiSelectFactory";
 import { isMutationResultError } from "@lib/factories/hooks";
-
-type FallbackValue =
-    | {
-          label: string;
-          needsRefreshFromApi?: boolean;
-      }
-    | string;
-
-export interface ApiSelectWithLoadInitialValueProps<ValueT, QueryArgType> {
-    value: ValueT | null;
-    fallbackValueLabel?: FallbackValue;
-    getSearchQueryArgs?: (query: string) => Partial<QueryArgType>;
-    onChange?: (value: ValueT | null) => void;
-    onReset?: () => void;
-    selectProps: Omit<
-        ApiSelectProps<ValueT, QueryArgType>,
-        "onChange" | "initialValue" | "loadingInitialValue" | "disabled"
-    >;
-    disabled?: boolean;
-}
-
-export interface ApiSelectMultipleWithLoadInitialValueProps<
-    ValueT,
-    QueryArgType,
-> {
-    values: ValueT[];
-    fallbackValueLabel?: (value: ValueT) => FallbackValue;
-    getSearchQueryArgs?: (query: string) => Partial<QueryArgType>;
-    onChange?: (options: ValueT[]) => void;
-    selectProps: Omit<
-        ApiSelectProps<ValueT, QueryArgType>,
-        "onChange" | "initialValue" | "loadingInitialValue" | "disabled"
-    >;
-    disabled?: boolean;
-}
-
-export interface ApiSelectHookFormProps<
-    TFieldValues extends FieldValues,
-    TName extends FieldPath<TFieldValues>,
-    TValue extends TFieldValues[TName],
-    QueryArgType,
-> extends Omit<ControllerProps<TFieldValues, TName>, "render"> {
-    selectProps?: Omit<
-        ApiSelectProps<TValue, QueryArgType>,
-        "onChange" | "initialValue" | "loadingInitialValue"
-    >;
-    initialValueLabel?: string;
-}
-
-export interface ApiSelectMultipleHookFormProps<
-    TFieldValues extends FieldValues,
-    TName extends FieldPath<TFieldValues>,
-    TValue,
-    QueryArgType,
-> extends Omit<ControllerProps<TFieldValues, TName>, "render"> {
-    selectProps?: Omit<
-        ApiSelectMultipleProps<TValue & TFieldValues[TName], QueryArgType>,
-        "onChange" | "initialValue" | "loadingInitialValue"
-    >;
-    initialValueLabels?: (value: TValue) => string;
-}
-
-export interface ApiSelectHookFormFactoryArguments<
-    ItemType extends BaseItemType,
-    QueryArgType extends BaseQueryArgType,
-    ValueType,
-    InitialQueryArgType extends BaseQueryArgType,
-> extends ApiSelectFactoryArguments<ItemType, QueryArgType, ValueType>,
-        BaseHookFormFactoryArguments<
-            ItemType,
-            InitialQueryArgType,
-            ValueType
-        > {}
-
-export interface ApiSelectMultipleHookFormFactoryArguments<
-    ItemType extends BaseItemType,
-    QueryArgType extends BaseQueryArgType,
-    ValueType,
-    InitialQueryArgType extends BaseQueryArgType,
-> extends ApiSelectMultipleFactoryArguments<ItemType, QueryArgType, ValueType>,
-        BaseHookFormFactoryArguments<
-            ItemType,
-            InitialQueryArgType,
-            ValueType
-        > {}
 
 export const apiSelectWithLoadInitialValueFactory = <
     ItemType extends BaseItemType,
@@ -160,19 +71,21 @@ export const apiSelectWithLoadInitialValueFactory = <
         const [chosenOption, setChosenOption] = React.useState<
             ApiSelectOption<ValueType> | null | undefined
         >(fallbackValue);
-        React.useEffect(() => {
+        const [prevFallbackValue, setPrevFallbackValue] =
+            React.useState(fallbackValue);
+        if (fallbackValue !== prevFallbackValue) {
+            setPrevFallbackValue(fallbackValue);
             if (
-                (chosenOption &&
+                !(
+                    chosenOption &&
                     fallbackValue &&
-                    chosenOption.key === fallbackValue.key) ||
-                (!chosenOption && !fallbackValue)
+                    chosenOption.key === fallbackValue.key
+                ) &&
+                !(!chosenOption && !fallbackValue)
             ) {
-                return;
+                setChosenOption(fallbackValue);
             }
-            setChosenOption(fallbackValue);
-            // We only need to reset on change of fallback value, not on change of chosen option
-            // eslint-disable-next-line react-hooks/exhaustive-deps
-        }, [fallbackValue]);
+        }
         const skipLoading = React.useMemo(
             () => value === null || !fallbackLabel.needsRefreshFromApi,
             [fallbackLabel, value],
@@ -189,14 +102,13 @@ export const apiSelectWithLoadInitialValueFactory = <
                 skip: skipLoading,
             });
 
-        React.useEffect(() => {
-            if (loadingValueData) {
-                return;
-            }
-            if (valueData) {
+        const [prevValueData, setPrevValueData] = React.useState(valueData);
+        if (valueData !== prevValueData) {
+            setPrevValueData(valueData);
+            if (!loadingValueData && valueData) {
                 setChosenOption(factoryArguments.getOptionForItem(valueData));
             }
-        }, [valueData, loadingValueData]);
+        }
 
         const onChange = React.useCallback(
             (option: ApiSelectOption<ValueType> | null) => {
@@ -273,30 +185,36 @@ export const apiSelectMultipleWithLoadInitialValueFactory = <
         const [chosenOptions, setChosenOptions] = React.useState<
             ApiSelectOption<ValueType>[]
         >([]);
-        React.useEffect(() => {
-            const currentValuesByValue: Record<
-                string,
-                ApiSelectOption<ValueType>
-            > = {};
-            chosenOptions.forEach((option) => {
-                currentValuesByValue[option.key] = option;
-            });
-            const valuesWithFallback = values.map((originalValue) => {
-                const mappedValue = mapValuesToFallbackOptions(originalValue);
-                return {
+
+        const valuesWithFallback = React.useMemo(
+            () =>
+                values.map((originalValue) => ({
                     originalValue,
-                    mappedValue,
-                };
+                    mappedValue: mapValuesToFallbackOptions(originalValue),
+                })),
+            [values, mapValuesToFallbackOptions],
+        );
+
+        const [prevValuesWithFallback, setPrevValuesWithFallback] =
+            React.useState(valuesWithFallback);
+        if (valuesWithFallback !== prevValuesWithFallback) {
+            setPrevValuesWithFallback(valuesWithFallback);
+            setChosenOptions((currentOptions) => {
+                const currentValuesByKey: Record<
+                    string,
+                    ApiSelectOption<ValueType>
+                > = {};
+                currentOptions.forEach((option) => {
+                    currentValuesByKey[option.key] = option;
+                });
+                return valuesWithFallback.map(
+                    (v) =>
+                        currentValuesByKey[v.mappedValue.key] ?? v.mappedValue,
+                );
             });
+        }
 
-            setChosenOptions(
-                valuesWithFallback.map(
-                    (value) =>
-                        currentValuesByValue[value.mappedValue.key] ??
-                        value.mappedValue,
-                ),
-            );
-
+        React.useEffect(() => {
             valuesWithFallback
                 .filter((value) => value.mappedValue.needsRefreshFromApi)
                 .forEach((value) => {
@@ -319,10 +237,7 @@ export const apiSelectMultipleWithLoadInitialValueFactory = <
                         });
                     });
                 });
-            // We don't want to re-run the effect every time the options change, so chosenOptions
-            // are not included in the dependency array
-            // eslint-disable-next-line react-hooks/exhaustive-deps
-        }, [mapValuesToFallbackOptions, values, trigger]);
+        }, [valuesWithFallback, trigger]);
 
         const onChange = React.useCallback(
             (options: ApiSelectOption<ValueType>[]) => {

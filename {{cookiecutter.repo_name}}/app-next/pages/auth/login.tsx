@@ -5,14 +5,14 @@ import type {
 import Head from "next/head";
 import { getCsrfToken } from "next-auth/react";
 import { getServerSession } from "next-auth";
-import { useTranslation } from "next-i18next";
-import { serverSideTranslations } from "next-i18next/serverSideTranslations";
+import { useTranslation } from "next-i18next/pages";
+import { serverSideTranslations } from "next-i18next/pages/serverSideTranslations";
 import React from "react";
 
+import config from "@lib/config";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { Card } from "@/components/Card";
 import { LoginForm } from "@/components/LoginForm";
-import config from "@lib/config";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
     const session = await getServerSession(

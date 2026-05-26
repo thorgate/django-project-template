@@ -1,6 +1,6 @@
 import { isRejectedWithValue } from "@reduxjs/toolkit";
 import type { Middleware } from "@reduxjs/toolkit";
-import { i18n } from "next-i18next";
+import { i18n } from "next-i18next/pages";
 import { toast } from "react-toastify";
 import { extractNonFieldError, isRecord } from "@lib/convertError";
 import { appUserSlice } from "@lib/slices/appUser";
@@ -32,7 +32,7 @@ export const rtkQueryErrorLogger: Middleware =
                 i18n?.t ||
                 (((key: string) => key) as (
                     key: string,
-                    context?: unknown,
+                    context?: unknown
                 ) => string);
 
             const payload = action?.payload as
@@ -57,7 +57,7 @@ export const rtkQueryErrorLogger: Middleware =
                 const message = extractNonFieldError(
                     payload,
                     (code) => t("errors.unexpectedErrorWithCode", { code }),
-                    t("errors.unexpectedError"),
+                    t("errors.unexpectedError")
                 );
                 toast.error(message);
             }

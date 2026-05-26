@@ -1,13 +1,17 @@
 import React from "react";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 import throttle from "lodash.throttle";
 
 import {
+    ApiSelectFactoryArguments,
+    ApiSelectMultipleFactoryArguments,
+    ApiSelectMultipleProps,
     ApiSelectOption,
-    APIQuery,
+    ApiSelectProps,
+    BaseApiSelectFactoryArguments,
     BaseItemType,
     BaseQueryArgType,
-    ListQueryResult,
+    RetrieveQueryResult,
 } from "@lib/factories/types";
 import { ScrollIntoViewEffect } from "@components/ScrollIntoViewEffect/";
 import { Combobox } from "@components/Input";
@@ -17,65 +21,6 @@ interface ApiSelectOptionsState<T> {
     pageNumber: number;
     hasMore: boolean;
     searchQuery: string;
-}
-
-export interface BaseApiSelectFactoryArguments<
-    ItemType extends BaseItemType,
-    QueryArgType extends BaseQueryArgType,
-    ValueType,
-> {
-    retrieveEndpoint: APIQuery<QueryArgType, ListQueryResult<ItemType>>;
-    getSearchQueryArgs: (query: string) => Partial<QueryArgType>;
-    getOptionForItem: (item: ItemType) => ApiSelectOption<ValueType>;
-    throttleWaitTime?: number;
-    displayName?: string;
-}
-
-export interface ApiSelectFactoryArguments<
-    ItemType extends BaseItemType,
-    QueryArgType extends BaseQueryArgType,
-    ValueType,
-> extends BaseApiSelectFactoryArguments<ItemType, QueryArgType, ValueType> {
-    filterByInitialValueOnInitialOpen?: boolean;
-}
-
-export type ApiSelectMultipleFactoryArguments<
-    ItemType extends BaseItemType,
-    QueryArgType extends BaseQueryArgType,
-    ValueType,
-> = BaseApiSelectFactoryArguments<ItemType, QueryArgType, ValueType>;
-
-export interface ApiSelectOptionWithoutValue {
-    label: string;
-    /* Key is used as react key, and for the form values, and must be unique string.*/
-    key: string;
-    /* Display value is rendered in the search box once option is selected, and ideally should be same as the value
-     * used for searching the API or option list. Falls back to label. */
-    displayValue?: string | undefined;
-    needsRefreshFromApi?: boolean;
-}
-
-export interface BaseApiSelectProps<QueryArgType> {
-    getSearchQueryArgs?: (query: string) => Partial<QueryArgType>;
-    label?: React.ReactNode;
-    error?: string;
-    loadingInitialValue?: boolean;
-    testId?: string;
-    className?: string;
-    disabled?: boolean;
-}
-
-export interface ApiSelectProps<T, QueryArgType>
-    extends BaseApiSelectProps<QueryArgType> {
-    value?: ApiSelectOption<T> | null;
-    onChange: (chosenOption: ApiSelectOption<T> | null) => void;
-    onReset?: () => void;
-}
-
-export interface ApiSelectMultipleProps<T, QueryArgType>
-    extends BaseApiSelectProps<QueryArgType> {
-    values?: ApiSelectOption<T>[];
-    onChange: (chosenOption: ApiSelectOption<T>[]) => void;
 }
 
 const loadPageHookFactory = <
@@ -105,7 +50,7 @@ const loadPageHookFactory = <
         });
         const onLoadPage = React.useCallback(
             (
-                data: ListQueryResult<ItemType> | undefined,
+                data: RetrieveQueryResult<ItemType> | undefined,
                 resetOptions: boolean,
                 pageNumber: number,
                 searchQuery: string | undefined = undefined,
@@ -216,7 +161,7 @@ const loadPageHookFactory = <
                 searchQuery: initialSearchQuery,
             });
             // But not every time the options change
-            // eslint-disable-next-line react-hooks/exhaustive-deps
+            // eslint-disable-next-line @eslint-react/exhaustive-deps
         }, [values, initialSearchQuery]);
         return { options, setOptions, onSearch, onLoadMore };
     };
@@ -254,7 +199,6 @@ export const apiSelectFactory = <
         onChange,
         onReset,
         disabled,
-        error,
     }: ApiSelectProps<ValueType, QueryArgType>) => {
         const { t } = useTranslation();
         const values = React.useMemo(() => (value ? [value] : []), [value]);
@@ -293,7 +237,6 @@ export const apiSelectFactory = <
                 onClear={onClear}
                 multiple={false}
                 label={label}
-                error={error}
                 options={options.options}
                 noResetToFirstOnSearch
             >
@@ -335,7 +278,6 @@ export const apiSelectMultipleFactory = <
         onChange,
         loadingInitialValue,
         disabled: outerDisabled,
-        error,
     }: ApiSelectMultipleProps<ValueType, QueryArgType>) => {
         const { t } = useTranslation();
         const disabled = React.useMemo(
@@ -359,13 +301,9 @@ export const apiSelectMultipleFactory = <
         }, [setOptions, onChange]);
         const onSelectionChange = React.useCallback(
             (values: ApiSelectOption<ValueType>[] | null) => {
-                if (values === null) {
-                    onClear();
-                } else {
-                    onChange(values);
-                }
+                onChange(values ?? []);
             },
-            [onChange, onClear],
+            [onChange],
         );
 
         return (
@@ -377,7 +315,6 @@ export const apiSelectMultipleFactory = <
                 onClear={onClear}
                 multiple
                 label={label}
-                error={error}
                 options={options.options}
                 noResetToFirstOnSearch
                 selectedOptionsDisplayLimit={1}

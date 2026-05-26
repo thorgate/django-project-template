@@ -32,7 +32,7 @@ export function Button({
     disabled,
 }: ButtonProps) {
     const classNames = clsx(
-        "focus:ring-2 focus:ring-inset focus:ring-brand-dark outline-none transition duration-500 ease-in-out",
+        "focus:ring-2 focus:ring-inset focus:ring-brand-dark outline-hidden transition duration-500 ease-in-out",
         variant !== "minimal" && "p-2 rounded",
         variant === "primary" &&
             "bg-brand-dark text-white hover:bg-brand-primary-accent",
@@ -43,7 +43,7 @@ export function Button({
         variant === "safe" &&
             "bg-brand-safe text-white hover:bg-brand-safe-accent",
         disabled && "opacity-50 cursor-not-allowed",
-        className,
+        className
     );
 
     if (href) {

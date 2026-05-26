@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useTranslation } from "next-i18next";
+import { useTranslation } from "next-i18next/pages";
 
 import { Button } from "@components/Button";
 import { Input } from "@components/Input";

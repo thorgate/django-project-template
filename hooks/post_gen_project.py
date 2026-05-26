@@ -49,23 +49,24 @@ def cleanup():
 
     if '{{ cookiecutter.include_celery}}' == NO:
         cleanup_paths += [
-            '{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}/celery.py',
-            '{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}/celery_settings.py',
-            '{{ cookiecutter.repo_name }}/{{ cookiecutter.repo_name }}/tasks.py',
+            '{{ cookiecutter.django_folder_name }}/{{ cookiecutter.default_django_app }}/celery.py',
+            '{{ cookiecutter.django_folder_name }}/{{ cookiecutter.default_django_app }}/celery_settings.py',
+            '{{ cookiecutter.django_folder_name }}/{{ cookiecutter.default_django_app }}/tasks.py',
         ]
 
     if '{{ cookiecutter.frontend_style }}' == WEBAPP:
         cleanup_paths += [
             'app',
+            'app-next',
             'Dockerfile-node.production',
-            '{{cookiecutter.repo_name}}/accounts/api_urls.py',
-            '{{cookiecutter.repo_name}}/accounts/jwt',
-            '{{cookiecutter.repo_name}}/accounts/rest',
-            '{{cookiecutter.repo_name}}/templates/emails/base.txt',
-            '{{cookiecutter.repo_name}}/templates/emails/password_reset.txt',
-            '{{cookiecutter.repo_name}}/{{cookiecutter.repo_name}}/rest/',
-            '{{cookiecutter.repo_name}}/static/502.html',
-            '{{cookiecutter.repo_name}}/static/robots.txt',
+            '{{ cookiecutter.django_folder_name }}/accounts/api_urls.py',
+            '{{ cookiecutter.django_folder_name }}/accounts/jwt',
+            '{{ cookiecutter.django_folder_name }}/accounts/rest',
+            '{{ cookiecutter.django_folder_name }}/templates/emails/base.txt',
+            '{{ cookiecutter.django_folder_name }}/templates/emails/password_reset.txt',
+            '{{ cookiecutter.django_folder_name }}/{{ cookiecutter.default_django_app }}/rest/',
+            '{{ cookiecutter.django_folder_name }}/static/502.html',
+            '{{ cookiecutter.django_folder_name }}/static/robots.txt',
             'ansible/roles/deploy/templates/razzle.env',
             'ansible/roles/deploy/templates/nginx/conf.d/common.node.include',
             'ansible/roles/deploy/templates/nginx/conf.d/app.proxy_node.include',
@@ -75,14 +76,14 @@ def cleanup():
     elif '{{ cookiecutter.frontend_style }}' in [SPA, SPA_NEXT]:
         cleanup_paths += [
             'webapp',
-            '{{cookiecutter.repo_name}}/accounts/emails.py',
-            '{{cookiecutter.repo_name}}/accounts/forms.py',
-            '{{cookiecutter.repo_name}}/accounts/urls.py',
-            '{{cookiecutter.repo_name}}/accounts/views.py',
-            '{{cookiecutter.repo_name}}/templates/accounts/',
-            '{{cookiecutter.repo_name}}/templates/base.html',
-            '{{cookiecutter.repo_name}}/templates/home.html',
-            '{{cookiecutter.repo_name}}/templates/registration/',
+            '{{ cookiecutter.django_folder_name }}/accounts/emails.py',
+            '{{ cookiecutter.django_folder_name }}/accounts/forms.py',
+            '{{ cookiecutter.django_folder_name }}/accounts/urls.py',
+            '{{ cookiecutter.django_folder_name }}/accounts/views.py',
+            '{{ cookiecutter.django_folder_name }}/templates/accounts/',
+            '{{ cookiecutter.django_folder_name }}/templates/base.html',
+            '{{ cookiecutter.django_folder_name }}/templates/home.html',
+            '{{ cookiecutter.django_folder_name }}/templates/registration/',
         ]
 
     if '{{ cookiecutter.webapp_include_storybook }}' == NO and '{{ cookiecutter.frontend_style }}' == WEBAPP:
@@ -100,8 +101,8 @@ def cleanup():
             'docker-compose.cypress.yml',
             'Makefile-cypress',
             'cypress/',
-            '{{cookiecutter.repo_name}}/cypress/',
-            '{{cookiecutter.repo_name}}/settings/test_cypress.py',
+            '{{ cookiecutter.django_folder_name }}/cypress/',
+            '{{ cookiecutter.django_folder_name }}/settings/test_cypress.py',
         ]
     else:
         if '{{ cookiecutter.frontend_style }}' in [SPA, SPA_NEXT]:
@@ -169,6 +170,13 @@ def cleanup():
     elif '{{ cookiecutter.frontend_style }}' == SPA:
         cleanup_paths += ["app-next"]
 
+    if '{{ cookiecutter.frontend_style }}' != SPA_NEXT:
+        cleanup_paths += [
+            'AGENTS.md',
+            'CLAUDE.md',
+            'docs/agent-guides',
+        ]
+
     # Rename first, then cleanup
     for old_path, new_path in rename_paths:
         old_full_path = os.path.join(cwd, old_path)
@@ -223,15 +231,15 @@ def remove_ci_project_generation_extra_commands(path):
     Will line containing CI_TEST_PROJECT_GENERATE and the following it.
     """
 
-    sed_command = f"/CI_TEST_PROJECT_GENERATE/,+2d"
+    sed_command = f"/CI_TEST_PROJECT_GENERATE/,+1d"
     return subprocess.check_call(["find", path, "-type", "f", "-exec", "sed", "-i", sed_command, "{}", "+"])
 
 
 def run_lint_fix(path):
     try:
-        subprocess.check_output(["ruff","--cache-dir=.ruff_cache", "--fix", path])
-        subprocess.check_output(["ruff","--cache-dir=.ruff_cache", "--select", "I", path])
-        subprocess.check_output(["ruff","format", "--cache-dir=.ruff_cache", path])
+        env = {**os.environ, "RUFF_CACHE_DIR": ".ruff_cache"}
+        subprocess.check_output(["ruff", "check", "--fix", path], env=env)
+        subprocess.check_output(["ruff", "format", path], env=env)
     except subprocess.CalledProcessError as e:
         print("ERROR: %s" % e.output.decode())
         raise e
