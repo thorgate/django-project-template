@@ -114,76 +114,23 @@ applications:
         name: dbcred-{{ cookiecutter.repo_name|as_hostname }}-dev-user
         key: PORT
 
-    # The dbcred Secret may not populate DATABASE_HOST for OWNER users
-    # (it's cross-namespace anyway); pin to the in-cluster service.
-    environment:
-      DJANGO_DATABASE_HOST: pg17-rw.databases.svc.cluster.local
-      DJANGO_DATABASE_SSLMODE: require
-      # Dockerfile-django.production COPYs the django folder INTO /app,
-      # so the settings module is reachable as `settings.cloud` (no
-      # <project>. prefix). Matches kostra's pattern.
-      DJANGO_SETTINGS_MODULE: settings.cloud
-      # Phoenix chart's redis-ha subchart deploys at <release>-redis-ha:6379
-      # but doesn't auto-wire the URL into the django container. settings/base.py
-      # default points at `redis:6379` which won't resolve in-namespace;
-      # override explicitly.
-      DJANGO_REDIS_URL: redis://{{ cookiecutter.repo_name|as_hostname }}-redis-ha:6379/1
+    # Non-secret config lives in extra/configmap.yaml. Mirrors wisby's
+    # environmentConfigMap pattern - decouples app config from chart
+    # values, easier to edit independently.
+    environmentConfigMap: {{ cookiecutter.repo_name|as_hostname }}-app-config
 
-{%- if cookiecutter.thorgate == YES %}
+    # TODO: SECRETS - currently defaulted by Django ("dummy key"), not
+    # safe outside an experimental test repo. Seal these via
+    # extra/sealed-secret-django-env.yaml + reference here as:
+    #   environmentSecret: {{ cookiecutter.repo_name|as_hostname }}-django-env
+    # Keys to seal:
+    #   DJANGO_SECRET_KEY
 {%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
-      # SPA mode: django at office.<host>; node at <host> (user-facing).
-      # See ansible/roles/deploy/templates/environment for the canonical
-      # list of env vars in this scaffold.
-      APP_PUBLIC_SITE_URL: https://{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
-      APP_SITE_URL: https://{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
-      APP_BACKEND_SITE_URL: https://{{ cookiecutter.spa_django_host_prefix }}.{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
-      APP_PUBLIC_BACKEND_SITE_URL: https://{{ cookiecutter.spa_django_host_prefix }}.{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
-      NEXTAUTH_URL: https://{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
-      DJANGO_SITE_URL: https://{{ cookiecutter.spa_django_host_prefix }}.{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
-      DJANGO_ALLOWED_HOSTS: {{ cookiecutter.spa_django_host_prefix }}.{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools,{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
-      # Parent-domain cookie so auth cookies set by django are visible
-      # to node (browser sees them as same-site via shared parent).
-      DJANGO_CSRF_COOKIE_DOMAIN: .{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
-{%- else %}
-      # WEBAPP mode: single host (django serves the built webapp).
-      APP_PUBLIC_SITE_URL: https://{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
-      APP_SITE_URL: https://{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
-      DJANGO_SITE_URL: https://{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
-      DJANGO_ALLOWED_HOSTS: {{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
-      DJANGO_CSRF_COOKIE_DOMAIN: {{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+    #   DJANGO_JWT_PRIVATE_KEY / PUBLIC_KEY (and matching APP_PUBLIC_JWT_PUBLIC_KEY in node)
 {%- endif %}
-{%- else %}
-      # TODO: set these to your project's actual hostnames (non-Thorgate).
-      APP_PUBLIC_SITE_URL: https://{{ cookiecutter.live_domain_name }}
-      DJANGO_ALLOWED_HOSTS: {{ cookiecutter.live_domain_name }}
-      DJANGO_CSRF_COOKIE_DOMAIN: {{ cookiecutter.live_domain_name }}
-{%- endif %}
-
+    #   DJANGO_SENTRY_DSN, DJANGO_EMAIL_HOST_PASSWORD
 {%- if cookiecutter.django_media_engine == S3 %}
-      # S3 / DO Spaces. Bucket need not exist for boot - only used when
-      # uploading media. Placeholder for the experimental scaffold.
-      DJANGO_AWS_S3_ENDPOINT_URL: https://fra1.digitaloceanspaces.com
-      DJANGO_AWS_STORAGE_BUCKET_NAME: {{ cookiecutter.repo_name|as_hostname }}-media
-{%- endif %}
-
-      DJANGO_SENTRY_ENVIRONMENT: dev
-{%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
-      APP_PUBLIC_SENTRY_ENVIRONMENT: dev
-{%- endif %}
-
-      DJANGO_DEFAULT_FROM_EMAIL: {{ cookiecutter.admin_email }}
-      DJANGO_SERVER_EMAIL: {{ cookiecutter.admin_email }}
-
-      # TODO: SECRETS - currently defaulted by Django ("dummy key"),
-      # not safe outside an experimental test repo. Seal these for any
-      # real deployment via extra/sealed-secret-django-env.yaml:
-      #   DJANGO_SECRET_KEY
-{%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
-      #   NEXTAUTH_SECRET, DJANGO_JWT_PRIVATE_KEY / PUBLIC_KEY
-{%- endif %}
-      #   DJANGO_SENTRY_DSN, DJANGO_EMAIL_HOST_PASSWORD
-{%- if cookiecutter.django_media_engine == S3 %}
-      #   DJANGO_AWS_ACCESS_KEY_ID / DJANGO_AWS_SECRET_ACCESS_KEY
+    #   DJANGO_AWS_ACCESS_KEY_ID / DJANGO_AWS_SECRET_ACCESS_KEY
 {%- endif %}
 
 {%- if cookiecutter.thorgate == YES %}
@@ -291,26 +238,14 @@ applications:
       timeoutSeconds: 5
     {%- endif %}
 
-    environment:
-      # Public URLs (also baked at next build time via APP_PUBLIC_*);
-      # these are runtime overrides for SSR + next-auth.
-{%- if cookiecutter.thorgate == YES %}
-      APP_PUBLIC_SITE_URL: https://{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
-      APP_SITE_URL: https://{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
-      APP_BACKEND_SITE_URL: https://{{ cookiecutter.spa_django_host_prefix }}.{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
-      APP_PUBLIC_BACKEND_SITE_URL: https://{{ cookiecutter.spa_django_host_prefix }}.{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
-      NEXTAUTH_URL: https://{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
-{%- else %}
-      APP_PUBLIC_SITE_URL: https://{{ cookiecutter.live_domain_name }}
-      APP_SITE_URL: https://{{ cookiecutter.live_domain_name }}
-{%- endif %}
+    # Shares the same ConfigMap as django. node ignores keys it doesn't
+    # need (DJANGO_DATABASE_HOST etc.) - harmless extras in env.
+    environmentConfigMap: {{ cookiecutter.repo_name|as_hostname }}-app-config
 
-      APP_PUBLIC_SENTRY_ENVIRONMENT: dev
-
-      # TODO: SECRETS - seal these via extra/sealed-secret-node-env.yaml:
-      #   NEXTAUTH_SECRET (required for next-auth in non-dev mode)
-      #   APP_PUBLIC_JWT_PUBLIC_KEY (mirror of django's)
-      #   APP_PUBLIC_SENTRY_DSN
+    # TODO: SECRETS - seal via extra/sealed-secret-node-env.yaml +
+    # reference here as:
+    #   environmentSecret: {{ cookiecutter.repo_name|as_hostname }}-node-env
+    # Keys: NEXTAUTH_SECRET, APP_PUBLIC_JWT_PUBLIC_KEY, APP_PUBLIC_SENTRY_DSN
 
 {%- if cookiecutter.thorgate == YES %}
     urlHost: {{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools

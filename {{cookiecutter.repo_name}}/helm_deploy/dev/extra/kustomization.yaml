@@ -9,9 +9,10 @@ kind: Kustomization
 # must precede the chart's wave-30 resources.
 resources:
   - namespace.yaml
+  - configmap.yaml
   - postgres.yaml
   - imageupdater.yaml
-  # TODO: add sealed-secret manifests for app config / registry creds
+  # TODO: add sealed-secret manifests for registry pull creds + app secrets
   # once you have them encrypted via kubeseal. Reference shape:
   #   helm_deploy/dev/extra/sealed-secret-django-env.yaml
   #   helm_deploy/dev/extra/sealed-secret-gitlab-registry.yaml

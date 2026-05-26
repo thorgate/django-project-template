@@ -1,0 +1,72 @@
+# Non-secret app config shared by the chart's Deployments.
+# Referenced from values.yaml as:
+#   applications.<app>.environmentConfigMap: {{ cookiecutter.repo_name|as_hostname }}-app-config
+#
+# All values are NON-SECRET. Secrets (DJANGO_SECRET_KEY,{% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %} NEXTAUTH_SECRET,
+# JWT keys,{% endif %} sentry DSN, SMTP password, AWS keys) belong in
+# extra/sealed-secret-django-env.yaml (+ -node-env.yaml for SPA) and
+# get referenced via environmentSecret in values.yaml.
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ cookiecutter.repo_name|as_hostname }}-app-config
+  namespace: {{ cookiecutter.repo_name|as_hostname }}-dev
+data:
+  # ---- Django settings module + DB host (Secret has user/pw/name/port) ----
+  DJANGO_DATABASE_HOST: pg17-rw.databases.svc.cluster.local
+  DJANGO_DATABASE_SSLMODE: require
+  DJANGO_SETTINGS_MODULE: settings.cloud
+  # Disable file logging so tracebacks land on stdout where
+  # `kubectl logs` sees them (cloud.py writes to /var/log/<project>/ otherwise).
+  DJANGO_DISABLE_FILE_LOGGING: "y"
+
+  # ---- Redis (Phoenix chart's redis-ha subchart at <release>-redis-ha:6379) ----
+  DJANGO_REDIS_URL: redis://{{ cookiecutter.repo_name|as_hostname }}-redis-ha:6379/1
+
+{%- if cookiecutter.thorgate == YES %}
+{%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
+  # ---- App URLs (SPA split: django at office.<host>, node at <host>) ----
+  APP_PUBLIC_SITE_URL: https://{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+  APP_SITE_URL: https://{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+  APP_BACKEND_SITE_URL: https://{{ cookiecutter.spa_django_host_prefix }}.{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+  APP_PUBLIC_BACKEND_SITE_URL: https://{{ cookiecutter.spa_django_host_prefix }}.{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+  NEXTAUTH_URL: https://{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+  DJANGO_SITE_URL: https://{{ cookiecutter.spa_django_host_prefix }}.{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+
+  # ---- Hosts + cookies ----
+  DJANGO_ALLOWED_HOSTS: {{ cookiecutter.spa_django_host_prefix }}.{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools,{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+  # Parent-domain cookie so auth cookies set by django are visible to
+  # node (browser sees them as same-site via shared parent).
+  DJANGO_CSRF_COOKIE_DOMAIN: .{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+{%- else %}
+  # ---- WEBAPP mode: single host (django serves the built webapp) ----
+  APP_PUBLIC_SITE_URL: https://{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+  APP_SITE_URL: https://{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+  DJANGO_SITE_URL: https://{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+  DJANGO_ALLOWED_HOSTS: {{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+  DJANGO_CSRF_COOKIE_DOMAIN: {{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+{%- endif %}
+{%- else %}
+  # ---- Non-Thorgate hostnames TODO ----
+  APP_PUBLIC_SITE_URL: https://{{ cookiecutter.live_domain_name }}
+  DJANGO_ALLOWED_HOSTS: {{ cookiecutter.live_domain_name }}
+  DJANGO_CSRF_COOKIE_DOMAIN: {{ cookiecutter.live_domain_name }}
+{%- endif %}
+
+{%- if cookiecutter.django_media_engine == S3 %}
+
+  # ---- Media (DO Spaces - bucket need not exist for boot) ----
+  DJANGO_AWS_S3_ENDPOINT_URL: https://fra1.digitaloceanspaces.com
+  DJANGO_AWS_STORAGE_BUCKET_NAME: {{ cookiecutter.repo_name|as_hostname }}-media
+{%- endif %}
+
+  # ---- Sentry env labels (DSN must be sealed separately if used) ----
+  DJANGO_SENTRY_ENVIRONMENT: dev
+{%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
+  APP_PUBLIC_SENTRY_ENVIRONMENT: dev
+{%- endif %}
+
+  # ---- Email defaults ----
+  DJANGO_DEFAULT_FROM_EMAIL: {{ cookiecutter.admin_email }}
+  DJANGO_SERVER_EMAIL: {{ cookiecutter.admin_email }}
