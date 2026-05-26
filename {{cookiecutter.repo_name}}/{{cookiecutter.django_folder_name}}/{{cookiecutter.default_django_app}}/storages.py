@@ -24,6 +24,11 @@ class PrivateMediaStorage(S3Boto3Storage):
 class MediaStorage(S3Boto3Storage):
     location = settings.MEDIAFILES_LOCATION
     default_acl = "public-read"
+    # comment out this line if you want to use non expiring links, but note that older files uploaded
+    # with private ACL need to be modified in AWS console for this to work.
+    # querystring_auth = False
+
+# end::[]
 # - {%- endif %}{% if cookiecutter.django_media_engine == GCS %}
 from storages.backends.gcloud import GoogleCloudStorage
 

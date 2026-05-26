@@ -48,6 +48,10 @@ POLICY
 resource "aws_s3_bucket_public_access_block" "access_storage" {
   bucket = aws_s3_bucket.media_bucket.id
 
+  rule {
+    # if is public allow for adding objects with the public ACL
+    object_ownership      = var.is_public ? "BucketOwnerPreferred" : "BucketOwnerEnforced"
+  }
   # Block public access to buckets and objects granted through new access control lists (ACLs)
   block_public_acls       = !var.is_public
   # Block public access to buckets and objects granted through any access control lists (ACLs)
