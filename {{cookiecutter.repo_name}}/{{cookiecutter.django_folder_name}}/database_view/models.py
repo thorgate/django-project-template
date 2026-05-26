@@ -3,6 +3,9 @@ import logging
 from django.db import DEFAULT_DB_ALIAS, models
 
 
+logger = logging.getLogger(__name__)
+
+
 class DatabaseView(models.Model):
     # Class names of views that are needed for this view
     dependencies: set[str] = set()
@@ -125,12 +128,12 @@ class DatabaseView(models.Model):
 def pre_migrate(*args, **kwargs):
     if kwargs.get("app_config").name != "database_view":
         return
-    logging.info("Dropping all DB views before migration to unblock any possible table changes.")
+    logger.info("Dropping all DB views before migration to unblock any possible table changes.")
     DatabaseView.drop_all_views()
 
 
 def post_migrate(*args, **kwargs):
     if kwargs.get("app_config").name != "database_view":
         return
-    logging.info("Re-creating all DB views after migrations.")
+    logger.info("Re-creating all DB views after migrations.")
     DatabaseView.create_all_views()

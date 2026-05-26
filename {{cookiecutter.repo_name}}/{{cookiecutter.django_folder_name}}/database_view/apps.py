@@ -8,7 +8,7 @@ class DatabaseViewConfig(AppConfig):
 
     def ready(self):
         # pylint: disable-next=import-outside-toplevel
-        from . import models
+        from . import models  # noqa: PLC0415
 
         pre_migrate.connect(models.pre_migrate)
         post_migrate.connect(models.post_migrate)

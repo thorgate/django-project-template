@@ -52,8 +52,8 @@ def default_project():
         "include_celery": NO,
         "webapp_include_storybook": NO,
         "test_host": "test1.thorgate.eu",
-        "python_version": "3.10",
-        "node_version": "18",
+        "python_version": "3.12",
+        "node_version": "20",
         "frontend_style": WEBAPP,
         "use_cypress": NO,
     }
