@@ -252,42 +252,18 @@ MEDIA_ROOT = env.str("DJANGO_MEDIA_ROOT", default="/files/media")
 MEDIA_URL = env.str("DJANGO_MEDIA_URL", default="/media/")
 MEDIAFILES_LOCATION = env.str("DJANGO_MEDIAFILES_LOCATION", default="media")
 
-# In staging/prod we use {{ cookiecutter.django_media_engine }} for file storage engine
-# - {% if cookiecutter.django_media_engine == S3 %}
-AWS_ACCESS_KEY_ID = "<unset>"
-AWS_SECRET_ACCESS_KEY = "<unset>"
-AWS_STORAGE_BUCKET_NAME = "<unset>"
-AWS_DEFAULT_ACL = "public-read"
-AWS_IS_GZIPPED = True
-AWS_S3_FILE_OVERWRITE = False
-AWS_S3_REGION_NAME = "eu-north-1"
-AWS_S3_SIGNATURE_VERSION = "s3v4"
 
-# Only set DJANGO_AWS_S3_ENDPOINT_URL if it's defined in environment, fallback to default value in other cases
-# Useful for s3 provided by other parties than AWS, like DO.
-if env.str("DJANGO_AWS_S3_ENDPOINT_URL", default=""):
-    AWS_S3_ENDPOINT_URL = env.str("DJANGO_AWS_S3_ENDPOINT_URL")
-
-# Should be True unless using s3 provider that doesn't support it (like DO)
-AWS_S3_ENCRYPTION = env.bool("DJANGO_AWS_S3_ENCRYPTION", default=True)
-
-# This helps get around a bug in boto3 (https://github.com/boto/boto3/issues/1644)
-# Details in https://github.com/jschneier/django-storages/issues/649
-AWS_S3_ADDRESSING_STYLE = "path"
-
-AWS_S3_OBJECT_PARAMETERS = {
-    "CacheControl": "max-age=1209600",  # 2 weeks in seconds
+# Disabled by default — no media files are used in this project yet.
+# To enable remote storage, set required environment variables.
+STORAGES = {
+    "default": {
+        "BACKEND": f"{DEFAULT_DJANGO_APP}.storages.DisabledMediaStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
 }
 
-# - {%- endif %}
-# - {% if cookiecutter.django_media_engine == GCS %}
-GS_BUCKET_NAME = "<unset>"
-GS_PROJECT_ID = "<unset>"
-GS_CREDENTIALS = "<unset>"
-GS_DEFAULT_ACL = "publicRead"
-GS_FILE_OVERWRITE = False
-GS_CACHE_CONTROL = "max-age=1209600"  # 2 weeks in seconds
-# - {%- endif %}
 
 # Static files (CSS, JavaScript, images)
 STATIC_ROOT = "/files/assets"
