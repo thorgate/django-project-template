@@ -110,7 +110,10 @@ applications:
     environment:
       DJANGO_DATABASE_HOST: pg17-rw.databases.svc.cluster.local
       DJANGO_DATABASE_SSLMODE: require
-      DJANGO_SETTINGS_MODULE: {{ cookiecutter.django_folder_name }}.settings.cloud   # TODO: confirm the settings module name
+      # Dockerfile-django.production COPYs the django folder INTO /app,
+      # so the settings module is reachable as `settings.cloud` (no
+      # <project>. prefix). Matches kostra's pattern.
+      DJANGO_SETTINGS_MODULE: settings.cloud
 
 {%- if cookiecutter.thorgate == YES %}
     urlHost: {{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
