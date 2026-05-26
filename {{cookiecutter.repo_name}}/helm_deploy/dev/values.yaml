@@ -331,9 +331,15 @@ ingress:
     X-Robots-Tag: "noindex nofollow"   # TODO: drop this once the app is publicly indexable
 {%- endif %}
 
-# TODO: enable Redis if your app needs celery / caching / sessions
+# dpt-template settings/base.py defaults to Redis for CACHES (and celery
+# broker if include_celery=yes), so the chart's redis-ha sub-chart is
+# enabled by default. The Phoenix chart wires DJANGO_REDIS_URL to the
+# in-namespace service automatically.
+#
+# Set to false ONLY if your app overrides CACHES in settings/cloud.py
+# to LocMemCache (kostra's pattern - internal tool with low load).
 redis-ha:
-  enabled: false
+  enabled: true
 
 # Sync waves: extras (configmap, postgres, secrets) apply at default wave
 # (0/10), this chart's resources at wave 30 so migrations run after the
