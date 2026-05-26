@@ -1,5 +1,22 @@
 from django.urls import include, path
 
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView,
+)
+
+from accounts.rest.views import UserViewSet
+from {{cookiecutter.default_django_app}}.rest.core.routers import BaseRouter
+
+
+router = BaseRouter()
+router.register(
+    r"user",
+    UserViewSet,
+    basename="user",
+)
+
 
 # Adding extra urls
 #
@@ -21,4 +38,15 @@ from django.urls import include, path
 urlpatterns = [
     path("auth/", include("accounts.jwt.urls")),
     path("user/", include("accounts.rest.urls")),
+    # Swagger OpenAPI Schema
+    path("schema/", SpectacularAPIView.as_view(), name="schema"),
+    path(
+        "schema/swagger-ui/",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger-ui",
+    ),
+    path(
+        "schema/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"
+    ),
+    path("", include(router.urls)),
 ]

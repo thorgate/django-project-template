@@ -1,9 +1,9 @@
-import React from 'react';
-import { Helmet } from 'react-helmet-async';
-import { Row, Col } from 'reactstrap';
+import React from "react";
+import { Helmet } from "react-helmet-async";
+import { Row, Col } from "reactstrap";
 
-import withView from 'decorators/withView';
-import { loginRequired } from 'decorators/permissions';
+import withView from "@/src/decorators/withView";
+import { loginRequired } from "@/src/decorators/permissions";
 
 const Restricted = () => (
     <div className="page-container">

@@ -1,0 +1,13 @@
+# Prettier is using this file to configure itself for the codebase
+
+[*.js]
+indent_size = 4
+
+[*.jsx]
+indent_size = 4
+
+[*.ts]
+indent_size = 4
+
+[*.tsx]
+indent_size = 4

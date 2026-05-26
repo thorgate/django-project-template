@@ -17,6 +17,7 @@ _(note that the primary repo is in [Gitlab](https://gitlab.com/thorgate-public/d
     - Separate settings for different environments (local/staging/production)
     - Python 3.6 or later
     - [SPA] Accessible from port `3000` for local development
+    - [SPA-NEXT] Accessible from port `3000` for local development
 
 - Frontend app with JavaScript (ES2015), React and Sass
 

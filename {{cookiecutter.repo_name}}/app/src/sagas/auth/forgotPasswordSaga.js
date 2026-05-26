@@ -1,14 +1,14 @@
-import { createSaveAction, createFormSaveSaga } from '@thorgate/spa-forms';
-import { takeLatest } from 'redux-saga/effects';
+import { createSaveAction, createFormSaveSaga } from "@thorgate/spa-forms";
+import { takeLatest } from "redux-saga/effects";
 
-import api from 'services/api';
+import api from "@/src/services/api";
 
 /**
  * Trigger Forgot password watcher saga.
  * @returns Created trigger action
  */
 export const forgotPassword = createSaveAction(
-    '@@sagas/auth/GET_FORGOT_PASSWORD_LINK',
+    "@@sagas/auth/GET_FORGOT_PASSWORD_LINK"
 );
 
 function successHook(result, _1, { meta: { setStatus } }) {

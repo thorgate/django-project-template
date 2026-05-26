@@ -2,30 +2,30 @@ import {
     createSaveAction,
     createFormSaveSaga,
     formErrorsHandler,
-} from '@thorgate/spa-forms';
-import { call, select, takeLatest, put } from 'redux-saga/effects';
-import { getLocation, push } from 'connected-react-router';
-import qs from 'qs';
-import { resolvePath } from 'tg-named-routes';
+} from "@thorgate/spa-forms";
+import { call, select, takeLatest, put } from "redux-saga/effects";
+import { getLocation, push } from "connected-react-router";
+import qs from "qs";
+import { resolvePath } from "tg-named-routes";
 
-import { saveToken } from 'sagas/helpers/token';
-import api from 'services/api';
+import { saveToken } from "@/src/sagas/helpers/token";
+import api from "@/src/services/api";
 
 /**
  * Trigger obtain token watcher saga.
  * @returns Created trigger action
  */
-export const obtainToken = createSaveAction('@@sagas/auth/OBTAIN_TOKEN');
+export const obtainToken = createSaveAction("@@sagas/auth/OBTAIN_TOKEN");
 
 function* successHook(result) {
     const { access, refresh } = result;
     saveToken(access, refresh);
 
     const location = yield select(getLocation);
-    let { next } = qs.parse(location.search || '', { ignoreQueryPrefix: true });
+    let { next } = qs.parse(location.search || "", { ignoreQueryPrefix: true });
 
     if (!next) {
-        next = resolvePath('landing');
+        next = resolvePath("landing");
     }
 
     yield put(push(next));

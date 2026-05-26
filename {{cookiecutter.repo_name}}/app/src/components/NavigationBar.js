@@ -1,28 +1,32 @@
-import { getUser, isAuthenticated } from '@thorgate/spa-permissions';
-import React from 'react';
-import PropTypes from 'prop-types';
-import { useTranslation } from 'react-i18next';
-import { connect } from 'react-redux';
-import { Link, withRouter } from 'react-router-dom';
-import { Nav, Navbar, NavbarBrand, NavItem, NavLink } from 'reactstrap';
-import { resolvePath } from 'tg-named-routes';
+import { getUser, isAuthenticated } from "@thorgate/spa-permissions";
+import { useRouter } from "next/router";
+import { signOut } from "next-auth/react";
+import React from "react";
+import PropTypes from "prop-types";
+import { useTranslation } from "react-i18next";
+import { connect } from "react-redux";
+import { Link, withRouter } from "react-router-dom";
+import { Nav, Navbar, NavbarBrand, NavItem, NavLink } from "reactstrap";
+import { useI18nResolvePath } from "tg-i18n-named-routes";
 
-import { SETTINGS } from 'settings';
-import { UserShape } from 'utils/types';
+import { SETTINGS } from "@/src/settings";
+import { UserShape } from "@/src/utils/types";
 
 const NavigationBar = ({ user, isLoggedIn }) => {
     const { t } = useTranslation();
+    const router = useRouter();
+    const resolvePath = useI18nResolvePath();
 
     let authNav = (
         <Nav className="ml-auto" navbar>
             <NavItem>
-                <NavLink tag={Link} to={resolvePath('auth:signup')}>
-                    {t('Signup')}
+                <NavLink tag={Link} to={resolvePath("auth:signup")}>
+                    {t("Signup")}
                 </NavLink>
             </NavItem>
             <NavItem>
-                <NavLink tag={Link} to={resolvePath('auth:login')}>
-                    {t('Login')}
+                <NavLink tag={"a"} href="/auth/login">
+                    {t("Login")}
                 </NavLink>
             </NavItem>
         </Nav>
@@ -35,8 +39,14 @@ const NavigationBar = ({ user, isLoggedIn }) => {
                     <NavLink href="#">{user.email}</NavLink>
                 </NavItem>
                 <NavItem>
-                    <NavLink tag={Link} to={resolvePath('auth:logout')}>
-                        {t('Logout')}
+                    <NavLink
+                        tag={"a"}
+                        onClick={async () => {
+                            await signOut({ redirect: false });
+                            router.reload();
+                        }}
+                    >
+                        {t("Logout")}
                     </NavLink>
                 </NavItem>
             </Nav>
@@ -44,14 +54,16 @@ const NavigationBar = ({ user, isLoggedIn }) => {
     }
 
     let devUrls = null;
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== "production") {
         devUrls = (
             <NavItem>
                 <NavLink
-                    href={SETTINGS.SITE_URL + SETTINGS.DJANGO_ADMIN_PANEL}
+                    href={
+                        SETTINGS.BACKEND_SITE_URL + SETTINGS.DJANGO_ADMIN_PANEL
+                    }
                     target="_blank"
                 >
-                    {t('Admin panel')}
+                    {t("Admin panel")}
                 </NavLink>
             </NavItem>
         );
@@ -59,13 +71,13 @@ const NavigationBar = ({ user, isLoggedIn }) => {
 
     return (
         <Navbar color="faded" light expand="md">
-            <NavbarBrand tag={Link} to={resolvePath('landing')}>
+            <NavbarBrand tag={Link} to={resolvePath("landing")}>
                 HOME
             </NavbarBrand>
             <Nav navbar>
                 <NavItem>
-                    <NavLink tag={Link} to={resolvePath('restricted')}>
-                        {t('Restricted view')}
+                    <NavLink tag={Link} to={resolvePath("restricted")}>
+                        {t("Restricted view")}
                     </NavLink>
                 </NavItem>
                 {devUrls}

@@ -5,7 +5,7 @@
       <entry url="file://$PROJECT_DIR$">
         <entryData>
           <resourceRoots>
-{% if cookiecutter.frontend_style == SPA %}
+{% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
             <path value="file://$PROJECT_DIR$/app/src" />
 {% else %}
             <path value="file://$PROJECT_DIR$/webapp/src" />

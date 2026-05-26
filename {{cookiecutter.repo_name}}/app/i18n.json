@@ -1,16 +1,15 @@
 {
   "DEFAULT_NAMESPACE": "translations",
   "TRANSLATION_NAMESPACES": [
+    "common",
+    "auth",
+    "userDetails",
     "translations"
   ],
   "FALLBACK_LANGUAGE": "en",
   "DEFAULT_LANGUAGE": "en",
-  "LANGUAGE_ORDER": [
+  "LANGUAGES": [
     "en",
     "et"
-  ],
-  "LANGUAGES": {
-    "en": "English",
-    "et": "Eesti keel"
-  }
+  ]
 }

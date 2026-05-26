@@ -1,20 +1,19 @@
-import { ssrRedirectMiddleware } from '@thorgate/spa-view-manager';
-import { routerMiddleware as routerMiddlewareFactory } from 'connected-react-router';
-import { createBrowserHistory, createMemoryHistory } from 'history';
-import serializeJS from 'serialize-javascript';
-import { createStore, applyMiddleware, compose } from 'redux';
-import { createLogger } from 'redux-logger';
-import createSagaMiddleware, { END } from 'redux-saga';
-import { SagaHotReloader } from 'tg-saga-manager';
+import { ssrRedirectMiddleware } from "@thorgate/spa-view-manager";
+import { routerMiddleware as routerMiddlewareFactory } from "connected-react-router";
+import { createBrowserHistory, createMemoryHistory } from "history";
+import { createStore, applyMiddleware, compose } from "redux";
+import { createLogger } from "redux-logger";
+import createSagaMiddleware, { END } from "redux-saga";
+import { SagaHotReloader } from "tg-saga-manager";
 
-import rootReducer from 'configuration/reducers';
-import rootSaga from 'sagas';
-import { onComponentError } from 'services/sentry';
+import rootReducer from "@/src/configuration/reducers";
+import rootSaga from "@/src/sagas";
+import { onComponentError } from "@/src/services/sentry";
 
 // Are we using development mode & client app
 const isDevClient =
-    process.env.BUILD_TARGET === 'client' &&
-    process.env.NODE_ENV !== 'production';
+    process.env.BUILD_TARGET === "client" &&
+    process.env.NODE_ENV !== "production";
 
 // Enable Redux devTools in development (only on development client app)
 const composeEnhancers =
@@ -33,7 +32,7 @@ export default function configureStore(initialState = {}, options = {}) {
         ...(options.sagaMiddleware || {}),
     };
 
-    if (process.env.BUILD_TARGET === 'client' && sagaMonitor) {
+    if (process.env.BUILD_TARGET === "client" && sagaMonitor) {
         sagaMiddleWareOptions.sagaMonitor = sagaMonitor;
     }
 
@@ -44,34 +43,24 @@ export default function configureStore(initialState = {}, options = {}) {
 
     // create router middleware only on client
     let history = null;
-    if (process.env.BUILD_TARGET === 'client') {
+    if (process.env.BUILD_TARGET === "client") {
         history = createBrowserHistory();
     } else {
         history = createMemoryHistory({
-            initialEntries: [options.location || '/'],
+            initialEntries: [options.location || "/"],
         });
     }
 
     // create list of middleware to spread later, makes easier way to add based on environment
     const middlewares = [routerMiddlewareFactory(history)];
 
-    if (process.env.BUILD_TARGET === 'server') {
+    if (process.env.BUILD_TARGET === "server") {
         middlewares.unshift(ssrRedirectMiddleware());
     }
 
     // if not production, add redux logger
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== "production") {
         const extraOptions = {};
-
-        if (process.env.BUILD_TARGET === 'server') {
-            extraOptions.actionTransformer = (action) =>
-                serializeJS(action, { unsafe: true });
-            extraOptions.stateTransformer = (state) =>
-                serializeJS(state, { unsafe: true });
-            extraOptions.titleFormatter = (action, time, took) =>
-                `action "${action}" @ ${time} (in ${took.toFixed(2)} ms)`;
-            extraOptions.colors = false;
-        }
 
         middlewares.push(
             createLogger({
@@ -79,7 +68,7 @@ export default function configureStore(initialState = {}, options = {}) {
                 duration: true,
                 logger: console,
                 ...extraOptions,
-            }),
+            })
         );
     }
 
@@ -93,7 +82,7 @@ export default function configureStore(initialState = {}, options = {}) {
     const store = createStore(
         rootReducer(history),
         initialState,
-        composeEnhancers(...storeEnhancers),
+        composeEnhancers(...storeEnhancers)
     );
 
     // Add support to stop all sagas
@@ -104,30 +93,7 @@ export default function configureStore(initialState = {}, options = {}) {
 
     const sagaHotReloader = new SagaHotReloader(store, sagaMiddleware);
 
-    if (process.env.BUILD_TARGET === 'client') {
-        sagaHotReloader.startRootSaga(rootSaga);
-    }
-
-    /* eslint-disable global-require */
-    /* eslint-disable @typescript-eslint/no-var-requires */
-    if (module.hot) {
-        module.hot.accept('./reducers', () => {
-            const nextRootReducer = require('./reducers').default;
-            store.replaceReducer(nextRootReducer(history));
-        });
-
-        if (process.env.BUILD_TARGET === 'client') {
-            module.hot.accept('../sagas', () => {
-                sagaHotReloader
-                    .replaceRootSaga(require('../sagas').default)
-                    .then(() => {
-                        // eslint-disable-next-line no-console
-                        console.log('🔁  HMR Reloaded `./sagas` ...');
-                    });
-            });
-        }
-    }
-    /* eslint-enable */
+    sagaHotReloader.startRootSaga(rootSaga);
 
     return {
         store,

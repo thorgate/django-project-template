@@ -1,4 +1,4 @@
-# -  {% if cookiecutter.frontend_style == SPA %}
+# -  {% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 # -    {% set LE_domain="{{ node_site_host }}" %}
 # -  {% elif cookiecutter.frontend_style == WEBAPP %}
 # -    {% set LE_domain="{{ django_site_host }}" %}

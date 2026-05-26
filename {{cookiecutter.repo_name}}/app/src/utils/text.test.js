@@ -1,11 +1,10 @@
-import { upperCaseFirst } from './text';
+import { upperCaseFirst } from "./text";
 
-describe('text utils', () => {
-    // eslint-disable-next-line jest/expect-expect
-    test('upperCaseFirst test', () => {
-        expect(upperCaseFirst('fasdASDASD ASD cada')).toBe(
-            'Fasdasdasd asd cada',
+describe("text utils", () => {
+    test("upperCaseFirst test", () => {
+        expect(upperCaseFirst("fasdASDASD ASD cada")).toBe(
+            "Fasdasdasd asd cada"
         );
-        expect(upperCaseFirst('')).toBe('');
+        expect(upperCaseFirst("")).toBe("");
     });
 });

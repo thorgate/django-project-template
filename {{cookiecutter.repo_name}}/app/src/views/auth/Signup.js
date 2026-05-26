@@ -1,37 +1,37 @@
-import { ConnectedRedirect } from '@thorgate/spa-pending-data';
-import React from 'react';
-import PropTypes from 'prop-types';
-import qs from 'qs';
-import { Helmet } from 'react-helmet-async';
-import { useTranslation } from 'react-i18next';
-import { connect } from 'react-redux';
-import { resolvePath } from 'tg-named-routes';
+import React, { useEffect } from "react";
+import PropTypes from "prop-types";
+import { Helmet } from "react-helmet-async";
+import { useTranslation } from "react-i18next";
+import { connect } from "react-redux";
+import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
 
-import AuthLayout from 'components/layouts/AuthLayout';
-import SignupForm from 'forms/auth/Signup';
-import withView from 'decorators/withView';
-import { signup } from 'sagas/auth/signupSaga';
-import { RouterLocationShape } from 'utils/types';
+import AuthLayout from "@/src/components/layouts/AuthLayout";
+import SignupForm from "@/src/forms/auth/Signup";
+import withView from "@/src/decorators/withView";
+import { signup } from "@/src/sagas/auth/signupSaga";
+import { RouterLocationShape } from "@/src/utils/types";
 
-const Signup = ({ location, isAuthenticated, onSignup }) => {
+const Signup = ({ onSignup }) => {
     const { t } = useTranslation();
+    const router = useRouter();
+    const { data: session, status } = useSession();
 
-    const query = qs.parse(location.search, { ignoreQueryPrefix: true });
-    const { permissionDenied } = location.state || {};
-
-    if (isAuthenticated && !permissionDenied) {
-        let nextUrl = resolvePath('landing');
-        if (query.next && query.next !== resolvePath('auth:login')) {
-            nextUrl = query.next;
+    useEffect(() => {
+        if (status === "loading") {
+            // Do nothing while loading
+            return;
         }
 
-        return <ConnectedRedirect to={nextUrl} />;
-    }
+        if (status === "authenticated") {
+            window.location.href = router.query.next || "/";
+        }
+    }, [status, router]);
 
     return (
         <AuthLayout>
             <Helmet>
-                <title>{t('Signup')}</title>
+                <title>{t("Signup")}</title>
             </Helmet>
             <SignupForm onSignup={onSignup} />
         </AuthLayout>

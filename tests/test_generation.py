@@ -8,11 +8,12 @@ import pytest
 from cookiecutter.config import USER_CONFIG_PATH
 from cookiecutter.exceptions import FailedHookException
 
-from .constants import YES, NO, WEBAPP, SPA, ALPINE, DEBIAN
+from .constants import YES, NO, WEBAPP, SPA, SPA_NEXT, ALPINE, DEBIAN
 
 
 def generate_project(cookies, config):
     os.environ.setdefault("DISABLE_PROJECT_TEMPLATE_VAULT_ENCRYPT", '1')
+    os.environ.setdefault("DPT_CI_PROJECT_TEST", '1')
 
     cookies._config_file = USER_CONFIG_PATH
     result = cookies.bake(extra_context=config)
@@ -55,6 +56,8 @@ def validate_project_works(result, config):
         # PWD call in Makefile reports wrong path during testing
         'PROJECT_ROOT': project_dir,
         'SITE_ROOT': project_inner_dir,
+        'DPT_VENV_CACHING': '1',
+        'DJANGO_JWT_PUBLIC_KEY': '',
     })
 
     try:
@@ -144,10 +147,37 @@ def test_spa_generate(cookies, default_project):
     validate_project_works(result, default_project)
 
 
+@pytest.mark.env("SPA_NEXT")
+def test_spa_next_generate(cookies, default_project):
+    default_project.update({
+        'frontend_style': SPA_NEXT,
+    })
+    result = generate_project(cookies, default_project)
+
+    assert result.project.join('app/').exists()
+    assert not result.project.join('webapp/').exists()
+
+    validate_project_works(result, default_project)
+
+
 @pytest.mark.env("DEBIAN_SPA")
 def test_debian_spa_generate(cookies, default_project):
     default_project.update({
         'frontend_style': SPA,
+        'docker_base_image': DEBIAN,
+    })
+    result = generate_project(cookies, default_project)
+
+    assert result.project.join('app/').exists()
+    assert not result.project.join('webapp/').exists()
+
+    validate_project_works(result, default_project)
+
+
+@pytest.mark.env("DEBIAN_SPA_NEXT")
+def test_debian_spa_next_generate(cookies, default_project):
+    default_project.update({
+        'frontend_style': SPA_NEXT,
         'docker_base_image': DEBIAN,
     })
     result = generate_project(cookies, default_project)
@@ -201,10 +231,40 @@ def test_mypy_spa_generate(cookies, default_project):
     validate_project_works(result, default_project)
 
 
+@pytest.mark.env("MYPY_SPA_NEXT")
+def test_mypy_spa_next_generate(cookies, default_project):
+    default_project.update({
+        'use_mypy': YES,
+        'frontend_style': SPA_NEXT,
+    })
+    result = generate_project(cookies, default_project)
+
+    assert result.project.join('app/').exists()
+    assert not result.project.join('webapp/').exists()
+
+    validate_project_works(result, default_project)
+
+
 @pytest.mark.env("CYPRESS_SPA")
 def test_cypress_spa_generate(cookies, default_project):
     default_project.update({
         'frontend_style': SPA,
+        'use_cypress': YES,
+    })
+    result = generate_project(cookies, default_project)
+
+    assert result.project.join('app/').exists()
+    assert result.project.join('app/cypress/').exists()
+    assert result.project.join('app/cypress.json').exists()
+    assert not result.project.join('webapp/').exists()
+
+    validate_project_works(result, default_project)
+
+
+@pytest.mark.env("CYPRESS_SPA_NEXT")
+def test_cypress_spa_next_generate(cookies, default_project):
+    default_project.update({
+        'frontend_style': SPA_NEXT,
         'use_cypress': YES,
     })
     result = generate_project(cookies, default_project)
@@ -236,7 +296,7 @@ def test_cypress_webapp_generate(cookies, default_project):
 @pytest.mark.env("AUTO_DEPLOY")
 def test_auto_deploy_generate(cookies, default_project):
     default_project.update({
-        'frontend_style': SPA,
+        'frontend_style': SPA_NEXT,
         'build_in_ci': YES,
         'use_auto_deploy': YES,
     })

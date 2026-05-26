@@ -21,11 +21,13 @@ DJANGO_FOLDER_NAME ?= {{cookiecutter.django_folder_name}}
 PROJECT_ROOT ?= $(CURDIR)
 SITE_ROOT ?= $(PROJECT_ROOT)/$(DJANGO_FOLDER_NAME)
 
+APP_ROOT ?= $(PROJECT_ROOT)/app
+
 CUR_DIR_NAME ?= $(shell basename `pwd`)
 DJANGO_IMAGE_NAME ?= $(CUR_DIR_NAME)-django
 POETRY_WRAPPER_IMAGE_NAME ?= $(PROJECT_NAME)-poetry-wrapper
 
-# - {%- if cookiecutter.frontend_style == SPA %}
+# - {%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 JS_COBERTURA="app/coverage/cobertura-coverage.xml"
 # - {% elif cookiecutter.frontend_style == WEBAPP %}
 JS_COBERTURA="webapp/coverage/cobertura-coverage.xml"
@@ -140,23 +142,23 @@ run-prettier:
 
 .PHONY:
 prettier-check:
-	@make run-prettier cmd="yarn prettier-check $(cmd)"
+	@make run-prettier cmd="{% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}pnpm{% else %}yarn{% endif %} prettier-check $(cmd)"
 
 
 .PHONY:
 prettier-check-all:
-	@make run-prettier cmd="yarn prettier-check-all $(cmd)"
+	@make run-prettier cmd="{% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}pnpm{% else %}yarn{% endif %} prettier-check-all $(cmd)"
 
 
 .PHONY:
 prettier-format:
-	@make run-prettier cmd="yarn prettier-format $(cmd)"
+	@make run-prettier cmd="{% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}pnpm{% else %}yarn{% endif %} prettier-format $(cmd)"
 
 
 .PHONY:
 prettier-format-cut-prefix:
-{%- if cookiecutter.frontend_style == SPA %}
-	@make run-prettier cmd="yarn prettier-format $(subst app/src, src, $(cmd))"
+{%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
+	@make run-prettier cmd="pnpm prettier-format $(subst app/src, src, $(cmd))"
 {%- else %}
 	@make run-prettier cmd="yarn prettier-format $(subst webapp/webapp, webapp, $(cmd))"
 {%- endif %}
@@ -164,7 +166,7 @@ prettier-format-cut-prefix:
 
 .PHONY:
 prettier-format-all: ## Format JavaScript code with Prettier
-	@make run-prettier cmd="yarn prettier-format-all $(cmd)"
+	@make run-prettier cmd="{% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}pnpm{% else %}yarn{% endif %} prettier-format-all $(cmd)"
 
 
 # NOTE:
@@ -182,6 +184,7 @@ run-python:
 	 -v $(SITE_ROOT):/app \
 	 -v $(PROJECT_ROOT)/pyproject.toml:/pyproject.toml \
 	 -v $(PROJECT_ROOT)/poetry.lock:/poetry.lock \
+	 -v $(PROJECT_ROOT)/ignored-vulnerabilities.txt:/ignored-vulnerabilities.txt \
 	  $(DJANGO_IMAGE_NAME) $(cmd)
 
 
@@ -202,7 +205,7 @@ setup: pycharm settings ## Sets up the project in your local machine. This inclu
 	@make migrate
 	@echo -e "$(CYAN)Installing node modules$(COFF)"
 	@make node-install
-{% if cookiecutter.frontend_style == SPA %}
+{% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 	@echo -e "$(CYAN)Extracting JS translations$(COFF)"
 	@make extract-i18n
 {% endif %}
@@ -269,7 +272,11 @@ patch-coverage-py-paths:  ## Updates the paths in python cobertura report to mak
 .PHONY:
 coverage-js:
 	@echo -e "$(CYAN)Running automatic code coverage check$(COFF)"
+{%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
+	@docker compose run --rm node pnpm test:coverage $(cmd)
+{%- else %}
 	@docker compose run --rm node yarn test --coverage $(cmd)
+{%- endif %}
 
 
 .PHONY:
@@ -288,18 +295,18 @@ coverage: coverage-py coverage-js  ## Runs all tests with coverage
 
 .PHONY:
 node-install:
-	@docker compose run --rm node yarn
+	@docker compose run --rm node {% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}pnpm install{% else %}yarn{% endif %}
 
 
 .PHONY:
 test-node-watch: clean
-	@docker compose run --rm node yarn test -- --watchAll
+	@docker compose run --rm node {% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}pnpm{% else %}yarn{% endif %} test -- --watchAll
 
 
 .PHONY:
 test-js: clean
 	@echo -e "$(CYAN)Running automatic node.js tests$(COFF)"
-	@docker compose run --rm node yarn test $(cmd)
+	@docker compose run --rm node {% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}pnpm{% else %}yarn{% endif %} test $(cmd)
 
 
 .PHONY:
@@ -336,7 +343,7 @@ lint-py: ruff-format-check ruff-lint prospector
 endif
 
 .PHONY:
-lint-js: prettier-check-all eslint node-typecheck stylelint
+lint-js: prettier-check-all eslint node-typecheck
 
 .PHONY:
 lint: lint-py lint-js
@@ -364,18 +371,18 @@ format: fmt
 .PHONY:
 eslint:
 	@echo -e "$(CYAN)Running ESLint$(COFF)"
-	@docker compose run --rm node yarn lint:eslint
+	@docker compose run --rm node {% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}pnpm{% else %}yarn{% endif %} lint:eslint $(cmd)
 
 .PHONY:
 node-typecheck:
 	@echo "$(CYAN)Running Node Typecheck(COFF)"
-	@docker compose run --rm node yarn lint:tsc $(cmd)
+	@docker compose run --rm node {% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}pnpm{% else %}yarn{% endif %} lint:tsc $(cmd)
 
 
 .PHONY:
 eslint-fix:
 	@echo -e "$(CYAN)Running ESLint$(COFF)"
-	@docker compose run --rm node yarn lint:eslint --fix
+	@make eslint cmd="--fix"
 
 
 .PHONY:
@@ -395,32 +402,25 @@ mypy:
 
 
 .PHONY:
-stylelint:
-	@echo -e "$(CYAN)Running StyleLint$(COFF)"
-	@docker compose run --rm node yarn stylelint
-
-
-.PHONY:
 ruff-format-check:
 	@echo -e "$(subst SECTION_NAME,ruff-format-check,$(GL_SECTION_START))$(CYAN)Running ruff format (check)$(COFF)"
-	@make run-python cmd="ruff format . --diff"
-	@make run-python cmd="ruff --select I . --diff"
+	make run-python cmd="ruff check . --diff"
+	make run-python cmd="ruff check --select I . --diff"
 	@echo -e "$(subst SECTION_NAME,ruff-format-check,$(GL_SECTION_END))"
 
 .PHONY:
 ruff-format:
 	@echo -e "$(CYAN)Running ruff format$(COFF)"
 	@make run-python cmd="ruff format ."
-	@make run-python cmd="ruff --select I . --fix"
 
 .PHONY:
 ruff-lint:
 	@echo -e "$(CYAN)Running The Ruff Linter$(COFF)"
-	@make run-python cmd="ruff ."
+	@make run-python cmd="ruff check ."
 
 .PHONY:
 ruff-lint-fix:
-	@make run-python cmd="ruff --fix --exit-non-zero-on-fix ."
+	@make run-python cmd="ruff check --fix --exit-non-zero-on-fix ."
 
 .PHONY:
 ruff-lint-ci:
@@ -497,10 +497,33 @@ compilemessages:
 	docker compose run --rm django ./manage.py compilemessages
 
 
-{% if cookiecutter.frontend_style == SPA -%}
+{% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT -%}
 .PHONY:
 extract-i18n:
-	docker compose run --rm node yarn extract-i18n
+	docker compose run --rm node pnpm extract-i18n
+
+.PHONY:
+export-schema:
+	docker-compose run --rm django ./manage.py spectacular --format openapi-json --file schema.json
+	@cp $(SITE_ROOT)/schema.json $(APP_ROOT)/lib/queries/schema.json
+
+.PHONY:
+generate-rtk-query-api: export-schema
+	docker-compose run --rm node pnpm generate-api
+	@make patch-rtk-queries-api
+	@make fmt-js
+
+.PHONY:
+patch-rtk-queries-api:
+	@cp ./app/lib/queries/queriesApi.generated.ts ./app/lib/queries/queriesApi.generated.base.ts
+	@patch ./app/lib/queries/queriesApi.generated.ts < ./app/lib/queries/queriesApi.generated.patch
+
+.PHONY:
+create-rtk-queries-api-patch:
+	@diff ./app/lib/queries/queriesApi.generated.base.ts ./app/lib/queries/queriesApi.generated.ts > ./app/lib/queries/queriesApi.generated.patch
+
+.PHONY:
+api: generate-rtk-query-api
 {%- endif %}
 
 
