@@ -59,6 +59,10 @@ test-django:
       - $CI_COMMIT_MESSAGE =~ /tests skip/
       - $CI_COMMIT_MESSAGE =~ /test skip/
       - $CI_COMMIT_MESSAGE =~ /\[no tests?\]/
+      # Skip on argocd-image-updater auto-commits to break the
+      # publish -> image-updater -> commit -> build -> publish loop.
+      # Harmless if the project isn't k8s-deployed.
+      - $CI_COMMIT_AUTHOR =~ /argocd-image-updater/
   script:
     - make settings
     - docker compose build django
@@ -101,6 +105,7 @@ test-node:
       - $CI_COMMIT_MESSAGE =~ /tests skip/
       - $CI_COMMIT_MESSAGE =~ /test skip/
       - $CI_COMMIT_MESSAGE =~ /\[no tests?\]/
+      - $CI_COMMIT_AUTHOR =~ /argocd-image-updater/
   script:
     - make settings
     - docker compose build node
@@ -129,6 +134,7 @@ test-cypress:
       - $CI_COMMIT_MESSAGE =~ /tests skip/
       - $CI_COMMIT_MESSAGE =~ /test skip/
       - $CI_COMMIT_MESSAGE =~ /\[no tests?\]/
+      - $CI_COMMIT_AUTHOR =~ /argocd-image-updater/
   script:
     - make settings
     - make cypress CYPRESS_DEFAULT_COMMAND_TIMEOUT=${CYPRESS_DEFAULT_COMMAND_TIMEOUT}
@@ -160,7 +166,12 @@ build_compose_file:
   needs: []
 # - {% endif %}
   except:
-    - template # Don't run CI on template branch, should not be required
+    refs:
+      - template  # Don't run CI on template branch, should not be required
+    variables:
+      # Break the publish -> image-updater -> commit -> build loop.
+      # Harmless if the project isn't k8s-deployed.
+      - $CI_COMMIT_AUTHOR =~ /argocd-image-updater/
   script:
     - ./scripts/images/publish-prod-image.sh ${PUBLISH_NAME} ${PUBLISH_DOCKER_FILE}
 
