@@ -60,6 +60,36 @@ docker build \
 echo "Pushing ${full_image} from for commit [${CI_RAW_CUR_COMMIT_ID}]"
 docker push "${full_image}:${CI_RAW_CUR_COMMIT_ID}"
 
+# Also push an environment-prefixed tag (dev-<sha> / prod-<sha>) so
+# argocd-image-updater consumers can filter on it via allowTags regexp.
+# Harmless when the project is ansible-only (just an extra registry tag
+# nobody pulls).
+#
+# Three ways to set the env prefix, in priority order:
+#   1. IMAGE_ENV_PREFIX env var: explicit override. Set this as a GitLab
+#      CI variable (project or schedule level) for projects whose branch
+#      naming doesn't match the defaults, or for one-off manual prod
+#      pushes from a feature branch.
+#   2. Branch -> env mapping (Thorgate convention; `live` is the
+#      historical prod inventory group name):
+#        master|main|prod|production|live|stable -> prod
+#        develop|dev|staging                      -> dev
+#   3. Otherwise: skip the env-prefixed push (other branches stay
+#      unprefixed).
+ENV_PREFIX="${IMAGE_ENV_PREFIX:-}"
+if [[ -z ${ENV_PREFIX} ]]; then
+    case "${CI_COMMIT_REF_SLUG:-}" in
+        master|main|prod|production|live|stable)  ENV_PREFIX=prod ;;
+        develop|dev|staging)                       ENV_PREFIX=dev ;;
+    esac
+fi
+if [[ -n ${ENV_PREFIX} ]]; then
+    env_tag="${ENV_PREFIX}-${CI_RAW_CUR_COMMIT_ID}"
+    echo "Tagging and pushing env-prefixed: ${full_image}:${env_tag}"
+    docker tag "${full_image}:${CI_RAW_CUR_COMMIT_ID}" "${full_image}:${env_tag}"
+    docker push "${full_image}:${env_tag}"
+fi
+
 if [[ -n ${CI_COMMIT_TAG} ]]; then
     echo "Tagging image with git tag ${CI_COMMIT_TAG}"
     docker tag "${full_image}:${CI_RAW_CUR_COMMIT_ID}" "${full_image}:${CI_COMMIT_TAG}"
