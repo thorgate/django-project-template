@@ -10,7 +10,11 @@
 chart: phoenix
 chartVersion: "0.3.0-dev"   # Pin to an exact version once the chart stabilises
 
-applicationName: {{ cookiecutter.repo_name }}
+# applicationName flows into chart-rendered resource names (Service,
+# Deployment, Middleware, Certificate, etc.). Those must be DNS-1123
+# compliant - underscores break apply. Use as_hostname so repo_name
+# values like `circular_orbit` render as `circular-orbit` here.
+applicationName: {{ cookiecutter.repo_name|as_hostname }}
 
 imagePullPolicy: Always
 imageSecrets:
