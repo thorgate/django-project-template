@@ -28,7 +28,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
                 session,
             },
         };
-    }
+    },
 );
 
 function Home() {

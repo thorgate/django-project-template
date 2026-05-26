@@ -5,6 +5,11 @@ FROM {{ python_image(cookiecutter.python_version, DEBIAN) }} as base
 # Use non-interactive frontend for debconf
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 
+# Switch to archive apt repository for buster
+RUN sed -i s/deb.debian.org/archive.debian.org/g /etc/apt/sources.list
+RUN sed -i 's|security.debian.org|archive.debian.org|g' /etc/apt/sources.list
+RUN sed -i '/stretch-updates/d' /etc/apt/sources.list
+
 ENV DJANGO_PRODUCTION_MODE 1
 ENV DJANGO_SETTINGS_MODULE settings.cloud
 ENV DJANGO_DEBUG 0

@@ -4,6 +4,7 @@ import type {
     NextLayoutComponentType,
 } from "next";
 import type { AppProps } from "next/app";
+import type { LayoutProps } from "@components/Layout";
 
 declare module "next" {
     type NextLayoutComponentType<P = {}> = NextComponentType<
@@ -12,6 +13,7 @@ declare module "next" {
         P
     > & {
         getLayout?: (page: ReactNode) => ReactNode;
+        getLayoutProps?: () => Partial<LayoutProps>;
     };
 }
 

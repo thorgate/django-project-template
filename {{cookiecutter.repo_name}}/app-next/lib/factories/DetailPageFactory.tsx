@@ -6,29 +6,42 @@ import { queriesApi } from "@lib/queries";
 import { LoadingState, ErrorState } from "@components/NonIdealState";
 import { useExtractNonFieldError } from "@lib/convertError";
 import {
+    APIQuery,
     BaseItemType,
     BaseQueryArgType,
-    DetailPageFactoryArguments,
+    DetailViewProps,
     FactoryServerSidePropsFunction,
     HiddenURLParameterSpecification,
 } from "@lib/factories/types";
+
+export interface DetailPageFactoryArguments<
+    ItemType extends BaseItemType,
+    QueryArgType extends BaseQueryArgType,
+    ParametersType extends Array<
+        HiddenURLParameterSpecification<QueryArgType, keyof QueryArgType>
+    >,
+> {
+    queryEndpoint: APIQuery<QueryArgType, ItemType>;
+    queryParameters: ParametersType;
+    DetailView: React.ComponentType<DetailViewProps<ItemType>>;
+}
 
 export const detailPageFactory = <
     ItemType extends BaseItemType,
     QueryArgType extends BaseQueryArgType,
     ParametersType extends Array<
         HiddenURLParameterSpecification<QueryArgType, keyof QueryArgType>
-    >
+    >,
 >({
     queryEndpoint,
     queryParameters,
     DetailView,
 }: DetailPageFactoryArguments<ItemType, QueryArgType, ParametersType>): [
     React.FunctionComponent<Record<string, never>>,
-    FactoryServerSidePropsFunction
+    FactoryServerSidePropsFunction,
 ] => {
     const parseQueryParameters = (
-        query: ReturnType<typeof useRouter>["query"]
+        query: ReturnType<typeof useRouter>["query"],
     ) => baseParseQueryParameters<QueryArgType>(query, queryParameters);
 
     const DetailViewController = () => {
@@ -36,7 +49,7 @@ export const detailPageFactory = <
         const extractNonFieldError = useExtractNonFieldError();
         const urlQueryParameters = React.useMemo(
             () => parseQueryParameters?.(router.query),
-            [router.query]
+            [router.query],
         );
 
         const {
@@ -62,13 +75,13 @@ export const detailPageFactory = <
 
     const getExtraProps: FactoryServerSidePropsFunction = async (
         store,
-        context
+        context,
     ) => {
         const queryParameters = parseQueryParameters(context.query);
         if (queryEndpoint && queryParameters) {
             store.dispatch(queryEndpoint.initiate(queryParameters));
             await Promise.all(
-                store.dispatch(queriesApi.util.getRunningQueriesThunk())
+                store.dispatch(queriesApi.util.getRunningQueriesThunk()),
             );
         }
 

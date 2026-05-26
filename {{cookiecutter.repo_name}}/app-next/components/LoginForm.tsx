@@ -1,12 +1,13 @@
-import { useForm, FieldValues } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import * as React from "react";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { signIn } from "next-auth/react";
 import { useTranslation } from "next-i18next";
 
 import { Button } from "@components/Button";
 import { Input } from "@components/Input";
+import { Spinner } from "@components/Spinner";
+import { useSessionIsValid } from "@lib/hooks/session";
 
 interface LoginFormValues {
     email: string;
@@ -19,7 +20,11 @@ interface LoginFormProps {
 
 export const LoginForm = ({ csrfToken }: LoginFormProps) => {
     const { t } = useTranslation(["auth", "common"]);
-    const { push, query, reload } = useRouter();
+    const { reload } = useRouter();
+    const sessionIsValid = useSessionIsValid();
+    const [isRedirecting, setIsRedirecting] = React.useState<"no" | "waiting">(
+        "no",
+    );
 
     const {
         register,
@@ -32,7 +37,7 @@ export const LoginForm = ({ csrfToken }: LoginFormProps) => {
             password: "",
         },
     });
-    const onSubmit = async (data: FieldValues) => {
+    const onSubmit = async (data: LoginFormValues) => {
         const result = await signIn("credentials", {
             redirect: false,
             email: data.email,
@@ -42,14 +47,24 @@ export const LoginForm = ({ csrfToken }: LoginFormProps) => {
         if (!result?.ok) {
             setError("root", { message: t("auth:error.invalidCredentials") });
         } else {
-            await push(
-                typeof query?.callbackUrl === "string"
-                    ? query?.callbackUrl
-                    : "/"
-            );
-            reload();
+            setIsRedirecting("waiting");
         }
     };
+
+    React.useEffect(() => {
+        if (sessionIsValid && isRedirecting === "waiting") {
+            void reload();
+        }
+    }, [sessionIsValid, reload, isRedirecting]);
+
+    const disabled = React.useMemo(
+        () =>
+            isSubmitting ||
+            isRedirecting !== "no" ||
+            sessionIsValid === undefined ||
+            sessionIsValid,
+        [sessionIsValid, isSubmitting, isRedirecting],
+    );
 
     return (
         <form className="px-5 py-7" onSubmit={handleSubmit(onSubmit)}>
@@ -71,6 +86,7 @@ export const LoginForm = ({ csrfToken }: LoginFormProps) => {
                 {...register("email", {
                     required: t("common:form.field.required"),
                 })}
+                disabled={disabled}
             />
             <Input
                 id="password"
@@ -80,18 +96,21 @@ export const LoginForm = ({ csrfToken }: LoginFormProps) => {
                 {...register("password", {
                     required: t("common:form.field.required"),
                 })}
+                disabled={disabled}
             />
-
-            <div className="flex flex-row justify-between items-center">
+            <div className="flex flex-row w-full">
                 <Button
                     type="submit"
-                    disabled={isSubmitting || isValidating || !isValid}
+                    className="bg-brand-dark text-white font-bold basis-1/2"
+                    disabled={disabled || isValidating || !isValid}
                 >
                     {t("auth:form.submit")}
                 </Button>
-                <Link href="/auth/forgot-password">
-                    {t("auth:forgotPassword.link")}
-                </Link>
+                {disabled ? (
+                    <div className="basis-1/2 my-auto px-3 ">
+                        <Spinner />
+                    </div>
+                ) : null}
             </div>
         </form>
     );

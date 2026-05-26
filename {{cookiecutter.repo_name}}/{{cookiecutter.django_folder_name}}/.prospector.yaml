@@ -34,12 +34,6 @@ pycodestyle:
 
         # E7	Statement
 
-        # Not applicable with black:
-        # - E701  #	multiple statements on one line (colon)
-        # - E702  #	multiple statements on one line (semicolon)
-        # - E703  #	statement ends with a semicolon
-        # - E704  # (*)	multiple statements on one line (def)
-
         - E711  # (^)	comparison to None should be ‘if cond is None:’
         - E712  # (^)	comparison to True should be ‘if cond is True:’ or ‘if cond:’
         - E713  #	test for membership should be ‘not in’
@@ -78,6 +72,12 @@ pycodestyle:
         - N814 #	camelcase imported as constant
         - N815 #	mixedCase variable in class scope
         - N816 #	mixedCase variable in global scope
+    disable:
+        # Not applicable with black:
+        - E701  #	multiple statements on one line (colon)
+        - E702  #	multiple statements on one line (semicolon)
+        - E703  #	statement ends with a semicolon
+        - E704  # (*)	multiple statements on one line (def)    options:
     options:
         max-line-length: 140
 

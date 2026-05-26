@@ -208,6 +208,8 @@ setup: pycharm settings ## Sets up the project in your local machine. This inclu
 {% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 	@echo -e "$(CYAN)Extracting JS translations$(COFF)"
 	@make extract-i18n
+	@echo -e "$(CYAN)Generating APIs$(COFF)"
+	@make api
 {% endif %}
 	@echo -e "$(CYAN)===================================================================="
 	@echo -e "SETUP SUCCEEDED"
@@ -523,7 +525,13 @@ create-rtk-queries-api-patch:
 	@diff ./app/lib/queries/queriesApi.generated.base.ts ./app/lib/queries/queriesApi.generated.ts > ./app/lib/queries/queriesApi.generated.patch
 
 .PHONY:
-api: generate-rtk-query-api
+generate-api-mock: export-schema
+	docker-compose run --rm node pnpm generate-api-mock
+	@patch ./app/mock/api/handlers.js < ./app/mock/api/handlers.patch
+	@make fmt-js
+
+.PHONY:
+api: generate-rtk-query-api generate-api-mock
 {%- endif %}
 
 

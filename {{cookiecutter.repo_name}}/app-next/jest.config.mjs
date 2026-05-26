@@ -13,9 +13,11 @@ const config = {
 
     modulePathIgnorePatterns: ["<rootDir>/cypress/"],
 
-    testEnvironment: "jest-environment-jsdom",
-
-    setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+    testEnvironment: "jest-fixed-jsdom",
+    testEnvironmentOptions: {
+        customExportConditions: ["node"],
+    },
+    setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
 
     coverageReporters: [
         "json",

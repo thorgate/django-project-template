@@ -36,11 +36,11 @@ export const getServerSideProps = wrapper.getServerSideProps(
                         : "",
             },
         };
-    }
+    },
 );
 
 const makeQueryArgs = (values: RecoveryPassword) => ({
-    recoveryPassword: values,
+    recoveryPasswordRequest: values,
 });
 
 const ResetPassword = ({
@@ -66,8 +66,8 @@ const ResetPassword = ({
         <>
             <Head>
                 <title>{`${t(
-                    "auth:resetPassword.title"
-                )} - test-project`}</title>
+                    "auth:resetPassword.title",
+                )} - {{ cookiecutter.project_title }}`}</title>
             </Head>
             <div className="p-10 xs:p-0 mx-auto md:w-full md:max-w-md">
                 <Card>

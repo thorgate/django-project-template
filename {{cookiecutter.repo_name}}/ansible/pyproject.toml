@@ -3,7 +3,7 @@ name = "{{ cookiecutter.repo_name }}-ansible"
 version = "1.0.0"
 description = "Ansible scripts for {{ cookiecutter.project_title }} deployment"
 authors = [
-    {name = "Thorgate",email = "hi@thorgate.eu"}
+    {name = "Thorgate", email = "hi@thorgate.eu"}
 ]
 readme = "README.adoc"
 requires-python = ">=3.10,<4.0"

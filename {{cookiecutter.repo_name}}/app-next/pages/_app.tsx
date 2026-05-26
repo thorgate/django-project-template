@@ -1,17 +1,18 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AppLayoutProps, AppProps } from "next/app";
 import { useRouter } from "next/router";
 import { SessionProvider, useSession, signOut } from "next-auth/react";
 import { appWithTranslation } from "next-i18next";
 import { Provider } from "react-redux";
 import { useTranslation } from "next-i18next";
+import { toast } from "react-toastify";
 
 import "@/styles/globals.css";
 import NextI18nextConfig from "@/next-i18next.config";
 import { Button } from "@components/Button";
 import { Layout } from "@components/Layout";
 import { useAppDispatch, useAppSelector } from "@lib/hooks";
-import { wrapper, appUserSlice } from "@lib/store";
+import { wrapper } from "@lib/store";
 import { queriesApi } from "@lib/queries";
 
 interface TokenWatcherProps {
@@ -19,46 +20,38 @@ interface TokenWatcherProps {
 }
 
 const TokenWatcher = ({ pageProps }: TokenWatcherProps) => {
-    const { hydrating } = wrapper.useHydration(pageProps);
+    const { t } = useTranslation(["common"]);
+    wrapper.useHydration(pageProps);
 
+    const { push } = useRouter();
     const dispatch = useAppDispatch();
-    const router = useRouter();
     const currentAccessToken = useAppSelector(
-        (state) => state.appUser.accessToken
+        (state) => state.appUser.accessToken,
     );
+    const [previousAccessToken, setPreviousAccessToken] =
+        useState(currentAccessToken);
+    const sessionExpired = useAppSelector(
+        (state) => state.appUser.sessionExpired,
+    );
+    const [previouslyExpired, setPreviouslyExpired] = useState(sessionExpired);
 
-    const { data: session, status } = useSession();
     useEffect(() => {
-        if (status === "loading") {
-            return;
+        if (currentAccessToken !== previousAccessToken) {
+            dispatch(queriesApi.util.invalidateTags(["user", "auth"]));
+            setPreviousAccessToken(currentAccessToken);
         }
+    }, [dispatch, currentAccessToken, previousAccessToken]);
 
-        if (status === "authenticated" && !session?.user?.sessionExpired) {
-            if (currentAccessToken !== session.user.accessToken) {
-                dispatch(
-                    appUserSlice.actions.setTokens(
-                        session
-                            ? {
-                                  accessToken: session.user.accessToken || "",
-                                  refreshToken: session.user.refreshToken || "",
-                              }
-                            : null
-                    )
-                );
-
-                if (hydrating) {
-                    dispatch(queriesApi.util.invalidateTags(["user", "auth"]));
-                }
-            }
-        } else {
-            // Clear session if refresh token is expired
-            if (session?.user?.sessionExpired) {
-                void signOut({ redirect: false }).then(() => {
-                    router.reload();
-                });
-            }
+    useEffect(() => {
+        if (sessionExpired && !previouslyExpired) {
+            toast.warning(t("errors.sessionExpired"));
+            setPreviouslyExpired(true);
+            signOut({ redirect: false }).then(() => push("/auth/login"));
         }
-    }, [dispatch, status, session, router, hydrating, currentAccessToken]);
+        if (!sessionExpired && previouslyExpired) {
+            setPreviouslyExpired(false);
+        }
+    }, [t, sessionExpired, previouslyExpired, push]);
 
     return null;
 };
@@ -76,6 +69,7 @@ const AuthButton = () => {
                     await signOut({ redirect: false });
                     router.reload();
                 }}
+                variant="safe"
             >
                 {t("navigation.signOut")}
             </Button>
@@ -83,7 +77,7 @@ const AuthButton = () => {
     }
 
     return (
-        <Button className="nav-link" href="/auth/login" variant="primary">
+        <Button className="nav-link" href="/auth/login" variant="safe">
             {t("navigation.signIn")}
         </Button>
     );
@@ -95,7 +89,14 @@ const App = ({ Component, ...props }: AppLayoutProps) => {
 
     const getLayout =
         Component.getLayout ||
-        ((page) => <Layout authElements={<AuthButton />}>{page}</Layout>);
+        ((page) => (
+            <Layout
+                authElements={<AuthButton />}
+                {...(Component.getLayoutProps?.() ?? {})}
+            >
+                {page}
+            </Layout>
+        ));
 
     return (
         <SessionProvider session={session}>

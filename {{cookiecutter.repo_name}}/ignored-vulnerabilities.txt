@@ -3,3 +3,12 @@
 ; starting with `;` are not printed out in summary when quality check is ran
 ;
 ; See inline script in poetry-check for details on how this works
+# We are unable to upgrade to Django 5.1 as it drops support for postgres 12
+GHSA-7xr5-9hcq-chf9
+# We are unable to upgrade to Django 5.1 as it drops support for postgres 12
+GHSA-6w2r-r2m5-xq5w
+# We are unable to upgrade to Django 5.1 as it drops support for postgres 12,
+# also is windows specific
+GHSA-qw25-v68c-qjf3
+# We are unable to upgrade to Django 5.1 as it drops support for postgres 12
+GHSA-frmv-pr5f-9mcr

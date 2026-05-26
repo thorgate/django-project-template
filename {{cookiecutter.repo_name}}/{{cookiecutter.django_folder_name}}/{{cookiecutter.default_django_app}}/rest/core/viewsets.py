@@ -55,6 +55,17 @@ class BaseFilterBackend(DjangoFilterBackend):
 
         return super().get_filterset_class(view, queryset)
 
+    def get_filterset_kwargs(self, request, queryset, view):
+        kwargs = super().get_filterset_kwargs(request, queryset, view)
+        if (
+            isinstance(view, ExtraFilteredActionsMixin)
+            and view.action in view.extra_filtered_actions
+            and request.method == "POST"
+        ):
+            kwargs["data"] = request.data
+
+        return kwargs
+
 
 class BaseViewSet(GenericViewSet):
     filter_backends = [BaseFilterBackend]

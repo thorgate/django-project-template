@@ -30,7 +30,7 @@ declare module "next-auth" {
 
 async function refreshToken(
     accessToken?: string | null,
-    refreshToken?: string | null
+    refreshToken?: string | null,
 ): Promise<
     | {
           access: string;
@@ -54,7 +54,7 @@ async function refreshToken(
                     headers: {
                         "Content-Type": "application/json",
                     },
-                }
+                },
             );
             const newToken = await res.json();
 
@@ -136,7 +136,7 @@ export const authOptions: AuthOptions = {
             if (token.expiresAt && token.expiresAt * 1000 < Date.now()) {
                 const newToken = await refreshToken(
                     token.accessToken,
-                    token.refreshToken
+                    token.refreshToken,
                 );
 
                 if (
