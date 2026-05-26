@@ -1,15 +1,3 @@
-- name: "Run preparation script"
-  shell: "bash roles/local-mirror/mirror-prepare.sh"
-  delegate_to: localhost
-  vars:
-    ansible_become: no
-  tags:
-    - media
-    - files
-    - db
-    - database
-
-
 - name: "Mirror the media files"
   import_tasks: mirror_media.yml
   tags:
