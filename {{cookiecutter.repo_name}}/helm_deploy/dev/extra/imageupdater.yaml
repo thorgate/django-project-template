@@ -17,11 +17,17 @@ spec:
   commonUpdateSettings:
     pullSecret: "pullsecret:argocd/gitlab-registry-credentials"
     updateStrategy: newest-build
-    # Match the env-prefixed tags that scripts/images/publish-prod-image.sh
-    # pushes (`dev-<sha>` for develop/dev/staging branches). Mutable tags
-    # like `master` and `latest` are deliberately excluded so the value
-    # written to git is always an immutable SHA reference.
-    allowTags: "regexp:^dev-[0-9a-f]{7,40}$"
+    # Match the bare 40-char commit-SHA tags that publish-prod-image.sh
+    # always pushes (regardless of branch). Mutable tags like `master`,
+    # `latest`, and any env-prefixed forms (`dev-<sha>`, `prod-<sha>`)
+    # are deliberately excluded so the value written to git is always
+    # an immutable SHA reference.
+    #
+    # If you run a multi-env setup (e.g. dev env tracks develop branch,
+    # prod env tracks main), override per-env to filter:
+    #   dev env:  ^dev-[0-9a-f]+$
+    #   prod env: ^prod-[0-9a-f]+$
+    allowTags: "regexp:^[0-9a-f]{40}$"
 
   applicationRefs:
     - namePattern: {{ cookiecutter.repo_name|as_hostname }}-helm-dev
