@@ -36,7 +36,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
 const makeQueryArgs = (
     values: ForgotPasswordType
 ): UserForgotPasswordCreateApiArg => ({
-    forgotPassword: values,
+    forgotPasswordRequest: values,
 });
 
 const ForgotPassword = () => {

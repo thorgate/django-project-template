@@ -26,7 +26,7 @@ COPY ./app/pnpm-lock.yaml ./
 RUN apt-get update && \
     apt-get install -y --no-install-recommends git python3 && \
     rm -rf /var/lib/apt/lists/* && \
-    npm -g i pnpm@^8 sharp && \
+    npm -g i pnpm@^11 sharp && \
     pnpm config set store-dir /usr/local/share/.cache/.pnpm-store && \
     pnpm install --frozen-lockfile
 

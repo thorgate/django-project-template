@@ -1,6 +1,6 @@
 import { TextEncoder, TextDecoder } from "util";
 import "@testing-library/jest-dom";
-import { server } from "@mock/api/node";
+import { server } from "@mock/api/server";
 import "@mock/i18next";
 import "@mock/nextRouter";
 

@@ -8,7 +8,7 @@ import {
     queriesApi,
     UserCreateApiArg,
     UserCreateApiResponse,
-    UserCreate as UserCreateType,
+    UserCreateRequest as UserCreateType,
     UserDetail,
 } from "@lib/queries";
 
@@ -34,7 +34,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
 );
 
 const makeQueryArgs = (values: UserCreateType): UserCreateApiArg => ({
-    userCreate: values,
+    userCreateRequest: values,
 });
 
 const UserCreate = () => {

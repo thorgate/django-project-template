@@ -6,25 +6,12 @@ import { queriesApi } from "@lib/queries";
 import { LoadingState, ErrorState } from "@components/NonIdealState";
 import { useExtractNonFieldError } from "@lib/convertError";
 import {
-    APIQuery,
     BaseItemType,
     BaseQueryArgType,
-    DetailViewProps,
+    DetailPageFactoryArguments,
     FactoryServerSidePropsFunction,
     HiddenURLParameterSpecification,
 } from "@lib/factories/types";
-
-export interface DetailPageFactoryArguments<
-    ItemType extends BaseItemType,
-    QueryArgType extends BaseQueryArgType,
-    ParametersType extends Array<
-        HiddenURLParameterSpecification<QueryArgType, keyof QueryArgType>
-    >,
-> {
-    queryEndpoint: APIQuery<QueryArgType, ItemType>;
-    queryParameters: ParametersType;
-    DetailView: React.ComponentType<DetailViewProps<ItemType>>;
-}
 
 export const detailPageFactory = <
     ItemType extends BaseItemType,

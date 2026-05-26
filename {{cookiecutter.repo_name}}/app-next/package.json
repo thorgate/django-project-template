@@ -23,7 +23,7 @@
     "cy:open": "cypress open",
     {%- endif %}
     "generate-api": "pnpm rtk-query-codegen-openapi ./lib/queries/openapiConfig.ts && pnpm prettier-format-all",
-    "generate-api-mock": "pnpm msw-auto-mock lib/queries/schema.json -o mock/api && pnpm prettier-format-all",
+    "generate-api-mock": "pnpm msw-auto-mock lib/queries/schema.json -o mock/api/handlers.generated.js && pnpm prettier-format-all",
     "extract-i18n": "i18next-scanner --config ./scanner.config.js",
     "postextract-i18n": "pnpm i18next-resources",
     "i18next-resources": "i18next-resources-for-ts interface -i ./public/locales/en -o ./types/i18next-resources.d.ts && prettier --write ./types/i18next-resources.d.ts"
