@@ -10,10 +10,14 @@ RUN sed -i s/deb.debian.org/archive.debian.org/g /etc/apt/sources.list
 RUN sed -i 's|security.debian.org|archive.debian.org|g' /etc/apt/sources.list
 RUN sed -i '/stretch-updates/d' /etc/apt/sources.list
 
-ENV DJANGO_PRODUCTION_MODE 1
-ENV DJANGO_SETTINGS_MODULE settings.cloud
-ENV DJANGO_DEBUG 0
-ENV PYTHONPYCACHEPREFIX /.pycache
+ENV DJANGO_PRODUCTION_MODE=1
+ENV DJANGO_SETTINGS_MODULE=settings.cloud
+ENV DJANGO_DEBUG=0
+ENV PYTHONPYCACHEPREFIX=/.pycache
+ENV POETRY_HOME="$HOME/.poetry"
+ENV POETRY_NO_INTERACTION=1
+ENV POETRY_VIRTUALENVS_CREATE=0
+ENV PATH="$POETRY_HOME/bin:$PATH"
 
 # Remove externally managed marker to allow installing to global scope
 RUN find / -name EXTERNALLY-MANAGED -exec rm -f {} \; || true
@@ -25,27 +29,23 @@ RUN mkdir -p $PYTHONPYCACHEPREFIX
 RUN mkdir -p /var/log/{{cookiecutter.repo_name}}
 
 COPY ./wait-for-it.sh /usr/bin/
-
-# Install system requirements
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends build-essential gettext libpq-dev zlib1g-dev libjpeg62-turbo-dev wget && \
-    rm -rf /var/lib/apt/lists/*
-
-ENV POETRY_HOME "$HOME/.poetry"
-ENV POETRY_NO_INTERACTION 1
-ENV POETRY_VIRTUALENVS_CREATE 0
-ENV PATH="$POETRY_HOME/bin:$PATH"
-
-RUN wget -O - -o /dev/null https://install.python-poetry.org | python3 -
-
 COPY pyproject.toml /
 COPY poetry.lock /
 
-# Install all non-dev dependencies from poetry.lock
-RUN poetry install --no-dev
+# 1. Install system requirements
+# 2. Install all non-dev dependencies from poetry.lock
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends build-essential gettext libpq-dev zlib1g-dev libjpeg62-turbo-dev wget && \
+    rm -rf /var/lib/apt/lists/* && \
+    wget -O - -o /dev/null https://install.python-poetry.org | python3 - && \
+    poetry install --without dev
 
 # Copy code
 COPY ./{{cookiecutter.django_folder_name}} /app
+
+# Pass build version reference
+ARG RELEASE_VERSION
+ENV DJANGO_RELEASE_VERSION=$RELEASE_VERSION
 
 # Set the default directory where CMD will execute
 WORKDIR /app

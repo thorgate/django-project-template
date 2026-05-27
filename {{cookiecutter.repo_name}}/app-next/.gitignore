@@ -19,6 +19,7 @@
 # misc
 .DS_Store
 *.pem
+junit.xml
 
 # debug
 npm-debug.log*

@@ -435,6 +435,7 @@ SPECTACULAR_SETTINGS = {
 # Example: https://TODO@sentry.thorgate.eu/TODO
 SENTRY_DSN = env.str("DJANGO_SENTRY_DSN", default="")
 SENTRY_ENVIRONMENT = env.str("DJANGO_SENTRY_ENVIRONMENT", default="local")
+RELEASE_VERSION = env.str("DJANGO_RELEASE_VERSION", default="development")
 
 if SENTRY_DSN and not IS_DOCKER_BUILD:
     import sentry_sdk  # NOQA

@@ -13,10 +13,8 @@ const config = {
 
     modulePathIgnorePatterns: ["<rootDir>/cypress/"],
 
-    testEnvironment: "jest-fixed-jsdom",
-    testEnvironmentOptions: {
-        customExportConditions: ["node"],
-    },
+    testEnvironment: "jest-environment-jsdom",
+
     setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
 
     coverageReporters: [
@@ -40,6 +38,8 @@ const config = {
         "<rootDir>/coverage",
         "<rootDir>/dist",
     ],
+
+    reporters: ["default", "jest-junit"],
 };
 
 const asyncConfig = createJestConfig(config);

@@ -33,6 +33,10 @@ RUN apt-get update && \
 # Copy code
 COPY ./app /app
 
+# Pass build version reference
+ARG RELEASE_VERSION
+ENV NEXT_PUBLIC_RELEASE_VERSION=$RELEASE_VERSION
+
 # Build node app
 RUN pnpm build
 

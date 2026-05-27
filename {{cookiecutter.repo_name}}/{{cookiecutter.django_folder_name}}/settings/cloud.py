@@ -18,6 +18,8 @@ if not IS_DOCKER_BUILD:
     DJANGO_SITE_URL = env.str("APP_BACKEND_SITE_URL")
     CSRF_COOKIE_DOMAIN = env.str("DJANGO_CSRF_COOKIE_DOMAIN")
 
+SESSION_COOKIE_SECURE = env.bool("DJANGO_SESSION_COOKIE_SECURE", default=True)
+
 CSRF_TRUSTED_ORIGINS = [
     f"https://{host}"
     for host in env.list("DJANGO_CSRF_TRUSTED_ORIGINS", default=ALLOWED_HOSTS)
