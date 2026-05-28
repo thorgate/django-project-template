@@ -60,10 +60,11 @@ class NavigationBar extends React.Component {
 }
 
 const renderNavigationBar = (containerID) => {
-    const container = document.getElementById(containerID);
+    const element = document.getElementById(containerID);
 
-    if (container) {
-        ReactDOM.render(<NavigationBar />, container);
+    if (element) {
+        const container = ReactDOM.createRoot(element);
+        container.render(<NavigationBar />);
     }
 };
 

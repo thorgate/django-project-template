@@ -1,13 +1,14 @@
+@use "config/global-variables" as globals;
 
 .page-login {
     margin: 0 auto;
     width: 385px;
     text-align: center;
     position: relative;
-    top: $loginBrandHeight * -1;
+    top: globals.$loginBrandHeight * -1;
 
     .brand {
-        height: $loginBrandHeight;
+        height: globals.$loginBrandHeight;
         padding: 25px 10px;
 
         h1 {

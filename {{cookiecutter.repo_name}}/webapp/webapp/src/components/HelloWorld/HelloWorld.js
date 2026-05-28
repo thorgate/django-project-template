@@ -7,7 +7,7 @@ import { useEffectOnce } from 'utils/hooks';
 
 import Counter from '../Counter';
 import WelcomeTest from '../WelcomeTest';
-import styles from './HelloWorld.scss';
+import * as styles from './HelloWorld.scss';
 
 export const HelloWorldBase = ({ title }) => (
     <>

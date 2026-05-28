@@ -1,17 +1,17 @@
 // Import config
-@import "config/global-variables";
+@use "config/global-variables";
 
 // Import atoms
-@import "atoms/global";
-@import "atoms/vertical-wrapper";
+@use "atoms/global";
+@use "atoms/vertical-wrapper";
 
 // Import molecules
-@import "molecules/browserupgrade";
+@use "molecules/browserupgrade";
 
 // Import organisms
 
 // Import vendors
-@import "vendors/bootstrap";
+@use "vendors/bootstrap";
 
 // Import views
-@import "views/page-login";
+@use "views/page-login";

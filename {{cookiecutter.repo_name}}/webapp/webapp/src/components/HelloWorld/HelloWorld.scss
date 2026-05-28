@@ -1,6 +1,5 @@
-@import "config/global-variables";
+@use "config/global-variables" as globals;
 
 .title {
-    color: $brand-primary;
+    color: globals.$brand-primary;
 }
-

@@ -1,4 +1,6 @@
+@use "../config/bootstrap-variables" as bsVariables;
+
 body {
     opacity: 1;
-    background: $gray-100;
+    background: bsVariables.$gray-100;
 }

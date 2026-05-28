@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/react';
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 
 import HelloWorld from 'components/HelloWorld';
@@ -44,11 +44,11 @@ function init() {
         return;
     }
 
-    ReactDOM.render(
+    const root = createRoot(elem);
+    root.render(
         <Provider store={store}>
             <HelloWorld />
         </Provider>,
-        elem,
     );
 }
 

@@ -40,7 +40,11 @@ services:
   django:
     <<: *django-container-spec
     ports:
+# - {% if cookiecutter.frontend_style == WEBAPP %}
       - "${DJANGO_PORT:-8000}:80"
+# - {% else %}
+      - "8001:80"
+# - {% endif %}
     # Add -Wall option to see the (deprecation) warnings
     # command: python -Wall manage.py runserver 0.0.0.0:80
     command: python manage.py runserver 0.0.0.0:80
@@ -51,14 +55,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile-node
-# - {%- if (cookiecutter.frontend_style == WEBAPP and cookiecutter.webapp_include_storybook == YES) or cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
     ports:
 # - {%- if cookiecutter.frontend_style == WEBAPP and cookiecutter.webapp_include_storybook == YES %}
       - "6006:80"
 # - {%- endif %}
 # - {%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
       - "3000:3000"
-# - {%- endif %}
+# - {% elif cookiecutter.frontend_style == WEBAPP %}
+      - "${DJANGO_PORT}:8000"
 # - {%- endif %}
     volumes:
 # -   {%- if cookiecutter.frontend_style == WEBAPP %}

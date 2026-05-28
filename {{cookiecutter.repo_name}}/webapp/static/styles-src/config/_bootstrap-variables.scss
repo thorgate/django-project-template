@@ -1,6 +1,9 @@
 // https://raw.githubusercontent.com/twbs/bootstrap/v4.3.1/scss/_variables.scss
 /* stylelint-disable */
 
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+
 // Variables
 //
 // Variables should follow the `$component-state-property-size` formula for
