@@ -1,56 +1,54 @@
-// - {% raw %}
 /* eslint-disable */
-'use strict';
+"use strict";
 
-const fs = require('fs');
-const eol = require('eol');
-const path = require('path');
-const VirtualFile = require('vinyl');
+const fs = require("fs");
+const eol = require("eol");
+const path = require("path");
+const VirtualFile = require("vinyl");
 const typescript = require("typescript");
-const merge = require('lodash.merge');
+const merge = require("lodash.merge");
 
-const i18n = require('./i18n.json');
+const i18nSettings = require("./next-i18next.config");
 
 const appDir = path.resolve(__dirname);
 
 module.exports = {
     input: [
-        'components/**/*.{js,jsx,ts,tsx}',
-        'lib/**/*.{js,jsx,ts,tsx}',
-        'pages/**/*.{js,jsx,ts,tsx}',
-        'src/**/*.{js,jsx,ts,tsx}',
-        '!src/**/*.test.{js,jsx,ts,tsx}',
+        "components/**/*.{js,jsx,ts,tsx}",
+        "pages/**/*.{js,jsx,ts,tsx}",
+        "lib/**/*.{js,jsx,ts,tsx}",
+        "!**/*.test.{js,jsx,ts,tsx}",
     ],
-    output: './public/locales',
+    output: "./public/locales",
     options: {
-        plural: true,
+        plural: false,
         removeUnusedKeys: false,
-        sort: false,
+        sort: true,
         attr: { extensions: [] },
         func: { extensions: [] },
         trans: { extensions: [] },
-        lngs: i18n.LANGUAGES,
-        defaultLng: i18n.DEFAULT_LANGUAGE,
-        defaultNs: i18n.DEFAULT_NAMESPACE,
+        lngs: i18nSettings.i18n.locales,
+        defaultLng: i18nSettings.i18n.defaultLocale,
+        defaultNs: "common",
         // Keep this in sync with the namespaces in types/i18next.d.ts
-        ns: i18n.TRANSLATION_NAMESPACES,
-        defaultValue: '',
+        ns: ["common", "auth", "user"],
+        defaultValue: "",
         resource: {
-            loadPath: '{{lng}}/{{ns}}.json',
-            savePath: '{{lng}}/{{ns}}.json',
+            loadPath: "{{lng}}/{{ns}}.json",
+            savePath: "{{lng}}/{{ns}}.json",
             jsonIndent: 4,
-            lineEnding: '\n',
+            lineEnding: "\n",
         },
-        nsSeparator: ':',
-        keySeparator: '.',
-        contextSeparator: '_',
+        nsSeparator: ":",
+        keySeparator: ".",
+        contextSeparator: "_",
         interpolation: {
-            prefix: '{{',
-            suffix: '}}',
+            prefix: "{{",
+            suffix: "}}",
         },
     },
     transform(file, enc, done) {
-        const tsExtensions = ['.ts', '.tsx'];
+        const tsExtensions = [".ts", ".tsx"];
 
         const { base, ext } = path.parse(file.path);
         const content = fs.readFileSync(file.path, enc);
@@ -68,13 +66,13 @@ module.exports = {
 
             result = outputText;
         } else {
-            const code = require('@babel/core').transformSync(content, {
+            const code = require("@babel/core").transformSync(content, {
                 // Required plugins to parse code but keep it close to the source
                 // This is for handling jsx syntax, dynamic imports and optional chaining
                 plugins: [
-                    '@babel/plugin-syntax-jsx',
-                    '@babel/plugin-syntax-dynamic-import',
-                    '@babel/plugin-transform-optional-chaining',
+                    "@babel/plugin-syntax-jsx",
+                    "@babel/plugin-syntax-dynamic-import",
+                    "@babel/plugin-proposal-optional-chaining",
                 ],
             });
 
@@ -82,12 +80,12 @@ module.exports = {
         }
 
         parser.parseFuncFromString(result, {
-            list: ['_', '__', 'i18next.t', 'i18n.t', 't', 'tNoop'],
+            list: ["_", "__", "i18next.t", "i18n.t", "t", "tNoop"],
         });
         parser.parseTransFromString(result, {
-            component: 'Trans',
-            i18nKey: 'i18nKey',
-            defaultsKey: 'defaults',
+            component: "Trans",
+            i18nKey: "i18nKey",
+            defaultsKey: "defaults",
             fallbackKey: (ns, value) => value,
         });
         done();
@@ -114,27 +112,27 @@ module.exports = {
                                 fs.realpathSync(
                                     path.join(
                                         appDir,
-                                        'public',
-                                        'locales',
-                                        resPath,
-                                    ),
-                                ),
+                                        "public",
+                                        "locales",
+                                        resPath
+                                    )
+                                )
                             )
-                            .toString('utf-8'),
+                            .toString("utf-8")
                     );
                 } catch (e) {
                     resContent = {};
                 }
                 const obj = merge(namespaces[ns], resContent);
-                let text = JSON.stringify(obj, null, jsonIndent) + '\n';
+                let text = JSON.stringify(obj, null, jsonIndent) + "\n";
 
-                if (lineEnding === 'auto') {
+                if (lineEnding === "auto") {
                     text = eol.auto(text);
-                } else if (lineEnding === '\r\n' || lineEnding === 'crlf') {
+                } else if (lineEnding === "\r\n" || lineEnding === "crlf") {
                     text = eol.crlf(text);
-                } else if (lineEnding === '\n' || lineEnding === 'lf') {
+                } else if (lineEnding === "\n" || lineEnding === "lf") {
                     text = eol.lf(text);
-                } else if (lineEnding === '\r' || lineEnding === 'cr') {
+                } else if (lineEnding === "\r" || lineEnding === "cr") {
                     text = eol.cr(text);
                 } else {
                     // Defaults to LF
@@ -155,7 +153,7 @@ module.exports = {
                     new VirtualFile({
                         path: resPath,
                         contents: contents,
-                    }),
+                    })
                 );
             });
         });
@@ -163,4 +161,3 @@ module.exports = {
         done();
     },
 };
-// - {% endraw %}

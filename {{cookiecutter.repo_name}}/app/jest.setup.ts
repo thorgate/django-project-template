@@ -1,3 +1,23 @@
 import { TextEncoder, TextDecoder } from "util";
+import "@testing-library/jest-dom";
+import { server } from "@mock/api/server";
+import "@mock/i18next";
+import "@mock/nextRouter";
 
-Object.assign(global, { TextDecoder, TextEncoder });
+const ResizeObserver = jest.fn().mockImplementation(() => ({
+    observe: jest.fn(),
+    unobserve: jest.fn(),
+    disconnect: jest.fn(),
+}));
+
+Object.assign(global, { TextDecoder, TextEncoder, ResizeObserver });
+
+beforeAll(() => {
+    server.listen();
+});
+
+afterEach(() => {
+    server.resetHandlers();
+});
+
+afterAll(() => server.close());

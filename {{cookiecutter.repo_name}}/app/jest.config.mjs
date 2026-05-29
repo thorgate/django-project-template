@@ -15,7 +15,7 @@ const config = {
 
     testEnvironment: "jest-environment-jsdom",
 
-    setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+    setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
 
     coverageReporters: [
         "json",
@@ -26,6 +26,11 @@ const config = {
         "clover",
     ],
 
+    coveragePathIgnorePatterns: [
+        "<rootDir>/mock",
+        "<rootDir>/lib/queries/queriesApi.generated.ts",
+    ],
+
     testPathIgnorePatterns: [
         "<rootDir>/.next/",
         "<rootDir>/cypress/",
@@ -33,6 +38,8 @@ const config = {
         "<rootDir>/coverage",
         "<rootDir>/dist",
     ],
+
+    reporters: ["default", "jest-junit"],
 };
 
 const asyncConfig = createJestConfig(config);
