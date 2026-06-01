@@ -26,12 +26,16 @@ COPY ./app/pnpm-lock.yaml ./
 RUN apt-get update && \
     apt-get install -y --no-install-recommends git python3 && \
     rm -rf /var/lib/apt/lists/* && \
-    npm -g i pnpm@^8 sharp && \
+    npm -g i pnpm@^{% if cookiecutter.node_version|int >= 22 %}11{% else %}10{% endif %} sharp && \
     pnpm config set store-dir /usr/local/share/.cache/.pnpm-store && \
     pnpm install --frozen-lockfile
 
 # Copy code
 COPY ./app /app
+
+# Pass build version reference
+ARG RELEASE_VERSION
+ENV NEXT_PUBLIC_RELEASE_VERSION=$RELEASE_VERSION
 
 # Build node app
 RUN pnpm build

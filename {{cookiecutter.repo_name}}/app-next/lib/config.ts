@@ -75,7 +75,11 @@ export default function config(
         const value = source[safeKey] ?? source[key];
 
         if (type === "number") {
-            return Number(value);
+            const result = Number(value);
+            if (Number.isNaN(result)) {
+                return undefined;
+            }
+            return result;
         }
 
         if (type === "boolean" && value) {

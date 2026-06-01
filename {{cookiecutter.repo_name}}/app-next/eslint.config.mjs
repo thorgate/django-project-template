@@ -42,7 +42,7 @@ export default tseslint.config(
             "pages/**/*",
             "**/*.stories.@(js|jsx|mjs|ts|tsx)",
             "lib/config.ts",
-            "middleware.ts",
+            "proxy.ts",
         ],
         rules: {
             "import-x/no-default-export": "off",

@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.files.storage import Storage
 
 # - {% if cookiecutter.django_media_engine == S3 %}
 from storages.backends.s3boto3 import S3Boto3Storage
@@ -41,4 +42,46 @@ class PrivateMediaStorage(GoogleCloudStorage):
 class MediaStorage(GoogleCloudStorage):
     location = settings.MEDIAFILES_LOCATION
     default_acl = "publicRead"
-    # - {% endif %}
+# - {% endif %}
+
+_DISABLED_MESSAGE = (
+    "Media file storage is disabled. "
+# - {% if cookiecutter.django_media_engine == S3 %}
+    "To enable it, configure S3 by setting "
+    "DJANGO_AWS_STORAGE_BUCKET_NAME, DJANGO_AWS_ACCESS_KEY_ID, and "
+    "DJANGO_AWS_SECRET_ACCESS_KEY environment variables."
+# - {% elif cookiecutter.django_media_engine == GCS %}
+    "To enable it, configure Google Cloud Storage by setting "
+    "DJANGO_GS_BUCKET_NAME, DJANGO_GS_PROJECT_ID, and "
+    "DJANGO_GS_CREDENTIALS environment variables."
+# - {% endif %}
+)
+
+
+class DisabledMediaStorage(Storage):
+    """Storage backend that rejects all operations.
+
+    Used as the default when remote storage is not configured, so that accidental
+    file-field usage fails loudly instead of silently writing to local disk.
+    """
+
+    def _save(self, name, content):
+        raise NotImplementedError(_DISABLED_MESSAGE)
+
+    def _open(self, name, mode="rb"):
+        raise NotImplementedError(_DISABLED_MESSAGE)
+
+    def url(self, name):
+        raise NotImplementedError(_DISABLED_MESSAGE)
+
+    def delete(self, name):
+        raise NotImplementedError(_DISABLED_MESSAGE)
+
+    def size(self, name):
+        raise NotImplementedError(_DISABLED_MESSAGE)
+
+    def exists(self, name):
+        raise NotImplementedError(_DISABLED_MESSAGE)
+
+    def listdir(self, path):
+        raise NotImplementedError(_DISABLED_MESSAGE)

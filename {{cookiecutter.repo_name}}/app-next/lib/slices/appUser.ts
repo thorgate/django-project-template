@@ -35,9 +35,6 @@ export const appUserSlice = createSlice({
         setSessionExpired: (state) => {
             state.sessionExpired = true;
         },
-        setSessionExpired: (state) => {
-            state.sessionExpired = true;
-        },
         setLocale: (state, action: PayloadAction<string>) => {
             state.locale = action.payload;
         },

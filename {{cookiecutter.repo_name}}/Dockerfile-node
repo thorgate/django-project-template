@@ -3,7 +3,7 @@ FROM node:{{ cookiecutter.node_version }}-alpine
 
 # Install system requirements
 RUN apk add --no-cache alpine-sdk python3 bash && \
-    npm -g i pnpm@^8 && \
+    npm -g i pnpm@^{% if cookiecutter.node_version|int >= 22 %}11{% else %}10{% endif %} && \
     pnpm config set store-dir /usr/local/share/.cache/.pnpm-store
 
 # Set the default directory where CMD will execute

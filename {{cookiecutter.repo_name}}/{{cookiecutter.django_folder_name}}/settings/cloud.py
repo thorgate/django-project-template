@@ -18,6 +18,8 @@ if not IS_DOCKER_BUILD:
     DJANGO_SITE_URL = env.str("APP_BACKEND_SITE_URL")
     CSRF_COOKIE_DOMAIN = env.str("DJANGO_CSRF_COOKIE_DOMAIN")
 
+SESSION_COOKIE_SECURE = env.bool("DJANGO_SESSION_COOKIE_SECURE", default=True)
+
 CSRF_TRUSTED_ORIGINS = [
     f"https://{host}"
     for host in env.list("DJANGO_CSRF_TRUSTED_ORIGINS", default=ALLOWED_HOSTS)
@@ -91,3 +93,68 @@ GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
     json.load(env.str("DJANGO_GS_CREDENTIALS", default="{}")),
 )
 # - {% endif %}
+
+
+# In staging/prod we use {{ cookiecutter.django_media_engine }} for file storage engine when configured
+# - {% if cookiecutter.django_media_engine == S3 %}
+if _aws_bucket := env.str("DJANGO_AWS_STORAGE_BUCKET_NAME", default=""):
+    STORAGES = {
+        **STORAGES,
+        "default": {
+            "BACKEND": f"{DEFAULT_DJANGO_APP}.storages.MediaStorage",
+        },
+    }
+    MEDIA_ROOT = env.str("DJANGO_MEDIA_ROOT", default="")
+    AWS_STORAGE_BUCKET_NAME = _aws_bucket
+    AWS_ACCESS_KEY_ID = env.str("DJANGO_AWS_ACCESS_KEY_ID", default="***UNSET***")
+    AWS_SECRET_ACCESS_KEY = env.str("DJANGO_AWS_SECRET_ACCESS_KEY", default="***UNSET***")
+    AWS_DEFAULT_ACL = "public-read"
+    AWS_IS_GZIPPED = True
+    AWS_S3_FILE_OVERWRITE = False
+    AWS_S3_REGION_NAME = env.str("DJANGO_AWS_REGION", default="eu-north-1")
+    AWS_S3_SIGNATURE_VERSION = "s3v4"
+    # Should be True unless using s3 provider that doesn't support it (like DO)
+    AWS_S3_ENCRYPTION = env.bool("DJANGO_AWS_S3_ENCRYPTION", default=True)
+
+    # This helps get around a bug in boto3 (https://github.com/boto/boto3/issues/1644)
+    # Details in https://github.com/jschneier/django-storages/issues/649
+    AWS_S3_ADDRESSING_STYLE = "path"
+
+    AWS_S3_OBJECT_PARAMETERS = {
+        "CacheControl": "max-age=1209600",  # 2 weeks in seconds
+    }
+
+    # Only set DJANGO_AWS_S3_ENDPOINT_URL if it's defined in environment, fallback to default value in other cases
+    # Useful for s3 provided by other parties than AWS, like DO.
+    if _s3_endpoint_url := env.str("DJANGO_AWS_S3_ENDPOINT_URL", default=""):
+        AWS_S3_ENDPOINT_URL = _s3_endpoint_url
+        del _s3_endpoint_url
+
+    del _aws_bucket
+# - {% elif cookiecutter.django_media_engine == GCS %}
+if _gs_bucket := env.str("DJANGO_GS_BUCKET_NAME", default=""):
+    STORAGES = {
+        **STORAGES,
+        "default": {
+            "BACKEND": f"{DEFAULT_DJANGO_APP}.storages.MediaStorage",
+        },
+    }
+
+    GS_BUCKET_NAME = _gs_bucket
+    GS_PROJECT_ID = env.str("DJANGO_GS_PROJECT_ID", default="***UNSET***")
+
+    # pylint: disable-next=import-outside-toplevel
+    import json  # noqa: PLC0415
+
+    # pylint: disable-next=import-outside-toplevel
+    from google.oauth2 import service_account  # noqa: PLC0415
+
+    GS_CREDENTIALS = service_account.Credentials.from_service_account_info(
+        json.load(env.str("DJANGO_GS_CREDENTIALS", default="{}")),
+    )
+    GS_DEFAULT_ACL = "publicRead"
+    GS_FILE_OVERWRITE = False
+    GS_CACHE_CONTROL = "max-age=1209600"  # 2 weeks in seconds
+
+    del _gs_bucket
+# - {%- endif %}

@@ -7,11 +7,7 @@ import {
 } from "@reduxjs/toolkit/query";
 import { useRouter } from "next/router";
 import { GetServerSidePropsContext } from "next/types";
-import {
-    ControllerProps,
-    FieldPath,
-    FieldValues,
-} from "react-hook-form/dist/types";
+import { ControllerProps, FieldPath, FieldValues } from "react-hook-form";
 import {
     TypedUseLazyQuery,
     TypedUseQuery,

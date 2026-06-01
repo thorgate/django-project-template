@@ -36,6 +36,9 @@ APP_BACKEND_SITE_URL=https://{{ "{{ django_site_host }}" }}
 APP_PUBLIC_BACKEND_SITE_URL=https://{{ "{{ django_site_host }}" }}
 APP_PUBLIC_SENTRY_ENVIRONMENT={{ "{{ app_sentry_environment }}" }}
 APP_PUBLIC_SENTRY_DSN={{ "{{ app_sentry_dsn }}" }}
+{% raw %}{% if app_sentry_sample_rate is defined %}{% endraw %}
+APP_PUBLIC_SENTRY_SAMPLE_RATE={{ "{{ app_sentry_sample_rate }}" }}
+{% raw %}{% endif %}{% endraw %}
 {%- endif %}
 
 DJANGO_DATABASE_HOST=postgres

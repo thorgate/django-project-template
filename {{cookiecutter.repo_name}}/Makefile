@@ -534,7 +534,7 @@ create-rtk-queries-api-patch:
 .PHONY:
 generate-api-mock: export-schema
 	docker-compose run --rm node pnpm generate-api-mock
-	@patch ./app/mock/api/handlers.js < ./app/mock/api/handlers.patch
+	@patch ./app/mock/api/handlers.generated.js < ./app/mock/api/handlers.generated.patch
 	@make fmt-js
 
 .PHONY:

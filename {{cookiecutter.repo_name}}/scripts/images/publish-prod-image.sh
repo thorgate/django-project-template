@@ -53,6 +53,7 @@ docker build \
     -f ${docker_file} \
     $(cache_from_arg) \
     --build-arg BUILDKIT_INLINE_CACHE=1 \
+    --build-arg RELEASE_VERSION=${CI_COMMIT_TAG:-$CI_RAW_CUR_COMMIT_ID} \
     -t "${full_image}:${CI_RAW_CUR_COMMIT_ID}" .
 
 # Push the image
