@@ -89,4 +89,4 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
         verbose_name = _("User")
         verbose_name_plural = _("Users")
         ordering = ["-created"]
-        constraints = [UniqueConstraint(Lower("name").desc(), name="unique_lower_email")]
+        constraints = [UniqueConstraint(Lower("email").desc(), name="unique_lower_email")]

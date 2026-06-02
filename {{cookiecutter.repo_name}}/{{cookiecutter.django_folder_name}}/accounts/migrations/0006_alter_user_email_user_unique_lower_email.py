@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name="user",
             constraint=models.UniqueConstraint(
-                models.OrderBy(django.db.models.functions.text.Lower("name"), descending=True),
+                models.OrderBy(django.db.models.functions.text.Lower("email"), descending=True),
                 name="unique_lower_email",
             ),
         ),
