@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -84,6 +85,14 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
 
     def natural_key(self):
         return (self.get_username().lower(),)
+
+    @property
+    def language_code(self):
+        return settings.LANGUAGE_CODE
+
+    @property
+    def timezone(self):
+        return settings.TIME_ZONE
 
     class Meta:
         verbose_name = _("User")
