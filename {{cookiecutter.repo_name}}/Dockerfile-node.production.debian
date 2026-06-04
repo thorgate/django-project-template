@@ -21,6 +21,7 @@ VOLUME /files/assets
 # Copy package files
 COPY ./app/package.json ./
 COPY ./app/pnpm-lock.yaml ./
+COPY ./app/pnpm-workspace.yaml ./
 
 # Install system requirements & node dependencies
 RUN apt-get update && \

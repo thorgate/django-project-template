@@ -12,6 +12,7 @@ ENV NEXT_SHARP_PATH=/usr/local/lib/node_modules/sharp
 # Copy package files
 COPY ./app/package.json ./
 COPY ./app/pnpm-lock.yaml ./
+COPY ./app/pnpm-workspace.yaml ./
 
 # Install node build dependencies
 RUN apk add --no-cache libc6-compat bash grep && \
