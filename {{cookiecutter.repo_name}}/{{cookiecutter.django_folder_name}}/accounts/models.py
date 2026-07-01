@@ -1,3 +1,5 @@
+import django.utils.timezone
+from django.conf import settings
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -6,7 +8,6 @@ from django.contrib.auth.models import (
 from django.db import models
 from django.db.models import UniqueConstraint
 from django.db.models.functions import Collate, Lower
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from {{cookiecutter.default_django_app}}.core.models import BaseModel, BaseModelQueryset
@@ -28,7 +29,7 @@ class UserManager(BaseUserManager):
         """
         Creates and saves a User with the given username, email and password.
         """
-        now = timezone.now()
+        now = django.utils.timezone.now()
         if not email:
             raise ValueError("The given email must be set")
         email = self.normalize_email(email)
@@ -67,7 +68,7 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
 
     is_staff = models.BooleanField(_("staff status"), default=False)
     is_active = models.BooleanField(_("active"), default=True)
-    created = models.DateTimeField(_("date joined"), default=timezone.now)
+    created = models.DateTimeField(_("date joined"), default=django.utils.timezone.now)
 
     USERNAME_FIELD = "email"
 
@@ -85,8 +86,16 @@ class User(BaseModel, AbstractBaseUser, PermissionsMixin):
     def natural_key(self):
         return (self.get_username().lower(),)
 
+    @property
+    def language_code(self):
+        return settings.LANGUAGE_CODE
+
+    @property
+    def timezone(self):
+        return settings.TIME_ZONE
+
     class Meta:
         verbose_name = _("User")
         verbose_name_plural = _("Users")
         ordering = ["-created"]
-        constraints = [UniqueConstraint(Lower("name").desc(), name="unique_lower_email")]
+        constraints = [UniqueConstraint(Lower("email").desc(), name="unique_lower_email")]

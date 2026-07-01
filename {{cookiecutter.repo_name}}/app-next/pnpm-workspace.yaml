@@ -1,0 +1,6 @@
+allowBuilds:
+  '@sentry/cli': true
+  '@swc/core': true
+  msw: true
+  sharp: true
+  unrs-resolver: true
