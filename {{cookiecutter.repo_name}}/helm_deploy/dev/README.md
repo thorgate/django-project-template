@@ -41,14 +41,18 @@ Add `staging/` and `prod/` by `cp -r dev <env>` and adjusting:
    you must touch are:
    - `values.yaml`: image registry path if not Thorgate, settings module,
      gunicorn command, extensions in `extra/postgres.yaml`
-   - `imageupdater.yaml`: branch name if not `master`
    - `namespace.yaml`: `customer` label for cost attribution
 
-3. **Push an initial image** via the project's CI (the dpt-templated
-   `scripts/images/publish-prod-image.sh` will produce a `dev-<sha>`
-   tag when commits land on `develop`/`dev`/`staging`). Image-updater
-   will detect the first matching tag and replace `dev-PLACEHOLDER`
-   in `images.yaml` automatically.
+   `extra/imageupdater.yaml` is already set to this repo's default branch
+   (`{{ default_git_branch }}`) in both the `allowTags` regex and
+   `writeBackConfig.branch` - no edit needed unless you rename the branch,
+   in which case update both together.
+
+3. **Push an initial image** via the project's CI. `publish-prod-image.sh`
+   tags every commit as `<branch-slug>-<sha>` (e.g. `{{ default_git_branch }}-<sha>`
+   on the default branch), which is what `allowTags` matches. Image-updater
+   detects the first matching tag and replaces the `PLACEHOLDER` in
+   `images.yaml` automatically.
 
 4. **Confirm Application Healthy** in the ArgoCD UI:
    `https://argocd.client-cluster-1.thorgatedigital.tools/applications/argocd/{{ cookiecutter.repo_name|as_hostname }}-helm-dev`

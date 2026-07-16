@@ -1,7 +1,34 @@
+import subprocess
+
 import stringcase
 import giturlparse
 
 from jinja2.ext import Extension
+
+
+def get_default_git_branch():
+    """Best-effort default branch for the generated project.
+
+    On a template UPGRADE (re-rendering into an existing checkout) this
+    returns the project's current branch, so helm_deploy references stay
+    correct for repos on `main` as well as `master`.
+
+    On a FRESH generation there is no repo yet, so it falls back to
+    `master` - which is exactly what hooks/post_gen_project.py checks the
+    new repo out as. Keep that hook and this fallback in sync.
+    """
+    try:
+        branch = (
+            subprocess.check_output(
+                ["git", "symbolic-ref", "--short", "HEAD"],
+                stderr=subprocess.DEVNULL,
+            )
+            .decode()
+            .strip()
+        )
+        return branch or "master"
+    except Exception:
+        return "master"
 
 
 def as_hostname(value):
@@ -84,6 +111,8 @@ class TGFiltersModule(Extension):
         environment.filters["snake_to_pascal_case"] = snake_to_pascal_case
         environment.filters["as_git_path"] = as_git_path
         environment.filters["get_url_path"] = get_url_path
+
+        environment.globals["default_git_branch"] = get_default_git_branch()
 
         environment.globals.update(
             SPA="spa",
