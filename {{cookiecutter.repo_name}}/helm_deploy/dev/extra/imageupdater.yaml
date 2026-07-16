@@ -27,7 +27,7 @@ spec:
     # prod env tracks main), override per-env to filter:
     #   dev env:  ^dev-[0-9a-f]+$
     #   prod env: ^prod-[0-9a-f]+$
-    allowTags: "regexp:^[0-9a-f]{40}$"
+    allowTags: "regexp:^master-[0-9a-f]{40}$"
 
   applicationRefs:
     - namePattern: {{ cookiecutter.repo_name|as_hostname }}-helm-dev
