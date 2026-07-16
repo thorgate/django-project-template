@@ -46,6 +46,7 @@
     "@thorgate/eslint-config": "^2.1.0",
     "@thorgate/eslint-config-typescript": "^2.1.0",
     "@thorgate/prettier-config": "1.0.1",
+    "@types/node": "18.15.13",
     "@typescript-eslint/eslint-plugin": "^4.12.0",
     "@typescript-eslint/parser": "^4.12.0",
     "babel-eslint": "10.1.0",
