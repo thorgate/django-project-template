@@ -16,5 +16,19 @@ resources:
   # once you have them encrypted via kubeseal. Reference shape:
   #   helm_deploy/dev/extra/sealed-secret-django-env.yaml
   #   helm_deploy/dev/extra/sealed-secret-gitlab-registry.yaml
-  # See tg-platform-gitops/examples/http-echo-sealed-secrets/ for the
-  # canonical SealedSecret pattern with kubeseal.
+  #
+  # CRITICAL: SealedSecrets in THIS overlay must carry
+  #   annotations:
+  #     argocd.argoproj.io/hook: PreSync
+  # with NO delete-policy. This is a multi-source ArgoCD Application
+  # (kustomize extra/ + Helm chart), where only hook-annotated resources
+  # from the kustomize source get reliably applied and persisted. A plain
+  # (unannotated) or helm.sh/hook SealedSecret churns on each sync, so its
+  # derived Secret (e.g. the registry pull secret) keeps disappearing and
+  # pods fail with "Unable to retrieve image pull secrets" / ImagePullBackOff.
+  # Running it as a PreSync hook also guarantees the decrypted Secret exists
+  # before the chart's wave-30 Deployment mounts it.
+  #
+  # (Single-source kustomize apps don't need this - their SealedSecrets can
+  # be plain Sync-phase resources. The hook is specifically required in this
+  # multi-source Helm overlay.)

@@ -10,7 +10,12 @@
 # static dir at /.
 
 chart: phoenix
-chartVersion: "0.3.0-dev"   # Pin to an exact version once the chart stabilises
+# Pinned to an exact build, not the floating `0.3.0-dev` tag, because this
+# build includes the Phoenix chart's init-container / Job image-tag fix.
+# Without it, initCommands (db-migrations, check-deploy below) render with
+# no tag -> `:latest`, which the registry never pushes, so the pod is stuck
+# in Init:ImagePullBackOff. Bump deliberately as the chart stabilises.
+chartVersion: "0.3.0-dev+72eb109e"
 
 # applicationName flows into chart-rendered resource names (Service,
 # Deployment, Middleware, Certificate, etc.). Those must be DNS-1123
