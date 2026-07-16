@@ -2,10 +2,9 @@
 
 ArgoCD-managed dev environment for `{{ cookiecutter.repo_name }}`.
 
-Picked up by the `clients-helm-dev` ApplicationSet in
-[tg-platform-gitops](https://gitlab.com/thorgate/tg-platform-gitops),
-which matches any repo in the `thorgate` GitLab group with topic
-`argo-managed` that has both:
+Picked up by the `clients-helm-dev` ApplicationSet in Thorgate's internal
+gitops repo, which matches any repo in the `thorgate` GitLab group with
+topic `argo-managed` that has both:
 
 - `helm_deploy/dev/` (this directory), AND
 - `helm_deploy/dev/values.yaml` (committed)
@@ -57,27 +56,14 @@ Add `staging/` and `prod/` by `cp -r dev <env>` and adjusting:
 4. **Confirm Application Healthy** in the ArgoCD UI:
    `https://argocd.client-cluster-1.thorgatedigital.tools/applications/argocd/{{ cookiecutter.repo_name|as_hostname }}-helm-dev`
 
-## How the project name flows into resource names
+## Resource naming
 
-Cookiecutter renders `repo_name` from your project title via
-`slugify(separator='_')`, so it can have underscores (e.g.
-`circular_orbit`). But several places require DNS-1123 (lowercase
-alphanumeric + hyphens only) or hostname compatibility:
-
-| Resource | Format | Filter applied |
-|---|---|---|
-| Postgres / PostgresUser CR `name` | k8s object name (DNS-1123) | `\| as_hostname` |
-| Namespace | k8s namespace (DNS-1123) | `\| as_hostname` |
-| Ingress hostname | DNS | `\| as_hostname` |
-| ImageUpdater CR `metadata.name` | k8s object name | `\| as_hostname` |
-| ImageUpdater `namePattern` | matches the Application name from the appset (already hyphen-form) | `\| as_hostname` |
-| Postgres `spec.database` | postgres identifier (underscores OK) | none |
-| `spec.role` | postgres identifier (underscores OK) | none |
-| Container image registry path | flexible, underscores typically allowed | none |
-
-The `as_hostname` filter is from the template's `tg_filters` extension
-and converts `_` to `-`. If your `repo_name` has no underscores the
-filter is a no-op.
+k8s object names and hostnames here must be DNS-1123 (lowercase
+alphanumeric + hyphens, no underscores): the Namespace, the Postgres /
+PostgresUser / ImageUpdater CR names, and the ingress hostnames. The
+Postgres `spec.database` / `spec.role` and the container image registry
+path may keep underscores. Keep this in mind when copying `dev/` to
+`staging/` / `prod/` and editing names by hand.
 
 ## Operational notes
 
@@ -104,18 +90,10 @@ filter is a no-op.
 
 ## Experimental warning
 
-This scaffold is **experimental** in dpt-template (gated behind the
-`use_kubernetes` cookiecutter var). The chart version pinned in
-`values.yaml` is a pre-1.0 dev tag. Expect:
+This helm / ArgoCD deploy setup is **experimental**. The Phoenix chart is
+pinned to a pre-1.0 dev tag in `values.yaml`, so expect:
 
 - Chart values may move around between Phoenix versions.
-- The `confident_curie` / `eager_cannon` template-test projects do not
-  yet have a k8s-deployed counterpart - the `circular_orbit` project
-  (when generated; note underscore - it flows through the cookiecutter
-  slugify and renders as `circular-orbit` for ingress hostnames + k8s
-  namespace via the `as_hostname` filter, see the table above) will
-  serve that role.
-- For production deployments, prefer the established ansible flow
-  until Phoenix stabilises and `circular-orbit` has run a full
-  lifecycle (deploy + cutover + a few image-updater cycles + token
-  rotation) without surprises.
+- For production, prefer the established ansible flow until the chart
+  stabilises and this scaffold has run a full lifecycle (deploy + cutover
+  + a few image-updater cycles + token rotation) without surprises.

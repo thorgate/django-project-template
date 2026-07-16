@@ -38,6 +38,7 @@ _(note that the primary repo is in [Gitlab](https://gitlab.com/thorgate-public/d
     - Automated code-formatting using [black](https://black.readthedocs.io) and [prettier](https://prettier.io)
     - [py.test](http://pytest.org/) and [coverage](https://coverage.readthedocs.io/) integration
     - Deploy helpers, using [Ansible](https://www.ansible.com/)
+    - Optional Kubernetes / ArgoCD deploy scaffold (experimental, `use_kubernetes`), see [Kubernetes / Helm deployment](#kubernetes--helm-deployment)
     - Media files are stored in a CDN like S3 or Google Cloud Storage
     - Out-of-the-box configuration for nginx, gunicorn and logrotate
     - Includes [PyCharm](https://www.jetbrains.com/pycharm/) project config
@@ -95,6 +96,66 @@ Translations are done with [i18next](https://www.i18next.com/) and its companion
 React powered application rendered with Django templates. This is the default option. Enabled with `frontend_style == webapp`.
 During development separate container is used to build assets. In production, node built with multi-stage image.
 Translations are done with Django JavaScriptCatalog.
+
+
+## Kubernetes / Helm deployment
+
+**Experimental.** Enable it with the `use_kubernetes` cookiecutter variable
+(see `CookiecutterVariables.adoc`). It generates a `helm_deploy/dev/`
+scaffold that deploys the project through ArgoCD on the Thorgate platform,
+alongside the ansible flow rather than replacing it.
+
+### What gets generated
+
+- `helm_deploy/dev/values.yaml` and `images.yaml`: config for the `phoenix`
+  Helm chart. `images.yaml` is kept separate so argocd-image-updater can bump
+  the image tag without touching the rest of the config.
+- `helm_deploy/dev/extra/`: a kustomize overlay applied alongside the chart.
+  It holds the namespace, a ConfigMap, the movetokube `Postgres` /
+  `PostgresUser` CRs, and the argocd-image-updater `ImageUpdater` CR.
+
+ArgoCD consumes these as one multi-source Application (the `extra/` overlay,
+the `phoenix` chart, and the repo's values). For the flow, the cluster
+prerequisites, and how to run it on your own ArgoCD, see
+[docs/argocd-deployment.md](docs/argocd-deployment.md).
+
+For Thorgate projects there's nothing to set up by hand: the platform's
+ApplicationSet discovers the repo once it's tagged `argo-managed`, and the
+concrete wiring lives in Thorgate's internal gitops repository.
+
+### Conventions the scaffold depends on (don't regress these)
+
+- The chart version in `values.yaml` is pinned to an exact build, not the
+  floating `-dev` tag. The pinned build fixes init containers rendering with
+  no image tag (`:latest`), which the registry never pushes, so pods would
+  otherwise hang in `Init:ImagePullBackOff`.
+- SealedSecrets go in `extra/` with `argocd.argoproj.io/hook: PreSync` and no
+  delete-policy, never `helm.sh/hook`. In a multi-source Application only
+  hook-annotated resources from the kustomize source apply reliably; a
+  helm-hook or unannotated SealedSecret churns, so its Secret (for example the
+  registry pull secret) keeps disappearing and pods `ImagePullBackOff`. The
+  scaffold ships no secrets, since Django defaults cover boot; add them here.
+- The movetokube operator provisions Postgres through sync-wave CRs, not helm
+  hooks, which would rotate the password on every sync. The platform's ArgoCD
+  config (`argocd-cm`) gates the CR health on `status.succeeded=true`, so the
+  chart's wave-30 resources wait for the database and its credentials Secret.
+- The branch in `extra/imageupdater.yaml` (`allowTags` and the write-back
+  `branch`) comes from the `default_git_branch` global in
+  `extensions/tg_filters.py`: it reads `git symbolic-ref` and falls back to
+  `master` to match what `hooks/post_gen_project.py` checks the new repo out
+  as. If you change that hook's branch, keep the fallback in sync.
+- k8s object names and hostnames run through the `as_hostname` filter
+  (underscores become hyphens) for DNS-1123; postgres database/role names and
+  image paths keep underscores.
+
+### Status / roadmap
+
+This is pre-1.0, so chart values may move between Phoenix versions; prefer the
+ansible flow for production until it settles. The `confident_curie` and
+`eager_cannon` template-test projects have no k8s counterpart yet. The
+`circular_orbit` project is meant to fill that role and run a full lifecycle
+(deploy, cutover, a few image-updater cycles, token rotation) before this is
+recommended for production.
 
 
 ## Upgrading project template

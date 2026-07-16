@@ -157,12 +157,8 @@ build_compose_file:
 .publish_image:
   stage: build
 # - {% if cookiecutter.use_kubernetes != YES %}
-  # Ansible-only projects deploy via manual operator action, so it's
-  # safe to publish in parallel with tests for faster CI. With
-  # use_kubernetes=yes, argocd-image-updater auto-rolls deployments
-  # off registry tags - a broken image getting published would
-  # auto-deploy - so we drop `needs: []` to let the test stage gate
-  # publish.
+  # Deploys here are manual, so it's safe to publish in parallel with the
+  # test stage for faster CI (that's what needs: [] does).
   needs: []
 # - {% endif %}
   except:

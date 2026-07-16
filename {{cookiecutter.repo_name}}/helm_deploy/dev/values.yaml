@@ -18,9 +18,8 @@ chart: phoenix
 chartVersion: "0.3.0-dev+72eb109e"
 
 # applicationName flows into chart-rendered resource names (Service,
-# Deployment, Middleware, Certificate, etc.). Those must be DNS-1123
-# compliant - underscores break apply. Use as_hostname so repo_name
-# values like `circular_orbit` render as `circular-orbit` here.
+# Deployment, Middleware, Certificate, etc.), so it must be DNS-1123
+# compliant: lowercase alphanumeric + hyphens, no underscores.
 applicationName: {{ cookiecutter.repo_name|as_hostname }}
 
 imagePullPolicy: Always
@@ -276,9 +275,9 @@ ingress:
     X-Robots-Tag: "noindex nofollow"   # TODO: drop this once the app is publicly indexable
 {%- endif %}
 
-# dpt-template settings/base.py defaults to Redis for CACHES (and celery
-# broker if include_celery=yes), so the chart's redis-ha sub-chart is
-# enabled by default. The Phoenix chart wires DJANGO_REDIS_URL to the
+# This project's settings/base.py defaults to Redis for CACHES (and the
+# celery broker when celery is enabled), so the chart's redis-ha sub-chart
+# is enabled by default. The Phoenix chart wires DJANGO_REDIS_URL to the
 # in-namespace service automatically.
 #
 # Set to false ONLY if your app overrides CACHES in settings/cloud.py
