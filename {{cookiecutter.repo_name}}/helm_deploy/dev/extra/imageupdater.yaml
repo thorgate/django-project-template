@@ -9,11 +9,15 @@ metadata:
   name: {{ cookiecutter.repo_name|as_hostname }}
   namespace: argocd
   annotations:
-    # Apply this CR before the consumer Application syncs, so the
-    # cross-namespace ImageUpdater is in place when image-updater
-    # reconciles. Without PreSync it can race the consumer Application
-    # and end up OutOfSync forever.
-    argocd.argoproj.io/hook: PreSync
+    # sync-wave -1 so this CR applies before the consumer Application's
+    # default-wave (0) resources, so the cross-namespace ImageUpdater is in
+    # place when image-updater reconciles. Do NOT use argocd.argoproj.io/hook:
+    # PreSync here: hook resources are untracked by ArgoCD and the default
+    # hook-delete-policy (BeforeHookCreation) deletes them before each sync,
+    # so an interrupted sync can leave the CR gone and image auto-updates
+    # silently stopped. A sync-waved resource keeps the ordering while staying
+    # tracked, pruned-protected, and self-healed.
+    argocd.argoproj.io/sync-wave: "-1"
 spec:
   commonUpdateSettings:
     pullSecret: "pullsecret:argocd/gitlab-registry-credentials"

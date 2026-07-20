@@ -129,12 +129,16 @@ concrete wiring lives in Thorgate's internal gitops repository.
   floating `-dev` tag. The pinned build fixes init containers rendering with
   no image tag (`:latest`), which the registry never pushes, so pods would
   otherwise hang in `Init:ImagePullBackOff`.
-- SealedSecrets go in `extra/` with `argocd.argoproj.io/hook: PreSync` and no
-  delete-policy, never `helm.sh/hook`. In a multi-source Application only
-  hook-annotated resources from the kustomize source apply reliably; a
-  helm-hook or unannotated SealedSecret churns, so its Secret (for example the
-  registry pull secret) keeps disappearing and pods `ImagePullBackOff`. The
-  scaffold ships no secrets, since Django defaults cover boot; add them here.
+- SealedSecrets go in `extra/` as plain, sync-waved resources
+  (`argocd.argoproj.io/sync-wave: "-1"`), never as ArgoCD or Helm hooks. A
+  hook resource is not tracked as part of the Application, and the default
+  hook-delete-policy (`BeforeHookCreation`) deletes it before every sync, so
+  an interrupted sync leaves the SealedSecret - and its derived Secret (for
+  example the registry pull secret) - gone, and pods `ImagePullBackOff` on
+  their next restart. Sync-waves apply the Secret before the chart's wave-30
+  Deployment (same mechanism as the Postgres CRs below) while keeping it
+  tracked and self-healed. The scaffold ships no secrets, since Django
+  defaults cover boot; add them here.
 - The movetokube operator provisions Postgres through sync-wave CRs, not helm
   hooks, which would rotate the password on every sync. The platform's ArgoCD
   config (`argocd-cm`) gates the CR health on `status.succeeded=true`, so the

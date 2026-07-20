@@ -65,14 +65,17 @@ the app starts:
 
 Two things that are easy to get wrong:
 
-- SealedSecrets in the overlay must be ArgoCD `PreSync` hooks
-  (`argocd.argoproj.io/hook: PreSync`, no delete-policy). In a multi-source
-  Application, an unannotated or `helm.sh/hook` SealedSecret does not apply
-  reliably, so its decrypted Secret keeps disappearing and pods fail to pull
-  images.
-- The database CRs use sync-waves, not helm hooks. A helm hook would make
-  ArgoCD recreate the CR on every sync, which rotates the database password
-  and leaves running pods with stale credentials.
+- SealedSecrets in the overlay must be plain, sync-waved resources
+  (`argocd.argoproj.io/sync-wave: "-1"`), never ArgoCD or Helm hooks. A hook
+  resource is untracked, and the default hook-delete-policy
+  (`BeforeHookCreation`) deletes it before every sync - so an interrupted sync
+  leaves the SealedSecret and its decrypted Secret gone, and pods fail to pull
+  images. Sync-waves apply the Secret before the chart's workloads (same as
+  the database CRs) while keeping it tracked and self-healed.
+- The database CRs use sync-waves, not helm hooks, for the same reason - and
+  additionally because a helm hook would recreate the CR on every sync, which
+  rotates the database password and leaves running pods with stale
+  credentials.
 
 ## Setting it up on your own ArgoCD
 

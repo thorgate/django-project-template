@@ -29,6 +29,10 @@ dependencies = [
     "django-storages==1.*",
     # - {%- endif %}
     "gunicorn>=26.0,<27",
+    # Serve collected static (Django admin, DRF, and the WEBAPP-mode frontend)
+    # from the gunicorn process - there is no nginx sidecar, and with
+    # DEBUG=False django.contrib.staticfiles does not serve static at runtime.
+    "whitenoise[brotli]>=6.11,<7",
     # - {%- if cookiecutter.docker_base_image == 'alpine' %}
     # If you change the docker base image to be non-alpine
     # This can be changed to psycopg2-binary to get advantage from

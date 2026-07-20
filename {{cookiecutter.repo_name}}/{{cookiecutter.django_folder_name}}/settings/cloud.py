@@ -41,6 +41,25 @@ EMAIL_HOST_PASSWORD = env.str("DJANGO_EMAIL_HOST_PASSWORD", default="TODO (api k
 
 STATIC_URL = env.str("DJANGO_STATIC_URL", default="/assets/")
 
+# WhiteNoise serves the collected static files (Django admin, DRF browsable
+# API, and - in WEBAPP mode - the prebuilt frontend) directly from gunicorn.
+# Required here: the pod runs gunicorn with no nginx sidecar, and with
+# DEBUG=False django.contrib.staticfiles does not serve static at runtime, so
+# without WhiteNoise every STATIC_URL request 404s. Env-gated so a deployment
+# that fronts static with its own webserver/CDN can disable it.
+USE_WHITENOISE = env.bool("DJANGO_USE_WHITENOISE", default=True)
+
+if USE_WHITENOISE:
+    # This stack has no SecurityMiddleware (security headers are applied at the
+    # ingress), so insert at the front - WhiteNoise should be as early as
+    # possible so STATIC_URL requests short-circuit before session/auth.
+    MIDDLEWARE.insert(0, "whitenoise.middleware.WhiteNoiseMiddleware")
+
+    STORAGES["staticfiles"]["BACKEND"] = env.str(
+        "DJANGO_WHITENOISE_BACKEND",
+        default="whitenoise.storage.CompressedStaticFilesStorage",
+    )
+
 # Production logging - all INFO and higher messages go to info.log file.
 # ERROR and higher messages additionally go to error.log file
 LOGGING["loggers"][""] = {
