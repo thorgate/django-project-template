@@ -11,9 +11,25 @@ RUN python3 -m ensurepip
 
 ENV POETRY_HOME="$HOME/.poetry"
 ENV POETRY_NO_INTERACTION=1
-ENV POETRY_VERSION="2.1.1"
+ENV POETRY_VERSION="2.4.1"
 
 RUN wget -O - -o /dev/null https://install.python-poetry.org | python3 -
 ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
 RUN apk add just
+
+# Helm + kustomize CLIs, used by the generated project's validate-k8s-manifests
+# job (helm template + kustomize build its helm_deploy scaffold). Pinned.
+ENV HELM_VERSION="v3.16.4"
+RUN wget -O - -o /dev/null https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz \
+    | tar -xz -C /tmp && \
+    mv /tmp/linux-amd64/helm /usr/local/bin/helm && \
+    rm -rf /tmp/linux-amd64 && \
+    helm version
+
+ENV KUSTOMIZE_VERSION="v5.5.0"
+RUN wget -O /tmp/kustomize.tgz -o /dev/null \
+    "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2F${KUSTOMIZE_VERSION}/kustomize_${KUSTOMIZE_VERSION}_linux_amd64.tar.gz" && \
+    tar -xz -C /usr/local/bin -f /tmp/kustomize.tgz kustomize && \
+    rm /tmp/kustomize.tgz && \
+    kustomize version
