@@ -55,6 +55,11 @@ test_main:
   variables:
     TEST_TAG: main
 
+test_KUBERNETES:
+  extends: .test_tag
+  variables:
+    TEST_TAG: KUBERNETES
+
 test_CELERY:
   extends: .test_tag
   variables:
