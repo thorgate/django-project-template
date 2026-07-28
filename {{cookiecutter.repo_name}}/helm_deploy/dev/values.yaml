@@ -23,6 +23,10 @@ chartVersion: "0.3.0-dev+72eb109e"
 applicationName: {{ cookiecutter.repo_name|as_hostname }}
 
 imagePullPolicy: Always
+# Registry pull secret, expected in this app's namespace. Create it from
+# secrets/gitlab-registry.yaml (a GitLab deploy token scoped to
+# `read_registry`) and seal it with secrets/seal.sh - without it every pod
+# fails with ImagePullBackOff. See secrets/README.md.
 imageSecrets:
   - gitlab-registry
 
@@ -123,19 +127,14 @@ applications:
     # values, easier to edit independently.
     environmentConfigMap: {{ cookiecutter.repo_name|as_hostname }}-app-config
 
-    # TODO: SECRETS - currently defaulted by Django ("dummy key"), not
-    # safe outside an experimental test repo. Seal these via
-    # extra/sealed-secret-django-env.yaml + reference here as:
+    # TODO: SECRETS - until you seal them, DJANGO_SECRET_KEY falls back to
+    # Django's "dummy key", which is not safe outside an experimental test
+    # repo. The plaintext template with the keys to fill in (and a
+    # pre-generated DJANGO_SECRET_KEY) is at secrets/django-env.yaml;
+    # `secrets/seal.sh` turns it into extra/sealed-secret-django-env.yaml.
+    # Then uncomment:
     #   environmentSecret: {{ cookiecutter.repo_name|as_hostname }}-django-env
-    # Keys to seal:
-    #   DJANGO_SECRET_KEY
-{%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
-    #   DJANGO_JWT_PRIVATE_KEY / PUBLIC_KEY (and matching APP_PUBLIC_JWT_PUBLIC_KEY in node)
-{%- endif %}
-    #   DJANGO_SENTRY_DSN, DJANGO_EMAIL_HOST_PASSWORD
-{%- if cookiecutter.django_media_engine == S3 %}
-    #   DJANGO_AWS_ACCESS_KEY_ID / DJANGO_AWS_SECRET_ACCESS_KEY
-{%- endif %}
+    # See secrets/README.md for the full walkthrough.
 
 {%- if cookiecutter.thorgate == YES %}
     {%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
@@ -246,10 +245,10 @@ applications:
     # need (DJANGO_DATABASE_HOST etc.) - harmless extras in env.
     environmentConfigMap: {{ cookiecutter.repo_name|as_hostname }}-app-config
 
-    # TODO: SECRETS - seal via extra/sealed-secret-node-env.yaml +
-    # reference here as:
+    # TODO: SECRETS - fill in secrets/node-env.yaml (NEXTAUTH_SECRET is
+    # pre-generated; APP_PUBLIC_JWT_PUBLIC_KEY must match django's), run
+    # secrets/seal.sh, then uncomment:
     #   environmentSecret: {{ cookiecutter.repo_name|as_hostname }}-node-env
-    # Keys: NEXTAUTH_SECRET, APP_PUBLIC_JWT_PUBLIC_KEY, APP_PUBLIC_SENTRY_DSN
 
 {%- if cookiecutter.thorgate == YES %}
     urlHost: {{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools

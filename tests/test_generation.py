@@ -355,6 +355,25 @@ def test_kubernetes_generate(cookies, default_project, frontend_style):
     assert result.project.join('helm_deploy/dev/values.yaml').exists()
     assert result.project.join('helm_deploy/dev/extra/kustomization.yaml').exists()
 
+    secrets = result.project.join('helm_deploy/dev/secrets')
+    assert secrets.join('gitlab-registry.yaml').exists()
+    assert secrets.join('django-env.yaml').exists()
+    assert secrets.join('node-env.yaml').exists() == (frontend_style != WEBAPP)
+    assert os.access(str(secrets.join('seal.sh')), os.X_OK)
+
+    # The plaintext templates hold real secrets once filled in, so they must
+    # never be committable - only the sealed output in extra/ is.
+    ignored = subprocess.run(
+        ['git', 'check-ignore', 'helm_deploy/dev/secrets/django-env.yaml'],
+        cwd=str(result.project),
+        stdout=subprocess.DEVNULL,
+    )
+    assert ignored.returncode == 0, 'helm_deploy/dev/secrets/*.yaml is not gitignored'
+
+    # Pre-generated keys, as with the ansible vault: no placeholder left behind.
+    django_env = yaml.safe_load(secrets.join('django-env.yaml').read())
+    assert len(django_env['stringData']['DJANGO_SECRET_KEY']) == 64
+
     validate_helm(result)
 
 

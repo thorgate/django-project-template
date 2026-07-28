@@ -113,6 +113,12 @@ alongside the ansible flow rather than replacing it.
 - `helm_deploy/dev/extra/`: a kustomize overlay applied alongside the chart.
   It holds the namespace, a ConfigMap, the movetokube `Postgres` /
   `PostgresUser` CRs, and the argocd-image-updater `ImageUpdater` CR.
+- `helm_deploy/dev/secrets/`: **gitignored** plaintext Secret templates
+  (registry pull creds, Django env, node env), pre-filled with generated
+  random keys the same way `ansible/host_vars/*/vault.yml` is. Fill in the
+  `REPLACE_ME` placeholders, run `secrets/seal.sh`, and commit only the
+  resulting SealedSecrets in `extra/`. See the generated
+  `helm_deploy/dev/secrets/README.md`.
 
 ArgoCD consumes these as one multi-source Application (the `extra/` overlay,
 the `phoenix` chart, and the repo's values). For the flow, the cluster
@@ -137,8 +143,12 @@ concrete wiring lives in Thorgate's internal gitops repository.
   example the registry pull secret) - gone, and pods `ImagePullBackOff` on
   their next restart. Sync-waves apply the Secret before the chart's wave-30
   Deployment (same mechanism as the Postgres CRs below) while keeping it
-  tracked and self-healed. The scaffold ships no secrets, since Django
-  defaults cover boot; add them here.
+  tracked and self-healed. `helm_deploy/dev/secrets/seal.sh` stamps that
+  annotation on everything it writes, so this holds by default.
+- The generated `.gitignore` ignores `helm_deploy/*/secrets/*.yaml`, and git
+  applies that nested `.gitignore` inside **this** repo too. Adding a new
+  plaintext template under `{{cookiecutter.repo_name}}/helm_deploy/dev/secrets/`
+  therefore needs `git add -f`, or it is silently skipped.
 - The movetokube operator provisions Postgres through sync-wave CRs, not helm
   hooks, which would rotate the password on every sync. The platform's ArgoCD
   config (`argocd-cm`) gates the CR health on `status.succeeded=true`, so the

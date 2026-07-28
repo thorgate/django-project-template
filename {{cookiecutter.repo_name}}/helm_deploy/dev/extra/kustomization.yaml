@@ -12,19 +12,24 @@ resources:
   - configmap.yaml
   - postgres.yaml
   - imageupdater.yaml
-  # TODO: add sealed-secret manifests for registry pull creds + app secrets
-  # once you have them encrypted via kubeseal. Reference shape:
-  #   helm_deploy/dev/extra/sealed-secret-django-env.yaml
-  #   helm_deploy/dev/extra/sealed-secret-gitlab-registry.yaml
+  # TODO: uncomment once you have sealed the plaintext templates in
+  # ../secrets/ (fill in the placeholders, then run ../secrets/seal.sh -
+  # it writes exactly these files). See ../secrets/README.md.
+  # - sealed-secret-gitlab-registry.yaml
+  # - sealed-secret-django-env.yaml
+{%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
+  # - sealed-secret-node-env.yaml
+{%- endif %}
   #
   # CRITICAL: SealedSecrets in THIS overlay must be plain, sync-waved
   # resources - NEVER ArgoCD or Helm hooks. Give each one:
   #   annotations:
   #     argocd.argoproj.io/sync-wave: "-1"
   # (any wave smaller than the chart's wave-30 works; -1 keeps them at the
-  # front of the overlay). That ordering unseals the derived Secret before
-  # the chart's Deployment mounts it - the same mechanism postgres.yaml uses
-  # for the database CRs.
+  # front of the overlay). ../secrets/seal.sh injects that annotation into
+  # every manifest it writes, so this holds by default. That ordering unseals
+  # the derived Secret before the chart's Deployment mounts it - the same
+  # mechanism postgres.yaml uses for the database CRs.
   #
   # Do NOT use argocd.argoproj.io/hook: PreSync (or helm.sh/hook). Hook
   # resources are NOT tracked as part of the Application's live state, and the

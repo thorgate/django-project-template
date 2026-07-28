@@ -48,3 +48,11 @@ webapp/coverage/
 webapp/webapp/webpack-stats.json
 
 {% endif %}
+{%- if cookiecutter.use_kubernetes == YES %}
+
+# Plaintext Kubernetes Secret templates. Fill these in, run
+# helm_deploy/<env>/secrets/seal.sh, and commit only the sealed output in
+# helm_deploy/<env>/extra/sealed-secret-*.yaml. See
+# helm_deploy/dev/secrets/README.md.
+helm_deploy/*/secrets/*.yaml
+{% endif %}

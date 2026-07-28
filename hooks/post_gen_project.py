@@ -160,6 +160,11 @@ def cleanup():
         cleanup_paths += [
             "helm_deploy",
         ]
+    elif '{{ cookiecutter.frontend_style }}' == WEBAPP:
+        # No separate node app to configure, so no node secrets to seal.
+        cleanup_paths += [
+            "helm_deploy/dev/secrets/node-env.yaml",
+        ]
 
     if os.getenv("DPT_CI_PROJECT_TEST") != "1":
         remove_ci_project_generation_extra_commands(cwd)

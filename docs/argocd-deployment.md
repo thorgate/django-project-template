@@ -77,6 +77,64 @@ Two things that are easy to get wrong:
   rotates the database password and leaves running pods with stale
   credentials.
 
+## Secrets
+
+The scaffold ships plaintext Secret templates in `helm_deploy/dev/secrets/`,
+pre-filled at project generation the same way `ansible/host_vars/*/vault.yml`
+is: random keys (`DJANGO_SECRET_KEY`, `NEXTAUTH_SECRET`) already generated,
+everything else marked `REPLACE_ME`. That whole directory is gitignored - what
+gets committed is the sealed output under `helm_deploy/dev/extra/`.
+
+| Plaintext template | Sealed as | Holds |
+| --- | --- | --- |
+| `secrets/gitlab-registry.yaml` | `extra/sealed-secret-gitlab-registry.yaml` | registry pull creds (`imageSecrets` in `values.yaml`) |
+| `secrets/django-env.yaml` | `extra/sealed-secret-django-env.yaml` | `DJANGO_SECRET_KEY`, Sentry DSN, SMTP password, JWT private key, object-storage keys |
+| `secrets/node-env.yaml` | `extra/sealed-secret-node-env.yaml` | `NEXTAUTH_SECRET`, JWT public key, frontend Sentry DSN (SPA modes only) |
+
+The workflow is: fill in the placeholders, run `secrets/seal.sh` (a `kubeseal`
+wrapper that also stamps the `argocd.argoproj.io/sync-wave: "-1"` annotation on
+each manifest), uncomment the entries in `extra/kustomization.yaml`, and set
+`environmentSecret` on the apps in `values.yaml`. `helm_deploy/dev/secrets/README.md`
+in a generated project has the full walkthrough.
+
+If you use something other than sealed-secrets (External Secrets Operator,
+SOPS, Vault), keep the plaintext templates as the list of keys each app needs
+and replace `seal.sh` plus the `extra/` output with your own equivalent.
+
+### The registry pull secret
+
+This is the one that blocks everything else: without it, every pod fails with
+`ImagePullBackOff` / "Unable to retrieve image pull secrets". For GitLab,
+create a **deploy token** (project Settings -> Repository -> Deploy tokens)
+scoped to `read_registry`, then generate the plaintext Secret:
+
+```sh
+kubectl create secret docker-registry gitlab-registry \
+  --namespace <app-namespace> \
+  --docker-server=registry.gitlab.com \
+  --docker-username='<deploy-token-username>' \
+  --docker-password='<deploy-token>' \
+  --dry-run=client -o yaml > helm_deploy/dev/secrets/gitlab-registry.yaml
+```
+
+and seal it. Note this is a *pull* secret living in the app's namespace, and
+is distinct from the two cluster-wide secrets argocd-image-updater uses: one
+to poll the registry for new tags, one to push the `images.yaml` bump back to
+git (`gitlab-registry-credentials` and `gitlab-write-credentials` in the
+`argocd` namespace, in the scaffold's naming).
+
+### Rotation
+
+Edit the plaintext file, re-seal, commit. The controller updates the derived
+Secret in place, but running pods keep the old env - follow up with a
+`kubectl rollout restart deploy` for the affected apps. Sealed manifests are
+not recoverable back to plaintext: if the plaintext is lost, generate a new
+value and rotate.
+
+Sealed values are also namespace- and name-scoped by default, so copying
+`dev/` to `staging/` means changing the `namespace:` in each plaintext
+template and re-sealing, not copying the sealed manifests across.
+
 ## Setting it up on your own ArgoCD
 
 1. Install the operators above (or adapt the scaffold to your equivalents).
@@ -85,9 +143,9 @@ Two things that are easy to get wrong:
 3. Replace the Thorgate-specific values: ingress hostnames, `storageClass`,
    the cross-namespace `DJANGO_DATABASE_HOST`, image registry paths, and
    the image pull / write-back secret names.
-4. Add your SealedSecrets (registry pull creds, Django env) as plain,
-   sync-waved resources (`argocd.argoproj.io/sync-wave: "-1"`) in
-   `helm_deploy/dev/extra/` - never hooks (see above).
+4. Fill in and seal the secrets (see "Secrets" above). They land in
+   `helm_deploy/dev/extra/` as plain, sync-waved resources
+   (`argocd.argoproj.io/sync-wave: "-1"`) - never hooks (see above).
 
 ## Thorgate projects
 
