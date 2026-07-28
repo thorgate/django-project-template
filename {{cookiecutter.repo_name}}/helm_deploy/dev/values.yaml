@@ -38,7 +38,7 @@ applications:
     # TODO: adjust gunicorn args per your app's WSGI module + concurrency
     command:
       - "gunicorn"
-      - "{{ cookiecutter.django_folder_name }}.wsgi:application"
+      - "{{ cookiecutter.default_django_app }}.wsgi:application"
       - "--workers"
       - "2"
       - "--bind"
@@ -66,7 +66,7 @@ applications:
     # DisallowedHost).
     readinessProbe:
       httpGet:
-        path: /{{ cookiecutter.django_health_check_path }}
+        path: /{{ cookiecutter.django_health_check_path }}/live
         port: 8000
         httpHeaders:
           - name: Host
@@ -85,7 +85,7 @@ applications:
 
     livenessProbe:
       httpGet:
-        path: /{{ cookiecutter.django_health_check_path }}
+        path: /{{ cookiecutter.django_health_check_path }}/live
         port: 8000
         httpHeaders:
           - name: Host
