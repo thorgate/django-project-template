@@ -3,6 +3,14 @@
   "version": "1.0.0",
   "private": true,
   "prettier": "@thorgate/prettier-config",
+{#- @types/minimatch@6.0.0 is an empty stub: no index.d.ts and no `types` field.
+    tsconfig.json auto-includes every node_modules/@types folder, so tsc fails the
+    whole project with TS2688 "Cannot find type definition file for 'minimatch'".
+    5.1.2 is the last version that ships definitions. Only reachable transitively
+    (via @types/glob), hence a resolution rather than a devDependency. #}
+  "resolutions": {
+    "@types/minimatch": "5.1.2"
+  },
   "dependencies": {
     "@babel/polyfill": "^7.12.1",
     "@reduxjs/toolkit": "^1.5.0",
