@@ -85,8 +85,9 @@ Two things that are easy to get wrong:
 3. Replace the Thorgate-specific values: ingress hostnames, `storageClass`,
    the cross-namespace `DJANGO_DATABASE_HOST`, image registry paths, and
    the image pull / write-back secret names.
-4. Add your SealedSecrets (registry pull creds, Django env) as `PreSync`
-   hooks in `helm_deploy/dev/extra/`.
+4. Add your SealedSecrets (registry pull creds, Django env) as plain,
+   sync-waved resources (`argocd.argoproj.io/sync-wave: "-1"`) in
+   `helm_deploy/dev/extra/` - never hooks (see above).
 
 ## Thorgate projects
 

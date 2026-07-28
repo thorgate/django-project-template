@@ -21,7 +21,7 @@ helm_deploy/dev/
   extra/
     namespace.yaml         {{ cookiecutter.repo_name }}-dev namespace + labels
     postgres.yaml          movetokube Postgres + PostgresUser CRs (sync-wave -10/-9)
-    imageupdater.yaml      ImageUpdater CR (PreSync hook, dedicated write Secret)
+    imageupdater.yaml      ImageUpdater CR (sync-wave -1, dedicated write Secret)
     kustomization.yaml     kustomize config for the extras
 ```
 

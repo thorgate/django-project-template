@@ -13,11 +13,11 @@ metadata:
   name: {{ cookiecutter.repo_name|as_hostname }}-app-config
   namespace: {{ cookiecutter.repo_name|as_hostname }}-dev
   annotations:
-    # PreSync hook (no delete-policy) so the ConfigMap is applied before the
-    # chart's Sync-phase Deployment consumes it via environmentConfigMap.
-    # Same reason as the SealedSecrets here: unannotated resources in this
-    # multi-source overlay don't apply reliably.
-    argocd.argoproj.io/hook: PreSync
+    # sync-wave -1 so the ConfigMap applies before the chart's wave-30
+    # Deployment consumes it via environmentConfigMap. A plain sync-waved
+    # resource, not a PreSync hook - see kustomization.yaml for why hooks are
+    # avoided in this overlay (untracked + deleted before every sync).
+    argocd.argoproj.io/sync-wave: "-1"
 data:
   # ---- Django settings module + DB host (Secret has user/pw/name/port) ----
   DJANGO_DATABASE_HOST: pg17-rw.databases.svc.cluster.local
