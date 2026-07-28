@@ -259,6 +259,59 @@ applications:
     urlPath: /
     tier: frontend
 {%- endif %}
+{%- if cookiecutter.include_celery == YES %}
+
+  # Celery worker + beat (only when include_celery=yes). Both inherit the
+  # django image, env, secrets and config via valuesFromApplication, so an
+  # image-updater bump of applications.django.imageTag rolls all three
+  # together. Neither is an HTTP service: no ingress, no probes, no
+  # migration/init steps. The redis-ha subchart is the broker (via
+  # DJANGO_REDIS_URL from the ConfigMap).
+  celery-worker:
+    valuesFromApplication: django
+    command: ["celery", "--app", "{{ cookiecutter.default_django_app }}", "worker", "--autoscale", "6,2", "--loglevel", "INFO", "-E"]
+    initCommands: []
+    initContainers: []
+    migrationCommand: null
+    checkDeployCommand: null
+    readinessProbe: null
+    livenessProbe: null
+    urlPath: false
+    replicas: 1
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    tier: worker
+
+  celery-beat:
+    valuesFromApplication: django
+    # Single replica: beat must not run twice. Uses celery's default
+    # file-based scheduler (writes celerybeat-schedule in the workdir, fine
+    # as ephemeral state for one replica). No custom scheduler class; for the
+    # DB scheduler add django-celery-beat and
+    # `--scheduler django_celery_beat.schedulers:DatabaseScheduler`.
+    command: ["celery", "--app", "{{ cookiecutter.default_django_app }}", "beat", "--loglevel", "INFO", "--logfile", "-", "--pidfile="]
+    initCommands: []
+    initContainers: []
+    migrationCommand: null
+    checkDeployCommand: null
+    readinessProbe: null
+    livenessProbe: null
+    urlPath: false
+    replicas: 1
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+    tier: worker
+{%- endif %}
 
 # Ingress
 ingress:
