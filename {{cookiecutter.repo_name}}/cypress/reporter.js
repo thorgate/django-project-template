@@ -1,4 +1,4 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+/* eslint-disable @typescript-eslint/no-require-imports -- CommonJS mocha reporter loaded by cypress */
 const mocha = require('mocha');
 const fs = require('fs');
 

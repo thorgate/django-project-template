@@ -19,7 +19,7 @@
 //     // });
 // };
 
-module.exports = (on, config) => {
+module.exports = (on) => {
     // https://github.com/cypress-io/cypress/issues/350
     on('before:browser:launch', (browser = {}, launchOptions) => {
         if (browser.name === 'chrome') {
