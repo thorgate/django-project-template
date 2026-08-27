@@ -59,6 +59,10 @@ test-django:
       - $CI_COMMIT_MESSAGE =~ /tests skip/
       - $CI_COMMIT_MESSAGE =~ /test skip/
       - $CI_COMMIT_MESSAGE =~ /\[no tests?\]/
+      # Skip on argocd-image-updater auto-commits to break the
+      # publish -> image-updater -> commit -> build -> publish loop.
+      # Harmless if the project isn't k8s-deployed.
+      - $CI_COMMIT_AUTHOR =~ /argocd-image-updater/
   script:
     - make settings
     - docker compose build django
@@ -67,6 +71,32 @@ test-django:
     - make coverage-py
     - make ruff-lint-ci
     - make patch-coverage-py-paths
+
+# - {%- if cookiecutter.use_kubernetes == YES %}
+validate-k8s-manifests:
+  stage: test
+# - {% if cookiecutter.thorgate == YES %}
+  tags:
+    - thorgate
+# - {% endif %}
+  needs: []
+  except:
+    refs:
+      - template  # Don't run CI on template branch, should not be required
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /tests skip/
+      - $CI_COMMIT_MESSAGE =~ /test skip/
+      - $CI_COMMIT_MESSAGE =~ /\[no tests?\]/
+      # Image-updater commits only bump images.yaml; the manifests still render.
+      - $CI_COMMIT_AUTHOR =~ /argocd-image-updater/
+  script:
+    # No cluster in CI, so these are render-only checks: helm template catches a
+    # values.yaml / images.yaml the chart can't consume (and confirms the pinned
+    # chartVersion resolves), kustomize build catches a broken extra/ overlay.
+    # helm + kustomize come from the ci image.
+    - helm template {{ cookiecutter.repo_name|as_hostname }} "$(yq '.chart' helm_deploy/dev/values.yaml)" --repo https://thorgate-public.gitlab.io/tg-helm-charts --version "$(yq '.chartVersion' helm_deploy/dev/values.yaml)" -f helm_deploy/dev/values.yaml -f helm_deploy/dev/images.yaml
+    - kustomize build helm_deploy/dev/extra
+# - {%- endif %}
 
 test-node:
   stage: test
@@ -101,6 +131,7 @@ test-node:
       - $CI_COMMIT_MESSAGE =~ /tests skip/
       - $CI_COMMIT_MESSAGE =~ /test skip/
       - $CI_COMMIT_MESSAGE =~ /\[no tests?\]/
+      - $CI_COMMIT_AUTHOR =~ /argocd-image-updater/
   script:
     - make settings
     - docker compose build node
@@ -129,6 +160,7 @@ test-cypress:
       - $CI_COMMIT_MESSAGE =~ /tests skip/
       - $CI_COMMIT_MESSAGE =~ /test skip/
       - $CI_COMMIT_MESSAGE =~ /\[no tests?\]/
+      - $CI_COMMIT_AUTHOR =~ /argocd-image-updater/
   script:
     - make settings
     - make cypress CYPRESS_DEFAULT_COMMAND_TIMEOUT=${CYPRESS_DEFAULT_COMMAND_TIMEOUT}
@@ -150,9 +182,18 @@ build_compose_file:
 # - {%- if cookiecutter.build_in_ci == YES %}
 .publish_image:
   stage: build
+# - {% if cookiecutter.use_kubernetes != YES %}
+  # Deploys here are manual, so it's safe to publish in parallel with the
+  # test stage for faster CI (that's what needs: [] does).
   needs: []
+# - {% endif %}
   except:
-    - template # Don't run CI on template branch, should not be required
+    refs:
+      - template  # Don't run CI on template branch, should not be required
+    variables:
+      # Break the publish -> image-updater -> commit -> build loop.
+      # Harmless if the project isn't k8s-deployed.
+      - $CI_COMMIT_AUTHOR =~ /argocd-image-updater/
   script:
     - ./scripts/images/publish-prod-image.sh ${PUBLISH_NAME} ${PUBLISH_DOCKER_FILE}
 

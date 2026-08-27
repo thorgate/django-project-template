@@ -1,0 +1,49 @@
+# PostgreSQL database managed by movetokube postgres-operator. The
+# operator creates the database + group role + per-user role in the
+# shared pg17 cluster (in the `databases` namespace) and writes the
+# user credentials into a Secret named
+# `dbcred-{{ cookiecutter.repo_name|as_hostname }}-dev-user` in this namespace.
+#
+# Sync waves order this BEFORE the consumer chart (which is at wave 30
+# in values.yaml).
+#
+# IMPORTANT: do NOT add helm.sh/hook annotations here. ArgoCD translates
+# `pre-install,pre-upgrade` into a PreSync hook that fires on EVERY sync
+# (not just install), so each argocd-image-updater bump would delete +
+# recreate the CR and movetokube would rotate the role password,
+# leaving the running Deployment with stale env credentials until a
+# manual rollout-restart. See tg-platform-gitops docs/postgres-local-clusters.md
+# for the full story.
+---
+apiVersion: db.movetokube.com/v1alpha1
+kind: Postgres
+metadata:
+  name: {{ cookiecutter.repo_name|as_hostname }}-dev
+  namespace: {{ cookiecutter.repo_name|as_hostname }}-dev
+  annotations:
+    postgres.db.movetokube.com/instance: pg17
+    argocd.argoproj.io/sync-wave: "-10"
+spec:
+  database: {{ cookiecutter.repo_name }}
+  dropOnDelete: false   # Keep the actual database if this CR is deleted
+  # TODO: add the extensions your app needs (e.g. citext, pgcrypto,
+  # pg_trgm, hstore, btree_gin, postgis, timescaledb)
+  extensions:
+    - citext
+    - pgcrypto
+---
+apiVersion: db.movetokube.com/v1alpha1
+kind: PostgresUser
+metadata:
+  name: {{ cookiecutter.repo_name|as_hostname }}-dev-user
+  namespace: {{ cookiecutter.repo_name|as_hostname }}-dev
+  annotations:
+    postgres.db.movetokube.com/instance: pg17
+    # Sync wave -9 so the user lands just after the database (-10) and
+    # still before the consumer Deployment (wave 30).
+    argocd.argoproj.io/sync-wave: "-9"
+spec:
+  role: {{ cookiecutter.repo_name }}
+  database: {{ cookiecutter.repo_name|as_hostname }}-dev   # References the Postgres CR by name
+  secretName: dbcred   # Becomes dbcred-{{ cookiecutter.repo_name|as_hostname }}-dev-user
+  privileges: OWNER

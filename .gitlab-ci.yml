@@ -39,10 +39,11 @@ stages:
   script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
     - poetry install
-    - export ENV_FOLDER=`poetry env list | cut -f 1 -d ' '`
-    - export VIRTUAL_ENV="${CI_PROJECT_DIR}/.cache/virtualenvs/${ENV_FOLDER}"
-    - export PATH="${VIRTUAL_ENV}/bin:${PATH}"
-    - pytest -E ${TEST_TAG} --maxfail=1 -vvv
+    # Run via `poetry run` so poetry resolves its own venv. The previous
+    # manual ENV_FOLDER/VIRTUAL_ENV/PATH shim broke when the base-ci image's
+    # default Python changed - the derived venv path stopped matching, giving
+    # `pytest: command not found` (exit 127).
+    - poetry run pytest -E ${TEST_TAG} --maxfail=1 -vvv
   cache:
     key: ci-python-cache
     paths:
@@ -53,6 +54,11 @@ test_main:
   extends: .test_tag
   variables:
     TEST_TAG: main
+
+test_KUBERNETES:
+  extends: .test_tag
+  variables:
+    TEST_TAG: KUBERNETES
 
 test_CELERY:
   extends: .test_tag

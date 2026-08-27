@@ -1,4 +1,4 @@
-import { testAccount, URLS } from '../constants';
+import { URLS } from '../constants';
 
 describe('Home page', () => {
     it('Renders a home page', () => {

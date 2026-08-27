@@ -1,0 +1,354 @@
+# ArgoCD ApplicationSet picks this up from:
+#   tg-platform-gitops/argocd/applications/clients-helm-appset-dev.yaml
+# The appset matches any repo in the `thorgate` group with topic
+# `argo-managed` that has helm_deploy/dev/values.yaml committed.
+#
+# Two-app SPA-NEXT/SPA shape when frontend_style is `spa` or `spa-next`:
+#   * django (API backend) at office.<base-host>
+#   * node   (frontend)     at <base-host> - user-facing
+# WEBAPP mode: django alone, serving the prebuilt webapp from its
+# static dir at /.
+
+chart: phoenix
+# Pinned to an exact build, not the floating `0.3.0-dev` tag, because this
+# build includes the Phoenix chart's init-container / Job image-tag fix.
+# Without it, initCommands (db-migrations, check-deploy below) render with
+# no tag -> `:latest`, which the registry never pushes, so the pod is stuck
+# in Init:ImagePullBackOff. Bump deliberately as the chart stabilises.
+chartVersion: "0.3.0-dev+72eb109e"
+
+# applicationName flows into chart-rendered resource names (Service,
+# Deployment, Middleware, Certificate, etc.), so it must be DNS-1123
+# compliant: lowercase alphanumeric + hyphens, no underscores.
+applicationName: {{ cookiecutter.repo_name|as_hostname }}
+
+imagePullPolicy: Always
+# Registry pull secret, expected in this app's namespace. Create it from
+# secrets/gitlab-registry.yaml (a GitLab deploy token scoped to
+# `read_registry`) and seal it with secrets/seal.sh - without it every pod
+# fails with ImagePullBackOff. See secrets/README.md.
+imageSecrets:
+  - gitlab-registry
+
+applications:
+  django:
+    # Image configuration lives in images.yaml (auto-updated by
+    # argocd-image-updater via extra/imageupdater.yaml).
+
+    port: 8000
+    serviceType: ClusterIP
+    replicas: 1
+
+    # TODO: adjust gunicorn args per your app's WSGI module + concurrency
+    command:
+      - "gunicorn"
+      - "{{ cookiecutter.default_django_app }}.wsgi:application"
+      - "--workers"
+      - "2"
+      - "--bind"
+      - "0.0.0.0:8000"
+      - "--access-logfile"
+      - "-"
+
+    # TODO: add your project's pre-start commands (migrations, collectstatic, etc.)
+    initCommands:
+      - name: db-migrations
+        command: ["python", "manage.py", "migrate", "--noinput"]
+      - name: check-deploy
+        command: ["python", "manage.py", "check", "--deploy"]
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+    # Probe Host header set explicitly because Django's ALLOWED_HOSTS
+    # rejects the kubelet's pod-IP-based Host header (returns 400
+    # DisallowedHost).
+    readinessProbe:
+      httpGet:
+        path: /{{ cookiecutter.django_health_check_path }}/live
+        port: 8000
+        httpHeaders:
+          - name: Host
+{%- if cookiecutter.thorgate == YES %}
+            {%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
+            value: {{ cookiecutter.spa_django_host_prefix }}.{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+            {%- else %}
+            value: {{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+            {%- endif %}
+{%- else %}
+            value: {{ cookiecutter.live_domain_name }}   # TODO: confirm this matches your dev ingress
+{%- endif %}
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 5
+
+    livenessProbe:
+      httpGet:
+        path: /{{ cookiecutter.django_health_check_path }}/live
+        port: 8000
+        httpHeaders:
+          - name: Host
+{%- if cookiecutter.thorgate == YES %}
+            {%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
+            value: {{ cookiecutter.spa_django_host_prefix }}.{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+            {%- else %}
+            value: {{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+            {%- endif %}
+{%- else %}
+            value: {{ cookiecutter.live_domain_name }}
+{%- endif %}
+      initialDelaySeconds: 30
+      periodSeconds: 20
+      timeoutSeconds: 5
+
+    # Database credentials provided by movetokube postgres-operator
+    # (the Secret is generated from extra/postgres.yaml's PostgresUser CR).
+    environmentFromSecret:
+      DJANGO_DATABASE_NAME:
+        name: dbcred-{{ cookiecutter.repo_name|as_hostname }}-dev-user
+        key: DATABASE_NAME
+      DJANGO_DATABASE_USER:
+        name: dbcred-{{ cookiecutter.repo_name|as_hostname }}-dev-user
+        key: LOGIN
+      DJANGO_DATABASE_PASSWORD:
+        name: dbcred-{{ cookiecutter.repo_name|as_hostname }}-dev-user
+        key: PASSWORD
+      DJANGO_DATABASE_PORT:
+        name: dbcred-{{ cookiecutter.repo_name|as_hostname }}-dev-user
+        key: PORT
+
+    # Non-secret config lives in extra/configmap.yaml. Mirrors wisby's
+    # environmentConfigMap pattern - decouples app config from chart
+    # values, easier to edit independently.
+    environmentConfigMap: {{ cookiecutter.repo_name|as_hostname }}-app-config
+
+    # TODO: SECRETS - until you seal them, DJANGO_SECRET_KEY falls back to
+    # Django's "dummy key", which is not safe outside an experimental test
+    # repo. The plaintext template with the keys to fill in (and a
+    # pre-generated DJANGO_SECRET_KEY) is at secrets/django-env.yaml;
+    # `secrets/seal.sh` turns it into extra/sealed-secret-django-env.yaml.
+    # Then uncomment:
+    #   environmentSecret: {{ cookiecutter.repo_name|as_hostname }}-django-env
+    # See secrets/README.md for the full walkthrough.
+
+{%- if cookiecutter.thorgate == YES %}
+    {%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
+    urlHost: {{ cookiecutter.spa_django_host_prefix }}.{{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+    {%- else %}
+    urlHost: {{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+    {%- endif %}
+{%- else %}
+    urlHost: {{ cookiecutter.live_domain_name }}
+{%- endif %}
+    urlPath: /
+    tier: backend
+
+{%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
+
+  # node: frontend service (Razzle for SPA mode, Next.js for SPA-NEXT).
+  # Image is registry.../<repo>/node (separate build from django).
+  # Listens on port 80 per docker-compose.production.yml's
+  # `pnpm start -p 80`.
+  node:
+    port: 80
+    serviceType: ClusterIP
+    replicas: 1
+
+    command:
+      - "pnpm"
+      - "start"
+      - "-p"
+      - "80"
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+    {%- if cookiecutter.frontend_style == SPA_NEXT %}
+    # Next.js: lightweight bundled /api/health route (see
+    # app/pages/api/health.ts) returns {ok: true} as soon as the
+    # server is ready - avoids the SSR overhead of probing `/`.
+    readinessProbe:
+      httpGet:
+        path: /api/health
+        port: 80
+        httpHeaders:
+          - name: Host
+{%- if cookiecutter.thorgate == YES %}
+            value: {{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+{%- else %}
+            value: {{ cookiecutter.live_domain_name }}
+{%- endif %}
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 5
+
+    livenessProbe:
+      httpGet:
+        path: /api/health
+        port: 80
+        httpHeaders:
+          - name: Host
+{%- if cookiecutter.thorgate == YES %}
+            value: {{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+{%- else %}
+            value: {{ cookiecutter.live_domain_name }}
+{%- endif %}
+      initialDelaySeconds: 30
+      periodSeconds: 20
+      timeoutSeconds: 5
+    {%- else %}
+    # Razzle (SPA mode): no built-in JSON health endpoint, probing `/`
+    # works once SSR is up. Consider adding a static /_health route
+    # for cheaper probes (see app/server/static/_health).
+    readinessProbe:
+      httpGet:
+        path: /
+        port: 80
+        httpHeaders:
+          - name: Host
+{%- if cookiecutter.thorgate == YES %}
+            value: {{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+{%- else %}
+            value: {{ cookiecutter.live_domain_name }}
+{%- endif %}
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 5
+
+    livenessProbe:
+      httpGet:
+        path: /
+        port: 80
+        httpHeaders:
+          - name: Host
+{%- if cookiecutter.thorgate == YES %}
+            value: {{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+{%- else %}
+            value: {{ cookiecutter.live_domain_name }}
+{%- endif %}
+      initialDelaySeconds: 30
+      periodSeconds: 20
+      timeoutSeconds: 5
+    {%- endif %}
+
+    # Shares the same ConfigMap as django. node ignores keys it doesn't
+    # need (DJANGO_DATABASE_HOST etc.) - harmless extras in env.
+    environmentConfigMap: {{ cookiecutter.repo_name|as_hostname }}-app-config
+
+    # TODO: SECRETS - fill in secrets/node-env.yaml (NEXTAUTH_SECRET is
+    # pre-generated; APP_PUBLIC_JWT_PUBLIC_KEY must match django's), run
+    # secrets/seal.sh, then uncomment:
+    #   environmentSecret: {{ cookiecutter.repo_name|as_hostname }}-node-env
+
+{%- if cookiecutter.thorgate == YES %}
+    urlHost: {{ cookiecutter.repo_name|as_hostname }}.client-cluster-1.thorgatedigital.tools
+{%- else %}
+    urlHost: {{ cookiecutter.live_domain_name }}
+{%- endif %}
+    urlPath: /
+    tier: frontend
+{%- endif %}
+{%- if cookiecutter.include_celery == YES %}
+
+  # Celery worker + beat (only when include_celery=yes). Both inherit the
+  # django image, env, secrets and config via valuesFromApplication, so an
+  # image-updater bump of applications.django.imageTag rolls all three
+  # together. Neither is an HTTP service: no ingress, no probes, no
+  # migration/init steps. The redis-ha subchart is the broker (via
+  # DJANGO_REDIS_URL from the ConfigMap).
+  celery-worker:
+    valuesFromApplication: django
+    command: ["celery", "--app", "{{ cookiecutter.default_django_app }}", "worker", "--autoscale", "6,2", "--loglevel", "INFO", "-E"]
+    initCommands: []
+    initContainers: []
+    migrationCommand: null
+    checkDeployCommand: null
+    readinessProbe: null
+    livenessProbe: null
+    urlPath: false
+    replicas: 1
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    tier: worker
+
+  celery-beat:
+    valuesFromApplication: django
+    # Single replica: beat must not run twice. Uses celery's default
+    # file-based scheduler (writes celerybeat-schedule in the workdir, fine
+    # as ephemeral state for one replica). No custom scheduler class; for the
+    # DB scheduler add django-celery-beat and
+    # `--scheduler django_celery_beat.schedulers:DatabaseScheduler`.
+    command: ["celery", "--app", "{{ cookiecutter.default_django_app }}", "beat", "--loglevel", "INFO", "--logfile", "-", "--pidfile="]
+    initCommands: []
+    initContainers: []
+    migrationCommand: null
+    checkDeployCommand: null
+    readinessProbe: null
+    livenessProbe: null
+    urlPath: false
+    replicas: 1
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+    tier: worker
+{%- endif %}
+
+# Ingress
+ingress:
+  enabled: true
+  type: traefik
+  tls:
+    enabled: true
+    certIssuer: letsencrypt-prod
+    certIssuerKind: ClusterIssuer
+  defaultResponseHeaders:
+    X-Frame-Options: {{ cookiecutter.x_frame_options }}
+    X-Content-Type-Options: nosniff
+{%- if cookiecutter.thorgate == YES %}
+    X-Robots-Tag: "noindex nofollow"   # TODO: drop this once the app is publicly indexable
+{%- endif %}
+
+# This project's settings/base.py defaults to Redis for CACHES (and the
+# celery broker when celery is enabled), so the chart's redis-ha sub-chart
+# is enabled by default. The Phoenix chart wires DJANGO_REDIS_URL to the
+# in-namespace service automatically.
+#
+# Set to false ONLY if your app overrides CACHES in settings/cloud.py
+# to LocMemCache (kostra's pattern - internal tool with low load).
+redis-ha:
+  enabled: true
+
+# Sync waves: extras (configmap, postgres, secrets) apply at default wave
+# (0/10), this chart's resources at wave 30 so migrations run after the
+# Postgres CR has reconciled. The movetokube CR health customisation in
+# argocd-cm gates the Postgres CR's "Healthy" status on
+# .status.succeeded=true, so wave 30 waits for the actual DB + Secret.
+hookAnnotations:
+  argocd.argoproj.io/sync-wave: "30"
+
+commonAnnotations:
+  argocd.argoproj.io/sync-wave: "30"
+
+# Image-updater config is in extra/imageupdater.yaml (CRD-based, not
+# inline). Leave this disabled.
+imageUpdater:
+  enabled: false

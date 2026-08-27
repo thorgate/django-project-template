@@ -58,11 +58,15 @@ export const makeStore = ({
                     process.env.APP_SSR_REDUX_LOGGER === "true")
             ) {
                 middlewares.push(
+                    // Cast: @types/redux-logger types its Middleware against
+                    // redux 5 (Dispatch<UnknownAction>), while @reduxjs/toolkit
+                    // 1.x here is still on redux 4 (Dispatch<AnyAction>). The
+                    // two are structurally incompatible at the type level only.
                     createLogger({
                         collapsed: true,
                         duration: true,
                         logger: console,
-                    })
+                    }) as any
                 );
             }
 

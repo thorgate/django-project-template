@@ -1,0 +1,47 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Resources applied alongside the Helm chart by the ApplicationSet's
+# first source (kustomize directory at helm_deploy/dev/extra/). The
+# sync-wave: "10" annotation is applied by the ApplicationSet to all
+# resources in this directory, so the individual files only need to
+# override that with a SMALLER number (more negative) for things that
+# must precede the chart's wave-30 resources.
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - postgres.yaml
+  - imageupdater.yaml
+  # TODO: uncomment once you have sealed the plaintext templates in
+  # ../secrets/ (fill in the placeholders, then run ../secrets/seal.sh -
+  # it writes exactly these files). See ../secrets/README.md.
+  # - sealed-secret-gitlab-registry.yaml
+  # - sealed-secret-django-env.yaml
+{%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
+  # - sealed-secret-node-env.yaml
+{%- endif %}
+  #
+  # CRITICAL: SealedSecrets in THIS overlay must be plain, sync-waved
+  # resources - NEVER ArgoCD or Helm hooks. Give each one:
+  #   annotations:
+  #     argocd.argoproj.io/sync-wave: "-1"
+  # (any wave smaller than the chart's wave-30 works; -1 keeps them at the
+  # front of the overlay). ../secrets/seal.sh injects that annotation into
+  # every manifest it writes, so this holds by default. That ordering unseals
+  # the derived Secret before the chart's Deployment mounts it - the same
+  # mechanism postgres.yaml uses for the database CRs.
+  #
+  # Do NOT use argocd.argoproj.io/hook: PreSync (or helm.sh/hook). Hook
+  # resources are NOT tracked as part of the Application's live state, and the
+  # default hook-delete-policy (BeforeHookCreation) deletes them before every
+  # sync and recreates them. An interrupted sync therefore leaves the
+  # SealedSecret - and its derived Secret (e.g. the registry pull secret) -
+  # deleted and never recreated, and pods fail with "Unable to retrieve image
+  # pull secrets" / ImagePullBackOff on their next restart. A sync-waved
+  # resource stays tracked, pruned-protected, and self-healed.
+  #
+  # (For a hard ordering guarantee, gate the SealedSecret's health in
+  # argocd-cm the same way postgres.yaml's CRs are gated, so wave 30 waits
+  # for the Secret to exist. Without that gate the worst case is a transient
+  # CreateContainerConfigError that self-heals on the next reconcile - still
+  # far better than a hook that can vanish permanently.)

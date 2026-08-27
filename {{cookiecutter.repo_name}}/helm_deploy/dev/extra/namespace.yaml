@@ -1,0 +1,26 @@
+# Own the `{{ cookiecutter.repo_name|as_hostname }}-dev` namespace
+# explicitly so we can put labels on it (used by tg-platform-gitops cost
+# attribution). The `as_hostname` filter converts repo_name underscores
+# to hyphens because k8s namespace names must be DNS-1123 compliant.
+#
+# The platform's ApplicationSet uses CreateNamespace=true to spin up an
+# unmanaged, label-less Namespace on first sync. Declaring it here makes
+# ArgoCD manage it, which lets us set the labels.
+#
+# No helm.sh/hook annotations: ArgoCD translates `pre-install` into a
+# PreSync hook and then gets stuck on "waiting for healthy" because the
+# resource is a cluster-scoped Namespace, not a Job. Apply it as a
+# regular Sync-phase resource.
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ cookiecutter.repo_name|as_hostname }}-dev
+  labels:
+{%- if cookiecutter.thorgate == YES %}
+    customer: internal   # TODO: change to the actual customer slug for billing attribution
+{%- else %}
+    customer: TODO
+{%- endif %}
+    team: platform
+    environment: dev

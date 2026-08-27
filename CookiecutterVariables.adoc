@@ -409,3 +409,29 @@ Do you want to use automatic deployments?
 include::cookiecutter.json[tags=use_auto_deploy]
 }
 ----
+
+[id=use_kubernetes]
+=== use_kubernetes
+
+Do you want to generate Kubernetes / ArgoCD deployment scaffolding (helm_deploy/ + image-updater integration)?
+
+NOTE: Experimental. When set to `yes`, the generated project includes a
+`helm_deploy/dev/` directory with `values.yaml`, `images.yaml`,
+`extra/postgres.yaml` (movetokube CRs), and `extra/imageupdater.yaml`
+configured for the Thorgate platform conventions. It also generates
+gitignored plaintext Secret templates in `helm_deploy/dev/secrets/`
+(with `DJANGO_SECRET_KEY` / `NEXTAUTH_SECRET` pre-generated, like the
+ansible vault) plus a `seal.sh` kubeseal wrapper. Also adjusts CI
+behavior so publish jobs depend on tests (preventing broken images
+from being auto-bumped by argocd-image-updater).
+
+Existing ansible-only deployment flows (controlled by `use_auto_deploy`)
+are unaffected; both can coexist if desired.
+
+.definition
+[source,json]
+----
+{
+include::cookiecutter.json[tags=use_kubernetes]
+}
+----

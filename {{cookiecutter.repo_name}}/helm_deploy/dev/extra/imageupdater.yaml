@@ -1,0 +1,88 @@
+# argocd-image-updater config: watch the GitLab registry for new
+# default-branch commit-SHA tags (`{{ default_git_branch }}-<sha>`, the
+# slug-prefixed tag publish-prod-image.sh pushes for every commit) on the
+# django image, and write them back into images.yaml in this repo. ArgoCD
+# then picks up the change and rolls the deployment.
+apiVersion: argocd-image-updater.argoproj.io/v1alpha1
+kind: ImageUpdater
+metadata:
+  name: {{ cookiecutter.repo_name|as_hostname }}
+  namespace: argocd
+  annotations:
+    # sync-wave -1 so this CR applies before the consumer Application's
+    # default-wave (0) resources, so the cross-namespace ImageUpdater is in
+    # place when image-updater reconciles. Do NOT use argocd.argoproj.io/hook:
+    # PreSync here: hook resources are untracked by ArgoCD and the default
+    # hook-delete-policy (BeforeHookCreation) deletes them before each sync,
+    # so an interrupted sync can leave the CR gone and image auto-updates
+    # silently stopped. A sync-waved resource keeps the ordering while staying
+    # tracked, pruned-protected, and self-healed.
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  commonUpdateSettings:
+    pullSecret: "pullsecret:argocd/gitlab-registry-credentials"
+    updateStrategy: newest-build
+    # Match the slug-prefixed tag `{{ default_git_branch }}-<sha>` that
+    # publish-prod-image.sh pushes for each commit on the `{{ default_git_branch }}`
+    # branch. This tag is immutable (unique per commit), unlike the mutable
+    # `{{ default_git_branch }}` / `latest` tags, so the value written back
+    # to git is always a stable reference. If you rename the branch, update
+    # this regex and writeBackConfig.branch below together.
+    #
+    # For a multi-env setup, point each env's overlay at the env-prefixed
+    # tag publish-prod-image.sh also pushes:
+    #   dev env:  ^dev-[0-9a-f]{40}$
+    #   prod env: ^prod-[0-9a-f]{40}$
+    allowTags: "regexp:^{{ default_git_branch }}-[0-9a-f]{40}$"
+
+  applicationRefs:
+    - namePattern: {{ cookiecutter.repo_name|as_hostname }}-helm-dev
+      images:
+        - alias: django
+{%- if cookiecutter.thorgate == YES %}
+          imageName: registry.gitlab.com/thorgate/{{ cookiecutter.repo_name }}/django
+{%- else %}
+          # TODO: match your project's registry path
+          imageName: registry.gitlab.com/your-group/{{ cookiecutter.repo_name }}/django
+{%- endif %}
+          manifestTargets:
+            helm:
+              name: applications.django.image
+              tag: applications.django.imageTag
+{%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
+        - alias: node
+{%- if cookiecutter.thorgate == YES %}
+          imageName: registry.gitlab.com/thorgate/{{ cookiecutter.repo_name }}/node
+{%- else %}
+          imageName: registry.gitlab.com/your-group/{{ cookiecutter.repo_name }}/node
+{%- endif %}
+          manifestTargets:
+            helm:
+              name: applications.node.image
+              tag: applications.node.imageTag
+{%- endif %}
+      writeBackConfig:
+        # Use the dedicated argocd-image-updater write Secret instead of
+        # the shared SCM repocreds. The shared repocreds token should
+        # eventually drop write_repository scope (see tg-platform-gitops
+        # README "target state" section); for that to be possible, every
+        # consumer (including this one) must use the dedicated Secret.
+        method: "git:secret:argocd/gitlab-write-credentials"
+        gitConfig:
+          # Pin the repository explicitly so image-updater isn't confused
+          # by the consumer Application's $values multi-source ref.
+          # Without this, writes can target the wrong repo entirely.
+{%- if cookiecutter.thorgate == YES %}
+          repository: https://gitlab.com/thorgate/{{ cookiecutter.repo_name }}.git
+{%- else %}
+          # TODO: set your project's https git URL
+          repository: https://gitlab.com/your-group/{{ cookiecutter.repo_name }}.git
+{%- endif %}
+          # Relative path: this CR is in helm_deploy/dev/extra/,
+          # images.yaml is one level up in helm_deploy/dev/. Using the
+          # absolute path here resulted in a doubled write-back path in
+          # earlier image-updater versions.
+          writeBackTarget: "helmvalues:../images.yaml"
+          # Branch image-updater writes the bumped image tag back to.
+          # Must match the branch your ArgoCD Application tracks.
+          branch: {{ default_git_branch }}

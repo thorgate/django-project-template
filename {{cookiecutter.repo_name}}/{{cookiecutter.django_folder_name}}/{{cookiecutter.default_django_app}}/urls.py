@@ -11,6 +11,8 @@ from django.views.generic.base import RedirectView
 
 from tg_utils.health_check.views import HealthCheckViewMinimal, HealthCheckViewProtected
 
+from {{ cookiecutter.default_django_app }}.views import liveness
+
 
 admin.autodiscover()
 
@@ -26,6 +28,10 @@ urlpatterns = [
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
     *static(settings.STATIC_URL, document_root=settings.STATIC_ROOT),
     path(f"{settings.DJANGO_HEALTH_CHECK_PATH}", HealthCheckViewMinimal.as_view(), name="health-check"),
+    # Dependency-free process-liveness probe for k8s (readiness + liveness).
+    # The full suite above (/_health) 500s on any critical failure and is for
+    # external monitoring, not k8s. See helm_deploy/dev/values.yaml.
+    path(f"{settings.DJANGO_HEALTH_CHECK_PATH}/live", liveness, name="health-check-live"),
     path(
         f"{settings.DJANGO_HEALTH_CHECK_PATH}/details",
         HealthCheckViewProtected.as_view(),

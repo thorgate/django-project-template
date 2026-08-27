@@ -1,4 +1,9 @@
-from django.http import HttpResponseNotFound, HttpResponseServerError, JsonResponse
+from django.http import (
+    HttpResponse,
+    HttpResponseNotFound,
+    HttpResponseServerError,
+    JsonResponse,
+)
 from django.shortcuts import render
 from django.template import TemplateDoesNotExist
 from django.utils.html import format_html
@@ -6,6 +11,18 @@ from django.utils.translation import gettext as _
 from django.views.decorators.csrf import requires_csrf_token
 
 from sentry_sdk import last_event_id
+
+
+def liveness(request):
+    """Process-liveness probe for Kubernetes (liveness + readiness).
+
+    Deliberately dependency-free: returns 200 as long as the app process is
+    serving. The full health-check suite lives at /_health (DB/cache plus any
+    app checks) and 500s on failure; it is meant for an external monitor, not
+    k8s. Keeping the probes off /_health means a DB blip or a stale background
+    job can't restart or de-route an otherwise healthy pod.
+    """
+    return HttpResponse("ok", content_type="text/plain")
 
 
 def page_not_found(request, exception, template_name="404.html"):

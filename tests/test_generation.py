@@ -309,6 +309,74 @@ def test_auto_deploy_generate(cookies, default_project):
     validate_project_works(result, default_project)
 
 
+CHART_REPO = "https://thorgate-public.gitlab.io/tg-helm-charts"
+
+
+def validate_helm(result):
+    """Verify the generated helm_deploy scaffold renders. No cluster in CI, so
+    this is two render smoke tests (helm + kustomize CLIs are in the base-ci
+    image):
+
+    1. `helm template` against the real phoenix chart - catches a values.yaml /
+       images.yaml the chart can't consume and confirms the pinned chartVersion
+       resolves from the repo.
+    2. `kustomize build` of the extra/ overlay (namespace, config, movetokube
+       CRs, image-updater CR) - catches a broken kustomization or manifest.
+    """
+    helm_dir = str(result.project.join('helm_deploy/dev'))
+    with open(os.path.join(helm_dir, 'values.yaml')) as f:
+        values = yaml.safe_load(f)
+
+    # Release name mirrors the ApplicationSet: repo_name, underscores -> hyphens.
+    release = result.project.basename.replace('_', '-')
+
+    subprocess.run(
+        [
+            'helm', 'template', release, values['chart'],
+            '--repo', CHART_REPO, '--version', values['chartVersion'],
+            '-f', 'values.yaml', '-f', 'images.yaml',
+        ],
+        cwd=helm_dir,
+        check=True,
+    )
+
+    subprocess.run(['kustomize', 'build', 'extra'], cwd=helm_dir, check=True)
+
+
+@pytest.mark.env("KUBERNETES")
+@pytest.mark.parametrize('frontend_style', [WEBAPP, SPA, SPA_NEXT])
+def test_kubernetes_generate(cookies, default_project, frontend_style):
+    default_project.update({
+        'frontend_style': frontend_style,
+        'use_kubernetes': YES,
+    })
+    result = generate_project(cookies, default_project)
+
+    assert result.project.join('helm_deploy/dev/values.yaml').exists()
+    assert result.project.join('helm_deploy/dev/extra/kustomization.yaml').exists()
+
+    secrets = result.project.join('helm_deploy/dev/secrets')
+    assert secrets.join('gitlab-registry.yaml').exists()
+    assert secrets.join('django-env.yaml').exists()
+    assert secrets.join('node-env.yaml').exists() == (frontend_style != WEBAPP)
+    assert os.access(str(secrets.join('seal.sh')), os.X_OK)
+
+    # The plaintext templates hold real secrets once filled in, so they must
+    # never be committable - only the sealed output in extra/ is.
+    ignored = subprocess.run(
+        ['git', 'check-ignore', 'helm_deploy/dev/secrets/django-env.yaml'],
+        cwd=str(result.project),
+        stdout=subprocess.DEVNULL,
+    )
+    assert ignored.returncode == 0, 'helm_deploy/dev/secrets/*.yaml is not gitignored'
+
+    # Pre-generated keys, as with the ansible vault: no placeholder left behind.
+    django_env = yaml.safe_load(secrets.join('django-env.yaml').read())
+    assert len(django_env['stringData']['DJANGO_SECRET_KEY']) == 64
+
+    validate_helm(result)
+
+
 def test_storybook_not_generate(cookies, default_project):
     default_project.update({
         'webapp_include_storybook': NO,

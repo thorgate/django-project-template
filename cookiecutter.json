@@ -68,7 +68,7 @@
     "_ end::node_version[] ": "",
 
     "_ tag::postgres_version[] ":"",
-    "postgres_version": ["16", "15", "14", "12"],
+    "postgres_version": ["17", "16", "15", "14", "12"],
     "_ end::postgres_version[] ": "",
 
     "_ tag::shared_postgres[] ":"",
@@ -125,5 +125,9 @@
 
     "_ tag::use_auto_deploy[] ":"",
     "use_auto_deploy": ["no", "yes"],
-    "_ end::use_auto_deploy[] ": ""
+    "_ end::use_auto_deploy[] ": "",
+
+    "_ tag::use_kubernetes[] ":"",
+    "use_kubernetes": ["no", "yes"],
+    "_ end::use_kubernetes[] ": ""
 }
