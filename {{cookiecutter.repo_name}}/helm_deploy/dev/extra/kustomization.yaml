@@ -11,7 +11,6 @@ resources:
   - namespace.yaml
   - configmap.yaml
   - postgres.yaml
-  - imageupdater.yaml
   # TODO: uncomment once you have sealed the plaintext templates in
   # ../secrets/ (fill in the placeholders, then run ../secrets/seal.sh -
   # it writes exactly these files). See ../secrets/README.md.

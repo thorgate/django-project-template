@@ -111,8 +111,11 @@ alongside the ansible flow rather than replacing it.
   Helm chart. `images.yaml` is kept separate so argocd-image-updater can bump
   the image tag without touching the rest of the config.
 - `helm_deploy/dev/extra/`: a kustomize overlay applied alongside the chart.
-  It holds the namespace, a ConfigMap, the movetokube `Postgres` /
-  `PostgresUser` CRs, and the argocd-image-updater `ImageUpdater` CR.
+  It holds the namespace, a ConfigMap and the movetokube `Postgres` /
+  `PostgresUser` CRs.
+- `k8_deploy/argocd/imageupdater-dev.yaml`: the argocd-image-updater
+  `ImageUpdater` CR. It is applied by the platform into the central ArgoCD's
+  namespace rather than into the app's own cluster.
 - `helm_deploy/dev/secrets/`: **gitignored** plaintext Secret templates
   (registry pull creds, Django env, node env), pre-filled with generated
   random keys the same way `ansible/host_vars/*/vault.yml` is. Fill in the
@@ -153,7 +156,7 @@ concrete wiring lives in Thorgate's internal gitops repository.
   hooks, which would rotate the password on every sync. The platform's ArgoCD
   config (`argocd-cm`) gates the CR health on `status.succeeded=true`, so the
   chart's wave-30 resources wait for the database and its credentials Secret.
-- The branch in `extra/imageupdater.yaml` (`allowTags` and the write-back
+- The branch in `k8_deploy/argocd/imageupdater-dev.yaml` (`allowTags` and the write-back
   `branch`) comes from the `default_git_branch` global in
   `extensions/tg_filters.py`: it reads `git symbolic-ref` and falls back to
   `master` to match what `hooks/post_gen_project.py` checks the new repo out

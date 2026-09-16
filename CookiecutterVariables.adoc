@@ -417,7 +417,7 @@ Do you want to generate Kubernetes / ArgoCD deployment scaffolding (helm_deploy/
 
 NOTE: Experimental. When set to `yes`, the generated project includes a
 `helm_deploy/dev/` directory with `values.yaml`, `images.yaml`,
-`extra/postgres.yaml` (movetokube CRs), and `extra/imageupdater.yaml`
+`extra/postgres.yaml` (movetokube CRs), and `k8_deploy/argocd/imageupdater-dev.yaml`
 configured for the Thorgate platform conventions. It also generates
 gitignored plaintext Secret templates in `helm_deploy/dev/secrets/`
 (with `DJANGO_SECRET_KEY` / `NEXTAUTH_SECRET` pre-generated, like the

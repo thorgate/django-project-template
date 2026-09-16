@@ -13,8 +13,8 @@ The scaffold is meant to run as a single multi-source ArgoCD Application
 that combines:
 
 1. Kustomize overlay (`helm_deploy/dev/extra/`): the Namespace, a ConfigMap
-   of non-secret env, the database CRs (`Postgres` / `PostgresUser`), and the
-   `ImageUpdater` CR. SealedSecrets go here too, once you add them.
+   of non-secret env and the database CRs (`Postgres` / `PostgresUser`).
+   SealedSecrets go here too, once you add them.
 2. Helm chart `phoenix`, from a Helm repository: renders the Deployments,
    Services, and Ingress, configured by `values.yaml`.
 3. Values ref, the project repo itself: supplies `values.yaml` (config) and
@@ -23,6 +23,12 @@ that combines:
 
 You can point a hand-written `Application` at these three sources, or use
 an `ApplicationSet` to discover many repos at once.
+
+The `ImageUpdater` CR is not part of the overlay. It lives in
+`k8_deploy/argocd/imageupdater-dev.yaml` and is applied by the platform into
+the namespace of the central ArgoCD, which is where argocd-image-updater
+runs. On the Thorgate platform that directory is picked up automatically for
+every `argo-managed` repo. Only `ImageUpdater` resources are accepted there.
 
 ## Cluster prerequisites
 

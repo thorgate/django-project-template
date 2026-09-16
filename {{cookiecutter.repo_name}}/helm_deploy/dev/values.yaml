@@ -33,7 +33,7 @@ imageSecrets:
 applications:
   django:
     # Image configuration lives in images.yaml (auto-updated by
-    # argocd-image-updater via extra/imageupdater.yaml).
+    # argocd-image-updater via k8_deploy/argocd/imageupdater-dev.yaml).
 
     port: 8000
     serviceType: ClusterIP
@@ -348,7 +348,7 @@ hookAnnotations:
 commonAnnotations:
   argocd.argoproj.io/sync-wave: "30"
 
-# Image-updater config is in extra/imageupdater.yaml (CRD-based, not
+# Image-updater config is in k8_deploy/argocd/imageupdater-dev.yaml (CRD-based, not
 # inline). Leave this disabled.
 imageUpdater:
   enabled: false
