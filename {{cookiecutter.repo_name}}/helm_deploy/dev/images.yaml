@@ -1,5 +1,5 @@
 # Image references - auto-updated by argocd-image-updater on push of
-# new commit-SHA tags to the registry. See extra/imageupdater.yaml for
+# new commit-SHA tags to the registry. See k8_deploy/argocd/imageupdater-dev.yaml for
 # the ImageUpdater CR that drives this. Initial values are placeholders;
 # image-updater rewrites them on the first matching tag push.
 #

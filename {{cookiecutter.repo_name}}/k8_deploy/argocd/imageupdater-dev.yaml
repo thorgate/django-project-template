@@ -78,10 +78,10 @@ spec:
           # TODO: set your project's https git URL
           repository: https://gitlab.com/your-group/{{ cookiecutter.repo_name }}.git
 {%- endif %}
-          # Relative path: this CR is in helm_deploy/dev/extra/,
-          # images.yaml is one level up in helm_deploy/dev/. Using the
-          # absolute path here resulted in a doubled write-back path in
-          # earlier image-updater versions.
+          # Relative to the Application's kustomize source path
+          # (helm_deploy/dev/extra/), not to this file: ../images.yaml is
+          # helm_deploy/dev/images.yaml. Using the absolute path here resulted
+          # in a doubled write-back path in earlier image-updater versions.
           writeBackTarget: "helmvalues:../images.yaml"
           # Branch image-updater writes the bumped image tag back to.
           # Must match the branch your ArgoCD Application tracks.
