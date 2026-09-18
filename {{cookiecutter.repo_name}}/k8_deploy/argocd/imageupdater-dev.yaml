@@ -22,6 +22,9 @@ spec:
   commonUpdateSettings:
     pullSecret: "pullsecret:argocd/gitlab-registry-credentials"
     updateStrategy: newest-build
+    # The central image-updater runs on arm64 nodes. Without this it only
+    # considers tags built for its own platform and finds none of ours.
+    platforms: ["linux/amd64"]
     # Match the slug-prefixed tag `{{ default_git_branch }}-<sha>` that
     # publish-prod-image.sh pushes for each commit on the `{{ default_git_branch }}`
     # branch. This tag is immutable (unique per commit), unlike the mutable
