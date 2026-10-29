@@ -6,17 +6,68 @@
       mode: 0600
 
 
-- name: "Check if certificate has already been acquired"
-  stat:
 # - {% endraw %}
 # -  {% if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}
 # -    {% set LE_domain="{{ node_site_host }}" %}
 # -  {% elif cookiecutter.frontend_style == WEBAPP %}
 # -    {% set LE_domain="{{ django_site_host }}" %}
 # -  {% endif %}
-      path: /etc/letsencrypt/live/{{ LE_domain }}/fullchain.pem
+
+# The host the certificate is issued for. Resolved into a fact once so every task below can stay
+#  inside a single raw block - a `# -` line inside a folded scalar would break the YAML.
+- set_fact:
+    le_domain: "{{ LE_domain }}"
 # - {% raw %}
+
+
+# follow=yes: the default reports a *dangling* symlink as existing, and everything in live/ is a
+#  symlink into archive/ - so a broken lineage would look fine and certbot would reject it.
+- name: "Check if certificate has already been acquired"
+  stat:
+      path: /etc/letsencrypt/live/{{ le_domain }}/fullchain.pem
+      follow: yes
   register: fullchain_file
+
+
+- name: "Check whether live/ holds a broken symlink"
+  stat:
+      path: /etc/letsencrypt/live/{{ le_domain }}/fullchain.pem
+  register: fullchain_link
+  when: not fullchain_file.stat.exists
+
+
+- set_fact:
+    broken_lineage: "{{ (not fullchain_file.stat.exists) and (fullchain_link.stat.islnk | default(false)) }}"
+
+
+# certbot refuses such a lineage, so fail here rather than less clearly in `certonly` below.
+- name: "Fail on a broken certificate lineage"
+  fail:
+    msg: >-
+      /etc/letsencrypt/live/{{ le_domain }}/fullchain.pem is a symlink whose target is missing,
+      so its archive/ directory is gone or incomplete. certbot will refuse this lineage with
+      "target ... of symlink ... does not exist".
+      Re-run with `-e reset_broken_certificate=true` to delete the lineage and have certbot issue
+      a fresh certificate. NB that needs this host to answer the ACME challenge for
+      {{ le_domain }}, so the DNS has to point here already - when it does not, restore the
+      archive directory from the old host instead (clone.yml --tags certs).
+  when:
+    - broken_lineage | bool
+    - not (reset_broken_certificate | default(false) | bool)
+
+
+# archive/ goes too: certbot would otherwise create `<domain>-0001` and leave live/<domain> broken.
+- name: "Remove the broken certificate lineage"
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "/etc/letsencrypt/live/{{ le_domain }}"
+    - "/etc/letsencrypt/archive/{{ le_domain }}"
+    - "/etc/letsencrypt/renewal/{{ le_domain }}.conf"
+  when:
+    - broken_lineage | bool
+    - reset_broken_certificate | default(false) | bool
 
 
 - name: "Create nginx config to retrieve initial certificate"
@@ -46,14 +97,17 @@
 - name: "Check for certbot binary"
   shell: "command -v certbot"
   register: certbot_bin
+  changed_when: false
   ignore_errors: yes
 
 
+# `certbot_bin`, not `result` - `result` is whatever the last management command left behind.
 - name: "Check for certbot-auto binary"
   shell: "command -v certbot-auto"
   register: certbot_auto_bin
+  changed_when: false
   ignore_errors: yes
-  when: result is failed
+  when: certbot_bin is failed
 
 
 - set_fact:

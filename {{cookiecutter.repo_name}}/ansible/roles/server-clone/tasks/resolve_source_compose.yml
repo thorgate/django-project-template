@@ -1,0 +1,32 @@
+# - {%- raw %}
+# A source still on the pre-ansible deploy has its compose file at `docker-compose.yml`, so look
+#  at the host rather than trusting the target's name. `-e source_compose_file=...` still wins.
+
+- name: "Check which compose file the source host has"
+  stat:
+    path: "{{ code_dir }}/{{ item }}"
+  loop: "{{ [source_compose_file, 'docker-compose.yml'] | unique }}"
+  register: source_compose_candidates
+  delegate_to: "{{ source_host | mandatory }}"
+
+
+- name: "Fail when the source host has no compose file"
+  fail:
+    msg: >-
+      Neither {{ source_compose_file }} nor docker-compose.yml exists in {{ code_dir }} on
+      {{ source_host }}. Point the clone at the right one with `-e source_compose_file=...`.
+  when: source_compose_candidates.results | selectattr('stat.exists') | list | length == 0
+
+
+- name: "Use the compose file the source host actually has"
+  set_fact:
+    source_compose_file: "{{ (source_compose_candidates.results | selectattr('stat.exists')
+                              | map(attribute='item') | list)[0] }}"
+
+
+- name: "Show the compose invocation used on the source host"
+  debug:
+    msg: >-
+      {{ source_host }}: {{ source_compose_command }} -f {{ source_compose_file }}
+      (in {{ code_dir }})
+# - {%- endraw %}

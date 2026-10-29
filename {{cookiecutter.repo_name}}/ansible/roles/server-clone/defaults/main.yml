@@ -1,0 +1,22 @@
+# Defaults for the server-clone role. Override them in group_vars / host_vars or with `-e` - only
+#  the values a project or a run actually selects belong there, the rest stays here.
+
+# Reload nginx on the target after the transfers - the cloned certificate replaces files nginx
+#  has open. Skipped automatically when the project has no nginx config there yet.
+clone_reload_nginx: true
+
+# Postgres version on the SOURCE host. Empty means the same as the target's; set it when the
+#  clone crosses versions - the upgrade happens as part of the restore.
+source_postgres_version: ""
+
+# Postgres backend on the SOURCE host. Empty means the same as the target's; set it (usually
+#  `-e source_postgres_backend=local`) when the clone moves between backends.
+source_postgres_backend: ""
+
+# Unprivileged user the SOURCE logs in to the target as (direct root SSH is disabled). Empty
+#  means the role asks the target who ansible is logged in as.
+clone_target_user: ""
+
+# Pass --compress to the transfers. Off by default - media is usually already compressed, and
+#  zlib caps one core at ~50-100 MB/s. On when the link is the bottleneck.
+clone_rsync_compress: false

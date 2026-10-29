@@ -2,3 +2,5 @@
 {{ cookiecutter.test_host }}
 
 [live]
+
+[server_clone]

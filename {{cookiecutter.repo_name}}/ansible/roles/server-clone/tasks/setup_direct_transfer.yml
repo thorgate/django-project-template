@@ -1,0 +1,51 @@
+# - {%- raw %}
+# rsync refuses remote-to-remote, so it runs ON the source - which needs SSH access to the target.
+#  A throwaway keypair is used rather than the existing deploy key, so revoking it affects nothing
+#  else; teardown_direct_transfer.yml revokes it. The key lives under /root on the source (the
+#  rsync runs there under `become`); the target login is the unprivileged `clone_target_user`,
+#  since direct root SSH is disabled. Agent forwarding is no good - `become` drops SSH_AUTH_SOCK.
+
+# Only the target can say who ansible logs in as: `ansible_user` is unset when it comes from
+#  ~/.ssh/config, $USER can differ, and `ansible_user_id` reports root under `become`.
+- name: "Determine the login user on the target host"
+  command: id -un
+  become: no
+  changed_when: false
+  register: clone_detected_user
+
+
+- name: "Use the target host's login user for the transfer"
+  set_fact:
+    clone_target_user: "{{ clone_target_user | default(clone_detected_user.stdout, true) }}"
+
+
+- name: "Ensure /root/.ssh exists on the source host"
+  file:
+    path: "/root/.ssh"
+    state: directory
+    mode: "0700"
+  delegate_to: "{{ source_host | mandatory }}"
+
+
+- name: "Create a dedicated SSH key on the source host for the transfer"
+  command: >-
+    ssh-keygen -t ed25519 -N '' -C "{{ project }}-clone-to-{{ clone_target_address }}"
+    -f {{ clone_ssh_key_path }}
+  args:
+    creates: "{{ clone_ssh_key_path }}"
+  delegate_to: "{{ source_host | mandatory }}"
+
+
+- name: "Read the public key from the source host"
+  slurp:
+    src: "{{ clone_ssh_key_path }}.pub"
+  register: clone_ssh_pubkey
+  delegate_to: "{{ source_host | mandatory }}"
+
+
+- name: "Authorize the source host on the target host"
+  authorized_key:
+    user: "{{ clone_target_user }}"
+    key: "{{ clone_ssh_pubkey.content | b64decode }}"
+    state: present
+# - {%- endraw %}

@@ -5,7 +5,7 @@ WARNING: If the code has *not been deployed* to the server already follow the in
 The deployment process works as follows:
 
 . Clone & checkout the project into test server specified in `deployment_version` variable)
-. Add some configuration files (nginx, env, etc)
+. Add some configuration files (nginx, env, the compose file, etc)
 {%- if cookiecutter.build_in_ci == YES %}
 . Pull docker images for the project from the registry and restart containers if needed
 {%- else -%}
@@ -26,6 +26,10 @@ NOTE: Note that the `publish_` pipes need to finish before the code can be deplo
 env::
     Only update the environment file on the server
 
+[#compose-tag]
+compose::
+    Only re-render the compose file on the server
+
 [source,bash]
 ----
 poetry run ansible-playbook --limit HOST -t env deploy.yml
@@ -41,6 +45,24 @@ force_deploy::
 [source,bash]
 ----
 poetry run ansible-playbook --limit test -e "force_deploy=stable" deploy.yml
+----
+
+start_project::
+    Whether the project should be running when the play finishes. Defaults to `true`. Set it to `false` to prepare
+ a server without starting it.
++
+The deploy then still does everything else - checks out the code, creates the database, writes the `.env` and
+compose files, creates the docker networks, {% if cookiecutter.build_in_ci == YES %}pulls{% else %}builds{% endif %} the images, runs migrations and collectstatic, acquires
+the certificates and updates the nginx config - but leaves the project stopped. Useful when preparing a new server
+that should not serve traffic yet, for example before cloning another server onto it with
+xref:clone.adoc[clone.yml].
++
+NOTE: The project is also stopped at the *end* of such a deploy, because the management commands (migrations,
+collectstatic) temporarily start containers via `compose run`.
+
+[source,bash]
+----
+poetry run ansible-playbook --limit test -e "start_project=false" deploy.yml
 ----
 
 

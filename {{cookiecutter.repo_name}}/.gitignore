@@ -56,3 +56,6 @@ webapp/webapp/webpack-stats.json
 # helm_deploy/dev/secrets/README.md.
 helm_deploy/*/secrets/*.yaml
 {% endif %}
+
+# Compose file rendered onto the server by ansible (roles/deploy/templates/docker-compose.production.yml)
+docker-compose.deploy.yml

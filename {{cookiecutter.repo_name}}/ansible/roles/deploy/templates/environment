@@ -41,10 +41,10 @@ APP_PUBLIC_SENTRY_SAMPLE_RATE={{ "{{ app_sentry_sample_rate }}" }}
 {% raw %}{% endif %}{% endraw %}
 {%- endif %}
 
-DJANGO_DATABASE_HOST=postgres
-DJANGO_DATABASE_PORT=5432
-DJANGO_DATABASE_NAME={{ "{{ project }}" }}
-DJANGO_DATABASE_USER={{ "{{ project }}" }}
+DJANGO_DATABASE_HOST={{ "{{ django_database_host }}" }}
+DJANGO_DATABASE_PORT={{ "{{ django_database_port }}" }}
+DJANGO_DATABASE_NAME={{ "{{ django_database_name }}" }}
+DJANGO_DATABASE_USER={{ "{{ django_database_user }}" }}
 DJANGO_DATABASE_PASSWORD={{ "{{ django_database_password }}" }}
 
 {%- if cookiecutter.frontend_style == SPA or cookiecutter.frontend_style == SPA_NEXT %}

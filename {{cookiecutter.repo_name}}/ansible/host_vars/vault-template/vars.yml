@@ -29,9 +29,6 @@ django_gs_project_id: "TODO"
 django_aws_storage_bucket_name: "{{ cookiecutter.repo_name }}-production"
 # - {%- endif %}
 
-# Which compose file to use in the server
-compose_file: "docker-compose.production.yml"
-
 # Which docker compose command to use. Compose v2 uses `docker compose` instead of `docker-compose`
 compose_command: "docker-compose"
 

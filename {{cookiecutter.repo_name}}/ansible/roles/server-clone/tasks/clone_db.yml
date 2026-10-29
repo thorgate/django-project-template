@@ -1,113 +1,323 @@
-- name: "Generate an unique filename for dump"
+# - {%- raw %}
+# Clones the database from the source host to the target host.
+#
+# The dump goes straight from the source host to the target host - it is never written to the
+#  ansible controller. See setup_direct_transfer.yml for how the source gets SSH access.
+#
+# Backends (`postgres_backend`):
+#  shared - the host's `postgres-<version>` container, via docker exec
+#  local  - the `postgres` service in this compose project, via `compose exec`
+#  remote - a managed database, via a throwaway postgres client container
+#
+# The ends may differ: dumps follow `source_postgres_backend` / `source_postgres_version`, loading
+#  follows the target's own. `pg_restore` reads older archives, so 10 -> 16 upgrades on restore.
+#
+# NB: a folded (`>`) block keeps the newline of any line indented deeper than the first, which
+#  would end a `shell:` statement - so continuation lines below stay at the same indentation.
+
+- name: "Check the postgres backends are ones we can clone"
+  assert:
+    that:
+      - "postgres_backend in ['shared', 'local', 'remote']"
+      - "source_postgres_backend in ['shared', 'local', 'remote']"
+    msg: >-
+      Unknown postgres backend - target {{ postgres_backend }},
+      source {{ source_postgres_backend }}
+
+
+- name: "Generate the dump filename"
   set_fact:
-    dump_filename: "/tmp/clone-{{ "{{ project | mandatory }}" }}.pg_dump"
+    dump_filename: "/tmp/clone-{{ project }}.pg_dump"
 
 
-- name: "Generate an unique filename for dump"
-  set_fact:
-    dump_filename_local: "./clone-{{ "{{ project | mandatory }}" }}.pg_dump"
-
-
-- name: "Create a fresh DB dump on the server"
+- name: "Create a fresh DB dump on the source host (shared postgres)"
   shell: >
-    docker exec -i postgres-{{ "{{ postgres_version | mandatory }}" }} pg_dump -U {{ "{{ project }}" }} \
-      --format=custom --compress=0 {{ "{{ project | mandatory }}" }} > {{ "{{ dump_filename }}" }}
-  no_log: true
-  delegate_to: "{{ "{{ source_host | mandatory }}" }}"
+    docker exec -i postgres-{{ source_postgres_version | mandatory }}
+    pg_dump -U {{ django_database_user }}
+    --format=custom --compress=0 {{ django_database_name }} > {{ dump_filename }}
+  no_log: "{{ ansible_verbosity < 3 }}"
+  delegate_to: "{{ source_host | mandatory }}"
+  when: source_postgres_backend == 'shared'
 
 
-- name: "Get the file from source host"
+- name: "Create a fresh DB dump on the source host (local postgres)"
   shell: >
-    rsync --delay-updates -F --compress --archive \
-      --no-recursive {{ "{{ source_host }}" }}:{{ "{{ dump_filename }}" }} {{ "{{ dump_filename_local }}" }}
-  delegate_to: localhost
-  vars:
-    ansible_become: no
+    {{ source_compose_command }} -f {{ source_compose_file }} exec -T postgres
+    pg_dump -U {{ django_database_user }}
+    --format=custom --compress=0 {{ django_database_name }} > {{ dump_filename }}
+  args:
+    chdir: "{{ code_dir }}"
+  no_log: "{{ ansible_verbosity < 3 }}"
+  delegate_to: "{{ source_host | mandatory }}"
+  when: source_postgres_backend == 'local'
 
 
-- name: Upload the tile to target host"
-  synchronize:
-    src: "{{ "{{ dump_filename_local }}" }}"
-    dest: "{{ "{{ dump_filename }}" }}"
-    mode: push
-    set_remote_user: no
-    recursive: no
-  delegate_to: localhost
-  vars:
-    ansible_become: no
+# There is no postgres container on the host for a managed database, so the client tooling is run
+#  in a throwaway container instead.
+- name: "Create a fresh DB dump on the source host (remote postgres)"
+  shell: >
+    docker run --rm --env PGPASSWORD={{ django_database_password | mandatory | quote }}
+    postgres:{{ source_postgres_version | mandatory }}
+    pg_dump --username={{ django_database_user | quote }}
+    --host={{ django_database_host | mandatory | quote }}
+    --port={{ django_database_port }}
+    --dbname={{ django_database_name | quote }}
+    --format=custom --compress=0 > {{ dump_filename }}
+  no_log: "{{ ansible_verbosity < 3 }}"
+  delegate_to: "{{ source_host | mandatory }}"
+  when: source_postgres_backend == 'remote'
+
+
+- name: "Copy the dump from the source host to the target host"
+  command: >-
+    rsync {{ '--compress' if clone_rsync_compress else '' }}
+    -e "ssh -i {{ clone_ssh_key_path }} -o StrictHostKeyChecking=accept-new"
+    {{ dump_filename }}
+    {{ clone_target_user }}@{{ clone_target_address }}:{{ dump_filename }}
+  delegate_to: "{{ source_host | mandatory }}"
 
 
 - name: "Stop the project"
   command: >-
-      docker-compose
-# - {% if cookiecutter.build_in_ci == NO %}
-        -f {{ "{{ compose_file "}} }}
-# - {% endif %}
-        stop
+    {{ compose_command }} -f {{ compose_file }} stop
   args:
-    chdir: "{{ "{{ code_dir }}" }}"
+    chdir: "{{ code_dir }}"
 
 
+# --- shared host container -------------------------------------------------------------------
 - name: "Check if database has been created previously"
   stat:
-      path: "{{ "{{ code_dir }}" }}/database.lock"
+    path: "{{ code_dir }}/database.lock"
   register: db_created
+  when: postgres_backend == 'shared'
 
 
 - name: "Drop database if it existed"
   shell: >
-      echo "
-        DROP DATABASE {{ "{{ project }}" }};
-        DROP USER {{ "{{ project }}" }};
-      " | docker exec -i postgres-{{ "{{ postgres_version | mandatory }}" }} psql -U postgres
-  when: db_created.stat.exists
+    echo "
+      DROP DATABASE {{ django_database_name }};
+      DROP USER {{ django_database_user }};
+    " | docker exec -i postgres-{{ postgres_version | mandatory }} psql -U postgres
+  when:
+    - postgres_backend == 'shared'
+    - db_created.stat.exists
 
 
 - name: "Create database"
   shell: >
-      echo "
-        CREATE DATABASE {{ "{{ project }}" }};
-        CREATE USER {{ "{{ project }}" }} WITH password '{{ "{{ django_database_password | mandatory }}" }}';
-        GRANT ALL PRIVILEGES ON DATABASE {{ "{{ project }}" }} to {{ "{{ project }}" }};
-      " | docker exec -i postgres-{{ "{{ postgres_version | mandatory }}" }} psql -U postgres
+    echo "
+      CREATE DATABASE {{ django_database_name }};
+      CREATE USER {{ django_database_user }} WITH password '{{ django_database_password | mandatory }}';
+      GRANT ALL PRIVILEGES ON DATABASE {{ django_database_name }} to {{ django_database_user }};
+    " | docker exec -i postgres-{{ postgres_version | mandatory }} psql -U postgres
+  when: postgres_backend == 'shared'
+
+
+# Whether the dump recreates `public` depends on the version it came from - pre-15 does, 15+ does
+#  not - and guessing wrong fails the restore either way, so read the archive's TOC.
+- name: "Check whether the dump carries the public schema (shared postgres)"
+  shell: >
+    cat {{ dump_filename }} | docker exec -i postgres-{{ postgres_version | mandatory }}
+    pg_restore -l | grep -q "SCHEMA - public"
+  register: shared_dump_public_schema
+  failed_when: false
+  changed_when: false
+  when: postgres_backend == 'shared'
+
+
+- name: "Drop the public schema so the dump can recreate it"
+  shell: >
+    echo "
+      DROP SCHEMA IF EXISTS public CASCADE;
+    " | docker exec -i postgres-{{ postgres_version | mandatory }} psql -U postgres
+    -d {{ django_database_name }}
+  when:
+    - postgres_backend == 'shared'
+    - (shared_dump_public_schema.rc | default(1)) == 0
+
+
+# The dump leaves `public` to the database, so create it - a previous run may have dropped it.
+- name: "Ensure the public schema exists before the restore"
+  shell: >
+    echo "
+      CREATE SCHEMA IF NOT EXISTS public AUTHORIZATION {{ django_database_user }};
+    " | docker exec -i postgres-{{ postgres_version | mandatory }} psql -U postgres
+    -d {{ django_database_name }}
+  when:
+    - postgres_backend == 'shared'
+    - (shared_dump_public_schema.rc | default(1)) != 0
+
+
+# As the superuser: only it may replay the dump's ownership and COMMENT statements. The dump's
+#  own ALTER ... OWNER TO still hands every object to the project role.
+- name: "Load the dump file"
+  shell: >
+    cat {{ dump_filename }} | docker exec -i postgres-{{ postgres_version | mandatory }}
+    pg_restore -U postgres -d {{ django_database_name }}
+  no_log: "{{ ansible_verbosity < 3 }}"
+  when: postgres_backend == 'shared'
+
+
+# After the restore: the schema the grant applies to is the one the dump just created.
+- name: "Grant schema access"
+  shell: >
+    echo "
+      CREATE SCHEMA IF NOT EXISTS public;
+      GRANT all ON SCHEMA public to {{ django_database_user }};
+    " | docker exec -i postgres-{{ postgres_version | mandatory }} psql -U postgres
+    -d {{ django_database_name }}
+  when: postgres_backend == 'shared'
+
+
+# --- postgres service in this compose project ------------------------------------------------
+# `compose stop` above stopped the project's own postgres container too, so bring it back up on
+#  its own - the rest of the project must stay down while the database is replaced.
+- name: "Start postgres on its own"
+  command: >-
+    {{ compose_command }} -f {{ compose_file }} up --detach --no-color postgres
+  args:
+    chdir: "{{ code_dir }}"
+  when: postgres_backend == 'local'
+
+
+- name: "Wait for postgres to accept connections"
+  command: >-
+    {{ compose_command }} -f {{ compose_file }} exec -T postgres
+    pg_isready -U {{ django_database_user }}
+  args:
+    chdir: "{{ code_dir }}"
+  register: pg_ready
+  until: pg_ready.rc == 0
+  retries: 30
+  delay: 2
+  changed_when: false
+  when: postgres_backend == 'local'
+
+
+# The role is the container's superuser and is created by the image from the .env credentials, so
+#  unlike the shared backend only the database is dropped and recreated. `postgres` is the
+#  maintenance database initdb always creates - you cannot drop a database you are connected to.
+- name: "Drop and recreate the database"
+  shell: >
+    echo "
+      DROP DATABASE IF EXISTS {{ django_database_name }};
+      CREATE DATABASE {{ django_database_name }} OWNER {{ django_database_user }};
+    " | {{ compose_command }} -f {{ compose_file }}
+    exec -T postgres psql -U {{ django_database_user }} -d postgres
+  args:
+    chdir: "{{ code_dir }}"
+  when: postgres_backend == 'local'
+
+
+- name: "Check whether the dump carries the public schema (local postgres)"
+  shell: >
+    cat {{ dump_filename }} | {{ compose_command }} -f {{ compose_file }}
+    exec -T postgres pg_restore -l | grep -q "SCHEMA - public"
+  args:
+    chdir: "{{ code_dir }}"
+  register: local_dump_public_schema
+  failed_when: false
+  changed_when: false
+  when: postgres_backend == 'local'
+
+
+# The database created above already has `public`, so let the dump recreate its own.
+- name: "Drop the public schema so the dump can recreate it"
+  shell: >
+    echo "
+      DROP SCHEMA IF EXISTS public CASCADE;
+    " | {{ compose_command }} -f {{ compose_file }}
+    exec -T postgres psql -U {{ django_database_user }} -d {{ django_database_name }}
+  args:
+    chdir: "{{ code_dir }}"
+  when:
+    - postgres_backend == 'local'
+    - (local_dump_public_schema.rc | default(1)) == 0
+
 
 - name: "Grant schema access"
   shell: >
-     echo "
-        GRANT all ON SCHEMA public to {{ "{{ project }}" }};
-     " | docker exec -i postgres-{{ "{{ postgres_version | mandatory }}" }} psql -U postgres -d {{ "{{ project }}" }}
+    echo "
+      CREATE SCHEMA IF NOT EXISTS public AUTHORIZATION {{ django_database_user }};
+      GRANT all ON SCHEMA public to {{ django_database_user }};
+    " | {{ compose_command }} -f {{ compose_file }}
+    exec -T postgres psql -U {{ django_database_user }} -d {{ django_database_name }}
+  args:
+    chdir: "{{ code_dir }}"
+  when:
+    - postgres_backend == 'local'
+    - (local_dump_public_schema.rc | default(1)) != 0
+
 
 - name: "Load the dump file"
   shell: >
-    cat {{ "{{ dump_filename }}" }} | docker exec -i postgres-{{ "{{ postgres_version | mandatory }}" }} pg_restore \
-      -U {{ "{{ project }}" }} -d {{ "{{ project }}" }}
-  no_log: true
+    cat {{ dump_filename }} | {{ compose_command }} -f {{ compose_file }}
+    exec -T postgres pg_restore -U {{ django_database_user }} -d {{ django_database_name }}
+  args:
+    chdir: "{{ code_dir }}"
+  no_log: "{{ ansible_verbosity < 3 }}"
+  when: postgres_backend == 'local'
 
 
+# --- managed database ---------------------------------------------------------------------------
+# The database cannot be dropped and recreated: that needs cluster admin rights the deploy user
+#  does not have, and on a managed cluster the database is created through the provider. So the
+#  contents are replaced instead - `--clean --if-exists` drops each object before restoring it.
+- name: "Restore into the managed database"
+  shell: >
+    cat {{ dump_filename }} |
+    docker run --rm --interactive --env PGPASSWORD={{ django_database_password | mandatory | quote }}
+    postgres:{{ postgres_version | mandatory }}
+    pg_restore --username={{ django_database_user | quote }}
+    --host={{ django_database_host | mandatory | quote }}
+    --port={{ django_database_port }}
+    --dbname={{ django_database_name | quote }}
+    --clean --if-exists --no-owner
+  no_log: "{{ ansible_verbosity < 3 }}"
+  when: postgres_backend == 'remote'
+
+
+# `start_project` is a default of the deploy role, which this play only includes dynamically, so
+#  it is not in scope here - the `default(true)` repeats the deploy role's default. `-e` still wins.
 - name: "Start the project"
   command: >-
-      docker-compose
-# - {% if cookiecutter.build_in_ci == NO %}
-        -f {{ "{{ compose_file }}" }}
-# - {% endif %}
-        up --build --detach --no-color --force-recreate --remove-orphans
+    {{ compose_command }} -f {{ compose_file }}
+    up --build --detach --no-color --force-recreate --remove-orphans
   args:
-    chdir: "{{ "{{ code_dir }}" }}"
+    chdir: "{{ code_dir }}"
+# - {%- endraw %}
+# - {%- if cookiecutter.build_in_ci == YES %}
+# - {%- raw %}
+  # DOCKER_CONFIG holds the registry credentials the deploy role set up.
+  environment:
+    DOCKER_CONFIG: "{{ code_dir }}/.docker-cfg"
+# - {%- endraw %}
+# - {%- endif %}
+# - {%- raw %}
+  when: start_project | default(true) | bool
+
+
+# With `start_project: false` the project stays down. This is more than skipping the task above:
+#  with the `local` backend the project's own postgres container was started on its own to load
+#  the dump, so the project has to be stopped again rather than just left alone.
+- name: "Stop the project"
+  command: >-
+    {{ compose_command }} -f {{ compose_file }}
+    stop
+  args:
+    chdir: "{{ code_dir }}"
+  when: not start_project | default(true) | bool
 
 
 - name: "Delete the dump file from source host"
   file:
-    path: "{{ "{{ dump_filename }}" }}"
+    path: "{{ dump_filename }}"
     state: absent
-  delegate_to: "{{ "{{ source_host }}" }}"
+  delegate_to: "{{ source_host }}"
 
-- name: "Delete the dump file locally"
-  file:
-    path: "{{ "{{ dump_filename_local }}" }}"
-    state: absent
-  delegate_to: localhost
 
 - name: "Delete the dump file from target host"
   file:
-    path: "{{ "{{ dump_filename }}" }}"
+    path: "{{ dump_filename }}"
     state: absent
+# - {%- endraw %}

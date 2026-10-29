@@ -1,3 +1,5 @@
+# Which media backend the SOURCE uses and where its media lives. clone_media_target.yml transfers.
+
 - name: "Extract settings from container"
   import_tasks: ../../helpers/run-management-command.yml
   vars:
@@ -7,58 +9,43 @@
 
 - name: "Store settings as json {{ "{{ result.stdout }}" }}"
   set_fact:
-    settings: "{{ "{{ result.stdout | from_json }}" }}"
+    source_settings: "{{ "{{ result.stdout | from_json }}" }}"
   delegate_to: "{{ "{{ source_host | mandatory }}" }}"
 
 
 - set_fact:
     media_backend: "FS"
-  delegate_to: "{{ "{{ source_host | mandatory }}" }}"
 
 
 - set_fact:
     media_backend: "S3"
-  when: "settings.AWS_ACCESS_KEY_ID and settings.AWS_ACCESS_KEY_ID != '<unset>'"
+  when: "'AWS_ACCESS_KEY_ID' in source_settings and source_settings.AWS_ACCESS_KEY_ID != '<unset>'"
   ignore_errors: yes
-  delegate_to: "{{ "{{ source_host | mandatory }}" }}"
 
 
 - set_fact:
     media_backend: "GCS"
-  when: "settings.GS_PROJECT_ID and settings.GS_PROJECT_ID != '<unset>'"
+  when: "'GS_PROJECT_ID' in source_settings and source_settings.GS_PROJECT_ID != '<unset>'"
   ignore_errors: yes
-  delegate_to: "{{ "{{ source_host | mandatory }}" }}"
 
 
-- name: "Fail if media mirroring is not supported for backend"
+- name: "Fail if media cloning is not supported for the source backend"
   fail:
-    msg: "Media backend {{ "{{ media_backend }}" }} does not have logic for mirroring"
-  when: "media_backend == 'GCS'"
-  delegate_to: "{{ "{{ source_host | mandatory }}" }}"
+    msg: >-
+      Source media backend {{ "{{ media_backend }}" }} does not have logic for cloning. Only a filesystem
+      (FS) source is supported.
+  when: "media_backend != 'FS'"
 
 
-- name: "Fail if media mirroring is not supported for backend"
-  fail:
-    msg: "Media backend {{ "{{ media_backend }}" }} does not have logic for mirroring"
-  when: "media_backend == 'S3'"
-  delegate_to: "{{ "{{ source_host | mandatory }}" }}"
-
-
-- name: "Install yq on the server"
+- name: "Install yq on the source host"
   pip:
     name: "yq"
   delegate_to: "{{ "{{ source_host | mandatory }}" }}"
 
 
-- name: "Figure out the local media directory"
-  shell: "{{ "{{ compose_command }}" }} -f {{ "{{ compose_file }}" }} config | yq -r '.services.django.volumes[]' | grep '/files/media' | cut -d: -f1"
-  vars:
-    ansible_become: no
-  register: "media_directory"
-  delegate_to: "{{ "{{ source_host | mandatory }}" }}"
-
-
-- name: "Mirror FS media files"
-  import_tasks: clone_media_source_FS.yml
-  when: "media_backend == 'FS'"
+- name: "Figure out the media directory on the source host"
+  shell: "{{ "{{ source_compose_command }}" }} -f {{ "{{ source_compose_file }}" }} config | yq -r '.services.django.volumes[]' | grep '/files/media' | cut -d: -f1"
+  args:
+    chdir: "{{ "{{ code_dir | mandatory }}" }}"
+  register: "source_media_directory"
   delegate_to: "{{ "{{ source_host | mandatory }}" }}"
