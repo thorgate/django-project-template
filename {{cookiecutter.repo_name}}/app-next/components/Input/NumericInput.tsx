@@ -3,12 +3,11 @@ import clsx from "clsx";
 import { Ref } from "react";
 import { NumericFormat } from "react-number-format";
 import type { NumericFormatProps } from "react-number-format";
-import { Controller } from "react-hook-form";
 import {
+    Controller,
     UseFormSetValue,
     FieldValues,
     Path,
-    get as getByFormPath,
 } from "react-hook-form";
 import { UseAPIBasedFormResult } from "@lib/factories/hooks";
 import { InputWrapper } from "@components/Input/InputWrapper";
@@ -111,11 +110,7 @@ export const NumericInput = <
     name,
     label,
     disabled,
-    form: {
-        formState: { errors },
-        isLoading,
-        control,
-    },
+    form: { isLoading, control },
     className,
     suffix = "",
     decimalScale = 2,
@@ -131,12 +126,12 @@ export const NumericInput = <
         <Controller<TFieldValues, TName>
             control={control}
             name={name}
-            render={({ field: { value, onChange } }) => (
+            render={({ field: { value, onChange }, fieldState: { error } }) => (
                 <SimpleNumericInput<TFieldValues>
                     id={name}
                     type={"tel"} // "tel" = numeric keyboard on mobile
                     label={label ?? String(name)}
-                    error={getByFormPath(errors, name)?.message}
+                    error={error?.message}
                     disabled={isLoading || disabled}
                     className={clsx(className, disabled && "bg-slate-50")}
                     suffix={unitWithPrecedingSpace}
