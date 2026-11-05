@@ -7,6 +7,7 @@
 - name: "Create Django superuser"
   command: >-
     {{ "{{ compose_command }}" }}
+    -f {{ "{{ compose_file }}" }}
     run
     -e DJANGO_SUPERUSER_EMAIL
     -e DJANGO_SUPERUSER_PASSWORD

@@ -1,9 +1,7 @@
 - name: "Stop the project"
   command: >-
-      docker-compose
-# - {% if cookiecutter.build_in_ci == NO %}
-        -f {{ "{{ compose_file "}} }}
-# - {% endif %}
+      {{ "{{ source_compose_command }}" }}
+        -f {{ "{{ source_compose_file }}" }}
         stop
   args:
     chdir: "{{ "{{ code_dir }}" }}"
@@ -11,8 +9,7 @@
 # - {%- raw %}
 - name: Define source postgres version when not set
   set_fact:
-    source_postgres_version: "{{ postgres_version }}"
-  when: source_postgres_version is not defined
+    source_postgres_version: "{{ source_postgres_version | default(postgres_version, true) }}"
 
 - name: "Detach shared containers to project specific networks"
   shell:
@@ -23,6 +20,17 @@
         container: nginx
       - name: "{{ project }}_postgres"
         container: "postgres-{{ source_postgres_version }}"
+
+# The proxy site config below includes conf.d/common.<project>.django.include and (through
+#  app.proxy_pass.include) conf.d/app.<project>.proxy.include, both written by the deploy role. A
+#  source that predates this ansible stack does not have them, and `nginx -t` then fails with
+#  `open() ".../common.<project>.django.include" failed (2: No such file or directory)`.
+#
+# Lay the full set down first. The site config it writes is immediately replaced by the proxy one
+#  below, but the includes it needs are then in place.
+- name: "Ensure the deploy role's nginx includes exist on the source host"
+  import_tasks: ../../helpers/update-nginx-config.yml
+
 
 - name: "Update nginx config"
   template:
@@ -39,7 +47,7 @@
     - { src: "app.proxy_pass.include", dest: "app.{{ project }}.proxy_django.include" }
     - { src: "app.proxy_pass.include", dest: "app.{{ project }}.proxy_node.include" }
   vars:
-    target_host: "{{ "{{ inventory_hostname }}" }}"
+    target_host: "{{ inventory_hostname }}"
 
 - name: "Reload nginx"
   import_tasks: ../../helpers/reload-nginx.yml

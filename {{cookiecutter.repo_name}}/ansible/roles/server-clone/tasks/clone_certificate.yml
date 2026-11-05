@@ -1,8 +1,10 @@
 # - {%- raw %}
+# Copies the letsencrypt certificate source -> target, straight across like everything else.
+
 - set_fact:
     certbot_binary: "certbot"
     dump_filename: "/tmp/{{ project }}-certs.tar.gz"
-    dump_filename_local: "./{{ project }}-certs.tar.gz"
+
 
 - name: Trigger forced renewal of SSL certificate
   shell: >
@@ -10,49 +12,126 @@
   when: forced_renewal | default(False)
   delegate_to: "{{ source_host | mandatory }}"
 
+
+# The archive directory is not always `archive/<domain>`: certbot suffixes a re-created lineage
+#  (`archive/<domain>-0001`) and the stale one can still sit next to it, so guessing tars the
+#  wrong directory and the target ends up with a lineage certbot rejects. Ask the symlink instead -
+#  `stat` resolves it even when its target is missing.
+- name: "Read where the live symlink points on the source host"
+  stat:
+    path: "/etc/letsencrypt/live/{{ node_site_host }}/fullchain.pem"
+  register: source_fullchain_link
+  delegate_to: "{{ source_host | mandatory }}"
+
+
+- name: "Fail when the source has no certificate to clone"
+  fail:
+    msg: >-
+      /etc/letsencrypt/live/{{ node_site_host }}/fullchain.pem does not exist on
+      {{ source_host }}. Check `certbot certificates` there - the lineage may be under a
+      different name than {{ node_site_host }}.
+  when: not source_fullchain_link.stat.exists
+
+
+- set_fact:
+    certificate_archive_dir: "{{ source_fullchain_link.stat.lnk_source | default('', true) | dirname
+                                 or '/etc/letsencrypt/archive/' ~ node_site_host }}"
+
+
+# The lineage name is the archive directory's, not necessarily the domain - and its own
+#  `live/`/`renewal/` entries have to come across too, or `certbot renew` breaks on the target.
+- set_fact:
+    certificate_lineage: "{{ certificate_archive_dir | basename }}"
+
+
+- name: "Show the lineage being cloned"
+  debug:
+    msg: >-
+      live/{{ node_site_host }}/fullchain.pem on {{ source_host }} points at
+      {{ source_fullchain_link.stat.lnk_target | default('(not a symlink)') }}
+      - archive directory {{ certificate_archive_dir }}, lineage {{ certificate_lineage }}
+
+
+# NB: `node_site_host` is the TARGET's - a source serving another domain has no such lineage.
+- name: "Check which lineage paths exist on the source host"
+  stat:
+    path: "{{ item }}"
+  loop: "{{ ['/etc/letsencrypt/live/' ~ node_site_host,
+             '/etc/letsencrypt/live/' ~ certificate_lineage,
+             certificate_archive_dir] | unique }}"
+  register: source_lineage
+  delegate_to: "{{ source_host | mandatory }}"
+
+
+# Only what is actually there - `live/<lineage>` is absent when lineage and domain match.
+- set_fact:
+    certificate_paths: "{{ source_lineage.results | selectattr('stat.exists')
+                           | map(attribute='item') | list | unique }}"
+
+
+- name: "Fail when the source lineage is missing or incomplete"
+  fail:
+    msg: >-
+      {{ certificate_archive_dir }} does not exist on {{ source_host }}, so the certificate for
+      {{ node_site_host }} cannot be cloned. Check the lineage there with
+      `certbot certificates` and `ls -l /etc/letsencrypt/live/{{ node_site_host }}/`.
+  when: certificate_archive_dir not in certificate_paths
+
+
 - name: "Create archive of certificates"
   shell: >
     tar -czf {{ dump_filename }} \
-      /etc/letsencrypt/live/{{ node_site_host }} \
-      /etc/letsencrypt/archive/{{ node_site_host }} \
+      {{ certificate_paths | join(' ') }} \
       /etc/letsencrypt/configs/*{{ project }}* \
       /etc/letsencrypt/renewal/{{ node_site_host }}*
   delegate_to: "{{ source_host | mandatory }}"
 
-- name: "Download certificates from source host"
-  shell: >
-    rsync --delay-updates -F --compress --archive \
-      --no-recursive {{ source_host }}:{{ dump_filename }} {{ dump_filename_local }}
-  delegate_to: localhost
-  vars:
-    ansible_become: no
 
-- name: Upload the certificates to target host"
-  synchronize:
-    src: "{{ dump_filename_local }}"
-    dest: "{{ dump_filename }}"
-    mode: push
-    set_remote_user: no
-    recursive: no
-  delegate_to: localhost
-  vars:
-    ansible_become: no
+# No --compress regardless of `clone_rsync_compress`: the archive is already a .tar.gz.
+- name: "Copy the archive from the source host to the target host"
+  command: >-
+    rsync
+    -e "ssh -i {{ clone_ssh_key_path }} -o StrictHostKeyChecking=accept-new"
+    {{ dump_filename }}
+    {{ clone_target_user }}@{{ clone_target_address }}:{{ dump_filename }}
+  delegate_to: "{{ source_host | mandatory }}"
 
+
+# The plain name too: a stale `archive/<domain>` would confuse the next certbot run.
 - name: "Delete the existing certificates from target host"
   file:
     path: "{{ item }}"
     state: absent
-  with_items:
-    - "/etc/letsencrypt/live/{{ node_site_host }}"
-    - "/etc/letsencrypt/archive/{{ node_site_host }}"
+  with_items: "{{ (certificate_paths + ['/etc/letsencrypt/archive/' ~ node_site_host]) | unique }}"
+
 
 - name: "Extract the certificates on target host"
   shell: >
     tar -xvzhf {{ dump_filename }} -C /
 
+
+# follow=yes so a symlink whose target did not come across is reported here, not by certbot.
+- name: "Verify the extracted certificate resolves on the target host"
+  stat:
+    path: "/etc/letsencrypt/live/{{ node_site_host }}/fullchain.pem"
+    follow: yes
+  register: target_fullchain
+
+
+- name: "Fail when the extracted certificate does not resolve"
+  fail:
+    msg: >-
+      /etc/letsencrypt/live/{{ node_site_host }}/fullchain.pem does not resolve after extracting
+      the archive, so {{ certificate_archive_dir }} did not make it across. Remove
+      /etc/letsencrypt/{live,archive,renewal}/{{ node_site_host }}* on {{ inventory_hostname }}
+      and let the deploy playbook issue a fresh certificate instead.
+  when: not target_fullchain.stat.exists
+
+
 - name: Check renewal of SSL certificate
   shell: >
     {{ certbot_binary }} renew --cert-name "{{ node_site_host }}"
+
 
 - name: "Delete the dump file from source host"
   file:
@@ -60,11 +139,6 @@
     state: absent
   delegate_to: "{{ source_host }}"
 
-- name: "Delete the dump file locally"
-  file:
-    path: "{{ dump_filename_local }}"
-    state: absent
-  delegate_to: localhost
 
 - name: "Delete the dump file from target host"
   file:

@@ -4,7 +4,9 @@ Your server needs to have https://docs.docker.com/engine/installation/[Docker En
 
 We also assume that you have Nginx and Postgres running in Docker containers and reachable via
 'private' network. We also make a few assumptions regards directories that will be used as volumes for static assets,
-etc. You can find these paths in link:../docker-compose.production.yml[docker-compose.production.yml].
+etc. These paths come from the `nginx_files_dir`, `data_dir` and `log_dir` variables in
+link:../roles/deploy/defaults/main.yml[the deploy role's defaults] and are used by
+link:../roles/deploy/templates/docker-compose.production.yml[its compose template].
 
 {%- if cookiecutter.build_in_ci == YES %}
 
@@ -41,6 +43,37 @@ credentials for the same docker registry host. This is a workaround for the foll
 https://github.com/moby/moby/issues/37569[issue in docker].
 
 {%- endif %}
+
+===== Database
+
+The `postgres_backend` variable in link:../group_vars/all/vars.yml[group_vars] selects where the
+database lives, and can be overridden per host:
+
+`shared`:: A `postgres-<postgres_version>` container shared by every project on the host. The
+deploy role creates the database, the role and the `citext` extension in it, and the project
+reaches it over the external `<project>_postgres` docker network.
+
+`local`:: A `postgres` service in the project's own compose file. The image creates the role and
+the database from the `.env` credentials. No external postgres network is used - the service sits
+on the project's own `default` network.
+
+`remote`:: A managed database (DigitalOcean, RDS, ...). There is no container and no postgres
+network; it is reached over the (non-internal) `default` network. Set `django_database_host` (and
+`django_database_port`/`name`/`user` if they differ from the defaults) in the host vars, and put
+the password in the vault.
++
+The deploy role does *not* bootstrap a managed database, so before the first deploy create it
+yourself:
++
+[source,sql]
+----
+CREATE DATABASE <project>;
+CREATE USER <project> WITH PASSWORD '<django_database_password from the vault>';
+GRANT ALL PRIVILEGES ON DATABASE <project> TO <project>;
+\c <project>
+CREATE EXTENSION IF NOT EXISTS citext;
+GRANT ALL ON SCHEMA public TO <project>;
+----
 
 ===== The first deployment checklist
 

@@ -1,0 +1,21 @@
+# Defaults for the deploy role. Override them in group_vars / host_vars or with `-e` - only the
+#  values a project or a host actually selects belong there, the rest stays here.
+
+# Django app package, used for the gunicorn/celery entrypoints in the compose file
+django_app: "{{ cookiecutter.default_django_app }}"
+
+# Gunicorn worker count for the django container
+gunicorn_worker_count: 2
+
+# Host side directories mounted into the containers
+nginx_files_dir: "/var/lib/docker-nginx/files/{{ cookiecutter.repo_name }}"
+data_dir: "/var/lib/docker-{{ cookiecutter.repo_name }}"
+log_dir: "/var/log/{{ cookiecutter.repo_name }}"
+
+# Whether the project is running after the play. False prepares a server fully but leaves it
+#  stopped - e.g. deploying and cloning onto it before the DNS is switched over.
+start_project: true
+
+# Let a failing `nginx -t` / reload pass instead of failing the play. Off by default; clone.yml
+#  turns it on for the deploy it runs on a brand new target and reloads nginx itself at the end.
+nginx_reload_ignore_errors: false

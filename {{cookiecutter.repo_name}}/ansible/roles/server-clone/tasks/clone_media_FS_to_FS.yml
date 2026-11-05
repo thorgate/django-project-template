@@ -1,0 +1,30 @@
+# FS -> FS. rsync cannot do remote-to-remote, so it runs ON the source and writes to the target.
+
+- name: "Install yq on the target host"
+  pip:
+    name: "yq"
+
+
+- name: "Figure out the media directory on the target host"
+  shell: "{{ "{{ compose_command }}" }} -f {{ "{{ compose_file }}" }} config | yq -r '.services.django.volumes[]' | grep '/files/media' | cut -d: -f1"
+  args:
+    chdir: "{{ "{{ code_dir | mandatory }}" }}"
+  register: "target_media_directory"
+
+
+# The source logs in unprivileged and cannot write a root-owned directory, so hand it over - the
+#  containers run as root and can still read the files.
+- name: "Ensure the media directory exists on the target host and is writable by the clone user"
+  file:
+    path: "{{ "{{ target_media_directory.stdout | mandatory }}" }}"
+    state: directory
+    owner: "{{ "{{ clone_target_user }}" }}"
+
+
+- name: "Copy the media files from the source host to the target host"
+  command: >-
+    rsync --archive --delay-updates {{ "{{ '--compress' if clone_rsync_compress else '' }}" }}
+    -e "ssh -i {{ "{{ clone_ssh_key_path }}" }} -o StrictHostKeyChecking=accept-new"
+    {{ "{{ source_media_directory.stdout | mandatory }}" }}/
+    {{ "{{ clone_target_user }}" }}@{{ "{{ clone_target_address }}" }}:{{ "{{ target_media_directory.stdout | mandatory }}" }}/
+  delegate_to: "{{ "{{ source_host | mandatory }}" }}"

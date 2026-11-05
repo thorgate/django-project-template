@@ -12,12 +12,221 @@ ansible-playbook -v --limit target.thorgate.eu -e source_host=source.thorgate.eu
 ----
 
 This will::
-* Download database from source server to local dump file
-* Download media and private files from source server
-* Upload database dump from target server
-* Drop database on target server
-* Restore database dump on target server
-* Upload media files to s3 configured on target server
+* Copy the letsencrypt certificate from the source server to the target server
+* Copy the database from the source server to the target server, dropping and recreating it there
+* Copy the media files from the source server to the target server (or to the target's S3 bucket)
 
 This operation doesn't require to stop project on source host, however it may still be useful +
 to stop it when performing live migration to ensure that the DB and media are in consistent state.
+
+==== Cloning onto a brand new server
+
+If `code_dir` does not exist on the target, the clone runs the xref:deploy.adoc[deploy] role first
+to create the project there - checkout, `.env`, compose file, docker networks, database, images and
+nginx config - so a bare server can be set up and populated in a single run. It is deployed with
+`start_project=false`, because the database restore needs the project stopped; the clone starts it
+at the end.
+
+The deploy happens *after* the certificate has been cloned, deliberately: during a migration the
+DNS still points at the source, so certbot on the target cannot issue a new certificate. With the
+cloned one already in place it sees a certificate that is not due for renewal and leaves it alone.
+
+When the clone finishes, nginx on the target is reloaded - the cloned certificate replaces files
+nginx already has open, and the deploy may have rewritten the site config.
+
+The reload is skipped when the project has no nginx config on the target yet - a tagged run (e.g.
+`--tags certs`) can land the certificate on a server the deploy role has not touched, and
+`nginx -t` would fail on a config that is not there. `-e clone_reload_nginx=false` skips it
+outright.
+
+The deploy the clone runs on a brand new target reloads nginx itself, and there `nginx -t` can
+fail on a config written for a project that has never started. That reload therefore runs with
+`nginx_reload_ignore_errors: true` - the failure is reported and the clone carries on, reloading
+nginx again at the end once the media and the database are in place.
+
+==== Nothing is staged on the ansible controller
+
+Every transfer goes *straight from the source host to the target host*. The database dump, the
+media files and the certificate archive are never written to the machine running ansible, which
+keeps production data off developer laptops.
+
+rsync refuses remote-to-remote transfers, so the rsync has to run on the source host, which means
+the source needs SSH access to the target. The role provisions that itself: it generates a
+throwaway ed25519 keypair at `/root/.ssh/clone-<project>-ed25519` on the source, authorizes it for
+`clone_target_user` on the target, runs the transfers, then removes the authorized key and the
+keypair again. The transfers are wrapped in a `block`/`always`, so the access is revoked even when
+a copy fails partway.
+
+`clone_target_user` is left empty by default, in which case the role asks the target host who
+ansible is logged in as - `id -un` run with `become: no`, before privilege escalation. That is the
+only reliable source: `ansible_user` is unset when the login comes from `~/.ssh/config`, the
+controller's own `$USER` can differ from the server account, and `ansible_user_id` would report
+root because the play runs with `become`. Direct root SSH is disabled on the servers, so this is
+always an unprivileged login. Set `clone_target_user` in the vars or with
+`-e clone_target_user=...` to force a specific one. Since that user cannot write a
+root-owned directory - and `--rsync-path="sudo rsync"` would need a password that cannot be
+supplied over the source-to-target connection - the destination media directory is chowned to it
+before the transfer. The files end up owned by that user, which is fine: the containers run as
+root and nginx only reads them. The database dump and the certificate archive go through `/tmp`,
+so they need no such handling.
+
+Pass `-e keep_clone_ssh_access=true` to leave the access in place, which is useful when you want to
+re-run the copy a few times while preparing the switchover - rsync only ships what changed, so
+repeat runs are cheap.
+
+NOTE: Agent forwarding would be the other way to give the source access to the target, but
+`become = True` in `ansible.cfg` drops `SSH_AUTH_SOCK`, so it does not survive the privilege
+escalation.
+
+==== Postgres backends
+
+Which tasks run is decided at runtime by the `postgres_backend` ansible variable, so a project can
+use a different backend per environment (override it in the host vars):
+
+[cols="1,3"]
+|===
+| `postgres_backend` | How the database is reached
+
+| `shared`
+| The `postgres-<version>` container shared by every project on the host, via `docker exec`. The
+  project's role and database are dropped and recreated.
+
+| `local`
+| The `postgres` service in the project's own compose file, via `compose exec`. `compose stop`
+  takes that container down with the rest of the project, so it is started again on its own (and
+  waited for with `pg_isready`) while the database is replaced. Only the database is dropped and
+  recreated - the role is the container's superuser and is created by the image from the `.env`
+  credentials, so dropping it would break the container.
+
+| `remote`
+| A managed database, via a throwaway `postgres:<version>` client container on each host. The
+  database itself cannot be dropped and recreated - that needs cluster admin rights the deploy
+  user does not have - so the contents are replaced with `pg_restore --clean --if-exists`
+  instead.
+|===
+
+==== Cloning across postgres backends
+
+The two servers do not have to use the same `postgres_backend` either. The dump tasks follow
+`source_postgres_backend` (defaults to the target's `postgres_backend`) and everything that loads
+the dump follows the target's own, so moving a project off its own postgres container onto a host
+that has a shared one is:
+
+[source,bash]
+----
+poetry run ansible-playbook -v --limit target.thorgate.eu \
+  -e source_host=source.thorgate.eu -e source_postgres_backend=local clone.yml
+----
+
+with the target's host vars saying `postgres_backend: shared`. The target's compose file is
+rendered accordingly - no project-local postgres service, the shared container linked in as
+`postgres` - so nothing else needs changing.
+
+==== Cloning across postgres versions
+
+The two servers do not have to run the same postgres version. Everything that touches the source
+host uses `source_postgres_version`, which defaults to the target's `postgres_version`; set it when
+the versions differ:
+
+[source,bash]
+----
+poetry run ansible-playbook -v --limit target.thorgate.eu \
+  -e source_host=source.thorgate.eu -e source_postgres_version=10 clone.yml
+----
+
+That is the migration case: the target's host vars set the new `postgres_version`, the source still
+runs the old one. The dump is taken inside the source's own postgres container (or, for a managed
+database, a client container of that version) and restored by the target's - `pg_restore` reads
+archives written by older versions, so the upgrade happens as part of the restore.
+
+A dump from a pre-15 server also recreates the `public` schema itself, which from postgres 15 on
+already exists in a fresh database and is owned by `pg_database_owner` - so whether the dump
+carries the schema depends on the version it came from. The role reads the archive's table of
+contents (`pg_restore -l | grep "SCHEMA - public"`) and prepares the database to match: it drops
+`public` when the dump recreates it, and creates `public` when the dump does not. Guessing either
+way breaks the restore - a dump that carries the schema ends with `errors ignored on restore` and a
+non-zero exit status, and one that does not fails every object with
+`ERROR: schema "public" does not exist`.
+
+With the `shared` backend `pg_restore` additionally runs as the superuser, so the dump's own
+`ALTER ... OWNER` / `COMMENT` statements replay cleanly; the grant of `public` to the project role
+happens after the restore for the same reason.
+
+==== Compose on the source host
+
+A task delegated to the source host still evaluates the *target's* variables, so the source's own
+`compose_command` and `compose_file` are looked up from its inventory entry and used by everything
+that runs there (the `local` backend's dump, the media directory lookup, `setup_proxy.yml`). Two
+servers may well run different compose versions - a v2 `docker compose` target against a v1
+`docker-compose` source would otherwise fail with `unknown shorthand flag: 'f' in -f`.
+
+Override them when the source is not in this inventory, or when it has not been deployed with this
+version of the ansible stack yet and its compose file is still at the old path:
+
+[source,bash]
+----
+poetry run ansible-playbook -v --limit target.thorgate.eu \
+  -e source_host=source.thorgate.eu \
+  -e source_compose_command=docker-compose -e source_compose_file=docker-compose.yml clone.yml
+----
+
+==== Supported media backends
+
+[cols="1,1,3"]
+|===
+| Source | Target | How
+
+| FS | FS | `rsync` runs on the source host and writes to the target host
+| FS | S3 | `aws-cli` runs on the source host with the target's bucket credentials
+| S3 or GCS | - | Not supported, the playbook fails early
+|===
+
+The media directory is read out of the compose file on each host, so the two ends do not have to
+use the same path.
+
+==== Compression
+
+`clone_rsync_compress` controls whether the transfers pass `--compress`. It defaults to *false*,
+because media uploads are usually already-compressed formats (JPEG/PNG/PDF) where zlib gains next
+to nothing while capping a single core at roughly 50-100 MB/s - on a fast server-to-server link it
+slows the copy down. Turn it on when the link between the hosts is the bottleneck rather than the
+CPU:
+
+[source,bash]
+----
+ansible-playbook -v --limit target.thorgate.eu \
+  -e source_host=source.thorgate.eu -e clone_rsync_compress=true clone.yml
+----
+
+The certificate archive is never compressed, it is already a `.tar.gz`.
+
+==== Cloning onto a server that should stay down
+
+`start_project` defaults to `true`, which means the project is started again once the database has been restored.
+Pass `-e start_project=false` to leave it stopped - the same variable the deploy playbook uses, see
+xref:deploy.adoc[Manual Deployment].
+
+[source,bash]
+----
+poetry run ansible-playbook -v --limit target.thorgate.eu \
+  -e source_host=source.thorgate.eu -e start_project=false clone.yml
+----
+
+
+==== tags
+
+[#clone-certs-tag]
+certs::
+    Only copy the certificates.
+
+[#clone-media-tag]
+media::
+    Only copy the media files.
+
+[#clone-db-tag]
+db::
+    Only copy the database.
+
+[#clone-proxy-tag]
+proxy::
+    Only set up the proxy on the source host. Also needs `-e setup_proxy=true`.

@@ -19,11 +19,39 @@
     dump_filename: "/tmp/mirror-{{ project | mandatory }}-{{ ansible_date_time.epoch }}.pg_dump"
 
 
-- name: "Create a fresh DB dump on the server"
+- name: "Create a fresh DB dump on the server (shared postgres)"
   shell: >
-    docker exec -i postgres-{{ postgres_version | mandatory }} pg_dump -U {{ project }} \
-      --format=custom --compress=0 {{ project }} > {{ dump_filename }}
-  no_log: true
+    docker exec -i postgres-{{ postgres_version | mandatory }}
+    pg_dump -U {{ django_database_user }}
+    --format=custom --compress=0 {{ django_database_name }} > {{ dump_filename }}
+  no_log: "{{ ansible_verbosity < 3 }}"
+  when: postgres_backend == 'shared'
+
+
+- name: "Create a fresh DB dump on the server (local postgres)"
+  shell: >
+    {{ compose_command }} -f {{ compose_file }} exec -T postgres
+    pg_dump -U {{ django_database_user }}
+    --format=custom --compress=0 {{ django_database_name }} > {{ dump_filename }}
+  args:
+    chdir: "{{ code_dir }}"
+  no_log: "{{ ansible_verbosity < 3 }}"
+  when: postgres_backend == 'local'
+
+
+# There is no postgres container on the host for a managed database, so the client tooling is run
+#  in a throwaway container instead.
+- name: "Create a fresh DB dump on the server (remote postgres)"
+  shell: >
+    docker run --rm --env PGPASSWORD={{ django_database_password | mandatory | quote }}
+    postgres:{{ postgres_version | mandatory }}
+    pg_dump --username={{ django_database_user | quote }}
+    --host={{ django_database_host | mandatory | quote }}
+    --port={{ django_database_port }}
+    --dbname={{ django_database_name | quote }}
+    --format=custom --compress=0 > {{ dump_filename }}
+  no_log: "{{ ansible_verbosity < 3 }}"
+  when: postgres_backend == 'remote'
 
 
 - name: "Download the dump file"

@@ -11,7 +11,9 @@ include::../roles/deploy/templates/environment[environment, lines=6..16]
 
 Ansible creates a backup with every change. The backup is located in the same directory.
 
-This environment file is used by link:../../docker-compose.production.yml[docker-compose.production] as well as by the containers themselves.
+This environment file is used by the compose file ansible renders onto the server from
+link:../roles/deploy/templates/docker-compose.production.yml[the deploy role's template], as well as
+by the containers themselves.
 
 See xref:../deploy.adoc#env-tag[Here] for more information on how to deploy just an update to the environment file.
 

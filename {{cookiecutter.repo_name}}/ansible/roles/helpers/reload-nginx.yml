@@ -1,2 +1,16 @@
+# - {%- raw %}
+# `nginx -t` fails on a config written for a project that has never started, so callers that
+#  expect that (clone.yml's deploy) set nginx_reload_ignore_errors and reload again later.
 - name: "Reload docker nginx"
   shell: "docker exec nginx nginx -t && docker exec nginx nginx -s reload"
+  register: nginx_reload
+  ignore_errors: "{{ nginx_reload_ignore_errors | default(false) }}"
+
+
+- name: "nginx reload failed and the error was ignored"
+  debug:
+    msg: >-
+      nginx reload failed on {{ inventory_hostname }}, ignored:
+      {{ nginx_reload.stderr | default(nginx_reload.msg | default('')) }}
+  when: nginx_reload is failed
+# - {%- endraw %}

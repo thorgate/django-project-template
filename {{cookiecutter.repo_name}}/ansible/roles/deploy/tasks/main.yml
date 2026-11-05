@@ -1,9 +1,9 @@
-- name: "Create needed directories {{ "{{ code_dir }}" }}"
+- name: "Create needed directories"
   file:
       path: "{{ "{{ item }}" }}"
       state: directory
   loop:
-      - "/var/log/{{ "{{ project }}" }}"
+      - "{{ "{{ log_dir }}" }}"
 
 
 - name: "Checkout the code"
@@ -30,37 +30,45 @@
       path: "{{ "{{ code_dir }}" }}/database.lock"
   register: db_created
 
-# - {%  if cookiecutter.shared_postgres == YES %}
+# Only the shared container is bootstrapped here: `local` is created by the postgres image from
+#  the .env credentials, `remote` has to exist already - see docs/the_first_deploy.adoc.
 - name: "Create database"
   shell: >
       echo "
-        CREATE DATABASE {{ "{{ project }}" }};
-        CREATE USER {{ "{{ project }}" }} WITH password '{{ "{{ django_database_password | mandatory }}" }}';
-        GRANT ALL PRIVILEGES ON DATABASE {{ "{{ project }}" }} to {{ "{{ project }}" }};
+        CREATE DATABASE {{ "{{ django_database_name }}" }};
+        CREATE USER {{ "{{ django_database_user }}" }} WITH password '{{ "{{ django_database_password | mandatory }}" }}';
+        GRANT ALL PRIVILEGES ON DATABASE {{ "{{ django_database_name }}" }} to {{ "{{ django_database_user }}" }};
       " | docker exec -i postgres-{{ "{{ postgres_version | mandatory }}" }} psql -U postgres
-  when: not db_created.stat.exists
+  when:
+    - postgres_backend == 'shared'
+    - not db_created.stat.exists
 
 - name: "Create database extensions"
   shell: >
     echo "
       CREATE EXTENSION IF NOT EXISTS citext;
-    " | docker exec -i postgres-{{ "{{ postgres_version | mandatory }}" }} psql -U postgres -d {{ "{{ project }}" }}
-  when: not db_created.stat.exists
+    " | docker exec -i postgres-{{ "{{ postgres_version | mandatory }}" }} psql -U postgres -d {{ "{{ django_database_name }}" }}
+  when:
+    - postgres_backend == 'shared'
+    - not db_created.stat.exists
 
 - name: "Grant schema access"
   shell: >
      echo "
-        GRANT all ON SCHEMA public to {{ "{{ project }}" }};
-     " | docker exec -i postgres-{{ "{{ postgres_version | mandatory }}" }} psql -U postgres -d {{ "{{ project }}" }}
-  when: not db_created.stat.exists
+        GRANT all ON SCHEMA public to {{ "{{ django_database_user }}" }};
+     " | docker exec -i postgres-{{ "{{ postgres_version | mandatory }}" }} psql -U postgres -d {{ "{{ django_database_name }}" }}
+  when:
+    - postgres_backend == 'shared'
+    - not db_created.stat.exists
 
-# - {% endif %}
 
 - name: "Create db creation lockfile"
   file:
       path: "{{ "{{ code_dir }}" }}/database.lock"
       state: touch
-  when: not db_created.stat.exists
+  when:
+    - postgres_backend == 'shared'
+    - not db_created.stat.exists
 
 
 - name: "Install/update .env file"
@@ -100,10 +108,10 @@
 - name: "Ensure docker networks exist"
   docker_network:
       name: "{{ "{{ item }}" }}"
-  loop:
-      - "{{ "{{ project }}" }}_default"
-      - "{{ "{{ project }}" }}_nginx"
-      - "{{ "{{ project }}" }}_postgres"
+  # The postgres network is only for the shared container; `local` and `remote` use `default`.
+  loop: >-
+      {{ "{{ [project ~ '_default', project ~ '_nginx']
+          + ([project ~ '_postgres'] if postgres_backend == 'shared' else []) }}" }}
 
 
 - name: "Attach shared containers to project specific networks"
@@ -113,43 +121,63 @@
         {{ "{% raw %}--format='{{range $k,$v := .NetworkSettings.Networks}}{{println $k}}{{end}}'{% endraw %}" }}
         | grep {{ "{{ item.name }}" }}
         || docker network connect {{ "{{ item.name }} {{ item.container }}" }}
-  loop:
-      - name: "{{ "{{ project }}" }}_nginx"
-        container: nginx
-# - {%  if cookiecutter.shared_postgres == YES %}
-      - name: "{{ "{{ project }}" }}_postgres"
-        container: "postgres-{{ "{{ postgres_version }}" }}"
-# - {%  endif %}
+  loop: >-
+      {{ "{{ [{'name': project ~ '_nginx', 'container': 'nginx'}]
+          + ([{'name': project ~ '_postgres', 'container': 'postgres-' ~ postgres_version}]
+             if postgres_backend == 'shared' else []) }}" }}
 
 
-# - {% if cookiecutter.build_in_ci == YES %}
-- name: "Copy compose file"
-  copy:
-    src: "{{ "{{ code_dir }}" }}/repository/{{ "{{ compose_file }}" }}"
-    dest: "{{ "{{ code_dir }}" }}/docker-compose.yml"
-    remote_src: true
+- name: "Install/update the compose file"
+  template:
+    src: docker-compose.production.yml
+    dest: "{{ "{{ code_dir }}/{{ compose_file }}" }}"
+    mode: 0644
+    backup: yes
+  tags:
+    - compose
 
 
-# - {%- endif %}
 - name: "Build the project"
   shell:
     cmd: >-
       {{ "{{ compose_command }}" }}
-# - {% if cookiecutter.build_in_ci == NO %}
-           -f {{ "{{ compose_file }}" }}
-# - {% endif %}
+      -f {{ "{{ compose_file }}" }}
       up --build --detach --no-color --force-recreate --remove-orphans
     chdir: "{{ "{{ code_dir }}" }}"
 # - {%- if cookiecutter.build_in_ci == YES %}
   environment:
     DOCKER_CONFIG: "{{ "{{ code_dir }}" }}/.docker-cfg"
 # - {%- endif %}
+  when: start_project | bool
   register: result
 
 
 # Print the build output
 - debug:
     var: result
+  when: start_project | bool
+
+
+# With `start_project: false` the images are still {% if cookiecutter.build_in_ci == YES %}pulled{% else %}built{% endif %}, so the commands below can run.
+- name: "{% if cookiecutter.build_in_ci == YES %}Pull{% else %}Build{% endif %} the project images"
+  shell:
+    cmd: >-
+      {{ "{{ compose_command }}" }}
+      -f {{ "{{ compose_file }}" }}
+      {% if cookiecutter.build_in_ci == YES %}pull{% else %}build --pull{% endif %}
+    chdir: "{{ "{{ code_dir }}" }}"
+# - {%- if cookiecutter.build_in_ci == YES %}
+  environment:
+    DOCKER_CONFIG: "{{ "{{ code_dir }}" }}/.docker-cfg"
+# - {%- endif %}
+  when: not start_project | bool
+  register: image_result
+
+
+# Print the image output
+- debug:
+    var: image_result
+  when: not start_project | bool
 
 
 - name: "Run migrations"
@@ -184,3 +212,14 @@
   import_tasks: nginx.yml
   tags:
     - nginx
+
+
+# `compose run` above started the services it depends on - leave the project stopped.
+- name: "Stop the project"
+  command: >-
+      {{ "{{ compose_command }}" }}
+      -f {{ "{{ compose_file }}" }}
+      stop
+  args:
+    chdir: "{{ "{{ code_dir }}" }}"
+  when: not start_project | bool

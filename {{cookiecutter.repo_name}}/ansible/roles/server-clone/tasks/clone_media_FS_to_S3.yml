@@ -1,0 +1,15 @@
+# FS -> S3. aws-cli runs ON the source with the TARGET's bucket credentials.
+
+- name: "Install awscli on the source host"
+  pip:
+    name: "awscli"
+  delegate_to: "{{ "{{ source_host | mandatory }}" }}"
+
+
+- name: "Use aws s3 command to upload the media files from the source host"
+  command: "aws s3 cp {{ "{{ source_media_directory.stdout | mandatory }}" }} s3://{{ "{{ settings.AWS_STORAGE_BUCKET_NAME }}" }}/media --recursive"
+  environment:
+    AWS_ACCESS_KEY_ID: "{{ "{{ settings.AWS_ACCESS_KEY_ID }}" }}"
+    AWS_SECRET_ACCESS_KEY: "{{ "{{ settings.AWS_SECRET_ACCESS_KEY }}" }}"
+  no_log: true
+  delegate_to: "{{ "{{ source_host | mandatory }}" }}"

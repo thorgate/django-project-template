@@ -1,4 +1,10 @@
 # Docker compose configuration for production
+#
+# NB: This file is only used by CI (`build_compose_file` job) to verify that the production images
+#  still build. The deployment renders its own copy onto the server from
+#  `ansible/roles/deploy/templates/docker-compose.production.yml` (landing there as
+#  `docker-compose.deploy.yml`), where the paths and names come from ansible variables instead of
+#  being baked in. Keep the two in sync.
 
 x-common-spec: &common-spec
   env_file: .env

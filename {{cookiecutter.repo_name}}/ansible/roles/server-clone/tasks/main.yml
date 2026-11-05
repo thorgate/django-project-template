@@ -1,3 +1,4 @@
+# - {%- raw %}
 - name: 'Check mandatory variables are defined'
   assert:
     that:
@@ -6,36 +7,189 @@
       - source_host is defined
       - postgres_version is defined
       - django_database_password is defined
-
-
-- set_fact:
-    local_media_path: "./clone-{{ "{{ project | mandatory }}" }}-files/"
-
-
-- name: "Clone certificates"
-  import_tasks: clone_certificate.yml
   tags:
     - certs
     - certificates
-
-
-- name: "Download media files"
-  import_tasks: clone_media_source.yml
-  tags:
     - media
     - files
+    - db
+    - database
+    - proxy
 
 
-- name: "Upload media files"
-  import_tasks: clone_media_target.yml
+- set_fact:
+    # Postgres version running on the SOURCE host - the target's own version unless the clone
+    #  crosses versions (e.g. a 10 -> 16 migration), in which case set source_postgres_version.
+    source_postgres_version: "{{ source_postgres_version | default(postgres_version, true) }}"
+    # Postgres backend on the SOURCE host - the target's own unless the clone crosses backends
+    #  (e.g. a project-local container -> the host's shared one), see clone_db.yml.
+    source_postgres_backend: "{{ source_postgres_backend | default(postgres_backend, true) }}"
+    # Delegated tasks evaluate the TARGET's variables, so the source's compose settings come
+    #  from its inventory entry - the hosts can run different compose versions. Override with
+    #  `-e source_compose_command=...` / `-e source_compose_file=...`.
+    source_compose_command: "{{ (hostvars[source_host] | default({})).compose_command | default(compose_command, true) }}"
+    source_compose_file: "{{ (hostvars[source_host] | default({})).compose_file | default(compose_file, true) }}"
+    # Address the source host uses to reach the target host
+    clone_target_address: "{{ ansible_host | default(inventory_hostname) }}"
+    # Throwaway keypair used for the source -> target transfers
+    clone_ssh_key_path: "/root/.ssh/clone-{{ project }}-ed25519"
   tags:
+    - certs
+    - certificates
     - media
     - files
+    - db
+    - database
+    - proxy
 
 
-- name: "Clone the DB"
-  import_tasks: clone_db.yml
+- name: "Resolve the compose file on the source host"
+  import_tasks: resolve_source_compose.yml
   tags:
+    - certs
+    - certificates
+    - media
+    - files
+    - db
+    - database
+    - proxy
+
+
+# Nothing below writes any of the cloned data to the ansible controller - the database dump and
+#  the media files go straight from the source host to the target host. The controller only
+#  orchestrates, which keeps production data off developer machines.
+#
+# That requires the source host to have SSH access to the target for the duration of the run. The
+#  transfers are wrapped in a block/always so the access is revoked even when a copy fails partway.
+- block:
+    - name: "Set up direct source -> target transfer"
+      import_tasks: setup_direct_transfer.yml
+      tags:
+        - certs
+        - certificates
+        - media
+        - files
+        - db
+        - database
+
+
+    - name: "Clone certificates"
+      import_tasks: clone_certificate.yml
+      tags:
+        - certs
+        - certificates
+
+
+    # A brand new server has nothing for the tasks below to shell into, so deploy it first - but
+    #  after the certificate, since during a migration the DNS still points at the source and
+    #  certbot can only leave a cloned certificate alone. Built but left down for clone_db.yml.
+    - name: "Check whether the project exists on the target host"
+      stat:
+        path: "{{ code_dir }}"
+      register: target_code_dir
+      tags:
+        - media
+        - files
+        - db
+        - database
+
+
+    - name: "Deploy the project onto the target host"
+      include_role:
+        name: deploy
+        apply:
+          tags:
+            - media
+            - files
+            - db
+            - database
+      vars:
+        start_project: false
+        # The deploy's own reload can fail on a project that has never started; the clone
+        #  reloads nginx itself at the end.
+        nginx_reload_ignore_errors: true
+      when: not target_code_dir.stat.exists
+      tags:
+        - media
+        - files
+        - db
+        - database
+
+
+    - name: "Detect the source media backend"
+      import_tasks: clone_media_source.yml
+      tags:
+        - media
+        - files
+
+
+    - name: "Copy the media files to the target"
+      import_tasks: clone_media_target.yml
+      tags:
+        - media
+        - files
+
+
+    - name: "Clone the DB"
+      import_tasks: clone_db.yml
+      tags:
+        - db
+        - database
+
+  always:
+    - name: "Tear down direct source -> target transfer"
+      import_tasks: teardown_direct_transfer.yml
+      tags:
+        - certs
+        - certificates
+        - media
+        - files
+        - db
+        - database
+
+
+# A `--tags certs` run can reach a server the deploy has not touched, where `nginx -t` fails.
+- name: "Check whether the project's nginx config is in place on the target host"
+  stat:
+    path: "/etc/nginx/sites-enabled/{{ project }}"
+  register: target_nginx_config
+  tags:
+    - certs
+    - certificates
+    - media
+    - files
+    - db
+    - database
+
+
+- name: "Skipping the nginx reload"
+  debug:
+    msg: >-
+      /etc/nginx/sites-enabled/{{ project }} does not exist on {{ inventory_hostname }} yet, so
+      there is nothing to reload - deploy.yml will install the config and reload nginx itself.
+  when:
+    - clone_reload_nginx | bool
+    - not target_nginx_config.stat.exists
+  tags:
+    - certs
+    - certificates
+    - media
+    - files
+    - db
+    - database
+
+
+# The cloned certificate replaced files nginx has open. setup_proxy.yml reloads the source.
+- name: "Reload nginx on the target host"
+  import_tasks: ../../helpers/reload-nginx.yml
+  when:
+    - clone_reload_nginx | bool
+    - target_nginx_config.stat.exists
+  tags:
+    - certs
+    - certificates
+    - media
+    - files
     - db
     - database
 
@@ -43,6 +197,7 @@
 - name: "Setup the proxy"
   import_tasks: setup_proxy.yml
   when: setup_proxy | default(false)
-  delegate_to: "{{ "{{ source_host | mandatory }}" }}"
+  delegate_to: "{{ source_host | mandatory }}"
   tags:
     - proxy
+# - {%- endraw %}

@@ -7,6 +7,26 @@ repository: {{ cookiecutter.gitlab_repo_url | as_git_path }}
 # Where the code should be cloned into
 code_dir: "/srv/{{ cookiecutter.repo_name }}"
 
+# Compose file ansible renders onto the server (from roles/deploy/templates/). Must not collide
+#  with a tracked file in the checkout.
+{%- if cookiecutter.build_in_ci == YES %}
+compose_file: "docker-compose.yml"
+{%- else %}
+compose_file: "docker-compose.deploy.yml"
+{%- endif %}
+
+# Where the database lives - override per host. `shared`: the host's `postgres-<version>`
+#  container. `local`: the `postgres` service in this compose project. `remote`: a managed
+#  database, which has to exist before the first deploy (docs/the_first_deploy.adoc).
+postgres_backend: "{% if cookiecutter.shared_postgres == YES %}shared{% else %}local{% endif %}"
+
+# Database connection. `postgres` is the compose service / external_links alias; for a managed
+#  database set the host in the host vars.
+django_database_host: "postgres"
+django_database_port: 5432
+django_database_name: "{{ "{{ project }}" }}"
+django_database_user: "{{ "{{ project }}" }}"
+
 # Postgres container version. This container should already exist in the server
 postgres_version: "{{ cookiecutter.postgres_version }}"
 

@@ -1,32 +1,41 @@
+# Runs `manage.py <command_params>` in a one-off django container.
+#
+# Two variants, because the quoting differs between compose v1 and v2. Each registers its own
+#  variable - a `register:` on a SKIPPED task still overwrites it - and `result` is set from
+#  whichever ran, since importers read `result.stdout`.
 
-- name: "Run manage.py {{ "{{ command_params | mandatory }}" }}"
+- name: "Run manage.py {{ "{{ command_params | mandatory }}" }} (compose v1)"
   command: >-
             {{ "{{ compose_command }}" }}
-# - {% if cookiecutter.build_in_ci == NO %}
-            -f {{ "{{ compose_file "}} }}
-# - {% endif %}
+            -f {{ "{{ compose_file }}" }}
             run --rm
             --entrypoint 'bash -c "python manage.py {{ "{{ command_params | mandatory }}" }}"'
             django
   args:
       chdir: "{{ "{{ code_dir }}" }}"
   when: "compose_command == 'docker-compose'"
-  register: result
+  register: command_result_v1
 
-- name: "Run manage.py {{ "{{ command_params | mandatory }}" }}"
+
+# --entrypoint="" not --entrypoint="''": `command` shlex-splits, so "''" would survive as two
+#  literal quotes and compose would try to exec a program named ''.
+- name: "Run manage.py {{ "{{ command_params | mandatory }}" }} (compose v2)"
   command: >-
             {{ "{{ compose_command }}" }}
-# - {% if cookiecutter.build_in_ci == NO %}
-            -f {{ "{{ compose_file "}} }}
-# - {% endif %}
+            -f {{ "{{ compose_file }}" }}
             run --rm
-            --entrypoint="''"
+            --entrypoint=""
             django
             bash -c "python manage.py {{ "{{ command_params | mandatory }}" }}"
   args:
       chdir: "{{ "{{ code_dir }}" }}"
   when: "compose_command != 'docker-compose'"
-  register: result
+  register: command_result_v2
+
+
+- set_fact:
+    result: "{{ "{{ command_result_v1 if compose_command == 'docker-compose' else command_result_v2 }}" }}"
+
 
 - debug:
-      var: result
+      var: result.stdout_lines

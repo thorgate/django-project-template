@@ -1,0 +1,25 @@
+# - {%- raw %}
+# Revokes what setup_direct_transfer.yml granted. Runs from `always`, so an aborted transfer does
+#  not leave the key behind. `-e keep_clone_ssh_access=true` keeps it, for repeated copies.
+
+- name: "Revoke the source host's SSH access to the target host"
+  authorized_key:
+    user: "{{ clone_target_user }}"
+    key: "{{ clone_ssh_pubkey.content | b64decode }}"
+    state: absent
+  # clone_ssh_pubkey is unset if setup itself failed before registering it
+  when:
+    - clone_ssh_pubkey is defined
+    - not (keep_clone_ssh_access | default(false))
+
+
+- name: "Remove the transfer key from the source host"
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ clone_ssh_key_path }}"
+    - "{{ clone_ssh_key_path }}.pub"
+  delegate_to: "{{ source_host | mandatory }}"
+  when: not (keep_clone_ssh_access | default(false))
+# - {%- endraw %}
